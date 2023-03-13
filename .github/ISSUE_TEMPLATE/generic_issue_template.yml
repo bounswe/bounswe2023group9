@@ -1,7 +1,40 @@
----
-name: Tracking issue
-about: Use this template for tracking new features.
-title: "[DATE]: [FEATURE NAME]"
-labels: tracking issue, needs triage
-assignees: octocat
----
+name: Generic Issue Form
+description: This template is created for generic issues.
+body:
+  - type: textarea
+    id: description
+    attributes:
+      description: "Please provide a description of the issue. What is the purpose of the issue? What will be the result of the issue? What are the expected outcomes of the issue?" 
+      placeholder: "This issue is created for ..."
+      label: Issue Description
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: 
+          ---     
+  - type: textarea
+    id: steps
+    attributes:
+      description: "This field is optional. What are the steps to follow to close this issue? Please provide a checklist of the steps."
+      value: | 
+              - [ ] ...
+              - [ ] ...
+              - [ ] ...
+      label: Steps
+  - type: markdown
+    attributes:
+      value: 
+          ---       
+  - type: input
+    id: deadline
+    attributes:
+      description: "This part is optional for now. Please provide a deadline for the issue."
+      placeholder: "19.03.2022 - Saturday - 23:59"
+      label: Deadline for the Issue
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: 
+          "**Please don't forget to assign the issue to whoever is responsible and add the appropriate labels.**"
