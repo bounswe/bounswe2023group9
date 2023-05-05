@@ -16,7 +16,7 @@ class API_GET_test_cases(TestCase):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
         self.assertEquals(serp_api_response.status_code,200,"SerpApi doesn't work as supposed to")
         serp_api_response = serp_api_response.json()['organic_results']
-        response = self.c.get("/api/serp-api/q=test&num=3/")
+        response = self.c.get("/api/serp-api/title=test&rows=3/")
         self.assertEquals(response.status_code,200)
         response_content = response.json()['results']
         self.assertEquals(len(response_content),3)
