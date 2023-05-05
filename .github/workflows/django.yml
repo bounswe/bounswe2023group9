@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./practice-app
+        working-directory: /practice-app
     strategy:
       max-parallel: 4
       matrix:
