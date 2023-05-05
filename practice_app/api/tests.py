@@ -11,7 +11,7 @@ class API_GET_test_cases(TestCase):
     def tearDown(self):
         print('GET Tests Completed Successfully')
 
-    @skip('limited use for this api')
+    # @skip('limited use for this api')
     def test_serp_api(self):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
         self.assertEquals(serp_api_response.status_code,200,"SerpApi doesn't work as supposed to")
