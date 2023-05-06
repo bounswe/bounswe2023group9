@@ -4,21 +4,16 @@ from django.http import JsonResponse
 from . import api_keys
 
 
+
 def google_scholar(request):
-    url = request.get_full_path().split('?')[-1] + '&'
-    search, number = None, None
-    if url.find("title") == -1:
+    number = request.GET.get("rows")
+    search = request.GET.get("title")
+    if search == None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
-    if url.find('rows') == -1:
+    if number == None or number == "" or not number.isnumeric():
         number = 5
-        search = re.findall('title=(.*?)&',url)[0]
     else:
-        search = re.findall('title=(.*?)&', url)[0]
-        number = int(re.findall('rows=(.*?)&', url)[0])
-    if search == "":
-        return JsonResponse({'status': 'Title to search must be given.'}, status=404)
-    if search == None or number == None:
-        return JsonResponse({'status': 'Please check your parameters.'}, status=404)
+        number = int(number)
 
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' + search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
     if request.status_code == 200:
