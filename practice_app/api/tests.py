@@ -12,11 +12,11 @@ class API_GET_test_cases(TestCase):
         print('GET Tests Completed Successfully')
 
     @skip('limited use for this api')
-    def test_serp_api(self):
+    def test_google_scholar(self):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
         self.assertEquals(serp_api_response.status_code,200,"SerpApi didn't work as supposed to")
         serp_api_response = serp_api_response.json()['organic_results']
-        response = self.c.get("/api/serp-api/?title=test&rows=3")
+        response = self.c.get("/api/google-scholar/?title=test&rows=3")
         self.assertEquals(response.status_code,200)
         response_content = response.json()['results']
         self.assertEquals(len(response_content),3)

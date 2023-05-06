@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from . import api_keys
 
 
-def serp_api(request):
+def google_scholar(request):
     url = request.get_full_path().split('?')[-1] + '&'
     search, number = None, None
     if url.find("title") == -1:
