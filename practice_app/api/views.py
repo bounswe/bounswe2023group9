@@ -1,11 +1,25 @@
-from django.shortcuts import render
 import requests
-import json, re
-from django.http import  JsonResponse
+import re
+from django.http import JsonResponse
 from . import api_keys
 
 
-def serp_api(request,search,number = 5):
+def serp_api(request):
+    url = request.get_full_path().split('?')[-1] + '&'
+    search, number = None, None
+    if url.find("title") == -1:
+        return JsonResponse({'status': 'Title to search must be given.'}, status=404)
+    if url.find('rows') == -1:
+        number = 5
+        search = re.findall('title=(.*?)&',url)[0]
+    else:
+        search = re.findall('title=(.*?)&', url)[0]
+        number = int(re.findall('rows=(.*?)&', url)[0])
+    if search == "":
+        return JsonResponse({'status': 'Title to search must be given.'}, status=404)
+    if search == None or number == None:
+        return JsonResponse({'status': 'Please check your parameters.'}, status=404)
+
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' + search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
     if request.status_code == 200:
         request = request.json()

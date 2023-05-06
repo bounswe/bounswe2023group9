@@ -14,9 +14,9 @@ class API_GET_test_cases(TestCase):
     @skip('limited use for this api')
     def test_serp_api(self):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
-        self.assertEquals(serp_api_response.status_code,200,"SerpApi doesn't work as supposed to")
+        self.assertEquals(serp_api_response.status_code,200,"SerpApi didn't work as supposed to")
         serp_api_response = serp_api_response.json()['organic_results']
-        response = self.c.get("/api/serp-api/title=test&rows=3/")
+        response = self.c.get("/api/serp-api/?title=test&rows=3")
         self.assertEquals(response.status_code,200)
         response_content = response.json()['results']
         self.assertEquals(len(response_content),3)
@@ -35,6 +35,12 @@ class API_GET_test_cases(TestCase):
             self.assertEquals(serp_api_response[count]['link'], result['url'])
             self.assertEquals(serp_api_response[count]['position'], result['pos'])
             count += 1
+        self.assertEquals(self.c.get("/api/serp-api/?title=").status_code,404)
+        self.assertEquals(self.c.get("/api/serp-api/?").status_code, 404)
+        self.assertEquals(self.c.get("/api/serp-api/").status_code, 404)
+        self.assertEquals(self.c.get("/api/serp-api/?rows=5").status_code, 404)
+        self.assertEquals(self.c.get("/api/serp-api/title=sad").status_code, 404)
+        self.assertEquals(self.c.get("/api/serp-api/?title=&").status_code, 404)
 
 
 
