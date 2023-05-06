@@ -36,6 +36,7 @@ def eric_papers(request):
         
         i = 0
         for paper in papers:
+            paper['source'] = 'eric-api'
             paper['date'] = paper.pop('publicationdateyear')
             paper['abstract'] = paper.pop('description')
             paper['position'] = i
