@@ -1,8 +1,9 @@
 import requests
 import re
 from django.http import JsonResponse
+import urllib.parse
+import json
 from . import api_keys
-
 
 
 def google_scholar(request):
@@ -15,7 +16,8 @@ def google_scholar(request):
     else:
         number = int(number)
 
-    request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' + search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
+    request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
+                           search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
     if request.status_code == 200:
         request = request.json()
         papers = request['organic_results']
@@ -26,10 +28,10 @@ def google_scholar(request):
             paper_info = {}
             paper_info['source'] = 'google_scholar'
 
-            if 'authors' in  pub_info.keys():
+            if 'authors' in pub_info.keys():
                 paper_info['authors'] = []
                 for author in pub_info['authors']:
-                    a = {'name' : author['name']}
+                    a = {'name': author['name']}
                     paper_info['authors'].append(a.copy())
             else:
                 temp = pub_info['summary'].split('-')[0].strip()
@@ -63,4 +65,40 @@ def google_scholar(request):
     elif request.status_code == 404:
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
     else:
-        return JsonResponse({'status': 'An internal server error has occured. Please try again.'},status=503)
+        return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
+
+
+def searchPaperOnCore(keyword, limit):
+    headersCore = {"Authorization": "Bearer " + api_keys.api_keys['core_api']}
+    params = {'q': keyword, 'limit': limit}
+    url = "https://api.core.ac.uk/v3/search/works?" + \
+        urllib.parse.urlencode(params)
+
+    req = requests.get(url, headers=headersCore)
+
+    result = {'status_code': req.status_code, 'results': []}
+    if req.status_code == 200:
+        resp = json.loads(req.content.decode("UTF-8"))
+        for i, r in enumerate(resp["results"]):
+            authors = []
+            for a in r['authors']:
+                authors.append(a['name'])
+
+            res_dic = {
+                'title': r['title'],
+                'authors': authors,
+                'source': "core.ac.uk",
+                'id': r['id'],
+                'date': r['publishedDate'],
+                'url': r['downloadUrl'],
+                'position': i,
+                'abstract': r['abstract']
+            }
+
+            result['results'].append(res_dic)
+
+    return result
+
+
+def core_get(request, keyword, limit):
+    return JsonResponse(searchPaperOnCore(keyword, limit))
