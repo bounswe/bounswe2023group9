@@ -37,6 +37,12 @@ def log_in(request):
     username = request.GET.get("username")
     password = request.GET.get("password")
 
+    if username == None or username == '':
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
+    
+    if password == None or password == '':
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
+    
     user = authenticate(request, username=username, password=password)
 
     if user is not None:
@@ -53,10 +59,26 @@ def log_out(request):
     return JsonResponse({"status":"User logged out."}, status = 200)
     
 def user_registration(request):
-    print(len(User.objects.filter(username= request.GET.get('user_id'))))
 
-    if len(User.objects.filter(username= request.GET.get('user_id'))) == 0:
-        user = User.objects.create_user(username= request.GET.get('user_id'), password= request.GET.get('password'), first_name= request.GET.get('name'),last_name= request.GET.get('surname') )
+    user_id = request.GET.get('user_id')
+    password = request.GET.get('password')
+    name = request.GET.get('name')
+    surname = request.GET.get('surname')
+
+    if user_id == None or user_id == '':
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
+    
+    if password == None or password == '':
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
+    
+    if name == None or name == '':
+        return JsonResponse({"status":"Name should be provided."}, status = 404)
+    
+    if surname == None or surname == '':
+        return JsonResponse({"status":"Surname should be provided."}, status = 404)
+    
+    if len(User.objects.filter(username= user_id)) == 0:
+        user = User.objects.create_user(username= user_id, password= password, first_name= name,last_name= surname )
         return JsonResponse({"status":"User created"}, status = 200)
     
     else:
