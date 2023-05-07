@@ -5,7 +5,10 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-  pull_request_target:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        required: true
 
 env:
   serp_api_key: ${{ secrets.SERP_API_KEY }}
