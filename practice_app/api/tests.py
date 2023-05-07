@@ -102,3 +102,69 @@ class EricPapersTestCase(TestCase):
         self.assertContains(response, 'date')
         self.assertContains(response, 'url')
         self.assertContains(response, 'position')
+class zenodo_test_cases(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def tearDown(self):
+        print('GET Tests Completed Successfully')
+
+    def test_zenodo_api(self):
+        ACCESS_TOKEN = api_keys.api_keys['ZENODO_API_KEY']
+        request = requests.get('https://zenodo.org/api/records',
+                               params={'q': 'test', 'sort': 'bestmatch', 'size': 3,
+                                       'access_token': ACCESS_TOKEN})
+        self.assertEquals(request.status_code, 200, "Zenodo API didn't work as supposed to")
+        response = self.c.get("/zenodo?search_title=test&rows=3")
+        self.assertEquals(response.status_code, 200)
+        response_content = response.json()['results']
+        self.assertEquals(len(response_content), 3)
+        count = 0
+        for result in response_content:
+            self.assertIn('source', result.keys())
+            self.assertEquals(result['source'], 'zenodo')
+            self.assertIn('authors', result.keys())
+            self.assertIn('id', result.keys())
+            self.assertIn('abstract', result.keys())
+            self.assertIn('url', result.keys())
+            self.assertIn('position', result.keys())
+            self.assertIn('date', result.keys())
+            self.assertIn('title', result.keys())
+            self.assertEquals(response[count]['title'], result['title'])
+            self.assertEquals(response[count]['link'], result['url'])
+            self.assertEquals(response[count]['position'], result['pos'])
+            count += 1
+class zenodo_test_cases(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def tearDown(self):
+        print('GET Tests Completed Successfully')
+
+    def test_zenodo_api(self):
+        ACCESS_TOKEN = api_keys.api_keys['ZENODO_API_KEY']
+        request = requests.get('https://zenodo.org/api/records',
+                               params={'q': 'test', 'sort': 'bestmatch', 'size': 3,
+                                       'access_token': ACCESS_TOKEN})
+        self.assertEquals(request.status_code, 200, "Zenodo API didn't work as supposed to")
+        response = self.c.get("/zenodo?search_title=test&rows=3")
+        self.assertEquals(response.status_code, 200)
+        response_content = response.json()['results']
+        self.assertEquals(len(response_content), 3)
+        count = 0
+        for result in response_content:
+            self.assertIn('source', result.keys())
+            self.assertEquals(result['source'], 'zenodo')
+            self.assertIn('authors', result.keys())
+            self.assertIn('id', result.keys())
+            self.assertIn('abstract', result.keys())
+            self.assertIn('url', result.keys())
+            self.assertIn('position', result.keys())
+            self.assertIn('date', result.keys())
+            self.assertIn('title', result.keys())
+            self.assertEquals(response[count]['title'], result['title'])
+            self.assertEquals(response[count]['link'], result['url'])
+            self.assertEquals(response[count]['position'], result['pos'])
+            count += 1
