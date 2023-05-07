@@ -4,9 +4,6 @@ import requests
 
 from django.http import JsonResponse, HttpResponse
 
-def eric_index(request):
-    return HttpResponse("Welcome to ERIC API!")
-
 def eric_papers(request):
     
     #params --> title, rows
