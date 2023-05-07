@@ -144,7 +144,7 @@ def semantic_scholar(request):
             paper_info['title'] = paper['title']
             paper_info['url'] = paper['url']
             paper_info['date'] = paper['year']
-            paper_info['pos'] = position
+            paper_info['position'] = position
             results.append(paper_info.copy())
         response['results'] = results
         return JsonResponse(response)

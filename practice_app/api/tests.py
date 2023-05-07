@@ -19,7 +19,7 @@ class google_scholar_test_cases(TestCase):
         self.assertEquals(self.c.get("/api/serp-api/title=sad").status_code, 404)
         self.assertEquals(self.c.get("/api/serp-api/?title=&").status_code, 404)
 
-    @skip('limited use for this api')
+    
     def test_results(self):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
         self.assertEquals(serp_api_response.status_code,200,"SerpApi didn't work as supposed to")
@@ -118,14 +118,14 @@ class SemanticScholarTestCase(TestCase):
         self.assertEquals(self.client.get("/api/semantic-scholar/title=coffee").status_code, 404)
         self.assertEquals(self.client.get("/api/semantic-scholar/?title=&").status_code, 404)
 
-    @skip('limited use for this api')
+    
     def test_results(self):
         
-        semantic_scholar_api_response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search?query=covid&fields=title,authors,id,abstract,url,position,date,title&offset=0&limit=3')
+        semantic_scholar_api_response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search?query=covid&fields=title,authors,url&offset=0&limit=3')
         self.assertEquals(semantic_scholar_api_response.status_code,200,"It didn't work as supposed to")
         semantic_scholar_api_response = semantic_scholar_api_response.json()['data']
         
-        response = self.c.get("/api/semantic-scholar/?title=pizza&rows=3")
+        response = self.client.get("/api/semantic-scholar/?title=covid&rows=3")
         self.assertEquals(response.status_code,200)
         response_content = response.json()['results']
         self.assertEquals(len(response_content),3)
@@ -137,7 +137,6 @@ class SemanticScholarTestCase(TestCase):
             self.assertIn('id', result.keys())
             self.assertIn('abstract', result.keys())
             self.assertIn('url', result.keys())
-            self.assertIn('position', result.keys())
             self.assertIn('date', result.keys())
             self.assertIn('title',result.keys())
             self.assertEquals(semantic_scholar_api_response[count]['title'],result['title'])
