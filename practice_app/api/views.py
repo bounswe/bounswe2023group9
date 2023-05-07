@@ -107,3 +107,44 @@ def eric_papers(request):
         return JsonResponse({'message':'Resource not found'}, status=404)
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
+
+
+def semantic_scholar(request):
+    query = request.GET
+    search = query.get("title")
+    limit = query.get("rows")
+    default_limit = 1
+    
+    if search is None or search == "":
+        return JsonResponse({'status': 'Title to search must be given.'}, status=404)
+    if limit is None or limit == "" or not limit.isnumeric():
+        limit = default_limit
+    else:
+        limit = int(limit)
+
+
+    fields = ['url','abstract','authors','title','year']
+    endpoint = f'https://api.semanticscholar.org/graph/v1/paper/search?query={search}&fields={",".join(fields)}&offset=0&limit={limit}'
+
+    response = requests.get(endpoint)
+    if response.status_code == 200:
+        response = response.json()
+        papers = response['data']
+        response = {}
+        results = []
+        for position,paper in enumerate(papers):
+            paper_info = {}
+            paper_info['source'] = 'semantic_scholar'
+            paper_info['authors'] = []
+            for author in paper['authors']:
+                author_name = {'name' : author['name']}
+                paper_info['authors'].append(author_name.copy())
+            paper_info['id'] = paper['paperId']
+            paper_info['abstract'] = paper['abstract']
+            paper_info['title'] = paper['title']
+            paper_info['url'] = paper['url']
+            paper_info['date'] = paper['year']
+            paper_info['pos'] = position
+            results.append(paper_info.copy())
+        response['results'] = results
+        return JsonResponse(response)
