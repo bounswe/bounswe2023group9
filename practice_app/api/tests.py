@@ -19,7 +19,7 @@ class google_scholar_test_cases(TestCase):
         self.assertEquals(self.c.get("/api/serp-api/title=sad").status_code, 404)
         self.assertEquals(self.c.get("/api/serp-api/?title=&").status_code, 404)
 
-    
+    @skip('limited use for this api')
     def test_results(self):
         serp_api_response = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=test&hl=en&num=3&api_key=' + api_keys.api_keys['serp_api'])
         self.assertEquals(serp_api_response.status_code,200,"SerpApi didn't work as supposed to")
