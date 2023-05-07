@@ -8,12 +8,12 @@ class EricPapersTestCase(TestCase):
 
     def test_invalid_title(self):
         #no search_title is provided
-        response = self.client.get('/api/eric/papers/')
+        response = self.client.get('/api/eric/')
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['message'], 'A paper title must be given.')
 
         #empty search_title is provided
-        response = self.client.get('/api/eric/papers/?title=')
+        response = self.client.get('/api/eric/?title=')
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['message'], 'A paper title must be given.')
 
@@ -23,7 +23,7 @@ class EricPapersTestCase(TestCase):
 
         field_count = 8
 
-        response = self.client.get('/api/eric/papers/?title=nanotechnology')
+        response = self.client.get('/api/eric/?title=nanotechnology')
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['papers'][0]), field_count)
@@ -39,7 +39,7 @@ class EricPapersTestCase(TestCase):
 
     def test_invalid_rows(self):
         # invalid rows is provided
-        response = self.client.get('/api/eric/papers/?title=education&rows=abc')
+        response = self.client.get('/api/eric/?title=education&rows=abc')
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['message'], 'Row count must be valid.')
 
@@ -49,7 +49,7 @@ class EricPapersTestCase(TestCase):
 
         field_count = 8
 
-        response = self.client.get('/api/eric/papers/?title=education&rows=10')
+        response = self.client.get('/api/eric/?title=education&rows=10')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['papers'][0]), field_count)
         self.assertContains(response, 'id')
