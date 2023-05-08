@@ -153,4 +153,37 @@ def eric_papers(request):
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
 
+def zenodo(request):
+     ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
+     search_title = request.GET.get("title", None)
+     rows = request.GET.get('rows', 5)
+     if search_title is None or search_title == "" or search_title.isspace() is True:
+         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
 
+     request = requests.get('https://zenodo.org/api/records',
+                      params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
+
+     if request.status_code == 200:
+         papers = request.json()["hits"]["hits"]
+         response = {}
+         results = []
+         for paper in papers:
+             paper_info = {}
+             paper_info['id'] = paper['id']
+             paper_info['title'] = paper['metadata']['title']
+             paper_info['url'] = paper['links']['doi']
+             paper_info['authors'] = []
+             paper_info['abstract'] = paper['metadata']['description']
+             paper_info['date'] = int(paper['metadata']['publication_date'].split("-")[0])
+             paper_info['position'] = papers.index(paper)
+             paper_info['source'] = 'Zenodo'
+             authors = paper['metadata']['creators']
+             for author in authors:
+                 paper_info['authors'].append(author['name'])
+             results.append(paper_info.copy())
+         response['results'] = results
+         return JsonResponse(response, status=200)
+     elif request.status_code == 404:
+         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
+     else:
+         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)

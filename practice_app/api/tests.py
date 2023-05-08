@@ -139,4 +139,32 @@ class EricPapersTestCase(TestCase):
         self.assertContains(response, 'date')
         self.assertContains(response, 'url')
         self.assertContains(response, 'position')
+        
+class ZenodoTestCases(TestCase):
 
+     def setUp(self):
+         self.c = Client()
+
+     def tearDown(self):
+         print('GET Tests Completed Successfully')
+
+     def test_zenodo_api(self):
+         response = self.c.get("/api/zenodo/?title=test&rows=3")
+         self.assertEquals(response.status_code, 200)
+         response_content = response.json()['results']
+         self.assertEquals(len(response_content), 3)
+         count = 0
+         for result in response_content:
+             self.assertIn('source', result.keys())
+             self.assertEquals(result['source'], 'Zenodo')
+             self.assertIn('authors', result.keys())
+             self.assertIn('id', result.keys())
+             self.assertIn('abstract', result.keys())
+             self.assertIn('url', result.keys())
+             self.assertIn('position', result.keys())
+             self.assertIn('date', result.keys())
+             self.assertIn('title', result.keys())
+             self.assertEquals(response_content[count]['title'], result['title'])
+             self.assertEquals(response_content[count]['url'], result['url'])
+             self.assertEquals(response_content[count]['position'], result['position'])
+             count += 1

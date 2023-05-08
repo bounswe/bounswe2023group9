@@ -8,6 +8,7 @@ on:
 
 env:
   serp_api_key: ${{ secrets.SERP_API_KEY }}
+  ZENODO_API_KEY: ${{ secrets.ZENODO_API_KEY }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
 
