@@ -108,7 +108,7 @@ def eric_papers(request):
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
 def zenodo(request):
-    ACCESS_TOKEN = api_keys.api_keys['ZENODO_API_KEY']
+    ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
     search_title = request.GET.get("search_title", None)
     rows = request.GET.get('rows', 5)
     if search_title is None or search_title == "" or search_title.isspace() is True:
