@@ -16,7 +16,7 @@ class DOAJ_API_Tester(TestCase):
         self.assertEquals(doaj_api_response.status_code, 200, "DoajApi didn't work as supposed to")
         doaj_api_response = doaj_api_response.json()['results']
         
-        response = self.c.get("/api/doaj-api/?query=einstein,relativity&row=3")
+        response = self.c.get("/api/doaj-api/?query=einstein,relativity&rows=3")
         self.assertEquals(response.status_code, 200)
         response_dict = response.json()
         self.assertIn('status_code', response_dict.keys())
