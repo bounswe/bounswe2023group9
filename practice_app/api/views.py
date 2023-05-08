@@ -100,5 +100,24 @@ def searchPaperOnCore(keyword, limit):
     return result
 
 
-def core_get(request, keyword, limit):
-    return JsonResponse(searchPaperOnCore(keyword, limit))
+def core_get(request):
+    keyword = request.GET.get("keyword")
+    limit = request.GET.get("limit")
+    if keyword == None or keyword == "":
+        return JsonResponse({'status': "'keyword' query param is required!"}, status=400)
+    elif limit == None or limit == "":
+        limit = 3
+    elif not limit.isnumeric():
+        return JsonResponse({'status': "'limit' query param must be numeric if exist!"}, status=400)
+    else:
+        limit = int(limit)
+
+    res = searchPaperOnCore(keyword, limit)
+    if res["status_code"] < 300 and len(res["results"]) == 0:
+        return JsonResponse({'status': "There is no such content with the specified keyword on this source!"}, status=204)
+    elif res["status_code"] < 300:
+        return JsonResponse(res)
+    elif res["status_code"] == 404:
+        return JsonResponse({'status': 'Unsuccessful request.'}, status=404)
+    else:
+        return JsonResponse({'status': 'An internal server error has occured. Please try again later.'}, status=500)
