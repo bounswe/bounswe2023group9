@@ -118,7 +118,7 @@ class ZenodoTestCases(TestCase):
         count = 0
         for result in response_content:
             self.assertIn('source', result.keys())
-            self.assertEquals(result['source'], 'zenodo')
+            self.assertEquals(result['source'], 'Zenodo')
             self.assertIn('authors', result.keys())
             self.assertIn('id', result.keys())
             self.assertIn('abstract', result.keys())
@@ -126,7 +126,7 @@ class ZenodoTestCases(TestCase):
             self.assertIn('position', result.keys())
             self.assertIn('date', result.keys())
             self.assertIn('title', result.keys())
-            self.assertEquals(response[count]['title'], result['title'])
-            self.assertEquals(response[count]['link'], result['url'])
-            self.assertEquals(response[count]['position'], result['pos'])
+            self.assertEquals(response_content[count]['title'], result['title'])
+            self.assertEquals(response_content[count]['url'], result['url'])
+            self.assertEquals(response_content[count]['position'], result['position'])
             count += 1
