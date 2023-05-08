@@ -102,7 +102,7 @@ class EricPapersTestCase(TestCase):
         self.assertContains(response, 'date')
         self.assertContains(response, 'url')
         self.assertContains(response, 'position')
-class zenodo_test_cases(TestCase):
+class ZenodoTestCases(TestCase):
 
     def setUp(self):
         self.c = Client()
