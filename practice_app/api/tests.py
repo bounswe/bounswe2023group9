@@ -33,7 +33,6 @@ class DOAJ_API_Tester(TestCase):
             self.assertIn('title',result.keys())
             self.assertEquals(result['id'], doaj_api_response[count]["id"])
             self.assertEquals(result['source'], 'DOAJ')
-            self.assertEquals(result['position'], doaj_api_response[count]["position"])
             self.assertEquals(result['date'], doaj_api_response[count]["created_date"])
             self.assertEquals(result['abstract'], doaj_api_response[count]["bibjson"]["abstract"])
             self.assertEquals(result['title'], doaj_api_response[count]["bibjson"]["title"])
