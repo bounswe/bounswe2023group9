@@ -111,7 +111,7 @@ class zenodo_test_cases(TestCase):
         print('GET Tests Completed Successfully')
 
     def test_zenodo_api(self):
-        ACCESS_TOKEN = api_keys.api_keys['ZENODO_API_KEY']
+        ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
         request = requests.get('https://zenodo.org/api/records',
                                params={'q': 'test', 'sort': 'bestmatch', 'size': 3,
                                        'access_token': ACCESS_TOKEN})
