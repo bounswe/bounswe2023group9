@@ -116,7 +116,7 @@ class ZenodoTestCases(TestCase):
                                params={'q': 'test', 'sort': 'bestmatch', 'size': 3,
                                        'access_token': ACCESS_TOKEN})
         self.assertEquals(request.status_code, 200, "Zenodo API didn't work as supposed to")
-        response = self.c.get("/zenodo/?title=test&rows=3")
+        response = self.c.get("/api/zenodo/?title=test&rows=3")
         self.assertEquals(response.status_code, 200)
         response_content = response.json()['results']
         self.assertEquals(len(response_content), 3)
