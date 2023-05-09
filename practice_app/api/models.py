@@ -43,7 +43,7 @@ class PaperList(models.Model):
     #list_id = models.AutoField(primary_key=True)
     list_title = models.CharField(max_length=50, default='Paper List')
     paper = models.ManyToManyField(Paper)
-    owner = models.ManyToManyField(User, related_name='owners')
+    owner = models.ForeignKey(User, related_name='owner')
     saver = models.ManyToManyField(User, related_name='savers', blank=True)
 
 class FollowRequest(models.Model):
