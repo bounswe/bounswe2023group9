@@ -13,7 +13,7 @@ class Paper(models.Model):
     year = models.IntegerField(blank=True, null=True)
     url = models.URLField()
     authors = models.TextField(max_length=500, blank=True, null=True)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=300)
     like_count = models.IntegerField()
 
     def set_authors(self, authors):
