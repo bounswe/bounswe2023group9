@@ -38,7 +38,7 @@ def orcid_api(request):
         if api_request["person"]["name"]["family-name"] != None:
             response["surname"] = api_request["person"]["name"]["family-name"]["value"]
         else:
-            response["surname"] = None
+            response["surname"] = " "
         return JsonResponse(response)
 
 # POST api/log_in/
@@ -69,7 +69,6 @@ def log_in(request):
 # GET api/log_out/
 # get user to log out by built-in logout function
 def log_out(request):
-
     logout(request)
     return JsonResponse({"status":"User logged out."}, status = 200)
 
@@ -78,12 +77,22 @@ def log_out(request):
 # username should be unique
 # name and surname should be provided in data
 # username, name, password must be provided, surname is optional
+
+
 def user_registration(request):
 
     user_id = request.headers["username"]
     password = request.headers['password']
-    name = request.POST['name']
-    surname = request.POST['surname']
+
+    url = "http://127.0.0.1:8000/api/orcid_api/?user_id=" + user_id
+    orcid_api_response = requests.get(url=url)
+    
+    if orcid_api_response.status_code == 200:
+        orcid_api_response = orcid_api_response.json()
+        name = orcid_api_response['name']
+        surname = orcid_api_response['surname']
+    else:
+        return JsonResponse({"status":"Valid ORCID ID should be provided."}, status = 404)
 
     if user_id == None or user_id == '':
         return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)

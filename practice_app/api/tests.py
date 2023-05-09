@@ -47,16 +47,16 @@ class registration_test_cases(TestCase):
         User.objects.create_user(username="0009-0005-5924-0000", password="strongpassword", first_name = "firstname", last_name = "lastname" )
 
     def test_404_responses(self):
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':'password'},data={'name':'','surname':'Tesla'}).status_code, 404)
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':''}, data={'name':'','surname':'Tesla'}).status_code, 404)
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'username','password':''},data={'name':'Nicola','surname':'Tesla'}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':'password'}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':''}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'username','password':''}).status_code, 404)
 
 
     def test_unique_username(self):
         Header = {'username': '0009-0005-5924-1831', 'password': 'mypassword'}
         Json = {'name': 'Nicola', 'surname': 'Tesla'}
 
-        response = self.c.post("/api/user_registration/", headers = Header, data = Json)
+        response = self.c.post("/api/user_registration/", headers = Header)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(len(User.objects.filter(username= "0009-0005-5924-1831")), 1)
 
@@ -64,7 +64,7 @@ class registration_test_cases(TestCase):
         Header = {'username': '0009-0005-5924-0000', 'password': 'mypassword'}
         Json = {'name': 'Nicola', 'surname': 'Tesla'}
 
-        response = self.c.post("/api/user_registration/", headers = Header, data = Json)
+        response = self.c.post("/api/user_registration/", headers = Header)
         self.assertEquals(response.status_code, 404)
         self.assertEquals(len(User.objects.filter(username= "0009-0005-5924-0000")), 1)
         
@@ -72,21 +72,21 @@ class log_in_test_cases(TestCase):
 
     def setUp(self):
         self.c = Client()
-        User.objects.create_user(username="0009-0005-5924-0000", password="strongpassword", first_name = "firstname", last_name = "lastname" )
+        User.objects.create_user(username="0009-0005-5924-1831", password="strongpassword", first_name = "firstname", last_name = "lastname" )
 
     def test_404_responses(self):
         self.assertEquals(self.c.post("/api/log_in/",headers={'username': '','password':''}).status_code, 404)
         self.assertEquals(self.c.post("/api/log_in/",headers = {'username':'username','password':''}).status_code, 404)
     
     def test_valid_login(self):
-        Headers = {'username': "0009-0005-5924-0000", "password": "strongpassword"}
+        Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
         response = self.c.post("/api/log_in/",headers = Headers)
         self.assertEquals(response.status_code, 200)
     
     def test_invalid_login(self):
-        Headers = {'username': "0009-0005-5924-0000", "password": "strong"}
+        Headers = {'username': "0000-0002-0753-0000", "password": "strong"}
         self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
-        Headers = {'username': "0009-0005-5924-1111", "password": "strong"}
+        Headers = {'username': "0000-0002-0753-1111", "password": "strong"}
         self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
 
 class log_out_test_cases(TestCase):
