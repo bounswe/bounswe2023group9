@@ -58,6 +58,13 @@ class core_api_test_cases(TestCase):
         resp = json.loads(temp.content.decode("UTF-8"))
         self.assertEquals(bool(
             resp["results"]), True, "Test failed: results test for success request with url '/api/core?keyword=hardware%20accelerators'.")
+        for i, r in enumerate(resp["results"]):
+            self.assertEquals(bool(
+                r["id"]), True, "Test failed: result id test for success request with url '/api/core?keyword=hardware%20accelerators' for the result#: " + str(i) + "result: " + str(r))
+            self.assertEquals(
+                r["source"], "core.ac.uk", "Test failed: source test for success request with url '/api/core?keyword=hardware%20accelerators' for the result#: " + str(i) + "result: " + str(r))
+            self.assertEquals(bool(
+                r["title"]), True, "Test failed: title test for success request with url '/api/core?keyword=hardware%20accelerators' for the result#: " + str(i) + "result: " + str(r))
 
         # normal successful request with valid limit
         temp = self.c.get("/api/core?keyword=hardware%20accelerators&limit=4")
@@ -66,6 +73,13 @@ class core_api_test_cases(TestCase):
         resp = json.loads(temp.content.decode("UTF-8"))
         self.assertEquals(bool(
             resp["results"]), True, "Test failed: results test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4'.")
+        for i, r in enumerate(resp["results"]):
+            self.assertEquals(bool(
+                r["id"]), True, "Test failed: result id test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4' for the result#: " + str(i) + "result: " + str(r))
+            self.assertEquals(
+                r["source"], "core.ac.uk", "Test failed: source test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4' for the result#: " + str(i) + "result: " + str(r))
+            self.assertEquals(bool(
+                r["title"]), True, "Test failed: title test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4' for the result#: " + str(i) + "result: " + str(r))
 
         self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
         self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
