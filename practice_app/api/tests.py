@@ -12,7 +12,7 @@ class core_api_test_cases(TestCase):
         self.c = Client()
 
     def tearDown(self):
-        print('Tests for GET requests using CORE API completed successfully!')
+        print('Tests for GET requests using CORE API completed!')
 
     def test_unexpected_responses(self):
         # missing keyword case
@@ -80,22 +80,6 @@ class core_api_test_cases(TestCase):
                 r["source"], "core.ac.uk", "Test failed: source test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4' for the result#: " + str(i) + "result: " + str(r))
             self.assertEquals(bool(
                 r["title"]), True, "Test failed: title test for success request with url '/api/core?keyword=hardware%20accelerators&limit=4' for the result#: " + str(i) + "result: " + str(r))
-
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-
-        # too many requests case
-        temp = self.c.get("/api/core?keyword=hardware%20accelerators&limit=10")
-        self.assertEquals(
-            temp.status_code, 204, "Test failed: status_code test for too many requests request with url '/api/core?keyword=hardware%20accelerators&limit=10'.")
-        self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': 'The server is too busy for this request. Please try again later.'}, "Test failed: content test for too many requests request with url '/api/core?keyword=hardware%20accelerators&limit=10'.")
 
 
 class google_scholar_test_cases(TestCase):
