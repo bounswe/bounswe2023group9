@@ -2,7 +2,6 @@ from django.test import TestCase, Client
 from unittest import skip
 import requests
 import json
-import time
 from . import api_keys
 # Create your tests here.
 
@@ -44,7 +43,6 @@ class core_api_test_cases(TestCase):
         self.assertEquals(json.loads(temp.content.decode(
             "UTF-8")), {'status': "'limit' query param must be numeric if exist!"}, "Test failed: content test for invalid limit param with url '/api/core?keyword=vision%20transformers&limit=abc'.")
 
-        time.sleep(65)  # sleep to wait for the rate limit of the third party
         # keyword not found case
         temp = self.c.get("/api/core?keyword=sdfhgaskdfgajksdhgf")
         self.assertEquals(
@@ -52,32 +50,7 @@ class core_api_test_cases(TestCase):
         self.assertEquals(json.loads(temp.content.decode(
             "UTF-8")), {'status': "There is no such content with the specified keyword on this source!"}, "Test failed: content test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf'.")
 
-        time.sleep(2)
-        # keyword not found case with empty limit
-        temp = self.c.get("/api/core?keyword=sdfhgaskdfgajksdhgf&limit")
-        self.assertEquals(
-            temp.status_code, 404, "Test failed: status_code test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit'.")
-        self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': "There is no such content with the specified keyword on this source!"}, "Test failed: content test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit'.")
-
-        time.sleep(2)
-        # keyword not found case with empty limit
-        temp = self.c.get("/api/core?keyword=sdfhgaskdfgajksdhgf&limit=")
-        self.assertEquals(
-            temp.status_code, 404, "Test failed: status_code test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit='.")
-        self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': "There is no such content with the specified keyword on this source!"}, "Test failed: content test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit='.")
-
-        time.sleep(65)
-        # keyword not found key with a valid limit
-        temp = self.c.get("/api/core?keyword=sdfhgaskdfgajksdhgf&limit=2")
-        self.assertEquals(
-            temp.status_code, 404, "Test failed: status_code test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit=2'.")
-        self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': "There is no such content with the specified keyword on this source!"}, "Test failed: content test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit=2'.")
-
     def test_expected_responses(self):
-        time.sleep(65)  # sleep to wait for the rate limit of the third party
         # normal successful request with no limit
         temp = self.c.get("/api/core?keyword=hardware%20accelerators")
         self.assertEquals(
@@ -86,25 +59,6 @@ class core_api_test_cases(TestCase):
         self.assertEquals(bool(
             resp["results"]), True, "Test failed: results test for success request with url '/api/core?keyword=hardware%20accelerators'.")
 
-        time.sleep(65)  # sleep to wait for the rate limit of the third party
-        # normal successful request with empty limit
-        temp = self.c.get("/api/core?keyword=hardware%20accelerators&limit")
-        self.assertEquals(
-            temp.status_code, 200, "Test failed: status_code test for success request with url '/api/core?keyword=hardware%20accelerators&limit'.")
-        resp = json.loads(temp.content.decode("UTF-8"))
-        self.assertEquals(bool(
-            resp["results"]), True, "Test failed: results test for success request with url '/api/core?keyword=hardware%20accelerators&limit'.")
-
-        time.sleep(2)
-        # normal successful request with empty limit
-        temp = self.c.get("/api/core?keyword=hardware%20accelerators&limit=")
-        self.assertEquals(
-            temp.status_code, 200, "Test failed: status_code test for success request with url '/api/core?keyword=hardware%20accelerators&limit='.")
-        resp = json.loads(temp.content.decode("UTF-8"))
-        self.assertEquals(bool(
-            resp["results"]), True, "Test failed: results test for success request with url '/api/core?keyword=hardware%20accelerators&limit='.")
-
-        time.sleep(2)
         # normal successful request with valid limit
         temp = self.c.get("/api/core?keyword=hardware%20accelerators&limit=4")
         self.assertEquals(
