@@ -14,33 +14,38 @@ class Paper(models.Model):
     url = models.URLField()
     authors = models.TextField(max_length=500, blank=True, null=True)
     title = models.CharField(max_length=300)
-    like_count = models.IntegerField()
+    like_count = models.IntegerField(default=0)
 
     def set_authors(self, authors):
         self.authors = json.dumps(authors)
 
     def get_authors(self):
         return json.loads(self.authors) if self.authors else []
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['third_party_id', 'source'], name='paper_unique_constraint')
+        ]
 
 class Comment(models.Model):
-    # comment_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     paper =  models.ForeignKey(Paper, on_delete=models.CASCADE)
     text = models.TextField(max_length=500)
 
 class Like(models.Model):
-    # like_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     paper = models.ForeignKey(Paper, on_delete=models.CASCADE)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'paper'], name='like_unique_constraint')
+        ]
 
 class UserInterest(models.Model):
-    # interest_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     interest = models.CharField(max_length=50, blank=True, null=True)
 
 class PaperList(models.Model):
-    #list_id = models.AutoField(primary_key=True)
     list_title = models.CharField(max_length=50, default='Paper List')
     paper = models.ManyToManyField(Paper, blank=True, null=True)
     owner = models.ForeignKey(User, related_name='owner', on_delete=models.CASCADE)
