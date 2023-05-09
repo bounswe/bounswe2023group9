@@ -9,10 +9,10 @@ class Paper(models.Model):
     paper_id = models.AutoField(primary_key=True)
     third_party_id = models.CharField(max_length=100)
     source = models.CharField(max_length=50)
-    abstract = models.TextField(max_length=5000)
-    year = models.IntegerField()
+    abstract = models.TextField(max_length=5000, blank=True)
+    year = models.IntegerField(blank=True)
     url = models.URLField()
-    authors = models.TextField(max_length=500)
+    authors = models.TextField(max_length=500, blank=True)
     title = models.CharField(max_length=100)
     like_count = models.IntegerField()
 
@@ -42,7 +42,7 @@ class UserInterest(models.Model):
 class PaperList(models.Model):
     #list_id = models.AutoField(primary_key=True)
     list_title = models.CharField(max_length=50, default='Paper List')
-    paper = models.ManyToManyField(Paper)
+    paper = models.ManyToManyField(Paper, blank=True)
     owner = models.ForeignKey(User, related_name='owner')
     saver = models.ManyToManyField(User, related_name='savers', blank=True)
 
