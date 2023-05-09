@@ -13,7 +13,7 @@ class core_api_test_cases(TestCase):
         self.c = Client()
 
     def tearDown(self):
-        print('Tests Completed Successfully')
+        print('Tests for GET requests using CORE API completed successfully!')
 
     def unexpected_responses(self):
 
