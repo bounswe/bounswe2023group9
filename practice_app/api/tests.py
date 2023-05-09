@@ -5,6 +5,40 @@ import json
 from . import api_keys
 # Create your tests here.
 
+class DOAJ_API_Tester(TestCase):
+    def setUp(self):
+        self.c = Client()
+
+    def tearDown(self):
+        print('GET Tests Completed Successfully')
+
+    def test_doaj_api(self):
+        doaj_api_response = requests.get('https://doaj.org/api/search/articles/einstein,relativity?page=1&pageSize=3')
+        self.assertEquals(doaj_api_response.status_code, 200, "DoajApi didn't work as supposed to")
+        doaj_api_response = doaj_api_response.json()['results']
+        
+        response = self.c.get("/api/doaj-api/?query=einstein,relativity&rows=3")
+        self.assertEquals(response.status_code, 200)
+        response_dict = response.json()
+        self.assertIn('status_code', response_dict.keys())
+        self.assertIn('count', response_dict.keys())
+        count = 0
+        for result in response_dict['results']:
+            self.assertIn('id', result.keys())
+            self.assertIn('source', result.keys())
+            self.assertIn('position', result.keys())
+            self.assertIn('authors',result.keys())
+            self.assertIn('date', result.keys())
+            self.assertIn('abstract', result.keys())
+            self.assertIn('url', result.keys())
+            self.assertIn('title',result.keys())
+            self.assertEquals(result['id'], doaj_api_response[count]["id"])
+            self.assertEquals(result['source'], 'DOAJ')
+            self.assertEquals(result['date'], doaj_api_response[count]["created_date"])
+            self.assertEquals(result['abstract'], doaj_api_response[count]["bibjson"]["abstract"])
+            self.assertEquals(result['title'], doaj_api_response[count]["bibjson"]["title"])
+            self.assertEquals(result['url'], doaj_api_response[count]["bibjson"]["link"][0]["url"])
+            count += 1
 
 # tests for the GET API which uses CORE API
 class core_api_test_cases(TestCase):
@@ -127,3 +161,131 @@ class google_scholar_test_cases(TestCase):
             self.assertEquals(
                 serp_api_response[count]['position'], result['pos'])
             count += 1
+
+class EricPapersTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_invalid_title(self):
+        #no search_title is provided
+        response = self.client.get('/api/eric/')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['message'], 'A paper title must be given.')
+
+        #empty search_title is provided
+        response = self.client.get('/api/eric/?title=')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['message'], 'A paper title must be given.')
+
+
+    def test_valid_title(self):
+        # valid title is provided
+
+        field_count = 8
+
+        response = self.client.get('/api/eric/?title=nanotechnology')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['papers'][0]), field_count)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+
+
+    def test_invalid_rows(self):
+        # invalid rows is provided
+        response = self.client.get('/api/eric/?title=education&rows=abc')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['message'], 'Row count must be valid.')
+
+
+    def test_valid_rows(self):
+        # test when valid title and rows are provided
+
+        field_count = 8
+
+        response = self.client.get('/api/eric/?title=education&rows=10')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['papers'][0]), field_count)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+        
+class ZenodoTestCases(TestCase):
+
+    def setUp(self):
+        self.c = Client()
+
+    def tearDown(self):
+        print('GET Tests Completed Successfully')
+
+    def test_zenodo_api(self):
+        response = self.c.get("/api/zenodo/?title=test&rows=3")
+        self.assertEquals(response.status_code, 200)
+        response_content = response.json()['results']
+        self.assertEquals(len(response_content), 3)
+        count = 0
+        for result in response_content:
+            self.assertIn('source', result.keys())
+            self.assertEquals(result['source'], 'Zenodo')
+            self.assertIn('authors', result.keys())
+            self.assertIn('id', result.keys())
+            self.assertIn('abstract', result.keys())
+            self.assertIn('url', result.keys())
+            self.assertIn('position', result.keys())
+            self.assertIn('date', result.keys())
+            self.assertIn('title', result.keys())
+            self.assertEquals(response_content[count]['title'], result['title'])
+            self.assertEquals(response_content[count]['url'], result['url'])
+            self.assertEquals(response_content[count]['position'], result['position'])
+            count += 1
+
+class SemanticScholarTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def tearDown(self):
+        print('GET Tests Completed Successfully')
+
+    def test_404_responses(self):
+        self.assertEquals(self.client.get("/api/semantic-scholar/?title=").status_code, 404)
+        self.assertEquals(self.client.get("/api/semantic-scholar/?").status_code, 404)
+        self.assertEquals(self.client.get("/api/semantic-scholar/").status_code, 404)
+        self.assertEquals(self.client.get("/api/semantic-scholar/?rows=9").status_code, 404)
+        self.assertEquals(self.client.get("/api/semantic-scholar/title=coffee").status_code, 404)
+        self.assertEquals(self.client.get("/api/semantic-scholar/?title=&").status_code, 404)
+
+    
+    def test_results(self):
+        
+        semantic_scholar_api_response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search?query=covid&fields=title,authors,url&offset=0&limit=3')
+        self.assertEquals(semantic_scholar_api_response.status_code,200,"It didn't work as supposed to")
+        semantic_scholar_api_response = semantic_scholar_api_response.json()['data']
+        
+        response = self.client.get("/api/semantic-scholar/?title=covid&rows=3")
+        self.assertEquals(response.status_code,200)
+        response_content = response.json()['results']
+        self.assertEquals(len(response_content),3)
+
+        for count,result in enumerate(response_content):
+            self.assertIn('source',result.keys())
+            self.assertEquals(result['source'],'semantic_scholar')
+            self.assertIn('authors',result.keys())
+            self.assertIn('id', result.keys())
+            self.assertIn('abstract', result.keys())
+            self.assertIn('url', result.keys())
+            self.assertIn('date', result.keys())
+            self.assertIn('title',result.keys())
+            self.assertEquals(semantic_scholar_api_response[count]['title'],result['title'])
+            self.assertEquals(semantic_scholar_api_response[count]['url'], result['url'])
+            self.assertEquals(count, result['position'])
