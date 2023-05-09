@@ -8,7 +8,10 @@ on:
 
 env:
   serp_api_key: ${{ secrets.SERP_API_KEY }}
+  core_api_key: ${{ secrets.CORE_API_KEY }}
+  x_els_api_key: ${{ secrets.X_ELS_API_KEY }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
 
 
 jobs:
