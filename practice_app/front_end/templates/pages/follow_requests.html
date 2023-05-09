@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container mt-5">
+    <a href="/search_paper/">
+        Search Paper
+      </a>
+      |
+      <a href="/search_user/">
+        Search User
+      </a>
+      |
+      <a href="/profile_page/">
+        Profile
+      </a>
+      |
+      <a href="/my_lists/">
+        My Lists
+      </a>
+      |
+      <a href="/following_lists/">
+        Following Lists
+      </a>
+
+    <hr>
+    <h1>Follow Requests</h1>
+
+    <table class="container">
+        <tr>
+            <th>Index</th>
+            <th>Sender</th>
+            <th>Status</th>
+        </tr>
+
+        {% for request in follow_requests %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{request.sender}}</td>
+            <td>
+              <button type="accept" class="btn btn-success m-2">Accept</button>
+              <button type="reject" class="btn btn-danger m-2">Reject</button>
+            </td>
+       </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
+
