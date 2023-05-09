@@ -16,8 +16,8 @@ class core_api_test_cases(TestCase):
         print('Tests for GET requests using CORE API completed successfully!')
 
     def test_unexpected_responses(self):
-
-        temp = self.c.get("/api/core")  # missing keyword case
+        # missing keyword case
+        temp = self.c.get("/api/core")
         self.assertEquals(
             temp.status_code, 400, "Test failed: status_code test for missing keyword param with url '/api/core'.")
         self.assertEquals(json.loads(temp.content.decode("UTF-8")),
