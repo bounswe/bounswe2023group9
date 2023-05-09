@@ -9,10 +9,10 @@ class Paper(models.Model):
     paper_id = models.AutoField(primary_key=True)
     third_party_id = models.CharField(max_length=100)
     source = models.CharField(max_length=50)
-    abstract = models.TextField(max_length=5000, blank=True)
-    year = models.IntegerField(blank=True)
+    abstract = models.TextField(max_length=5000, blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True)
     url = models.URLField()
-    authors = models.TextField(max_length=500, blank=True)
+    authors = models.TextField(max_length=500, blank=True, null=True)
     title = models.CharField(max_length=100)
     like_count = models.IntegerField()
 
@@ -37,14 +37,14 @@ class Like(models.Model):
 class UserInterest(models.Model):
     # interest_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    interest = models.CharField(max_length=50, blank=True)
+    interest = models.CharField(max_length=50, blank=True, null=True)
 
 class PaperList(models.Model):
     #list_id = models.AutoField(primary_key=True)
     list_title = models.CharField(max_length=50, default='Paper List')
-    paper = models.ManyToManyField(Paper, blank=True)
-    owner = models.ForeignKey(User, related_name='owner')
-    saver = models.ManyToManyField(User, related_name='savers', blank=True)
+    paper = models.ManyToManyField(Paper, blank=True, null=True)
+    owner = models.ForeignKey(User, related_name='owner', on_delete=models.CASCADE)
+    saver = models.ManyToManyField(User, related_name='savers', blank=True, null=True)
 
 class FollowRequest(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
@@ -52,6 +52,6 @@ class FollowRequest(models.Model):
     status = models.CharField(max_length=50)
 
 class Follower(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    follower = models.ManyToManyField(User, related_name='followers', blank=True)
-    followed = models.ManyToManyField(User, related_name='followeds', blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user')
+    follower = models.ManyToManyField(User, related_name='followers', blank=True, null=True)
+    followed = models.ManyToManyField(User, related_name='followeds', blank=True, null=True)
