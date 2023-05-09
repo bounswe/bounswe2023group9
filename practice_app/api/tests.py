@@ -15,7 +15,7 @@ class core_api_test_cases(TestCase):
     def tearDown(self):
         print('Tests for GET requests using CORE API completed successfully!')
 
-    def unexpected_responses(self):
+    def test_unexpected_responses(self):
 
         temp = self.c.get("/api/core")  # missing keyword case
         self.assertEquals(
@@ -76,7 +76,7 @@ class core_api_test_cases(TestCase):
         self.assertEquals(json.loads(temp.content.decode(
             "UTF-8")), {'status': "There is no such content with the specified keyword on this source!"}, "Test failed: content test for keyword not-found with url '/api/core?keyword=sdfhgaskdfgajksdhgf&limit=2'.")
 
-    def expected_responses(self):
+    def test_expected_responses(self):
         time.sleep(65)  # sleep to wait for the rate limit of the third party
         # normal successful request with no limit
         temp = self.c.get("/api/core?keyword=hardware%20accelerators")
