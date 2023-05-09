@@ -56,6 +56,11 @@ class FollowRequest(models.Model):
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
     status = models.CharField(max_length=50)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['sender', 'receiver'], name='followrequest_unique_constraint')
+        ]
+
 class Follower(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user')
     follower = models.ManyToManyField(User, related_name='followers', blank=True, null=True)
