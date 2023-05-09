@@ -1,2 +1,4 @@
 Django==4.2
 requests==2.29.0
+urllib3==1.26.9
+json5==0.9.6
