@@ -421,3 +421,37 @@ def user_registration(request):
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
 
+# POST api/follow/
+# username and password of follower should be in headers
+# username of followed should be in data
+
+@csrf_exempt
+def follow_user(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        user = request.user
+        
+    query = request.POST
+    followed_username = query.get('followed_username')
+    if followed_username == None or followed_username == '':
+        return JsonResponse({"status":"Username of followed should be provided."}, status = 404)
+    
+    if User.objects.filter(username=followed_username).exists():
+        followed_user = User.objects.get(username=followed_username)
+        if models.Follower.objects.filter(follower=user, followed=followed_user).exists():
+            return JsonResponse({"status":"You are already following this user."}, status=409)
+        elif models.FollowRequest.objects.filter(sender=user, receiver=followed_user).exists():
+            return JsonResponse({"status":"You have already sent a following request this user."}, status=409)
+        else:
+            models.FollowRequest.objects.create(sender=user, receiver=followed_user)
+            return JsonResponse({"status":"User followed."}, status = 200)
+    else:
+        return JsonResponse({"status":"Username of followed is invalid."}, status = 404)
+    
