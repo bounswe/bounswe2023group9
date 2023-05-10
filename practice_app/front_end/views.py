@@ -19,15 +19,20 @@ def search_user(request):
 
 
 def sign_in(request):
+    # uncomment below and get sign_in page before testing.
+    # this is necessary until a user is created
+    # after the user is created, comment them again
     """r_username = "omari"
     r_password = "123456"
     User.objects.create_user(
         username=r_username, password=r_password, first_name="nam", last_name="surname")"""
+
+    # warning will bi used to warn the user if the credentials are invaild or for any other warning
     context = {'page': 'Sign In', 'warning': ""}
-    if request.user.is_authenticated:
+    if request.user.is_authenticated:  # if the user is authenticated, then redirect to search paper page
         return redirect("/search_paper/")
 
-    if request.method == "POST":
+    if request.method == "POST":  # if the sign in button clicked
         username = request.POST.get("user_name")
         password = request.POST.get("password")
 
@@ -38,11 +43,11 @@ def sign_in(request):
         login_request.session = request.session
         login_request.headers = {"username": username, "password": password}
         login_response = log_in(login_request)
-        if login_response.status_code == 200:
-            context = {'page': 'Search Paper'}
+
+        if login_response.status_code == 200:  # if the user is registered, redirect to search paper page
             return redirect("/search_paper/")
         else:
-            context["warning"] = "Invalid credentials!"
+            context["warning"] = "Invalid credentials!"  # if not registered
 
     return render(request, "pages/sign_in.html", context)
 
