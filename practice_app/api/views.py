@@ -4,23 +4,27 @@ from django.http import JsonResponse, HttpRequest
 import urllib.parse
 import json
 from . import api_keys
+from . import models
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+
 from django.views.decorators.csrf import csrf_exempt
 
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
     
-    # Parse the parameters (query and rows)
+    # Parse the parameters (title and rows)
     params = request.GET
-    query = params.get('query')
+    query = params.get('title')
     rows = params.get('rows')
 
     # Check whether the paramters are given correctly
     # If not, return 404 JsonResponse
-    if query is None or query == "" or rows is None or rows == "" or not rows.isnumeric():
-        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?query=sun&row=3'}, status=404)
+    if query is None or query == "":
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
+    if rows is None or rows == "" or not rows.isnumeric():
+        rows = 3
     
     # Check whether the row exceeds the limit
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
@@ -33,26 +37,29 @@ def doaj_get(request):
     # parse the dictionary
     # all fields are assumed to exist in the response
     if res.status_code == 200:
-        return JsonResponse(
-            {
-                "status_code": 200,
-                "count": response["total"] if response["total"] < rows else rows,
-                "results": [
-                    {
-                        "id": result["id"],
-                        "source": "DOAJ",
-                        "position": index + 1,
-                        "authors": [author["name"] for author in result["bibjson"]["author"]],
-                        "date": result["created_date"],
-                        "abstract": result["bibjson"]["abstract"],
-                        "title": result["bibjson"]["title"],
-                        "url": result["bibjson"]["link"][0]["url"]
-                    } for index, result in enumerate(response["results"])
-                ]
-            }
-        )
+        try:
+            return JsonResponse(
+                {
+                    "status_code": 200,
+                    "count": response["total"] if response["total"] < rows else rows,
+                    "results": [
+                        {
+                            "id": result["id"],
+                            "source": "DOAJ",
+                            "position": index + 1,
+                            "authors": [author["name"] for author in result["bibjson"]["author"]],
+                            "date": int(result["created_date"][0:4]),
+                            "abstract": result["bibjson"]["abstract"],
+                            "title": result["bibjson"]["title"],
+                            "url": result["bibjson"]["link"][0]["url"]
+                        } for index, result in enumerate(response["results"])
+                    ]
+                }
+            )
+        except:
+            return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
     else:
-        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?query=sun&row=3'}, status=404)
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
 def google_scholar(request):
     number = request.GET.get("rows")
@@ -60,7 +67,7 @@ def google_scholar(request):
     if search == None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     if number == None or number == "" or not number.isnumeric():
-        number = 5
+        number = 3
     else:
         number = int(number)
 
@@ -153,22 +160,22 @@ def searchPaperOnCore(keyword, limit):
 
 
 def core_get(request):  # this method parses the parameters of given get request which will use the CORE API and gives the necessary response
-    keyword = request.GET.get("keyword")
-    limit = request.GET.get("limit")
+    title = request.GET.get("title")
+    limit = request.GET.get("rows")
 
-    if keyword == None or keyword == "":  # if no keyword param or empty
-        return JsonResponse({'status': "'keyword' query param is required!"}, status=400)
+    if title == None or title == "":  # if no title param or empty
+        return JsonResponse({'status': "'title' title param is required!"}, status=400)
     elif limit == None or limit == "":  # if limit is empty or not specified at all
         limit = 3
     elif not limit.isnumeric():  # if limit is invalid (not numeric)
-        return JsonResponse({'status': "'limit' query param must be numeric if exist!"}, status=400)
+        return JsonResponse({'status': "'rows' rows param must be numeric if exist!"}, status=400)
     else:
         limit = int(limit)  # change limit to integer
 
-    res = searchPaperOnCore(keyword, limit)  # call the third party api
-    # if no paper found with such a keyword
+    res = searchPaperOnCore(title, limit)  # call the third party api
+    # if no paper found with such a title
     if res["status_code"] < 300 and len(res["results"]) == 0:
-        return JsonResponse({'status': "There is no such content with the specified keyword on this source!"}, status=404)
+        return JsonResponse({'status': "There is no such content with the specified title on this source!"}, status=404)
     elif res["status_code"] < 300:  # if successful
         return JsonResponse(res)
     elif res["status_code"] == 429:  # if the rate limit was hit
@@ -182,7 +189,7 @@ def core_get(request):  # this method parses the parameters of given get request
 def eric_papers(request):
     
     #params --> title, rows
-    default_rows = '5'
+    default_rows = '3'
 
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
@@ -214,7 +221,7 @@ def eric_papers(request):
             paper['position'] = i
             i += 1
             
-        return JsonResponse({'papers':papers})
+        return JsonResponse({'results':papers})
     elif response.status_code == 404:
         return JsonResponse({'message':'Resource not found'}, status=404)
     else:
@@ -222,7 +229,7 @@ def eric_papers(request):
 def zenodo(request):
     ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
     search_title = request.GET.get("title", None)
-    rows = request.GET.get('rows', 5)
+    rows = request.GET.get('rows', 3)
     if search_title is None or search_title == "" or search_title.isspace() is True:
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
 
@@ -258,7 +265,7 @@ def semantic_scholar(request):
     query = request.GET
     search = query.get("title")
     limit = query.get("rows")
-    default_limit = 1
+    default_limit = 3
     
     if search is None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
@@ -335,6 +342,8 @@ def orcid_api(request):
 # username and password should be provided in Headers
 @csrf_exempt
 def log_in(request):
+    if 'username' not in request.headers or 'password' not in request.headers:
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     
     username = request.headers["username"]
     password = request.headers["password"]
@@ -358,6 +367,7 @@ def log_in(request):
 
 # GET api/log_out/
 # get user to log out by built-in logout function
+@csrf_exempt
 def log_out(request):
     logout(request)
     return JsonResponse({"status":"User logged out."}, status = 200)
@@ -370,7 +380,8 @@ def log_out(request):
 
 @csrf_exempt
 def user_registration(request):
-
+    if 'username' not in request.headers or 'password' not in request.headers:
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     user_id = request.headers["username"]
     password = request.headers['password']
 
@@ -409,3 +420,4 @@ def user_registration(request):
     
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
+
