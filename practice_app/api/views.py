@@ -420,4 +420,50 @@ def user_registration(request):
     
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
+@csrf_exempt
+def post_papers(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
 
+    query = request.POST
+    db = query.get('db')
+    if db == None or db == "":
+        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    if db == 'semantic-scholar':
+        response = semantic_scholar(request)
+    elif db == 'doaj':
+        response = doaj_get(request)
+    elif db == 'core':
+        response = core_get(request)
+    elif db == 'zenodo':
+        response = zenodo(request)
+    elif db == 'eric':
+        response = eric_papers(request)
+    elif db == 'google-scholar':
+        response = google_scholar(request)
+
+    results = json.loads(response.content)['results']
+    for result in results:
+        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists():
+            continue
+        paper = models.Paper()
+        if 'url' in result.keys():
+            paper.url = result['url']
+        paper.title = result['title']
+        if 'authors' in result.keys():
+            paper.set_authors(result['authors'])
+        if 'date' in result.keys():
+            paper.year = result['date']
+        paper.third_party_id = result['id']
+        paper.source = result['source']
+        if 'abstract' in result.keys():
+            paper.abstract = result['abstract']
+        paper.like_count = 0
+        paper.save()
+    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200)
