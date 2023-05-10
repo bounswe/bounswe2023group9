@@ -269,7 +269,7 @@ class SemanticScholarTestCase(TestCase):
     
     def test_results(self):
         
-        semantic_scholar_api_response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search?query=covid&fields=title,authors,url&offset=0&rows=3')
+        semantic_scholar_api_response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search?query=covid&fields=title,authors,url&offset=0&limit=3')
         self.assertEquals(semantic_scholar_api_response.status_code,200,"It didn't work as supposed to")
         semantic_scholar_api_response = semantic_scholar_api_response.json()['data']
         
