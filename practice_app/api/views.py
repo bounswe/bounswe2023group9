@@ -4,7 +4,9 @@ from django.http import JsonResponse
 import urllib.parse
 import json
 from . import api_keys
-from django.shortcuts import render
+from django.contrib.auth import authenticate
+from . import models
+from django.views.decorators.csrf import csrf_exempt
 
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
@@ -57,7 +59,7 @@ def google_scholar(request):
     if search == None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     if number == None or number == "" or not number.isnumeric():
-        number = 5
+        number = 3
     else:
         number = int(number)
 
@@ -150,22 +152,22 @@ def searchPaperOnCore(keyword, limit):
 
 
 def core_get(request):  # this method parses the parameters of given get request which will use the CORE API and gives the necessary response
-    keyword = request.GET.get("keyword")
-    limit = request.GET.get("limit")
+    title = request.GET.get("title")
+    limit = request.GET.get("rows")
 
-    if keyword == None or keyword == "":  # if no keyword param or empty
-        return JsonResponse({'status': "'keyword' query param is required!"}, status=400)
+    if title == None or title == "":  # if no title param or empty
+        return JsonResponse({'status': "'title' query param is required!"}, status=400)
     elif limit == None or limit == "":  # if limit is empty or not specified at all
         limit = 3
     elif not limit.isnumeric():  # if limit is invalid (not numeric)
-        return JsonResponse({'status': "'limit' query param must be numeric if exist!"}, status=400)
+        return JsonResponse({'status': "'rows' query param must be numeric if exist!"}, status=400)
     else:
         limit = int(limit)  # change limit to integer
 
-    res = searchPaperOnCore(keyword, limit)  # call the third party api
-    # if no paper found with such a keyword
+    res = searchPaperOnCore(title, limit)  # call the third party api
+    # if no paper found with such a title
     if res["status_code"] < 300 and len(res["results"]) == 0:
-        return JsonResponse({'status': "There is no such content with the specified keyword on this source!"}, status=404)
+        return JsonResponse({'status': "There is no such content with the specified title on this source!"}, status=404)
     elif res["status_code"] < 300:  # if successful
         return JsonResponse(res)
     elif res["status_code"] == 429:  # if the rate limit was hit
@@ -179,7 +181,7 @@ def core_get(request):  # this method parses the parameters of given get request
 def eric_papers(request):
     
     #params --> title, rows
-    default_rows = '5'
+    default_rows = '3'
 
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
@@ -219,7 +221,7 @@ def eric_papers(request):
 def zenodo(request):
     ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
     search_title = request.GET.get("title", None)
-    rows = request.GET.get('rows', 5)
+    rows = request.GET.get('rows', 3)
     if search_title is None or search_title == "" or search_title.isspace() is True:
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
 
@@ -255,7 +257,7 @@ def semantic_scholar(request):
     query = request.GET
     search = query.get("title")
     limit = query.get("rows")
-    default_limit = 1
+    default_limit = 3
     
     if search is None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
@@ -290,3 +292,45 @@ def semantic_scholar(request):
             results.append(paper_info.copy())
         response['results'] = results
         return JsonResponse(response)
+@csrf_exempt
+def post_papers(request):
+    username = request.headers['username']
+    password = request.headers['password']
+    print(username)
+    print(password)
+    user = authenticate(request, username=username, password=password)
+    if user == None:
+        return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    query = request.GET
+    db = query.get('db')
+    if db == None or db == "":
+        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    if db == 'semantic-scholar':
+        response = semantic_scholar(request)
+    elif db == 'doaj':
+        response = doaj_get(request)
+    elif db == 'core':
+        response = core_get(request)
+    elif db == 'zenodo':
+        response = zenodo(request)
+    elif db == 'eric':
+        response = eric_papers(request)
+    elif db == 'google-scholar':
+        response = google_scholar(request)
+
+    results = json.loads(response.content)['results']
+
+    for result in results:
+        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists():
+            continue
+        paper = models.Paper()
+        paper.url = result['url']
+        paper.title = result['title']
+        paper.set_authors(result['authors'])
+        paper.year = result['date']
+        paper.third_party_id = result['id']
+        paper.source = result['source']
+        paper.abstract = result['abstract']
+        paper.like_count = 0
+        paper.save()
+    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200)

@@ -8,5 +8,6 @@ urlpatterns = [
     path("core", views.core_get, name="core"),
     path('eric/', views.eric_papers, name='eric_papers'),
     path("zenodo/",views.zenodo, name="zenodo"),
+    path('post-paper/',views.post_papers,name='post-papers'),
     path('semantic-scholar/', views.semantic_scholar, name='semantic-scholar')
 ]
