@@ -34,7 +34,7 @@ class DOAJ_API_Tester(TestCase):
             self.assertIn('title',result.keys())
             self.assertEquals(result['id'], doaj_api_response[count]["id"])
             self.assertEquals(result['source'], 'DOAJ')
-            self.assertEquals(result['date'], doaj_api_response[count]["created_date"])
+            self.assertEquals(result['date'], int(doaj_api_response[count]["created_date"][0:4]))
             self.assertEquals(result['abstract'], doaj_api_response[count]["bibjson"]["abstract"])
             self.assertEquals(result['title'], doaj_api_response[count]["bibjson"]["title"])
             self.assertEquals(result['url'], doaj_api_response[count]["bibjson"]["link"][0]["url"])
@@ -186,7 +186,7 @@ class EricPapersTestCase(TestCase):
         response = self.client.get('/api/eric/?title=nanotechnology')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['papers'][0]), field_count)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
         self.assertContains(response, 'id')
         self.assertContains(response, 'title')
         self.assertContains(response, 'author')
@@ -211,7 +211,7 @@ class EricPapersTestCase(TestCase):
 
         response = self.client.get('/api/eric/?title=education&rows=10')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['papers'][0]), field_count)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
         self.assertContains(response, 'id')
         self.assertContains(response, 'title')
         self.assertContains(response, 'author')
