@@ -25,7 +25,6 @@ from front_end.views import *
 urlpatterns = [
     path("api/", include("api.urls")),
     path("admin/", admin.site.urls),
-    path('admin/', admin.site.urls),
     path('', home, name='Home'),
     path('search_paper/', search_paper, name='Search Paper'),
     path('search_user/', search_user, name='Search User'),

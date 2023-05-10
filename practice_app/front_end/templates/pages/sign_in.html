@@ -3,9 +3,8 @@
 <div class="container mt-5">
   <form
     class="col-6 mx-auto card p-3 shadow-lg"
-    method="post"
+    method="POST"
     enctype="multipart/form-data"
-    action="#"
   >
     {% csrf_token %}
     <h2>Sign In</h2>
@@ -32,9 +31,10 @@
       />
     </div>
 
-    <button type="sign_in" class="btn btn-success" value="Click" name="Submit">
+    <button type="submit" class="btn btn-success" value="Submit" name="Submit">
       Sign In
     </button>
+    <p>{{ warning }}</p>
   </form>
 </div>
 

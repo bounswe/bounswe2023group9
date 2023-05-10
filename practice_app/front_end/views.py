@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 
 
@@ -17,14 +17,20 @@ def search_user(request):
 
 
 def sign_in(request):
-    context = {'page': 'Sign In'}
-    username = request.POST.get("user_name")
-    print("out of if")
-    print(username)
-    if request.POST.get("Submit"):
+
+    r_username = "omarri"
+    r_password = "123456"
+    context = {'page': 'Sign In', 'warning': ""}
+    if request.method == "POST":
         username = request.POST.get("user_name")
-        print("in if")
-        print(username)
+        password = request.POST.get("password")
+
+        if r_username == username and r_password == password:
+            context = {'page': 'Search Paper'}
+            return redirect("/search_paper/")
+        else:
+            context["warning"] = "Invalid credentials!"
+
     return render(request, "pages/sign_in.html", context)
 
 
