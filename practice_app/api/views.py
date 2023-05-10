@@ -342,6 +342,8 @@ def orcid_api(request):
 # username and password should be provided in Headers
 @csrf_exempt
 def log_in(request):
+    if 'username' not in request.headers or 'password' not in request.headers:
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     
     username = request.headers["username"]
     password = request.headers["password"]
@@ -365,6 +367,7 @@ def log_in(request):
 
 # GET api/log_out/
 # get user to log out by built-in logout function
+@csrf_exempt
 def log_out(request):
     logout(request)
     return JsonResponse({"status":"User logged out."}, status = 200)
@@ -377,7 +380,8 @@ def log_out(request):
 
 @csrf_exempt
 def user_registration(request):
-
+    if 'username' not in request.headers or 'password' not in request.headers:
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     user_id = request.headers["username"]
     password = request.headers['password']
 
@@ -416,3 +420,4 @@ def user_registration(request):
     
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
+
