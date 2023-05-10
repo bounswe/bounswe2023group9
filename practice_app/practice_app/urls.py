@@ -29,6 +29,7 @@ urlpatterns = [
     path('search_paper/', search_paper, name='Search Paper'),
     path('search_user/', search_user, name='Search User'),
     path('sign_in/', sign_in, name='Sign In'),
+    path('sign_up/', sign_up, name='Sign Up'),
     path('profile_page/', profile_page, name='Profile Page'),
     path('my_lists/', my_lists, name='My Lists'),
     path('following_lists/', following_lists, name='Following Lists'),

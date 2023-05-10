@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block start %}
+
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-3 shadow-lg"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Sign Up</h2>
+    <hr />
+    <div class="mb-3">
+      <label for="user_name" class="form-label">ORCID ID</label>
+      <input
+        name="user_name"
+        class="form-control"
+        value=""
+        required
+        type="text"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password</label>
+      <input
+        name="password"
+        class="form-control"
+        value=""
+        required
+        type="password"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-success" value="Submit" name="Submit">
+      Sign Up
+    </button>
+    <p>{{ warning }}</p>
+  </form>
+</div>
+
+{% endblock %}
