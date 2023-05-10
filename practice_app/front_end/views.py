@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
+
+from api.views import *
 
 
 def home(request):
@@ -17,15 +19,26 @@ def search_user(request):
 
 
 def sign_in(request):
-
-    r_username = "omarri"
+    """r_username = "omari"
     r_password = "123456"
+    User.objects.create_user(
+        username=r_username, password=r_password, first_name="nam", last_name="surname")"""
     context = {'page': 'Sign In', 'warning': ""}
+    if request.user.is_authenticated:
+        return redirect("/search_paper/")
+
     if request.method == "POST":
         username = request.POST.get("user_name")
         password = request.POST.get("password")
 
-        if r_username == username and r_password == password:
+        login_request = HttpRequest()
+        login_request.method = 'POST'
+        login_request.user = request.user
+        login_request.META = request.META
+        login_request.session = request.session
+        login_request.headers = {"username": username, "password": password}
+        login_response = log_in(login_request)
+        if login_response.status_code == 200:
             context = {'page': 'Search Paper'}
             return redirect("/search_paper/")
         else:
