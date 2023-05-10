@@ -3,6 +3,7 @@ from unittest import skip
 import requests
 import json
 from . import api_keys
+from . import models
 from django.contrib.auth.models import User
 # Create your tests here.
 
@@ -393,3 +394,61 @@ class log_out_test_cases(TestCase):
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log_out/").status_code, 200)
+
+class FollowUserTestCase(TestCase):
+    def setUp(self):
+        self.c = Client()
+        User.objects.create_user(username="0009-0005-5924-1831", password="strongpassword", first_name = "follower", last_name = "follower" )
+        User.objects.create_user(username="0009-0005-5924-1832", password="strongpassword", first_name = "followed", last_name = "followed" )
+
+    def tearDown(self):
+        print('Tests for POST requests using follow_user completed!')
+    
+    def test_unauthorized_follower(self):
+        # no headers are provided
+        response = self.c.post("/api/follow_user/")
+        self.assertEquals(response.status_code, 407)
+        self.assertEquals(response.json()['status'], "username and password fields can not be empty")
+
+        # empty credentials are provided
+        response = self.c.post("/api/follow_user/", headers = {'username':'','password':''})
+        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.json()['status'], "user credentials are incorrect.")
+
+        # invalid follower is provided
+        response = self.c.post("/api/follow_user/", headers = {'username':'dummy','password':'dummy'})
+        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.json()['status'], "user credentials are incorrect.")
+
+    def test_invalid_followed_username(self):
+        Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
+
+        # no followed username is provided
+        response = self.c.post("/api/follow_user/", headers = Headers)
+        
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['status'], "Username of followed should be provided.")
+
+        # empty followed username is provided
+        response = self.c.post("/api/follow_user/", headers = Headers, data = {'followed_username':''})
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['status'], "Username of followed should be provided.")
+
+        # followed is not a valid username
+        response = self.c.post("/api/follow_user/", headers = Headers, data = {'followed_username':'dummy'})
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['status'], "Username of followed is invalid.")
+
+    def test_valid_and_invalid_follow_cases(self):
+        # follow request is sent for the first time
+        Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
+        Body = {'followed_username':'0009-0005-5924-1832'}
+        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        print(response.json())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], "User followed.")
+
+        # follow request is sent for the second time
+        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['status'], "You have already sent a following request this user.")
