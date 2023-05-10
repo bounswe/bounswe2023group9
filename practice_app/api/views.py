@@ -7,6 +7,7 @@ from . import api_keys
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
@@ -332,6 +333,7 @@ def orcid_api(request):
 # POST api/log_in/
 # implements log in functionality
 # username and password should be provided in Headers
+@csrf_exempt
 def log_in(request):
     
     username = request.headers["username"]
@@ -366,7 +368,7 @@ def log_out(request):
 # name and surname should be provided in data
 # username, name, password must be provided, surname is optional
 
-
+@csrf_exempt
 def user_registration(request):
 
     user_id = request.headers["username"]
