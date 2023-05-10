@@ -11,7 +11,7 @@ class Paper(models.Model):
     source = models.CharField(max_length=50)
     abstract = models.TextField(max_length=5000, blank=True, null=True)
     year = models.IntegerField(blank=True, null=True)
-    url = models.URLField()
+    url = models.URLField(blank=True)
     authors = models.TextField(max_length=500, blank=True, null=True)
     title = models.CharField(max_length=300)
     like_count = models.IntegerField(default=0)

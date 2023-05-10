@@ -11,15 +11,17 @@ from django.views.decorators.csrf import csrf_exempt
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
     
-    # Parse the parameters (query and rows)
+    # Parse the parameters (title and rows)
     params = request.GET
-    query = params.get('query')
+    query = params.get('title')
     rows = params.get('rows')
 
     # Check whether the paramters are given correctly
     # If not, return 404 JsonResponse
-    if query is None or query == "" or rows is None or rows == "" or not rows.isnumeric():
-        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?query=sun&row=3'}, status=404)
+    if query is None or query == "":
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
+    if rows is None or rows == "" or not rows.isnumeric():
+        rows = 3
     
     # Check whether the row exceeds the limit
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
@@ -32,26 +34,29 @@ def doaj_get(request):
     # parse the dictionary
     # all fields are assumed to exist in the response
     if res.status_code == 200:
-        return JsonResponse(
-            {
-                "status_code": 200,
-                "count": response["total"] if response["total"] < rows else rows,
-                "results": [
-                    {
-                        "id": result["id"],
-                        "source": "DOAJ",
-                        "position": index + 1,
-                        "authors": [author["name"] for author in result["bibjson"]["author"]],
-                        "date": result["created_date"],
-                        "abstract": result["bibjson"]["abstract"],
-                        "title": result["bibjson"]["title"],
-                        "url": result["bibjson"]["link"][0]["url"]
-                    } for index, result in enumerate(response["results"])
-                ]
-            }
-        )
+        try:
+            return JsonResponse(
+                {
+                    "status_code": 200,
+                    "count": response["total"] if response["total"] < rows else rows,
+                    "results": [
+                        {
+                            "id": result["id"],
+                            "source": "DOAJ",
+                            "position": index + 1,
+                            "authors": [author["name"] for author in result["bibjson"]["author"]],
+                            "date": int(result["created_date"][0:4]),
+                            "abstract": result["bibjson"]["abstract"],
+                            "title": result["bibjson"]["title"],
+                            "url": result["bibjson"]["link"][0]["url"]
+                        } for index, result in enumerate(response["results"])
+                    ]
+                }
+            )
+        except:
+            return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
     else:
-        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?query=sun&row=3'}, status=404)
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
 def google_scholar(request):
     number = request.GET.get("rows")
@@ -156,11 +161,11 @@ def core_get(request):  # this method parses the parameters of given get request
     limit = request.GET.get("rows")
 
     if title == None or title == "":  # if no title param or empty
-        return JsonResponse({'status': "'title' query param is required!"}, status=400)
+        return JsonResponse({'status': "'title' title param is required!"}, status=400)
     elif limit == None or limit == "":  # if limit is empty or not specified at all
         limit = 3
     elif not limit.isnumeric():  # if limit is invalid (not numeric)
-        return JsonResponse({'status': "'rows' query param must be numeric if exist!"}, status=400)
+        return JsonResponse({'status': "'rows' rows param must be numeric if exist!"}, status=400)
     else:
         limit = int(limit)  # change limit to integer
 
@@ -213,7 +218,7 @@ def eric_papers(request):
             paper['position'] = i
             i += 1
             
-        return JsonResponse({'papers':papers})
+        return JsonResponse({'results':papers})
     elif response.status_code == 404:
         return JsonResponse({'message':'Resource not found'}, status=404)
     else:
@@ -292,45 +297,4 @@ def semantic_scholar(request):
             results.append(paper_info.copy())
         response['results'] = results
         return JsonResponse(response)
-@csrf_exempt
-def post_papers(request):
-    username = request.headers['username']
-    password = request.headers['password']
-    print(username)
-    print(password)
-    user = authenticate(request, username=username, password=password)
-    if user == None:
-        return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
-    query = request.GET
-    db = query.get('db')
-    if db == None or db == "":
-        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
-    if db == 'semantic-scholar':
-        response = semantic_scholar(request)
-    elif db == 'doaj':
-        response = doaj_get(request)
-    elif db == 'core':
-        response = core_get(request)
-    elif db == 'zenodo':
-        response = zenodo(request)
-    elif db == 'eric':
-        response = eric_papers(request)
-    elif db == 'google-scholar':
-        response = google_scholar(request)
 
-    results = json.loads(response.content)['results']
-
-    for result in results:
-        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists():
-            continue
-        paper = models.Paper()
-        paper.url = result['url']
-        paper.title = result['title']
-        paper.set_authors(result['authors'])
-        paper.year = result['date']
-        paper.third_party_id = result['id']
-        paper.source = result['source']
-        paper.abstract = result['abstract']
-        paper.like_count = 0
-        paper.save()
-    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200)

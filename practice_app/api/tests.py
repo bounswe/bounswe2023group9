@@ -17,7 +17,7 @@ class DOAJ_API_Tester(TestCase):
         self.assertEquals(doaj_api_response.status_code, 200, "DoajApi didn't work as supposed to")
         doaj_api_response = doaj_api_response.json()['results']
         
-        response = self.c.get("/api/doaj-api/?query=einstein,relativity&rows=3")
+        response = self.c.get("/api/doaj-api/?title=einstein,relativity&rows=3")
         self.assertEquals(response.status_code, 200)
         response_dict = response.json()
         self.assertIn('status_code', response_dict.keys())
@@ -54,28 +54,28 @@ class core_api_test_cases(TestCase):
         self.assertEquals(
             temp.status_code, 400, "Test failed: status_code test for missing title param with url '/api/core'.")
         self.assertEquals(json.loads(temp.content.decode("UTF-8")),
-                          {'status': "'title' query param is required!"}, "Test failed: content test for missing title param with url '/api/core'.")
+                          {'status': "'title' title param is required!"}, "Test failed: content test for missing title param with url '/api/core'.")
 
         # missing title case with rows
         temp = self.c.get("/api/core?rows=5")
         self.assertEquals(
             temp.status_code, 400, "Test failed: status_code test for missing title param with url '/api/core?rows=5'.")
         self.assertEquals(json.loads(temp.content.decode("UTF-8")),
-                          {'status': "'title' query param is required!"}, "Test failed: content test for missing title param with url '/api/core?rows=5'.")
+                          {'status': "'title' title param is required!"}, "Test failed: content test for missing title param with url '/api/core?rows=5'.")
 
         # missing title case with some random params
         temp = self.c.get("/api/core?randomNonexistParam=randomVal")
         self.assertEquals(
             temp.status_code, 400, "Test failed: status_code test for missing title param with url '/api/core?randomNonexistParam=randomVal'.")
         self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': "'title' query param is required!"}, "Test failed: content test for missing title param with url '/api/core?randomNonexistParam=randomVal'.")
+            "UTF-8")), {'status': "'title' title param is required!"}, "Test failed: content test for missing title param with url '/api/core?randomNonexistParam=randomVal'.")
 
         # invalid rows case
         temp = self.c.get("/api/core?title=vision%20transformers&rows=abc")
         self.assertEquals(
             temp.status_code, 400, "Test failed: status_code test for invalid rows param with url '/api/core?title=vision%20transformers&rows=abc'.")
         self.assertEquals(json.loads(temp.content.decode(
-            "UTF-8")), {'status': "'rows' query param must be numeric if exist!"}, "Test failed: content test for invalid rows param with url '/api/core?title=vision%20transformers&rows=abc'.")
+            "UTF-8")), {'status': "'rows' rows param must be numeric if exist!"}, "Test failed: content test for invalid rows param with url '/api/core?title=vision%20transformers&rows=abc'.")
 
         # title not found case
         temp = self.c.get("/api/core?title=sdfhgaskdfgajksdhgf")
