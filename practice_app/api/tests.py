@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from unittest import skip
 import requests
 import json
-from . import api_keys
+from . import api_keys, models
 from django.contrib.auth.models import User
 # Create your tests here.
 
@@ -221,7 +221,8 @@ class EricPapersTestCase(TestCase):
         self.assertContains(response, 'date')
         self.assertContains(response, 'url')
         self.assertContains(response, 'position')
-        
+
+
 class ZenodoTestCases(TestCase):
 
     def setUp(self):
@@ -359,7 +360,9 @@ class registration_test_cases(TestCase):
         response = self.c.post("/api/user_registration/", headers = Header)
         self.assertEquals(response.status_code, 404)
         self.assertEquals(len(User.objects.filter(username= "0009-0005-5924-0000")), 1)
-        
+
+
+
 class log_in_test_cases(TestCase):
 
     def setUp(self):
@@ -393,3 +396,60 @@ class log_out_test_cases(TestCase):
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log_out/").status_code, 200)
+
+class post_paper_test_cases(TestCase):
+    def setUp(self):
+        self.client = Client()
+        User.objects.create_user(username="0009-0005-5924-0000", password="strongpassword", first_name="firstname", last_name="lastname")
+
+    def tearDown(self):
+        print('Tests for POST method post-papers completed!')
+
+    def test_post(self):
+        response = self.client.post("/api/post-papers/",{'db':'zenodo','title' : 'sad', 'rows' : 5 },headers={'username':"0009-0005-5924-0000",'password':'strongpassword'})
+        self.assertEquals(response.status_code,200)
+        self.assertEquals(len(models.Paper.objects.filter(source='Zenodo')),5)
+        response = self.client.post("/api/post-papers/", {'db': 'semantic-scholar', 'title': 'sad', 'rows': 5},
+                                    headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(models.Paper.objects.filter(source='semantic_scholar')), 5)
+        response = self.client.post("/api/post-papers/", {'db': 'google-scholar', 'title': 'sad', 'rows': 6},
+                                            headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(models.Paper.objects.filter(source='google_scholar')), 6)
+        response = self.client.post("/api/post-papers/", {'db': 'doaj', 'title': 'sad', 'rows': 8},
+                                    headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(models.Paper.objects.filter(source='DOAJ')), 8)
+        # response = self.client.post("/api/post-papers/", {'db': 'core', 'title': 'sad', 'rows': 3},
+        #                             headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        # self.assertEquals(response.status_code, 200)
+        # self.assertEquals(len(models.Paper.objects.filter(source='core.ac.uk')), 3)
+        response = self.client.post("/api/post-papers/", {'db': 'eric', 'title': 'sad'},
+                                    headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(len(models.Paper.objects.filter(source='eric-api')), 3)
+
+    def test_4xx_responses(self):
+        response = self.client.post("/api/post-papers/", {'title': 'sad', 'rows': 3},
+                                    headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code,404)
+        self.assertEquals(json.loads(response.content.decode("UTF-8")),{'status': 'db and title parameters must be added to the request body.'})
+
+        response = self.client.post("/api/post-papers/",{'db':'zenodo', 'rows' : 3 },headers={'username':"0009-0005-5924-0000",'password':'strongpassword'})
+        self.assertEquals(response.status_code,404)
+        self.assertEquals(json.loads(response.content.decode("UTF-8")), {'status': 'db and title parameters must be added to the request body.'})
+
+        response = self.client.post("/api/post-papers/",{'db':'zenodo','title' : 'sad', 'rows' : 3 },headers={'username':"0009-0005-5924-0000"})
+        self.assertEquals(response.status_code, 407)
+        self.assertEquals(json.loads(response.content.decode("UTF-8")),{'status': 'username and password fields can not be empty'})
+
+        response = self.client.post("/api/post-papers/", {'db': 'zenodo', 'title': '', 'rows': 3},
+                                    headers={ 'password': 'strongpassword'})
+        self.assertEquals(response.status_code, 407)
+        self.assertEquals(json.loads(response.content.decode("UTF-8")),{'status': 'username and password fields can not be empty'})
+
+        response = self.client.post("/api/post-papers/", {'db': 'zenodo', 'title': 'sad', 'rows': 5},
+                                    headers={'username': "0009-0005-5924-000", 'password': 'strongpassword'})
+        self.assertEquals(response.status_code,401)
+        self.assertEquals(json.loads(response.content.decode("UTF-8")), {'status' : 'user credentials are incorrect.'})
