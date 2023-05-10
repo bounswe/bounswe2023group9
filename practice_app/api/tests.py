@@ -443,7 +443,6 @@ class FollowUserTestCase(TestCase):
         Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
         Body = {'followed_username':'0009-0005-5924-1832'}
         response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
-        print(response.json())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['status'], "User followed.")
 
