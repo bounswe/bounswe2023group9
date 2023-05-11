@@ -375,7 +375,7 @@ class NasaStiTestCase(TestCase):
 
         field_count = 8
 
-        response = self.client.get('/api/nasa-sti/?title=space')
+        response = self.client.get('/api/nasa-sti/?title=space&rows=abc')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results'][0]), field_count)
         self.assertEqual(len(response.json()['results']), 3)
