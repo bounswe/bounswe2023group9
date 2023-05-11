@@ -434,11 +434,11 @@ class post_paper_test_cases(TestCase):
     def test_4xx_responses(self):
         response = self.client.post("/api/post-papers/", {'title': 'sad', 'rows': 3},
                                     headers={'username': "0009-0005-5924-0000", 'password': 'strongpassword'})
-        self.assertEquals(response.status_code,404)
+        self.assertEquals(response.status_code,400)
         self.assertEquals(json.loads(response.content.decode("UTF-8")),{'status': 'db and title parameters must be added to the request body.'})
 
         response = self.client.post("/api/post-papers/",{'db':'zenodo', 'rows' : 3 },headers={'username':"0009-0005-5924-0000",'password':'strongpassword'})
-        self.assertEquals(response.status_code,404)
+        self.assertEquals(response.status_code,400)
         self.assertEquals(json.loads(response.content.decode("UTF-8")), {'status': 'db and title parameters must be added to the request body.'})
 
         response = self.client.post("/api/post-papers/",{'db':'zenodo','title' : 'sad', 'rows' : 3 },headers={'username':"0009-0005-5924-0000"})

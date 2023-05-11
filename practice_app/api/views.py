@@ -457,7 +457,7 @@ def post_papers(request):
 
     query = request.POST
     if 'db' not in query.keys() or 'title' not in query.keys(): # db parameter or title parameter is not set
-        return JsonResponse({'status' : 'db and title parameters must be added to the request body.'},status=404)
+        return JsonResponse({'status' : 'db and title parameters must be added to the request body.'},status=400)
     db = query.get('db')
     title = query.get('title')
     if 'rows' not in query.keys(): # default rows value if it is not set
