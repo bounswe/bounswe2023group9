@@ -423,7 +423,8 @@ def user_registration(request):
     orcid_api_request.method = 'GET'
     orcid_api_request.user = request.user
     orcid_api_request.META = request.META
-    orcid_api_request.GET.update({"user_id":user_id})
+    orcid_api_request.session = request.session
+    orcid_api_request.GET.update({"user_id": user_id})
     orcid_api_response = orcid_api(orcid_api_request)
 
     if orcid_api_response.status_code == 200:
