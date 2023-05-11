@@ -61,6 +61,11 @@ def doaj_get(request):
     else:
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
+# GET api/google-scholar/
+# Utilizes the serpAPI to get results from google scholar
+# params -> title , rows
+# response type: 200 -> {'resutls' : [{'pos' : <position> , 'source' : google_scholar, 'authors' : [ {'name' : <author-name>},{} ... ] ,
+#  'date': <pub-year> , 'title' : <paper_title> , 'url' : <link-to-source> ,'abstract' : <abstract>   } ,{} ... ]}
 def google_scholar(request):
     # getting the parameters
     number = request.GET.get("rows")
