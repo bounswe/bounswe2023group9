@@ -524,3 +524,14 @@ class post_paper_test_cases(TestCase):
                                     headers={'username': "0009-0005-5924-000", 'password': 'strongpassword'})
         self.assertEquals(response.status_code,401)
         self.assertEquals(json.loads(response.content.decode("UTF-8")), {'status' : 'user credentials are incorrect.'})
+
+class add_interst_test_cases(TestCase):
+    def setUp(self):
+        self.client = Client()
+        user = User.objects.create_user(username="testuser", password="strongpassword", first_name="firstname", last_name="lastname")
+    def testAddInterest(self):
+        request = self.factory.post('/add_interest', {'interest': 'music'})
+        request.user = user
+        response = views.add_interest(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(UserInterest.objects.filter(user=user, interest='music').count(), 1)
