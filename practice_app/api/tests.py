@@ -468,4 +468,18 @@ class SavePaperListTest(TestCase):
             response.json()['status'],
             'Paper list is not found!'
         )
+
+        response = self.client.post(url, {'paper_list_id': ''}, **headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
+
+        response = self.client.post(url, {'paper_list_id': 'asdfg'}, **headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
         

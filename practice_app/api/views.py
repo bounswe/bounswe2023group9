@@ -439,15 +439,15 @@ def save_paper_list(request):
             # If the authentication is failed return an error
             return JsonResponse({'status' : 'Incorrect username or password!'},status=401)
 
-    # Get the paper list id with the POST method    
+    # Get the paper list id with the POST method
     post_id = request.POST['paper_list_id']
-
+    
     #Check if the provided id is valid
-    if not models.PaperList.objects.filter(id = post_id).exists():
+    if not post_id.isnumeric() or post_id == None or not models.PaperList.objects.filter(id = post_id).exists():
         return JsonResponse({'status': 'Paper list is not found!'}, status=404)
     else:
         # Get the paper list object and add the current logged in user to the savers list of the paper list
-        paper_list = models.PaperList.objects.get(pk = post_id) 
+        paper_list = models.PaperList.objects.get(pk = post_id)
         paper_list.saver.add(user)
 
         # Save the changes
@@ -455,4 +455,4 @@ def save_paper_list(request):
 
         # Return a success response
         return JsonResponse({'status': 'Paper list is saved successfully!'}, status=200)
-
+    
