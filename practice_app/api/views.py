@@ -229,8 +229,14 @@ def eric_papers(request):
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
-            paper['date'] = paper.pop('publicationdateyear')
-            paper['abstract'] = paper.pop('description')
+            if 'publicationdateyear' in paper.keys():
+                paper['date'] = paper.pop('publicationdateyear')
+            else:
+                paper['date'] = 0
+            if 'description' in paper.keys():
+                paper['abstract'] = paper.pop('description')
+            else:
+                paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
             
