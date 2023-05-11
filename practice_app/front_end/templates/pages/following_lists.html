@@ -1,26 +1,6 @@
-{% extends "base.html" %}
-{% block start %}
+{% extends "header.html" %}
+{% block header %}
 
-<div class="container mt-5">
-    <a href="/search_paper/">
-        Search Paper
-      </a>
-      |
-      <a href="/search_user/">
-        Search User
-      </a>
-      |
-      <a href="/profile_page/">
-        Profile
-      </a>
-      |
-      <a href="/my_lists/">
-        My Lists
-      </a>
-      |
-      <a href="/follow_requests/">
-        Follow Requests
-      </a>
 
     <hr>
     <h1>Following Lists</h1>
@@ -38,7 +18,6 @@
         </tr>
         {% endfor %}
     </table>
-</div>
 
 {% endblock %}
 
