@@ -11,7 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.decorators.csrf import csrf_exempt
 
-
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
 
@@ -23,9 +22,7 @@ def doaj_get(request):
     # Check whether the paramters are given correctly
     # If not, return 404 JsonResponse
     if query is None or query == "":
-        return JsonResponse(
-            {"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'},
-            status=404)
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
     if rows is None or rows == "" or not rows.isnumeric():
         rows = 3
 
@@ -62,10 +59,7 @@ def doaj_get(request):
         except:
             return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
     else:
-        return JsonResponse(
-            {"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'},
-            status=404)
-
+        return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
 # GET api/google-scholar/
 # Utilizes the serpAPI to get results from google scholar
@@ -89,23 +83,23 @@ def google_scholar(request):
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
 
-    if request.status_code == 200:  # successful request
+    if request.status_code == 200: # successful request
         # get the results
         request = request.json()
         papers = request['organic_results']
         response = {}
         results = []
-        for paper in papers:  # iterate over the results to get necessary fields
+        for paper in papers: # iterate over the results to get necessary fields
             pub_info = paper['publication_info']
             paper_info = {}
-            paper_info['source'] = 'google_scholar'  # source is set
+            paper_info['source'] = 'google_scholar' # source is set
 
-            if 'authors' in pub_info.keys():  # only take the names of the authors
+            if 'authors' in pub_info.keys(): # only take the names of the authors
                 paper_info['authors'] = []
                 for author in pub_info['authors']:
                     a = {'name': author['name']}
                     paper_info['authors'].append(a.copy())
-            else:  # if authors field is not present in the result, get them from the summary field
+            else: # if authors field is not present in the result, get them from the summary field
                 temp = pub_info['summary'].split('-')[0].strip()
                 temp = temp.split(',')
                 authors = []
@@ -116,40 +110,40 @@ def google_scholar(request):
                     authors.append(author.copy())
                 paper_info['authors'] = authors
 
-            paper_info['id'] = paper['result_id']  # third party id of the paper
+            paper_info['id'] = paper['result_id'] # third party id of the paper
             # this api doesn't return year / date as a field, so we get it from summary using regex
             summary = pub_info['summary']
             summary = '-' + summary + '-'
             year = re.findall('[\W|\s](\d{4})[\W|\s]', summary)
-            if len(year) == 0:  # if not found set 0
+            if len(year) == 0: # if not found set 0
                 year = None
                 paper_info['date'] = 0000
             else:
                 year = int(year[0])
                 paper_info['date'] = year
 
-            paper_info['abstract'] = paper['snippet']  # no abstract is returned from the third party so we used snippet
-            paper_info['title'] = paper['title']  # title is set
+            paper_info['abstract'] = paper['snippet'] # no abstract is returned from the third party so we used snippet
+            paper_info['title'] = paper['title'] # title is set
             if 'link' in paper.keys():
-                paper_info['url'] = paper['link']  # url is set
-            paper_info['pos'] = paper['position']  # position is set
+                paper_info['url'] = paper['link'] # url is set
+            paper_info['pos'] = paper['position'] # position is set
             results.append(paper_info.copy())
         response['results'] = results
-        return JsonResponse(response)  # results are returned
-    elif request.status_code == 404:  # third party returned 404
+        return JsonResponse(response) # results are returned
+    elif request.status_code == 404: # third party returned 404
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
-    else:  # third party returned something unexpected
+    else: # third party returned something unexpected
         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 
 # this method sends requests to CORE API and fetches the response
 def searchPaperOnCore(keyword, limit):
     headersCore = {"Authorization": "Bearer " +
-                                    api_keys.api_keys['core_api']}  # insert api key to header
+                   api_keys.api_keys['core_api']}  # insert api key to header
 
     params = {'q': keyword, 'limit': limit}
     url = "https://api.core.ac.uk/v3/search/works?" + \
-          urllib.parse.urlencode(params)
+        urllib.parse.urlencode(params)
 
     req = requests.get(url, headers=headersCore)
 
@@ -178,8 +172,7 @@ def searchPaperOnCore(keyword, limit):
     return result
 
 
-def core_get(
-        request):  # this method parses the parameters of given get request which will use the CORE API and gives the necessary response
+def core_get(request):  # this method parses the parameters of given get request which will use the CORE API and gives the necessary response
     title = request.GET.get("title")
     limit = request.GET.get("rows")
 
@@ -207,21 +200,22 @@ def core_get(
 
 
 def eric_papers(request):
-    # params --> title, rows
+
+    #params --> title, rows
     default_rows = '3'
 
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
 
     if search_title == None or search_title.strip() == '':
-        return JsonResponse({'message': 'A paper title must be given.'}, status=404)
+        return JsonResponse({'message':'A paper title must be given.'}, status=404)
 
     try:
         int(rows)
     except ValueError:
-        return JsonResponse({'message': 'Row count must be valid.'}, status=404)
+        return JsonResponse({'message':'Row count must be valid.'}, status=404)
 
-    # response --> source, authors, id, date, abstract, title, url, position
+    #response --> source, authors, id, date, abstract, title, url, position
 
     baseURL = "https://api.ies.ed.gov/eric/"
     response_fields = "&fields=id AND title AND author AND publicationdateyear AND url AND description AND source"
@@ -246,45 +240,45 @@ def eric_papers(request):
             paper['position'] = i
             i += 1
 
-        return JsonResponse({'results': papers})
+        return JsonResponse({'results':papers})
     elif response.status_code == 404:
-        return JsonResponse({'message': 'Resource not found'}, status=404)
+        return JsonResponse({'message':'Resource not found'}, status=404)
     else:
-        return JsonResponse({'message': 'Internal server error'}, status=503)
-
-
-# GET api/zenodo/
-# params -> title , rows
+        return JsonResponse({'message':'Internal server error'}, status=503)
 def zenodo(request):
-    ACCESS_TOKEN = api_keys.api_keys['zenodo_api']  # Get the api key from, api_keys for request to third party.
-    # Get the parameters
+    ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
     search_title = request.GET.get("title", None)
     rows = request.GET.get('rows', 3)
-    # Check the validity of parameters
     if search_title is None or search_title == "" or search_title.isspace() is True:
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
 
-    # Third party api call
     request = requests.get('https://zenodo.org/api/records',
-                           params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
+                     params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
 
-    if request.status_code == 200:  # Control the status code of the response
-        papers = request.json()["hits"]["hits"]  # Get the papers list
+    if request.status_code == 200:
+        papers = request.json()["hits"]["hits"]
         response = {}
         results = []
-        for paper in papers:  # For every paper, add wanted properties to paper_info for response.
+        for paper in papers:
             paper_info = {}
             paper_info['id'] = paper['id']
             paper_info['title'] = paper['metadata']['title']
+            paper_info['url'] = paper['links']['doi']
+            paper_info['authors'] = []
+            paper_info['abstract'] = paper['metadata']['description']
+            paper_info['date'] = int(paper['metadata']['publication_date'].split("-")[0])
+            paper_info['position'] = papers.index(paper)
+            paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
             for author in authors:
                 paper_info['authors'].append(author['name'])
-            results.append(paper_info.copy())  # Add paper info to results.
-        response['results'] = results  # Return the results as response
+            results.append(paper_info.copy())
+        response['results'] = results
         return JsonResponse(response, status=200)
     elif request.status_code == 404:
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
-
+    else:
+        return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 def semantic_scholar(request):
     query = request.GET
@@ -299,7 +293,8 @@ def semantic_scholar(request):
     else:
         limit = int(limit)
 
-    fields = ['url', 'abstract', 'authors', 'title', 'year']
+
+    fields = ['url','abstract','authors','title','year']
     endpoint = f'https://api.semanticscholar.org/graph/v1/paper/search?query={search}&fields={",".join(fields)}&offset=0&limit={limit}'
 
     response = requests.get(endpoint)
@@ -308,12 +303,12 @@ def semantic_scholar(request):
         papers = response['data']
         response = {}
         results = []
-        for position, paper in enumerate(papers):
+        for position,paper in enumerate(papers):
             paper_info = {}
             paper_info['source'] = 'semantic_scholar'
             paper_info['authors'] = []
             for author in paper['authors']:
-                author_name = {'name': author['name']}
+                author_name = {'name' : author['name']}
                 paper_info['authors'].append(author_name.copy())
             paper_info['id'] = paper['paperId']
             paper_info['abstract'] = paper['abstract']
@@ -325,31 +320,31 @@ def semantic_scholar(request):
         response['results'] = results
         return JsonResponse(response)
 
-
 # GET api/orcid_api/
 # Utilizes the orcid api to get user credentials
 # params -> user_id
 # response type: {"user_id": string, "name": string, "surname": string}
 def orcid_api(request):
+
     # user_id should be a valid ORCID ID
     user_id = request.GET.get('user_id')
 
     Headers = {"Accept": "application/json"}
 
     if user_id == None or user_id == '':
-        return JsonResponse({"status": "ORCID ID should be provided as user_id"}, status=404)
+        return JsonResponse({"status":"ORCID ID should be provided as user_id"}, status = 404)
 
     # third party api call
     # returns a json file that contains all public information related with given ORCID ID
-    api_request = requests.get("https://orcid.org/" + user_id, headers=Headers)
+    api_request = requests.get("https://orcid.org/"+user_id, headers=Headers)
 
     if api_request.status_code != 200:
-        return JsonResponse({"status": "Invalid ORCID ID"}, status=404)
+        return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
     else:
         try:
             api_request = api_request.json()
         except:
-            return JsonResponse({"status": "Invalid ORCID ID"}, status=404)
+            return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
 
         response = {}
         response["user_id"] = user_id
@@ -361,23 +356,22 @@ def orcid_api(request):
             response["surname"] = " "
         return JsonResponse(response)
 
-
 # POST api/log_in/
 # implements log in functionality
 # username and password should be provided in Headers
 @csrf_exempt
 def log_in(request):
     if 'username' not in request.headers or 'password' not in request.headers:
-        return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
 
     username = request.headers["username"]
     password = request.headers["password"]
 
     if username == None or username == '':
-        return JsonResponse({"status": "ORCID ID should be provided."}, status=404)
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
 
     if password == None or password == '':
-        return JsonResponse({"status": "Password should be provided."}, status=404)
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
 
     # Check user database to authenticate the user with given credentials. Return a user if valid username and password is given.
     user = authenticate(request, username=username, password=password)
@@ -385,19 +379,17 @@ def log_in(request):
     # if the user is authenticated log in by built-in login function
     if user is not None:
         login(request, user)
-        return JsonResponse({"status": "User logged in."}, status=200)
+        return JsonResponse({"status":"User logged in."}, status = 200)
 
     else:
-        return JsonResponse({"status": "Authentication failed"}, status=404)
-
+        return JsonResponse({"status":"Authentication failed"}, status = 404)
 
 # GET api/log_out/
 # get user to log out by built-in logout function
 @csrf_exempt
 def log_out(request):
     logout(request)
-    return JsonResponse({"status": "User logged out."}, status=200)
-
+    return JsonResponse({"status":"User logged out."}, status = 200)
 
 # POST api/user_registration
 # username and password should be in headers
@@ -408,7 +400,7 @@ def log_out(request):
 @csrf_exempt
 def user_registration(request):
     if 'username' not in request.headers or 'password' not in request.headers:
-        return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     user_id = request.headers["username"]
     password = request.headers['password']
 
@@ -417,37 +409,36 @@ def user_registration(request):
     orcid_api_request.method = 'GET'
     orcid_api_request.user = request.user
     orcid_api_request.META = request.META
-    orcid_api_request.GET.update({"user_id": user_id})
+    orcid_api_request.GET.update({"user_id":user_id})
     orcid_api_response = orcid_api(orcid_api_request)
 
     if orcid_api_response.status_code == 200:
         name = json.loads(orcid_api_response.content.decode()).get("name")
         surname = json.loads(orcid_api_response.content.decode()).get("surname")
     else:
-        return JsonResponse({"status": "Valid ORCID ID should be provided."}, status=404)
+        return JsonResponse({"status":"Valid ORCID ID should be provided."}, status = 404)
 
     if user_id == None or user_id == '':
-        return JsonResponse({"status": "ORCID ID should be provided."}, status=404)
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
 
     if password == None or password == '':
-        return JsonResponse({"status": "Password should be provided."}, status=404)
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
 
     if name == None or name == '':
-        return JsonResponse({"status": "Name should be provided."}, status=404)
+        return JsonResponse({"status":"Name should be provided."}, status = 404)
 
     if surname == None:
         surname = " "
 
     # Check if the user_id is already taken.
-    if len(User.objects.filter(username=user_id)) == 0:
+    if len(User.objects.filter(username= user_id)) == 0:
         # Create user on User model by using create_user function.
         # Used create_user() instead of create() since create_user() handles password encryption
-        User.objects.create_user(username=user_id, password=password, first_name=name, last_name=surname)
-        return JsonResponse({"status": "User created"}, status=200)
+        User.objects.create_user(username= user_id, password= password, first_name= name,last_name= surname )
+        return JsonResponse({"status":"User created"}, status = 200)
 
     else:
-        return JsonResponse({"status": "Username is already taken."}, status=409)
-
+        return JsonResponse({"status":"Username is already taken."}, status = 409)
 
 # POST api/follow/
 # username and password of follower should be in headers
@@ -462,64 +453,59 @@ def follow_user(request):
         password = request.headers['password']
         follower_user = authenticate(request, username=username, password=password)
         if follower_user == None:
-            return JsonResponse({'status': 'user credentials are incorrect.'}, status=401)
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
     else:
         follower_user = request.user
 
     query = request.POST
     followed_username = query.get('followed_username')
     if followed_username == None or followed_username == '':
-        return JsonResponse({"status": "Username of followed should be provided."}, status=400)
+        return JsonResponse({"status":"Username of followed should be provided."}, status = 400)
 
     if User.objects.filter(username=followed_username).exists():
         followed_user = User.objects.get(username=followed_username)
-        if models.Follower.objects.filter(user=follower_user,
-                                          followed=followed_user).exists() and models.Follower.objects.filter(
-                user=followed_user, follower=follower_user).exists():
-            return JsonResponse({"status": "You are already following this user."}, status=409)
+        if models.Follower.objects.filter(user=follower_user, followed=followed_user).exists() and models.Follower.objects.filter(user=followed_user, follower=follower_user).exists():
+            return JsonResponse({"status":"You are already following this user."}, status=409)
         elif models.FollowRequest.objects.filter(sender=follower_user, receiver=followed_user).exists():
-            return JsonResponse({"status": "You have already sent a following request this user."}, status=409)
+            return JsonResponse({"status":"You have already sent a following request this user."}, status=409)
         else:
             models.FollowRequest.objects.create(sender=follower_user, receiver=followed_user, status='pending')
-            return JsonResponse({"status": "User followed."}, status=200)
+            return JsonResponse({"status":"User followed."}, status = 200)
     else:
-        return JsonResponse({"status": "Username of followed is invalid."}, status=404)
-
+        return JsonResponse({"status":"Username of followed is invalid."}, status = 404)
 
 @csrf_exempt
 def post_papers(request):
     # Authentication
-    if request.user.is_anonymous:  # user is not logged in
-        if 'username' not in request.headers or 'password' not in request.headers:  # credentials are incomplete
+    if request.user.is_anonymous: # user is not logged in
+        if 'username' not in request.headers or 'password' not in request.headers: # credentials are incomplete
             return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
         username = request.headers['username']
         password = request.headers['password']
         user = authenticate(request, username=username, password=password)
-        if user == None:  # credentials are incorrect
-            return JsonResponse({'status': 'user credentials are incorrect.'}, status=401)
+        if user == None: # credentials are incorrect
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
     else:
         user = request.user
 
     query = request.POST
-    if 'db' not in query.keys() or 'title' not in query.keys():  # db parameter or title parameter is not set
-        return JsonResponse({'status': 'db and title parameters must be added to the request body.'}, status=400)
+    if 'db' not in query.keys() or 'title' not in query.keys(): # db parameter or title parameter is not set
+        return JsonResponse({'status' : 'db and title parameters must be added to the request body.'},status=400)
     db = query.get('db')
     title = query.get('title')
-    if 'rows' not in query.keys():  # default rows value if it is not set
+    if 'rows' not in query.keys(): # default rows value if it is not set
         rows = 3
     else:
         rows = query.get('rows')
 
-    api_request = HttpRequest()  # creating a GET request to pass to the API methods
+    api_request = HttpRequest() # creating a GET request to pass to the API methods
     api_request.method = 'GET'
     api_request.user = user
     api_request.META = request.META
-    api_request.GET.update({"title": title, 'rows': rows})
+    api_request.GET.update({"title": title,'rows':rows})
 
-    if db == None or db == "":  # db parameter is empty
-        return JsonResponse({
-                                'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'},
-                            status=404)
+    if db == None or db == "": # db parameter is empty
+        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
     # calling the API method for the given db parameter
     if db == 'semantic-scholar':
         response = semantic_scholar(api_request)
@@ -533,18 +519,15 @@ def post_papers(request):
         response = eric_papers(api_request)
     elif db == 'google-scholar':
         response = google_scholar(api_request)
-    else:  # db parameter doesn't match with any of the options available
-        return JsonResponse({
-                                'status': 'Invalid database name. Please select one of the following : semantic-scholar , doaj , core , zenodo , eric , google-scholar'},
-                            status=404)
-    if response.status_code != 200:  # the call is not successful / something unexpected happened
+    else: # db parameter doesn't match with any of the options available
+        return JsonResponse({'status': 'Invalid database name. Please select one of the following : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    if response.status_code != 200: # the call is not successful / something unexpected happened
         return response
-    results = json.loads(response.content)['results']  # loading the json response
-    for result in results:  # iterating over the response to save the results to the database
-        if models.Paper.objects.filter(source=result['source'], third_party_id=result[
-            'id']).exists():  # if the paper exists in the database, pass
+    results = json.loads(response.content)['results'] # loading the json response
+    for result in results: # iterating over the response to save the results to the database
+        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists(): # if the paper exists in the database, pass
             continue
-        paper = models.Paper()  # create Paper object
+        paper = models.Paper() # create Paper object
         # Fill the fields
         if 'url' in result.keys():
             paper.url = result['url']
@@ -558,9 +541,8 @@ def post_papers(request):
         if 'abstract' in result.keys():
             paper.abstract = result['abstract']
         paper.like_count = 0
-        paper.save()  # save to the DB
-    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200)  # success response
-
+        paper.save() # save to the DB
+    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200) # success response
 
 @csrf_exempt
 def add_interest(request):
@@ -572,14 +554,14 @@ def add_interest(request):
         password = request.headers['password']
         current_user = authenticate(request, username=username, password=password)
         if current_user == None:  # If the authentication is failed return an error
-            return JsonResponse({'status': 'user credentials are incorrect.'}, status=401)
+            return JsonResponse({'status': 'User credentials are incorrect.'}, status=401)
     else:
         current_user = request.user
     query = request.POST
     added_interest = query.get('interest')  # Get the interest to be added from query
     # If interest is empty or None, raise error
     if added_interest is None or added_interest == '':
-        return JsonResponse({"status": "Name of the interest."}, status=400)
+        return JsonResponse({'status': 'Name of the interest can\'t be empty.'}, status=400)
 
     try:  # If there interest has been added before, raise error.
         select = models.UserInterest.objects.get(user_id=current_user.id, interest=added_interest)
