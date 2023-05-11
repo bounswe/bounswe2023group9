@@ -19,4 +19,5 @@ urlpatterns = [
     path('post-papers/',views.post_papers,name='post-papers'),
     path('save-paper-list/', views.save_paper_list, name = 'save_paper_list'),
     path('add-paper-to-list/', views.add_paper_to_list, name="add_paper_to_list"),
+    path('create-paper-list', views.create_paper_list , name="create_paper_list")
 ]
