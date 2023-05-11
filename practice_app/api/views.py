@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 # GET Method for DOAJ API
 def doaj_api(request):
     DOAJ_MAX_ROW = 10
-    
     # Parse the parameters (title and rows)
     params = request.GET
     query = params.get('title')
@@ -26,7 +25,6 @@ def doaj_api(request):
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
     if rows is None or rows == "" or not rows.isnumeric():
         rows = 3
-    
     # Check whether the row exceeds the limit
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
 
@@ -214,21 +212,19 @@ def core_get(request):  # this method parses the parameters of given get request
 
 
 def eric_papers(request):
-    
+
     #params --> title, rows
     default_rows = '3'
-
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
 
     if search_title == None or search_title.strip() == '':
         return JsonResponse({'message':'A paper title must be given.'}, status=404)
-   
+
     try:
         int(rows)
     except ValueError:
         return JsonResponse({'message':'Row count must be valid.'}, status=404)
-
     #response --> source, authors, id, date, abstract, title, url, position
 
     baseURL = "https://api.ies.ed.gov/eric/"
@@ -239,7 +235,6 @@ def eric_papers(request):
 
     if response.status_code == 200:
         papers = response.json()['response']['docs']
-        
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
@@ -253,27 +248,29 @@ def eric_papers(request):
                 paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
-            
         return JsonResponse({'results':papers})
     elif response.status_code == 404:
         return JsonResponse({'message':'Resource not found'}, status=404)
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
+# GET api/zenodo
+# params -> title , rows    
 def zenodo(request):
-    ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
+    ACCESS_TOKEN = api_keys.api_keys['zenodo_api'] #Getting the third party api key from api_keys
+    #Getting the parameters
     search_title = request.GET.get("title", None)
     rows = request.GET.get('rows', 3)
-    if search_title is None or search_title == "" or search_title.isspace() is True:
+    if search_title is None or search_title == "" or search_title.isspace() is True: #If title is empty raise error
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
-
+    #Third party API call
     request = requests.get('https://zenodo.org/api/records',
                      params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
 
-    if request.status_code == 200:
-        papers = request.json()["hits"]["hits"]
+    if request.status_code == 200:  #Status code check
+        papers = request.json()["hits"]["hits"] #Getting the papers
         response = {}
         results = []
-        for paper in papers:
+        for paper in papers: #For every paper, get the wanted attributes
             paper_info = {}
             paper_info['id'] = paper['id']
             paper_info['title'] = paper['metadata']['title']
@@ -286,9 +283,9 @@ def zenodo(request):
             authors = paper['metadata']['creators']
             for author in authors:
                 paper_info['authors'].append(author['name'])
-            results.append(paper_info.copy())
-        response['results'] = results
-        return JsonResponse(response, status=200)
+            results.append(paper_info.copy()) #Add the paper attributes into results
+        response['results'] = results 
+        return JsonResponse(response, status=200) #Return results as response
     elif request.status_code == 404:
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
     else:
@@ -299,7 +296,6 @@ def semantic_scholar(request):
     search = query.get("title")
     limit = query.get("rows")
     default_limit = 3
-    
     if search is None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     if limit is None or limit == "" or not limit.isnumeric():
@@ -383,10 +379,9 @@ def nasa_sti(request):
 
 # GET api/orcid_api/
 # Utilizes the orcid api to get user credentials
-# params -> user_id 
+# params -> user_id
 # response type: {"user_id": string, "name": string, "surname": string}
 def orcid_api(request):
-    
     # user_id should be a valid ORCID ID
     user_id = request.GET.get('user_id')
 
@@ -394,8 +389,7 @@ def orcid_api(request):
 
     if user_id == None or user_id == '':
         return JsonResponse({"status":"ORCID ID should be provided as user_id"}, status = 404)
-    
-    # third party api call 
+    # third party api call
     # returns a json file that contains all public information related with given ORCID ID
     api_request = requests.get("https://orcid.org/"+user_id, headers=Headers)
 
@@ -406,7 +400,6 @@ def orcid_api(request):
             api_request = api_request.json()
         except:
             return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
-        
         response = {}
         response["user_id"] = user_id
         response["name"] = api_request["person"]["name"]["given-names"]["value"]
@@ -424,16 +417,16 @@ def orcid_api(request):
 def log_in(request):
     if 'username' not in request.headers or 'password' not in request.headers:
         return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
-    
+
     username = request.headers["username"]
     password = request.headers["password"]
 
     if username == None or username == '':
         return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
-    
+
     if password == None or password == '':
         return JsonResponse({"status":"Password should be provided."}, status = 404)
-    
+
     # Check user database to authenticate the user with given credentials. Return a user if valid username and password is given.
     user = authenticate(request, username=username, password=password)
 
@@ -482,23 +475,23 @@ def user_registration(request):
 
     if user_id == None or user_id == '':
         return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
-    
+
     if password == None or password == '':
         return JsonResponse({"status":"Password should be provided."}, status = 404)
-    
+
     if name == None or name == '':
         return JsonResponse({"status":"Name should be provided."}, status = 404)
-    
+
     if surname == None:
         surname = " "
-    
-    # Check if the user_id is already taken. 
+
+    # Check if the user_id is already taken.
     if len(User.objects.filter(username= user_id)) == 0:
         # Create user on User model by using create_user function.
         # Used create_user() instead of create() since create_user() handles password encryption
         User.objects.create_user(username= user_id, password= password, first_name= name,last_name= surname )
         return JsonResponse({"status":"User created"}, status = 200)
-    
+
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
 
@@ -587,12 +580,12 @@ def follow_user(request):
             return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
     else:
         follower_user = request.user
-        
+
     query = request.POST
     followed_username = query.get('followed_username')
     if followed_username == None or followed_username == '':
         return JsonResponse({"status":"Username of followed should be provided."}, status = 400)
-    
+
     if User.objects.filter(username=followed_username).exists():
         followed_user = User.objects.get(username=followed_username)
         if models.Follower.objects.filter(user=follower_user, followed=followed_user).exists() and models.Follower.objects.filter(user=followed_user, follower=follower_user).exists():
@@ -675,6 +668,33 @@ def post_papers(request):
         paper.save() # save to the DB
     return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200) # success response
 
+@csrf_exempt
+def add_interest(request):
+    # Authentication
+    if request.user.is_anonymous:  # The user is not logged in
+        if 'username' not in request.headers or 'password' not in request.headers:  # Check the credentials and return error accordingly
+            return JsonResponse({'status': 'Username and password fields can not be empty'}, status=407)
+        username = request.headers['username']  # Get the credentials from header
+        password = request.headers['password']
+        current_user = authenticate(request, username=username, password=password)
+        if current_user == None:  # If the authentication is failed return an error
+            return JsonResponse({'status': 'User credentials are incorrect.'}, status=401)
+    else:
+        current_user = request.user
+    query = request.POST
+    added_interest = query.get('interest')  # Get the interest to be added from query
+    # If interest is empty or None, raise error
+    if added_interest is None or added_interest == '':
+        return JsonResponse({'status': 'Name of the interest can\'t be empty.'}, status=400)
+
+    try:  # If there interest has been added before, raise error.
+        select = models.UserInterest.objects.get(user_id=current_user.id, interest=added_interest)
+        return JsonResponse({'status': 'This interest has already been added'}, status=407)
+
+    except models.UserInterest.DoesNotExist:  # Else add the interest to user.
+        interest_list = models.UserInterest(user_id=current_user.id, interest=added_interest)
+        interest_list.save()
+    return JsonResponse({'status': 'Interest has been added to profile successfully!'}, status=200)
 
 @csrf_exempt
 def add_paper_to_list(request):
