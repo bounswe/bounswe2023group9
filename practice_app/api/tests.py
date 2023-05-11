@@ -4,6 +4,7 @@ import requests
 import json
 from . import api_keys
 from django.contrib.auth.models import User
+from . import models
 # Create your tests here.
 
 class DOAJ_API_Tester(TestCase):
@@ -393,3 +394,78 @@ class log_out_test_cases(TestCase):
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log_out/").status_code, 200)
+
+class SavePaperListTest(TestCase):
+
+    def setUp(self):
+
+        #Setting up a test user object and a test paper list object
+
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser', password='testpass'
+        )
+        self.paper_list = models.PaperList.objects.create(
+            id = 1,
+            list_title='Test Paper List',
+            owner = self.user
+        )
+
+    def test_save_paper_list_authenticated(self):
+        # Testing for the successful case with a valid paper list id and valid credentials
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'testpass',
+        }
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id}, **headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.paper_list.refresh_from_db()
+        self.assertIn(self.user, self.paper_list.saver.all())
+        self.assertEqual(
+            response.json()['status'], 
+            'Paper list is saved successfully!'
+        )
+
+    def test_save_paper_list_unauthenticated(self):
+        # Testing for the case where the user credentials are not filled
+        url = '/api/save-paper-list/'
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id})
+
+        self.assertEqual(response.status_code, 407)
+        self.assertEqual(
+            response.json()['status'],
+            'Empty username or password!'
+        )
+
+    def test_save_paper_list_invalid_credentials(self):
+        # Testing for the case where the user credentials are not correct
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'incorrectpassword',
+        }
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id}, **headers)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.json()['status'],
+            'Incorrect username or password!'
+        )
+
+    def test_save_paper_list_not_found(self):
+        # Testing for the case where the provided paper list id is not valid
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'testpass',
+        }
+        response = self.client.post(url, {'paper_list_id': 99}, **headers)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
+        

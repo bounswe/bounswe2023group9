@@ -421,3 +421,41 @@ def user_registration(request):
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
 
+
+@csrf_exempt
+def save_paper_list(request):
+
+    user = request.user
+
+    if user.is_anonymous:
+        # If user us anonymous and credentials are not provided in headers return an error
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'Empty username or password!'}, status=407)
+        # If there are credential information in headers authenticate the user
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            # If the authentication is failed return an error
+            return JsonResponse({'status' : 'Incorrect username or password!'},status=401)
+
+    # Get the paper list id with the POST method    
+    post_id = request.POST['paper_list_id']
+
+    #Check if the provided id is valid
+    if not models.PaperList.objects.filter(id = post_id).exists():
+        return JsonResponse({'status': 'Paper list is not found!'}, status=404)
+    else:
+        # Get the paper list object and add the current logged in user to the savers list of the paper list
+        paper_list = models.PaperList.objects.get(pk = post_id)
+        username = request.headers['username']
+        password = request.headers['password']
+        
+        paper_list.saver.add(user)
+
+        # Save the changes
+        paper_list.save()
+
+        # Return a success response
+        return JsonResponse({'status': 'Paper list is saved successfully!'}, status=200)
+
