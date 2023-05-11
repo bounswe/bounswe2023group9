@@ -1,40 +1,102 @@
 {% extends "base.html" %}
 {% block start %}
-
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
 <div class="container mt-5">
-
-  <a href="/search_user/">
-    Search User
-  </a>
-  |
-  <a href="/profile_page/">
-    Profile
-  </a>
-  |
-  <a href="/my_lists/">
-    My Lists
-  </a>
-  |
-  <a href="/following_lists/">
-    Following Lists
-  </a>
-  |
-  <a href="/follow_requests/">
-    Follow Requests
-  </a>
+  <ul class="nav justify-content-center">
+    <li class="nav-item">
+      <a class="nav-link" href="/profile_page/">Profile</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/search_paper/">Search Paper</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/search_user/">Search User</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/my_lists/"> My Lists</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/following_lists/">Following Lists</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/follow_requests/">Follow Requests</a>
+    </li>
+  </ul>
 
   <hr>
-
-  <h2>Search Paper</h2>
+  
+  <h2 class="h2 text-center">Search Paper</h2>
   <div class="mt-5">
       <div class="mx-auto col-6">
-          <form>
+          <form class="col-20 mx-auto card p-3 shadow-lg"
+          method="POST"
+          id = "search"
+          enctype="multipart/form-data"
+          action = "#search_results">
+          {% csrf_token %}
+            <div class="mb-3">
+              <label for="database" class="form-label">Select a Database</label>
+
+              <select 
+              class = "form-select" form-id="search" name="database">
+                <option value="semantic_scholar">Semantic Scholar</option>
+                <option value="zenodo">Zenodo</option>
+                <option value="eric_papers">Eric Papers</option>
+                <option value="core">Core</option>
+                <option value="google_scholar">Google Scholar</option>
+                <option value="doaj">Doaj</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="rows" class= "form-label">Select number of results</label>
+              <input class="form-control" value = "5" name="rows" type = "number">
+            </div>
             <div class="mb-3">
               <label for="search_paper" class="form-label">Title or Query</label>
-              <input name="search_paper" value="" type="text">
+              <input
+              class="form-control"
+              required
+              name="search_paper" 
+              value="" 
+              type="text">
             </div>
-            <button type="search" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary" name="search">Search</button>
+            <p>{{ warning }}</p>
           </form>
+      </div>
+    
+
+    <div id = "search_results"  class="mx-auto  card p-3 shadow-lg">
+        <h1>Search Results</h1>
+
+    <table class="table">
+        <tr>
+            <th class ="col-1">Index</th>
+            <th class ="col-3">Paper Title</th>
+            <th class ="col-5">Abstract</th>
+            <th class ="col-3">Authors</th>
+            <th class ="col-1">Date</th>
+            <th class ="col-3">Add to List</th>
+            <th class ="col-1">Comment</th>
+        </tr>
+        {% for paper in papers %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td><a href={{paper.url}}>{{paper.title}}</a></td>
+            <td>{{paper.abstract}}</td>
+            <td>{% for author in paper.authors %}
+              {{author.name}},
+              {% endfor %}
+            </td>
+            <td>{{paper.date}}</td>
+            <td><button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button></td>
+            <td><button type="submit" class="btn" name="comment"><i class="material-icons">comment</i></button></td>
+        </tr>
+        {% endfor %}
+    </table>
       </div>
   </div>
 </div>

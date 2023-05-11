@@ -9,7 +9,32 @@ def home(request):
 
 
 def search_paper(request):
-    context = {'page': 'Search Paper'}
+
+    papers = {}
+    if request.method == "POST":  # if the search button clicked
+        database = request.POST.get("database")
+        query = request.POST.get("search_paper")
+        rows = request.POST.get("rows")
+        search_request = HttpRequest()
+        search_request.method = 'POST'
+        search_request.user = request.user
+        search_request.META = request.META
+        search_request.session = request.session
+        search_request.GET.update({"title": query, "rows": rows})
+        if database == "semantic_scholar":
+            response = semantic_scholar(search_request)
+        elif database == "eric_papers":
+            response = eric_papers(search_request)
+        elif database == "zenodo":
+            response = zenodo(search_request)
+        elif database == "doaj":
+            response = doaj_get(search_request)
+        elif database == "google_scholar":
+            response = google_scholar(search_request)
+        elif database == "core":
+            response = core_get(search_request)
+        papers = json.loads(response.content.decode()).get('results')
+    context = {'page': 'Search Paper', 'warning': "","papers": papers}
     return render(request, "pages/search_paper.html", context)
 
 
