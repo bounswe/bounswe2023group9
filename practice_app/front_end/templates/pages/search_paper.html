@@ -26,7 +26,6 @@
   </ul>
 
   <hr>
-  
   <h2 class="h2 text-center">Search Paper</h2>
   <div class="mt-5">
       <div class="mx-auto col-6">
@@ -36,6 +35,7 @@
           enctype="multipart/form-data"
           action = "#search_results">
           {% csrf_token %}
+          <input type='hidden' value="search" name='id'>
             <div class="mb-3">
               <label for="database" class="form-label">Select a Database</label>
 
@@ -75,12 +75,12 @@
     <table class="table">
         <tr>
             <th class ="col-1">Index</th>
-            <th class ="col-3">Paper Title</th>
-            <th class ="col-5">Abstract</th>
-            <th class ="col-3">Authors</th>
-            <th class ="col-1">Date</th>
-            <th class ="col-3">Add to List</th>
-            <th class ="col-1">Comment</th>
+            <th class ="col-2">Paper Title</th>
+            <th class ="col-3">Abstract</th>
+            <th class ="col-2">Authors</th>
+            <th class ="col-2">Date</th>
+            <th class ="col-2">Add to List</th>
+            <th class ="col-2">Comment</th>
         </tr>
         {% for paper in papers %}
         <tr>
@@ -92,9 +92,43 @@
               {% endfor %}
             </td>
             <td>{{paper.date}}</td>
-            <td><button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button></td>
-            <td><button type="submit" class="btn" name="comment"><i class="material-icons">comment</i></button></td>
+            <td>
+              <form
+              method="POST"
+              id = "add_list"
+              enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type='hidden' value="add_list" name='id'>
+              <input type='hidden' value={{paper.id}} name='paper_id'>
+              <input type='hidden' value={{papers}} name='papers'>
+              <select class = "form-select" form-id="add_list" name="list_id">
+                {% for list in lists %}
+                <option value={{list.id}}>{{list.name}}</option>
+                {% endfor %}
+              </select>
+              </form>
+              <button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button>
+            </td>
+            
+            <td>
+              <form method="POST"
+              id = "comment"
+              enctype="multipart/form-data">
+              {% csrf_token %}
+                <input type='hidden' value="comment" name='id'>
+                <input type='hidden' value={{paper.id}} name='paper_id'>
+                <input type='hidden' value= {{paper}} name='papers'>
+                <input
+                class="form-control"
+                required
+                name="comment" 
+                value="" 
+                type="text">
+            </div>
+                <button type="submit" class="btn" name="comment"><i class="material-icons">comment</i></button>
+              </form></td>
         </tr>
+        
         {% endfor %}
     </table>
       </div>

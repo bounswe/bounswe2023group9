@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpRequest
-
+from api.models import *
 from api.views import *
 
 
@@ -9,32 +9,53 @@ def home(request):
 
 
 def search_paper(request):
-
-    papers = {}
+    context = {'page': 'Search Paper', 'warning': "","papers": {} ,"lists":{}}
     if request.method == "POST":  # if the search button clicked
-        database = request.POST.get("database")
-        query = request.POST.get("search_paper")
-        rows = request.POST.get("rows")
-        search_request = HttpRequest()
-        search_request.method = 'POST'
-        search_request.user = request.user
-        search_request.META = request.META
-        search_request.session = request.session
-        search_request.GET.update({"title": query, "rows": rows})
-        if database == "semantic_scholar":
-            response = semantic_scholar(search_request)
-        elif database == "eric_papers":
-            response = eric_papers(search_request)
-        elif database == "zenodo":
-            response = zenodo(search_request)
-        elif database == "doaj":
-            response = doaj_get(search_request)
-        elif database == "google_scholar":
-            response = google_scholar(search_request)
-        elif database == "core":
-            response = core_get(search_request)
-        papers = json.loads(response.content.decode()).get('results')
-    context = {'page': 'Search Paper', 'warning': "","papers": papers}
+        if request.POST.get('id') == "search":
+            database = request.POST.get("database")
+            query = request.POST.get("search_paper")
+            rows = request.POST.get("rows")
+            search_request = HttpRequest()
+            search_request.method = 'POST'
+            search_request.user = request.user
+            search_request.META = request.META
+            search_request.session = request.session
+            search_request.GET.update({"title": query, "rows": rows})
+            if database == "semantic_scholar":
+                response = semantic_scholar(search_request)
+            elif database == "eric_papers":
+                response = eric_papers(search_request)
+            elif database == "zenodo":
+                response = zenodo(search_request)
+            elif database == "doaj":
+                response = doaj_api(search_request)
+            elif database == "google_scholar":
+                response = google_scholar(search_request)
+            elif database == "core":
+                response = core_get(search_request)
+            lists = models.PaperList.objects.filter(owner = request.user)
+            papers = json.loads(response.content.decode()).get('results')
+
+        elif request.POST.get('id') == "add_list":
+            list_id = request.POST.get("list_id")
+            paper_id = request.POST.get("paper_id")
+            papers = request.POST.get("papers")
+            add_paper_request = HttpRequest()
+            add_paper_request.method = 'POST'
+            add_paper_request.user = request.user
+            add_paper_request.META = request.META
+            add_paper_request.session = request.session
+            add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
+            lists = models.PaperList.objects.filter(owner = request.user)
+            add_paper_to_list(add_paper_request)
+
+        elif request.POST.get("id") == "comment":
+            paper_id = request.POST.get("paper_id")
+            papers = request.POST.get("papers")
+            print(papers)
+            lists = models.PaperList.objects.filter(owner = request.user)
+            
+        context = {'page': 'Search Paper', 'warning': "","papers": papers ,"lists":lists}
     return render(request, "pages/search_paper.html", context)
 
 
