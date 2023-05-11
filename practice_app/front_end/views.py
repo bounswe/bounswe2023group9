@@ -15,7 +15,7 @@ def search_paper(request):
 
 def search_user(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     context = {'page': 'Search User'}
     return render(request, "pages/search_user.html", context)
 
@@ -81,14 +81,14 @@ def sign_in(request):
 
 def profile_page(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     context = {'page': 'Profile Page'}
     return render(request, "pages/profile_page.html", context)
 
 
 def my_lists(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     papers = [
         {'title': '<PAPER TITLE1>', 'abstract': "<ABSTRACT1>", 'year': 2000},
         {'title': '<PAPER TITLE2>', 'abstract': "<ABSTRACT2>", 'year': 2001},
@@ -101,7 +101,7 @@ def my_lists(request):
 
 def following_lists(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     lists = [
         'list1',
         'list2',
@@ -114,7 +114,7 @@ def following_lists(request):
 
 def list_content(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     context = {'page': 'List Content'}
     return render(request, "pages/list_content.html", context)
 
@@ -125,7 +125,7 @@ def paper_content(request):
 
 def followers(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     followers = get_followers(request)
     followers = json.loads(followers.content)['followers']
     context = {'page': 'Followers', 'followers': followers}
@@ -135,7 +135,7 @@ def followers(request):
 
 def following(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     following = get_following(request)
     following = json.loads(following.content)['following']
     context = {'page': 'Following', 'followings': following}
@@ -147,7 +147,7 @@ def following(request):
 
 def follow_requests(request):
     if request.user.is_anonymous:
-        redirect("/sign_in/")
+        return redirect("/sign_in/")
     reqs = [
         {'sender': 'NAME1'},
         {'sender': 'NAME2'},
