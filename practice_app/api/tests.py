@@ -387,17 +387,17 @@ class log_in_test_cases(TestCase):
         Headers = {'username': "0000-0002-0753-0000", "password": "strong"}
         self.assertEquals(self.c.post("/api/log-in/", headers = Headers).status_code, 404)
         Headers = {'username': "0000-0002-0753-1111", "password": "strong"}
-        self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
+        self.assertEquals(self.c.post("/api/log-in/", headers = Headers).status_code, 404)
 
 class log_out_test_cases(TestCase):
     def setUp(self):
         self.c = Client()
 
     def tearDown(self):
-        print('Tests for GET requests using log-out completed!')
+        print('Tests for GET requests using log_out completed!')
 
     def test_logout(self):
-        self.assertEquals(self.c.get("/api/log_out/").status_code, 200)
+        self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
 
 class SavePaperListTest(TestCase):
 
@@ -414,6 +414,9 @@ class SavePaperListTest(TestCase):
             list_title='Test Paper List',
             owner = self.user
         )
+
+    def tearDown(self):
+        print('Tests for POST requests using save_paper_list completed!')
 
     def test_save_paper_list_authenticated(self):
         # Testing for the successful case with a valid paper list id and valid credentials
@@ -493,7 +496,6 @@ class SavePaperListTest(TestCase):
             response.json()['status'],
             'Paper list id must be provided!'
         )
-        self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
 
 class FollowUserTestCase(TestCase):
     def setUp(self):

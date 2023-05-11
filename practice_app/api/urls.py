@@ -17,4 +17,5 @@ urlpatterns = [
     path("user-registration/", views.user_registration, name="user_registration"),
     path("follow-user/", views.follow_user, name="follow_user"),
     path('post-papers/',views.post_papers,name='post-papers'),
+    path('save-paper-list/', views.save_paper_list, name = 'save_paper_list'),
 ]
