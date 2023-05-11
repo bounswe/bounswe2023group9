@@ -28,12 +28,13 @@ def search_paper(request):
             elif database == "zenodo":
                 response = zenodo(search_request)
             elif database == "doaj":
-                response = doaj_api(search_request)
+                response = doaj_get(search_request)
             elif database == "google_scholar":
                 response = google_scholar(search_request)
             elif database == "core":
                 response = core_get(search_request)
-            lists = models.PaperList.objects.filter(owner = request.user)
+            if request.user.is_authenticated:
+                lists = models.PaperList.objects.filter(owner = request.user)
             papers = json.loads(response.content.decode()).get('results')
 
         elif request.POST.get('id') == "add_list":
@@ -49,11 +50,6 @@ def search_paper(request):
             lists = models.PaperList.objects.filter(owner = request.user)
             add_paper_to_list(add_paper_request)
 
-        elif request.POST.get("id") == "comment":
-            paper_id = request.POST.get("paper_id")
-            papers = request.POST.get("papers")
-            print(papers)
-            lists = models.PaperList.objects.filter(owner = request.user)
             
         context = {'page': 'Search Paper', 'warning': "","papers": papers ,"lists":lists}
     return render(request, "pages/search_paper.html", context)
