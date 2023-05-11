@@ -432,11 +432,11 @@ def follow_user(request):
             return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
         username = request.headers['username']
         password = request.headers['password']
-        user = authenticate(request, username=username, password=password)
-        if user == None:
+        follower_user = authenticate(request, username=username, password=password)
+        if follower_user == None:
             return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
     else:
-        user = request.user
+        follower_user = request.user
         
     query = request.POST
     followed_username = query.get('followed_username')
@@ -445,12 +445,12 @@ def follow_user(request):
     
     if User.objects.filter(username=followed_username).exists():
         followed_user = User.objects.get(username=followed_username)
-        if models.Follower.objects.filter(follower=user, followed=followed_user).exists():
+        if models.Follower.objects.filter(user=follower_user, followed=followed_user).exists() and models.Follower.objects.filter(user=followed_user, follower=follower_user).exists():
             return JsonResponse({"status":"You are already following this user."}, status=409)
-        elif models.FollowRequest.objects.filter(sender=user, receiver=followed_user).exists():
+        elif models.FollowRequest.objects.filter(sender=follower_user, receiver=followed_user).exists():
             return JsonResponse({"status":"You have already sent a following request this user."}, status=409)
         else:
-            models.FollowRequest.objects.create(sender=user, receiver=followed_user)
+            models.FollowRequest.objects.create(sender=follower_user, receiver=followed_user, status='pending')
             return JsonResponse({"status":"User followed."}, status = 200)
     else:
         return JsonResponse({"status":"Username of followed is invalid."}, status = 404)
