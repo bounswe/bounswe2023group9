@@ -32,6 +32,24 @@
       <a href="/profile_page/">
         Profile
       </a>
+        {% if logged_in == 0 %}
+        |
+        <a href="/sign_in/">
+        Log In
+        </a>
+        {% endif %}
+        {% if logged_in == 0 %}
+        |
+        <a href="/sign_up/">
+        Sign Up
+        </a>
+        {% endif %}
+        {% if logged_in == 1 %}
+        |
+        <a href="/log_out/">
+        Log out
+        </a>
+        {% endif %}
     {% block header %}
     {% endblock %}
 

@@ -9,14 +9,17 @@ def home(request):
 
 
 def search_paper(request):
-    context = {'page': 'Search Paper'}
+    logged_in = 1
+    if request.user.is_anonymous:
+        logged_in = 0
+    context = {'page': 'Search Paper', 'logged_in' : logged_in}
     return render(request, "pages/search_paper.html", context)
 
 
 def search_user(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
-    context = {'page': 'Search User'}
+    context = {'page': 'Search User', 'logged_in' : 1}
     return render(request, "pages/search_user.html", context)
 
 def sign_up(request):
@@ -82,7 +85,7 @@ def sign_in(request):
 def profile_page(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
-    context = {'page': 'Profile Page'}
+    context = {'page': 'Profile Page', 'logged_in' : 1}
     return render(request, "pages/profile_page.html", context)
 
 
@@ -95,7 +98,7 @@ def my_lists(request):
         {'title': '<PAPER TITLE3>', 'abstract': "<ABSTRACT3>", 'year': 2002},
         {'title': '<PAPER TITLE4>', 'abstract': "<ABSTRACT4>", 'year': 2003},
     ]
-    context = {'page': 'My Lists', "papers": papers}
+    context = {'page': 'My Lists', "papers": papers, 'logged_in' : 1}
     return render(request, "pages/my_lists.html", context)
 
 
@@ -108,19 +111,22 @@ def following_lists(request):
         'list3',
         'list4',
     ]
-    context = {'page': 'Following Lists', 'lists': lists}
+    context = {'page': 'Following Lists', 'lists': lists, 'logged_in' : 1}
     return render(request, "pages/following_lists.html", context)
 
 
 def list_content(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
-    context = {'page': 'List Content'}
+    context = {'page': 'List Content', 'logged_in' : 1}
     return render(request, "pages/list_content.html", context)
 
 
 def paper_content(request):
-    context = {'page': 'Paper content'}
+    logged_in = 1
+    if request.user.is_anonymous:
+        logged_in = 0
+    context = {'page': 'Paper content','logged_in':logged_in}
     return render(request, "pages/paper_content.html", context)
 
 def followers(request):
@@ -128,7 +134,7 @@ def followers(request):
         return redirect("/sign_in/")
     followers = get_followers(request)
     followers = json.loads(followers.content)['followers']
-    context = {'page': 'Followers', 'followers': followers}
+    context = {'page': 'Followers', 'followers': followers , 'logged_in' : 1}
     return render(request, "pages/followers.html", context)
 
 
@@ -138,7 +144,7 @@ def following(request):
         return redirect("/sign_in/")
     following = get_following(request)
     following = json.loads(following.content)['following']
-    context = {'page': 'Following', 'followings': following}
+    context = {'page': 'Following', 'followings': following, 'logged_in' : 1}
     return render(request, "pages/following.html", context)
 
 
@@ -154,5 +160,5 @@ def follow_requests(request):
         {'sender': 'NAME3'},
         {'sender': 'NAME4'}
     ]
-    context = {'page': 'Follow Requests', 'follow_requests': reqs}
+    context = {'page': 'Follow Requests', 'follow_requests': reqs, 'logged_in' : 1}
     return render(request, "pages/follow_requests.html", context)
