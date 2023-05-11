@@ -3,6 +3,7 @@ from unittest import skip
 import requests
 import json
 from . import api_keys
+from . import models
 from django.contrib.auth.models import User
 # Create your tests here.
 
@@ -397,8 +398,13 @@ class log_out_test_cases(TestCase):
 class FollowUserTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        User.objects.create_user(username="0009-0005-5924-1831", password="strongpassword", first_name = "follower", last_name = "follower" )
-        User.objects.create_user(username="0009-0005-5924-1832", password="strongpassword", first_name = "followed", last_name = "followed" )
+        user_1 = User.objects.create_user(username="0009-0005-5924-1831", password="strongpassword", first_name = "follower", last_name = "follower")
+        user_2 = User.objects.create_user(username="0009-0005-5924-1832", password="strongpassword", first_name = "followed_pending", last_name = "followed_pending")
+        user_3 = User.objects.create_user(username="0009-0005-5924-1833", password="strongpassword", first_name = "followed_approved", last_name = "followed_approved")
+        user_1_follower = models.Follower.objects.create(user=user_1)
+        user_1_follower.followed.add(user_3)
+        user_3_follower = models.Follower.objects.create(user=user_3)
+        user_3_follower.follower.add(user_1)
 
     def tearDown(self):
         print('Tests for POST requests using follow_user completed!')
@@ -450,3 +456,11 @@ class FollowUserTestCase(TestCase):
         response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json()['status'], "You have already sent a following request this user.")
+
+    def test_already_follower_cases(self):
+        # follower_user is already following followed_user
+        Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
+        Body = {'followed_username':'0009-0005-5924-1833'}
+        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['status'], "You are already following this user.")
