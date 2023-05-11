@@ -63,35 +63,45 @@ def doaj_get(request):
     else:
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
-
+# GET api/google-scholar/
+# Utilizes the serpAPI to get results from google scholar
+# params -> title , rows
+# response type: 200 -> {'resutls' : [{'pos' : <position> , 'source' : google_scholar, 'authors' : [ {'name' : <author-name>},{} ... ] ,
+#  'date': <pub-year> , 'title' : <paper_title> , 'url' : <link-to-source> ,'abstract' : <abstract>   } ,{} ... ]}
 def google_scholar(request):
+    # getting the parameters
     number = request.GET.get("rows")
     search = request.GET.get("title")
+    # if search title is empty return 404
     if search == None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
+    # if rows parameter is empty / invalid use the default value = 3
     if number == None or number == "" or not number.isnumeric():
         number = 3
     else:
         number = int(number)
 
+    # send the request to the third party api
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
-    if request.status_code == 200:
+
+    if request.status_code == 200: # successful request
+        # get the results
         request = request.json()
         papers = request['organic_results']
         response = {}
         results = []
-        for paper in papers:
+        for paper in papers: # iterate over the results to get necessary fields
             pub_info = paper['publication_info']
             paper_info = {}
-            paper_info['source'] = 'google_scholar'
+            paper_info['source'] = 'google_scholar' # source is set
 
-            if 'authors' in pub_info.keys():
+            if 'authors' in pub_info.keys(): # only take the names of the authors
                 paper_info['authors'] = []
                 for author in pub_info['authors']:
                     a = {'name': author['name']}
                     paper_info['authors'].append(a.copy())
-            else:
+            else: # if authors field is not present in the result, get them from the summary field
                 temp = pub_info['summary'].split('-')[0].strip()
                 temp = temp.split(',')
                 authors = []
@@ -102,27 +112,29 @@ def google_scholar(request):
                     authors.append(author.copy())
                 paper_info['authors'] = authors
 
-            paper_info['id'] = paper['result_id']
+            paper_info['id'] = paper['result_id'] # third party id of the paper
+            # this api doesn't return year / date as a field, so we get it from summary using regex
             summary = pub_info['summary']
             summary = '-' + summary + '-'
             year = re.findall('[\W|\s](\d{4})[\W|\s]', summary)
-            if len(year) == 0:
+            if len(year) == 0: # if not found set 0
                 year = None
-                paper_info['date'] = 'Not found'
+                paper_info['date'] = 0000
             else:
                 year = int(year[0])
                 paper_info['date'] = year
 
-            paper_info['abstract'] = paper['snippet']
-            paper_info['title'] = paper['title']
-            paper_info['url'] = paper['link']
-            paper_info['pos'] = paper['position']
+            paper_info['abstract'] = paper['snippet'] # no abstract is returned from the third party so we used snippet
+            paper_info['title'] = paper['title'] # title is set
+            if 'link' in paper.keys():
+                paper_info['url'] = paper['link'] # url is set
+            paper_info['pos'] = paper['position'] # position is set
             results.append(paper_info.copy())
         response['results'] = results
-        return JsonResponse(response)
-    elif request.status_code == 404:
+        return JsonResponse(response) # results are returned
+    elif request.status_code == 404: # third party returned 404
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
-    else:
+    else: # third party returned something unexpected
         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 
@@ -209,8 +221,7 @@ def eric_papers(request):
 
     baseURL = "https://api.ies.ed.gov/eric/"
     response_fields = "&fields=id AND title AND author AND publicationdateyear AND url AND description AND source"
-    endpoint = baseURL + "?search=title:" + \
-        search_title + "&rows=" + rows + response_fields
+    endpoint = baseURL + "?search=title:" + search_title + "&rows=" + str(rows) + response_fields
 
     response = requests.get(endpoint)
 
@@ -220,8 +231,14 @@ def eric_papers(request):
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
-            paper['date'] = paper.pop('publicationdateyear')
-            paper['abstract'] = paper.pop('description')
+            if 'publicationdateyear' in paper.keys():
+                paper['date'] = paper.pop('publicationdateyear')
+            else:
+                paper['date'] = 0
+            if 'description' in paper.keys():
+                paper['abstract'] = paper.pop('description')
+            else:
+                paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
 
@@ -433,6 +450,108 @@ def user_registration(request):
         User.objects.create_user(
             username=user_id, password=password, first_name=name, last_name=surname)
         return JsonResponse({"status": "User created"}, status=200)
-
     else:
         return JsonResponse({"status": "Username is already taken."}, status=409)
+# POST api/follow/
+# username and password of follower should be in headers
+# username of followed should be in data
+
+@csrf_exempt
+def follow_user(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        follower_user = authenticate(request, username=username, password=password)
+        if follower_user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        follower_user = request.user
+        
+    query = request.POST
+    followed_username = query.get('followed_username')
+    if followed_username == None or followed_username == '':
+        return JsonResponse({"status":"Username of followed should be provided."}, status = 400)
+    
+    if User.objects.filter(username=followed_username).exists():
+        followed_user = User.objects.get(username=followed_username)
+        if models.Follower.objects.filter(user=follower_user, followed=followed_user).exists() and models.Follower.objects.filter(user=followed_user, follower=follower_user).exists():
+            return JsonResponse({"status":"You are already following this user."}, status=409)
+        elif models.FollowRequest.objects.filter(sender=follower_user, receiver=followed_user).exists():
+            return JsonResponse({"status":"You have already sent a following request this user."}, status=409)
+        else:
+            models.FollowRequest.objects.create(sender=follower_user, receiver=followed_user, status='pending')
+            return JsonResponse({"status":"User followed."}, status = 200)
+    else:
+        return JsonResponse({"status":"Username of followed is invalid."}, status = 404)
+
+@csrf_exempt
+def post_papers(request):
+    # Authentication
+    if request.user.is_anonymous: # user is not logged in
+        if 'username' not in request.headers or 'password' not in request.headers: # credentials are incomplete
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None: # credentials are incorrect
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        user = request.user
+
+    query = request.POST
+    if 'db' not in query.keys() or 'title' not in query.keys(): # db parameter or title parameter is not set
+        return JsonResponse({'status' : 'db and title parameters must be added to the request body.'},status=400)
+    db = query.get('db')
+    title = query.get('title')
+    if 'rows' not in query.keys(): # default rows value if it is not set
+        rows = 3
+    else:
+        rows = query.get('rows')
+
+    api_request = HttpRequest() # creating a GET request to pass to the API methods
+    api_request.method = 'GET'
+    api_request.user = user
+    api_request.META = request.META
+    api_request.GET.update({"title": title,'rows':rows})
+
+    if db == None or db == "": # db parameter is empty
+        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    # calling the API method for the given db parameter
+    if db == 'semantic-scholar':
+        response = semantic_scholar(api_request)
+    elif db == 'doaj':
+        response = doaj_get(api_request)
+    elif db == 'core':
+        response = core_get(api_request)
+    elif db == 'zenodo':
+        response = zenodo(api_request)
+    elif db == 'eric':
+        response = eric_papers(api_request)
+    elif db == 'google-scholar':
+        response = google_scholar(api_request)
+    else: # db parameter doesn't match with any of the options available
+        return JsonResponse({'status': 'Invalid database name. Please select one of the following : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    if response.status_code != 200: # the call is not successful / something unexpected happened
+        return response
+    results = json.loads(response.content)['results'] # loading the json response
+    for result in results: # iterating over the response to save the results to the database
+        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists(): # if the paper exists in the database, pass
+            continue
+        paper = models.Paper() # create Paper object
+        # Fill the fields
+        if 'url' in result.keys():
+            paper.url = result['url']
+        paper.title = result['title']
+        if 'authors' in result.keys():
+            paper.set_authors(result['authors'])
+        if 'date' in result.keys():
+            paper.year = result['date']
+        paper.third_party_id = result['id']
+        paper.source = result['source']
+        if 'abstract' in result.keys():
+            paper.abstract = result['abstract']
+        paper.like_count = 0
+        paper.save() # save to the DB
+    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200) # success response
