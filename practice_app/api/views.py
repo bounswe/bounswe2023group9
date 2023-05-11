@@ -635,6 +635,8 @@ def get_followers(request):
     user = request.user
     follow_object = models.Follower.objects.filter(user=user)
     response = []
+    if len(follow_object) == 0:
+        return JsonResponse({'followers': response}, status=200)
     for _user in  follow_object[0].follower.all():
         res = {}
         res['user_id'] = _user.username
@@ -649,6 +651,8 @@ def get_following(request):
     user = request.user
     follow_object = models.Follower.objects.filter(user=user)
     response = []
+    if len(follow_object) == 0:
+        return JsonResponse({'following': response}, status=200)
     for _user in follow_object[0].followed.all():
         res = {}
         res['user_id'] = _user.username
