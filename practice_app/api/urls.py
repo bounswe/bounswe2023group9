@@ -1,4 +1,3 @@
-
 from django.urls import path
 from . import views
 
@@ -10,7 +9,7 @@ urlpatterns = [
     path("google-scholar/", views.google_scholar, name="google-scholar"),
     path("core/", views.core_get, name="core"),
     path('eric/', views.eric_papers, name='eric_papers'),
-    path("zenodo/", views.zenodo, name="zenodo"),
+    path("zenodo/",views.zenodo, name="zenodo"),
     path('semantic-scholar/', views.semantic_scholar, name='semantic-scholar'),
     path("orcid-api/", views.orcid_api, name="orcid_api"),
     path("log-in/", views.log_in, name="log_in"),

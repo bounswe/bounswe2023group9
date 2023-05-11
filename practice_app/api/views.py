@@ -11,10 +11,9 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.decorators.csrf import csrf_exempt
 
-
 def doaj_get(request):
     DOAJ_MAX_ROW = 10
-
+    
     # Parse the parameters (title and rows)
     params = request.GET
     query = params.get('title')
@@ -26,13 +25,12 @@ def doaj_get(request):
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
     if rows is None or rows == "" or not rows.isnumeric():
         rows = 3
-
+    
     # Check whether the row exceeds the limit
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
 
     # send GET request
-    api_url = "https://doaj.org/api/search/articles/" + \
-        query + "?page=1&" + "pageSize=" + str(rows)
+    api_url = "https://doaj.org/api/search/articles/" + query + "?page=1&" + "pageSize=" + str(rows)
     res = requests.get(api_url)
     response = res.json()
 
@@ -202,22 +200,22 @@ def core_get(request):  # this method parses the parameters of given get request
 
 
 def eric_papers(request):
-
-    # params --> title, rows
+    
+    #params --> title, rows
     default_rows = '3'
 
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
 
     if search_title == None or search_title.strip() == '':
-        return JsonResponse({'message': 'A paper title must be given.'}, status=404)
-
+        return JsonResponse({'message':'A paper title must be given.'}, status=404)
+   
     try:
         int(rows)
     except ValueError:
-        return JsonResponse({'message': 'Row count must be valid.'}, status=404)
+        return JsonResponse({'message':'Row count must be valid.'}, status=404)
 
-    # response --> source, authors, id, date, abstract, title, url, position
+    #response --> source, authors, id, date, abstract, title, url, position
 
     baseURL = "https://api.ies.ed.gov/eric/"
     response_fields = "&fields=id AND title AND author AND publicationdateyear AND url AND description AND source"
@@ -227,7 +225,7 @@ def eric_papers(request):
 
     if response.status_code == 200:
         papers = response.json()['response']['docs']
-
+        
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
@@ -241,14 +239,12 @@ def eric_papers(request):
                 paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
-
-        return JsonResponse({'results': papers})
+            
+        return JsonResponse({'results':papers})
     elif response.status_code == 404:
-        return JsonResponse({'message': 'Resource not found'}, status=404)
+        return JsonResponse({'message':'Resource not found'}, status=404)
     else:
-        return JsonResponse({'message': 'Internal server error'}, status=503)
-
-
+        return JsonResponse({'message':'Internal server error'}, status=503)
 def zenodo(request):
     ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
     search_title = request.GET.get("title", None)
@@ -257,7 +253,7 @@ def zenodo(request):
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
 
     request = requests.get('https://zenodo.org/api/records',
-                           params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
+                     params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
 
     if request.status_code == 200:
         papers = request.json()["hits"]["hits"]
@@ -270,8 +266,7 @@ def zenodo(request):
             paper_info['url'] = paper['links']['doi']
             paper_info['authors'] = []
             paper_info['abstract'] = paper['metadata']['description']
-            paper_info['date'] = int(
-                paper['metadata']['publication_date'].split("-")[0])
+            paper_info['date'] = int(paper['metadata']['publication_date'].split("-")[0])
             paper_info['position'] = papers.index(paper)
             paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
@@ -285,13 +280,12 @@ def zenodo(request):
     else:
         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
-
 def semantic_scholar(request):
     query = request.GET
     search = query.get("title")
     limit = query.get("rows")
     default_limit = 3
-
+    
     if search is None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     if limit is None or limit == "" or not limit.isnumeric():
@@ -299,7 +293,8 @@ def semantic_scholar(request):
     else:
         limit = int(limit)
 
-    fields = ['url', 'abstract', 'authors', 'title', 'year']
+
+    fields = ['url','abstract','authors','title','year']
     endpoint = f'https://api.semanticscholar.org/graph/v1/paper/search?query={search}&fields={",".join(fields)}&offset=0&limit={limit}'
 
     response = requests.get(endpoint)
@@ -308,12 +303,12 @@ def semantic_scholar(request):
         papers = response['data']
         response = {}
         results = []
-        for position, paper in enumerate(papers):
+        for position,paper in enumerate(papers):
             paper_info = {}
             paper_info['source'] = 'semantic_scholar'
             paper_info['authors'] = []
             for author in paper['authors']:
-                author_name = {'name': author['name']}
+                author_name = {'name' : author['name']}
                 paper_info['authors'].append(author_name.copy())
             paper_info['id'] = paper['paperId']
             paper_info['abstract'] = paper['abstract']
@@ -327,32 +322,30 @@ def semantic_scholar(request):
 
 # GET api/orcid_api/
 # Utilizes the orcid api to get user credentials
-# params -> user_id
+# params -> user_id 
 # response type: {"user_id": string, "name": string, "surname": string}
-
-
 def orcid_api(request):
-
+    
     # user_id should be a valid ORCID ID
     user_id = request.GET.get('user_id')
 
     Headers = {"Accept": "application/json"}
 
     if user_id == None or user_id == '':
-        return JsonResponse({"status": "ORCID ID should be provided as user_id"}, status=404)
-
-    # third party api call
+        return JsonResponse({"status":"ORCID ID should be provided as user_id"}, status = 404)
+    
+    # third party api call 
     # returns a json file that contains all public information related with given ORCID ID
     api_request = requests.get("https://orcid.org/"+user_id, headers=Headers)
 
     if api_request.status_code != 200:
-        return JsonResponse({"status": "Invalid ORCID ID"}, status=404)
+        return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
     else:
         try:
             api_request = api_request.json()
         except:
-            return JsonResponse({"status": "Invalid ORCID ID"}, status=404)
-
+            return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
+        
         response = {}
         response["user_id"] = user_id
         response["name"] = api_request["person"]["name"]["given-names"]["value"]
@@ -366,41 +359,37 @@ def orcid_api(request):
 # POST api/log_in/
 # implements log in functionality
 # username and password should be provided in Headers
-
-
 @csrf_exempt
 def log_in(request):
     if 'username' not in request.headers or 'password' not in request.headers:
-        return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
-
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
+    
     username = request.headers["username"]
     password = request.headers["password"]
 
     if username == None or username == '':
-        return JsonResponse({"status": "ORCID ID should be provided."}, status=404)
-
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
+    
     if password == None or password == '':
-        return JsonResponse({"status": "Password should be provided."}, status=404)
-
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
+    
     # Check user database to authenticate the user with given credentials. Return a user if valid username and password is given.
     user = authenticate(request, username=username, password=password)
 
     # if the user is authenticated log in by built-in login function
     if user is not None:
         login(request, user)
-        return JsonResponse({"status": "User logged in."}, status=200)
+        return JsonResponse({"status":"User logged in."}, status = 200)
 
     else:
-        return JsonResponse({"status": "Authentication failed"}, status=404)
+        return JsonResponse({"status":"Authentication failed"}, status = 404)
 
 # GET api/log_out/
 # get user to log out by built-in logout function
-
-
 @csrf_exempt
 def log_out(request):
     logout(request)
-    return JsonResponse({"status": "User logged out."}, status=200)
+    return JsonResponse({"status":"User logged out."}, status = 200)
 
 # POST api/user_registration
 # username and password should be in headers
@@ -408,11 +397,10 @@ def log_out(request):
 # name and surname should be provided in data
 # username, name, password must be provided, surname is optional
 
-
 @csrf_exempt
 def user_registration(request):
     if 'username' not in request.headers or 'password' not in request.headers:
-        return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     user_id = request.headers["username"]
     password = request.headers['password']
 
@@ -421,37 +409,37 @@ def user_registration(request):
     orcid_api_request.method = 'GET'
     orcid_api_request.user = request.user
     orcid_api_request.META = request.META
-    orcid_api_request.GET.update({"user_id": user_id})
+    orcid_api_request.GET.update({"user_id":user_id})
     orcid_api_response = orcid_api(orcid_api_request)
 
     if orcid_api_response.status_code == 200:
         name = json.loads(orcid_api_response.content.decode()).get("name")
-        surname = json.loads(
-            orcid_api_response.content.decode()).get("surname")
+        surname = json.loads(orcid_api_response.content.decode()).get("surname")
     else:
-        return JsonResponse({"status": "Valid ORCID ID should be provided."}, status=404)
+        return JsonResponse({"status":"Valid ORCID ID should be provided."}, status = 404)
 
     if user_id == None or user_id == '':
-        return JsonResponse({"status": "ORCID ID should be provided."}, status=404)
-
+        return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
+    
     if password == None or password == '':
-        return JsonResponse({"status": "Password should be provided."}, status=404)
-
+        return JsonResponse({"status":"Password should be provided."}, status = 404)
+    
     if name == None or name == '':
-        return JsonResponse({"status": "Name should be provided."}, status=404)
-
+        return JsonResponse({"status":"Name should be provided."}, status = 404)
+    
     if surname == None:
         surname = " "
-
-    # Check if the user_id is already taken.
-    if len(User.objects.filter(username=user_id)) == 0:
+    
+    # Check if the user_id is already taken. 
+    if len(User.objects.filter(username= user_id)) == 0:
         # Create user on User model by using create_user function.
         # Used create_user() instead of create() since create_user() handles password encryption
-        User.objects.create_user(
-            username=user_id, password=password, first_name=name, last_name=surname)
-        return JsonResponse({"status": "User created"}, status=200)
+        User.objects.create_user(username= user_id, password= password, first_name= name,last_name= surname )
+        return JsonResponse({"status":"User created"}, status = 200)
+    
     else:
-        return JsonResponse({"status": "Username is already taken."}, status=409)
+        return JsonResponse({"status":"Username is already taken."}, status = 409)
+
 # POST api/follow/
 # username and password of follower should be in headers
 # username of followed should be in data
