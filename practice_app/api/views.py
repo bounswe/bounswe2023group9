@@ -630,3 +630,29 @@ def add_paper_to_list(request):
     paper_lists[0].paper.add(papers[0])
     return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
 
+#returns the followers of the user
+def get_followers(request):
+    user = request.user
+    follow_object = models.Follower.objects.filter(user=user)
+    response = []
+    for _user in  follow_object[0].follower.all():
+        res = {}
+        res['user_id'] = _user.username
+        res['name'] = user.first_name
+        res['surname'] = user.last_name
+        response.append(res.copy())
+    return  JsonResponse({'followers' : response} , status=200)
+
+
+#returns the following of the user
+def get_following(request):
+    user = request.user
+    follow_object = models.Follower.objects.filter(user=user)
+    response = []
+    for _user in follow_object[0].followed.all():
+        res = {}
+        res['user_id'] = _user.username
+        res['name'] = user.first_name
+        res['surname'] = user.last_name
+        response.append(res.copy())
+    return JsonResponse({'following': response}, status=200)

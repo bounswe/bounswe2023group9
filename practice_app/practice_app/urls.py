@@ -36,6 +36,8 @@ urlpatterns = [
     path('list_content/', list_content, name='List Content'),
     path('paper_content/', paper_content, name='Paper Content'),
     path('follow_requests/', follow_requests, name='Follow Requests'),
+    path('followers/', followers, name='Follow Requests'),
+    path('following/', following, name='Follow Requests'),
 ]
 
 if settings.DEBUG:

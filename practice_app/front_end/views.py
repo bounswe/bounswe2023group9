@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpRequest
-
+import json
 from api.views import *
 
 
@@ -14,6 +14,8 @@ def search_paper(request):
 
 
 def search_user(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     context = {'page': 'Search User'}
     return render(request, "pages/search_user.html", context)
 
@@ -78,11 +80,15 @@ def sign_in(request):
 
 
 def profile_page(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     context = {'page': 'Profile Page'}
     return render(request, "pages/profile_page.html", context)
 
 
 def my_lists(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     papers = [
         {'title': '<PAPER TITLE1>', 'abstract': "<ABSTRACT1>", 'year': 2000},
         {'title': '<PAPER TITLE2>', 'abstract': "<ABSTRACT2>", 'year': 2001},
@@ -94,6 +100,8 @@ def my_lists(request):
 
 
 def following_lists(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     lists = [
         'list1',
         'list2',
@@ -105,6 +113,8 @@ def following_lists(request):
 
 
 def list_content(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     context = {'page': 'List Content'}
     return render(request, "pages/list_content.html", context)
 
@@ -113,8 +123,31 @@ def paper_content(request):
     context = {'page': 'Paper content'}
     return render(request, "pages/paper_content.html", context)
 
+def followers(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
+    followers = get_followers(request)
+    followers = json.loads(followers.content)['followers']
+    context = {'page': 'Followers', 'followers': followers}
+    return render(request, "pages/followers.html", context)
+
+
+
+def following(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
+    following = get_following(request)
+    following = json.loads(following.content)['following']
+    context = {'page': 'Following', 'followings': following}
+    return render(request, "pages/following.html", context)
+
+
+
+
 
 def follow_requests(request):
+    if request.user.is_anonymous:
+        redirect("/sign_in/")
     reqs = [
         {'sender': 'NAME1'},
         {'sender': 'NAME2'},
