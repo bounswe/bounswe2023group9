@@ -4,8 +4,10 @@ import requests
 import json
 from . import api_keys, models
 from django.contrib.auth.models import User
+from . import models
 # Create your tests here.
 
+# TEST CASE FOR DOAJ API
 class DOAJ_API_Tester(TestCase):
     def setUp(self):
         self.c = Client()
@@ -14,17 +16,16 @@ class DOAJ_API_Tester(TestCase):
         print('GET Tests for DOAJ_API Completed Successfully')
 
     def test_doaj_api(self):
-        doaj_api_response = requests.get('https://doaj.org/api/search/articles/einstein,relativity?page=1&pageSize=3')
+        doaj_api_response = requests.get('https://doaj.org/api/search/articles/einstein,relativity?page=1&pageSize=10')
         self.assertEquals(doaj_api_response.status_code, 200, "DoajApi didn't work as supposed to")
         doaj_api_response = doaj_api_response.json()['results']
         
-        response = self.c.get("/api/doaj-api/?title=einstein,relativity&rows=3")
+        response = self.c.get("/api/doaj-api/?title=einstein,relativity&rows=10")
         self.assertEquals(response.status_code, 200)
         response_dict = response.json()
         self.assertIn('status_code', response_dict.keys())
         self.assertIn('count', response_dict.keys())
-        count = 0
-        for result in response_dict['results']:
+        for index, result in enumerate(response_dict['results']):
             self.assertIn('id', result.keys())
             self.assertIn('source', result.keys())
             self.assertIn('position', result.keys())
@@ -33,13 +34,37 @@ class DOAJ_API_Tester(TestCase):
             self.assertIn('abstract', result.keys())
             self.assertIn('url', result.keys())
             self.assertIn('title',result.keys())
-            self.assertEquals(result['id'], doaj_api_response[count]["id"])
+
+            self.assertEquals(result['id'], doaj_api_response[index]["id"])
             self.assertEquals(result['source'], 'DOAJ')
-            self.assertEquals(result['date'], int(doaj_api_response[count]["created_date"][0:4]))
-            self.assertEquals(result['abstract'], doaj_api_response[count]["bibjson"]["abstract"])
-            self.assertEquals(result['title'], doaj_api_response[count]["bibjson"]["title"])
-            self.assertEquals(result['url'], doaj_api_response[count]["bibjson"]["link"][0]["url"])
-            count += 1
+            self.assertEquals(result['date'], int(doaj_api_response[index]["created_date"][0:4]))
+
+            if "bibjson" in doaj_api_response[index].keys():
+                if "abstract" in doaj_api_response[index]["bibjson"].keys():
+                    self.assertEquals(result['abstract'], doaj_api_response[index]["bibjson"]["abstract"])
+                else:
+                    self.assertEquals(result['abstract'], "NO ABSTRACT")
+                if "title" in doaj_api_response[index]["bibjson"].keys():
+                    self.assertEquals(result['title'], doaj_api_response[index]["bibjson"]["title"])
+                else:
+                    self.assertEquals(result['title'], "NO TITLE")
+                if "link" in doaj_api_response[index]["bibjson"].keys() and len(doaj_api_response[index]["bibjson"]["link"]) > 0 and "url" in doaj_api_response[index]["bibjson"]["link"][0].keys():
+                    self.assertEquals(result['url'], doaj_api_response[index]["bibjson"]["link"][0]["url"])
+                else:
+                    self.assertEquals(result['url'], "NO URL")
+                
+                if "author" in doaj_api_response[index]["bibjson"].keys():
+                    self.assertGreater(len(result['authors']), 0)
+                    for i, author in enumerate(result['authors']):
+                        self.assertEquals(author, doaj_api_response[index]["bibjson"]["author"][i]["name"])
+                else:
+                    self.assertEquals(result['authors'], [])
+            else:
+                self.assertEquals(result['abstract'], "NO ABSTRACT")
+                self.assertEquals(result['title'], "NO TITLE")
+                self.assertEquals(result['url'], "NO URL")
+                self.assertEquals(result['authors'], [])
+
 
 # tests for the GET API which uses CORE API
 class core_api_test_cases(TestCase):
@@ -386,17 +411,115 @@ class log_in_test_cases(TestCase):
         Headers = {'username': "0000-0002-0753-0000", "password": "strong"}
         self.assertEquals(self.c.post("/api/log-in/", headers = Headers).status_code, 404)
         Headers = {'username': "0000-0002-0753-1111", "password": "strong"}
-        self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
+        self.assertEquals(self.c.post("/api/log-in/", headers = Headers).status_code, 404)
 
 class log_out_test_cases(TestCase):
     def setUp(self):
         self.c = Client()
 
     def tearDown(self):
-        print('Tests for GET requests using log-out completed!')
+        print('Tests for GET requests using log_out completed!')
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
+
+class SavePaperListTest(TestCase):
+
+    def setUp(self):
+
+        #Setting up a test user object and a test paper list object
+
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser', password='testpass'
+        )
+        self.paper_list = models.PaperList.objects.create(
+            id = 1,
+            list_title='Test Paper List',
+            owner = self.user
+        )
+
+    def tearDown(self):
+        print('Tests for POST requests using save_paper_list completed!')
+
+    def test_save_paper_list_authenticated(self):
+        # Testing for the successful case with a valid paper list id and valid credentials
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'testpass',
+        }
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id}, **headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.paper_list.refresh_from_db()
+        self.assertIn(self.user, self.paper_list.saver.all())
+        self.assertEqual(
+            response.json()['status'], 
+            'Paper list is saved successfully!'
+        )
+
+    def test_save_paper_list_unauthenticated(self):
+        # Testing for the case where the user credentials are not filled
+        url = '/api/save-paper-list/'
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id})
+
+        self.assertEqual(response.status_code, 407)
+        self.assertEqual(
+            response.json()['status'],
+            'Empty username or password!'
+        )
+
+    def test_save_paper_list_invalid_credentials(self):
+        # Testing for the case where the user credentials are not correct
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'incorrectpassword',
+        }
+        response = self.client.post(url, {'paper_list_id': self.paper_list.id}, **headers)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(
+            response.json()['status'],
+            'Incorrect username or password!'
+        )
+
+    def test_save_paper_list_not_found(self):
+        # Testing for the case where the provided paper list id is not valid
+        url = '/api/save-paper-list/'
+        headers = {
+            'HTTP_USERNAME': 'testuser',
+            'HTTP_PASSWORD': 'testpass',
+        }
+        response = self.client.post(url, {'paper_list_id': 99}, **headers)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
+
+        response = self.client.post(url, {'paper_list_id': ''}, **headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
+
+        response = self.client.post(url, {'paper_list_id': 'asdfg'}, **headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list is not found!'
+        )
+        
+        response = self.client.post(url, None, **headers)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(
+            response.json()['status'],
+            'Paper list id must be provided!'
+        )
 
 class FollowUserTestCase(TestCase):
     def setUp(self):
@@ -560,3 +683,31 @@ class add_interest_test_cases(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content.decode("UTF-8")),
                          {'status': 'User credentials are incorrect.'})
+
+class Add_Paper_To_List_Test_Cases(TestCase):
+    def setUp(self):
+        self.c = Client()
+        User.objects.create_user(username="1234-5678-9012-3456", password="strongpassword", first_name="namefirst", last_name="namelast")
+
+    def tearDown(self):
+        print('POST Method to Add a Paper to a List Has Been Completed Successfully')
+
+    def test_add_paper_to_list(self):
+        user = User.objects.filter(username="1234-5678-9012-3456")[0]
+        paper_list = models.PaperList.objects.create(list_title="Test List", owner=user)
+        paper1 = models.Paper.objects.create(third_party_id="1", source="Source", abstract="Abstract1", year=2001, title="Title1")
+        paper2 = models.Paper.objects.create(third_party_id="12", source="SourceSource", abstract="Abstract2", year=2002, title="Title2")
+        paper3 = models.Paper.objects.create(third_party_id="123", source="SourceSourceSource", abstract="Abstract3", year=2003, title="Title3")
+        paper4 = models.Paper.objects.create(third_party_id="1234", source="SourceSourceSourceSource", abstract="Abstract4", year=2004, title="Title4")
+       
+
+        headers = {'HTTP_USERNAME': "1234-5678-9012-3456", 'HTTP_PASSWORD': "strongpassword"}
+        response = self.client.post("/api/add-paper-to-list/", data={'list_id': paper_list.id,'paper_id' : paper1.paper_id}, **headers)
+        response = self.client.post("/api/add-paper-to-list/", data={'list_id': paper_list.id,'paper_id' : paper2.paper_id}, **headers)
+        response = self.client.post("/api/add-paper-to-list/", data={'list_id': paper_list.id,'paper_id' : paper3.paper_id}, **headers)
+        response = self.client.post("/api/add-paper-to-list/", data={'list_id': paper_list.id,'paper_id' : paper4.paper_id}, **headers)
+
+        self.assertEquals(response.status_code, 200)
+        p_list = models.PaperList.objects.filter(id=paper_list.id)[0]
+        self.assertTrue(paper1 in p_list.paper.all() and paper2 in p_list.paper.all() and paper3 in p_list.paper.all() and paper4 in p_list.paper.all())
+
