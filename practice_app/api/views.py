@@ -440,7 +440,10 @@ def save_paper_list(request):
             return JsonResponse({'status' : 'Incorrect username or password!'},status=401)
 
     # Get the paper list id with the POST method
-    post_id = request.POST['paper_list_id']
+    try:
+        post_id = request.POST['paper_list_id']
+    except KeyError:
+        return JsonResponse({'status': 'Paper list id must be provided!'}, status=404)
     
     #Check if the provided id is valid
     if not post_id.isnumeric() or post_id == None or not models.PaperList.objects.filter(id = post_id).exists():
