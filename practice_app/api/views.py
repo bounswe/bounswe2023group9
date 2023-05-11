@@ -11,7 +11,8 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.decorators.csrf import csrf_exempt
 
-def doaj_get(request):
+# GET Method for DOAJ API
+def doaj_api(request):
     DOAJ_MAX_ROW = 10
     
     # Parse the parameters (title and rows)
@@ -37,29 +38,42 @@ def doaj_get(request):
     # parse the dictionary
     # all fields are assumed to exist in the response
     if res.status_code == 200:
-        try:
-            return JsonResponse(
-                {
-                    "status_code": 200,
-                    "count": response["total"] if response["total"] < rows else rows,
-                    "results": [
-                        {
-                            "id": result["id"],
-                            "source": "DOAJ",
-                            "position": index + 1,
-                            "authors": [author["name"] for author in result["bibjson"]["author"]],
-                            "date": int(result["created_date"][0:4]),
-                            "abstract": result["bibjson"]["abstract"],
-                            "title": result["bibjson"]["title"],
-                            "url": result["bibjson"]["link"][0]["url"]
-                        } for index, result in enumerate(response["results"])
-                    ]
-                }
-            )
-        except:
-            return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
+        response_dict = {
+        "status_code": 200, 
+        "count": response["total"] if response["total"] < rows else rows,
+        "results": [],
+        }
+        for index, result in enumerate(response["results"]):
+            result_dict = {
+                "id": result["id"],
+                "source": "DOAJ",
+                "position": index,
+                "authors": [],
+                "date": 0,
+                "abstract": "NO ABSTRACT",
+                "title": "NO TITLE",
+                "url": "NO URL",
+            }
+
+            if "bibjson" in result.keys():
+                if "author" in result["bibjson"].keys():
+                    result_dict["authors"] = [author["name"] for author in result["bibjson"]["author"]]
+                if "abstract" in result["bibjson"].keys():
+                    result_dict["abstract"] = result["bibjson"]["abstract"]
+                if "title" in result["bibjson"].keys():
+                    result_dict["title"] = result["bibjson"]["title"]
+                if "link" in result["bibjson"].keys() and len(result["bibjson"]["link"]) > 0 and "url" in result["bibjson"]["link"][0].keys():
+                    result_dict["url"] = result["bibjson"]["link"][0]["url"]
+
+            if "created_date" in result.keys():
+                result_dict["date"] = int(result["created_date"][0:4])
+
+            response_dict["results"].append(result_dict)
+        return JsonResponse(response_dict, status=200)
+    
     else:
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
+
 
 # GET api/google-scholar/
 # Utilizes the serpAPI to get results from google scholar
@@ -547,7 +561,7 @@ def post_papers(request):
     if db == 'semantic-scholar':
         response = semantic_scholar(api_request)
     elif db == 'doaj':
-        response = doaj_get(api_request)
+        response = doaj_api(api_request)
     elif db == 'core':
         response = core_get(api_request)
     elif db == 'zenodo':
@@ -580,3 +594,38 @@ def post_papers(request):
         paper.like_count = 0
         paper.save() # save to the DB
     return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200) # success response
+
+
+@csrf_exempt
+def add_paper_to_list(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    
+    data = request.POST
+    list_id = data.get("list_id")
+    pid = data.get("paper_id")
+    
+    if not list_id.isnumeric() or not pid.isnumeric():
+        return JsonResponse({"status":"Either list id or paper id is missing, or they are not integer"}, status = 400)
+
+    paper_lists = models.PaperList.objects.filter(id=list_id)
+    if len(paper_lists) == 0:
+        return JsonResponse({"status":"No Such List"}, status = 400)
+    elif len(paper_lists) > 1:
+        return JsonResponse({"status":"More than 1 List Found"}, status = 400)
+    
+    papers = models.Paper.objects.filter(paper_id=pid)
+    if len(papers) == 0:
+        return JsonResponse({"status":"No Such Paper"}, status = 400)
+    elif len(papers) > 1:
+        return JsonResponse({"status":"More than 1 Paper Found"}, status = 400)
+
+    paper_lists[0].paper.add(papers[0])
+    return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
+

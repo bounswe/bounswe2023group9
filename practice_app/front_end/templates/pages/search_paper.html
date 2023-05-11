@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block start %}
+
+<div class="container mt-5">
+
+  <a href="/search_user/">
+    Search User
+  </a>
+  |
+  <a href="/profile_page/">
+    Profile
+  </a>
+  |
+  <a href="/my_lists/">
+    My Lists
+  </a>
+  |
+  <a href="/following_lists/">
+    Following Lists
+  </a>
+  |
+  <a href="/follow_requests/">
+    Follow Requests
+  </a>
+
+  <hr>
+
+  <h2>Search Paper</h2>
+  <div class="mt-5">
+      <div class="mx-auto col-6">
+          <form>
+            <div class="mb-3">
+              <label for="search_paper" class="form-label">Title or Query</label>
+              <input name="search_paper" value="" type="text">
+            </div>
+            <button type="search" class="btn btn-primary">Search</button>
+          </form>
+      </div>
+  </div>
+</div>
+
+{% endblock %}
