@@ -1,30 +1,45 @@
-{% extends "base.html" %}
-{% block start %}
+{% extends "header.html" %}
+{% block header %}
 
-<div class="container mt-5">
-    <a href="/search_paper/">
-        Search Paper
-      </a>
-      |
-      <a href="/search_user/">
-        Search User
-      </a>
-      |
-      <a href="/my_lists/">
-        My Lists
-      </a>
-      |
-      <a href="/following_lists/">
-        Following Lists
-      </a>
-      <a href="/follow_requests/">
-        Follow Requests
-      </a>
       
     <hr>
     <h1>Profile</h1>
 
-</div>
+    <table class="container">
+      <tr>
+        <td>ORCID ID</td>
+        <td>{{profile.orcid_id}}</td>
+      </tr>
+      <tr>
+        <td>FIRST NAME</td>
+        <td>{{profile.first_name}}</td>
+      </tr>
+      <tr>
+        <td>LAST NAME</td>
+        <td>{{profile.last_name}}</td>
+      </tr>
+      <tr>
+        <td>DATE JOINED</td>
+        <td>{{profile.date_joined}} GMT 0</td>
+      </tr>
+    </table>
+  
+  <hr>
+
+  <table class="container">
+    <tr>
+      <th>Index</th>
+      <th>Interests</th>
+    </tr>
+
+    {% for interest in profile.interests %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{interest}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
 
 {% endblock %}
 

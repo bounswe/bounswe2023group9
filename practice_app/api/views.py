@@ -307,6 +307,53 @@ def semantic_scholar(request):
             results.append(paper_info.copy())
         response['results'] = results
         return JsonResponse(response)
+    
+# GET Method for NASA STI OpenAPI
+# params -> title, rows
+# title: required, title of the paper to be searched
+# rows: not required, number of papers to be returned, if not provided or nonnumeric value provided then default value is 3
+# response type: {"results": [{"title": string, "url": string, "authors": [string], "abstract": string, "date": int, "position": int, "source": string}]}
+def nasa_sti(request):
+    query = request.GET.get("title", None)
+    paper_number = request.GET.get('rows')
+    default_paper_number = 3
+
+    if query is None or query == "":
+        return JsonResponse({'status': 'Title to search must be given.'}, status=400)
+    
+    if paper_number is None or default_paper_number == "" or not paper_number.isnumeric():
+        paper_number = default_paper_number
+    
+    request = requests.get('https://ntrs.nasa.gov/api/citations/search', params={'abstract': query, 'page.size': paper_number})
+
+    if request.status_code == 200:
+        papers = request.json()["results"]
+        response = {}
+        results = []
+        for paper in papers:
+            paper_info = {}
+            paper_info['id'] = paper['id']
+            paper_info['title'] = paper['title']
+            if len(paper['downloads']) > 0:
+                paper_info['url'] = "https://ntrs.nasa.gov" + paper['downloads'][0]['links']['original']
+            else:
+                paper_info['url'] = None
+            paper_info['authors'] = []
+            if 'authorAffiliations' in paper:
+                authors = paper['authorAffiliations']
+                for author in authors:
+                    paper_info['authors'].append(author['meta']['author']['name'])
+            paper_info['abstract'] = paper['abstract']
+            paper_info['date'] = int(paper['created'].split("-")[0])
+            paper_info['position'] = papers.index(paper)
+            paper_info['source'] = 'Nasa STI'
+            results.append(paper_info.copy())
+        response['results'] = results
+        return JsonResponse(response, status=200)
+    elif request.status_code == 404:
+        return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
+    else:
+        return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 # GET api/orcid_api/
 # Utilizes the orcid api to get user credentials
@@ -436,4 +483,242 @@ def user_registration(request):
         return JsonResponse({"status": "User created"}, status=200)
 
     else:
-        return JsonResponse({"status": "Username is already taken."}, status=409)
+        return JsonResponse({"status":"Username is already taken."}, status = 409)
+
+# POST Method to create paper list
+@csrf_exempt
+def create_paper_list(request):
+    user = request.user
+
+    if user.is_anonymous:
+        # If user is anonymous and credentials are not provided in headers return an error
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'Username and password must be supplied!'}, status=407)
+
+        # If there are credential information in headers authenticate the user
+        username = request.headers['username']
+        password = request.headers['password']
+
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            # If the authentication is failed return an error
+            return JsonResponse({'status' : 'Incorrect username or password!'}, status=401)
+    
+    # Get the paper name with the POST method
+    try:
+        list_title = request.POST['list_title']
+    except KeyError:
+        return JsonResponse({'status': 'Paper list title must be provided!'}, status=400)
+
+    paper_list = models.PaperList.objects.create(list_title=list_title, owner=user) # create instance
+    paper_list.save() # Insert to the database 
+
+    # Return a success response
+    return JsonResponse({'status': 'Paper list created successfully!'}, status=200)
+
+
+@csrf_exempt
+def save_paper_list(request):
+
+    user = request.user
+
+    if user.is_anonymous:
+        # If user us anonymous and credentials are not provided in headers return an error
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'Empty username or password!'}, status=407)
+        # If there are credential information in headers authenticate the user
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            # If the authentication is failed return an error
+            return JsonResponse({'status' : 'Incorrect username or password!'},status=401)
+
+    # Get the paper list id with the POST method
+    try:
+        post_id = request.POST['paper_list_id']
+    except KeyError:
+        return JsonResponse({'status': 'Paper list id must be provided!'}, status=404)
+    
+    #Check if the provided id is valid
+    if not post_id.isnumeric() or post_id == None or not models.PaperList.objects.filter(id = post_id).exists():
+        return JsonResponse({'status': 'Paper list is not found!'}, status=404)
+    else:
+        # Get the paper list object and add the current logged in user to the savers list of the paper list
+        paper_list = models.PaperList.objects.get(pk = post_id)
+        paper_list.saver.add(user)
+
+        # Save the changes
+        paper_list.save()
+
+        # Return a success response
+        return JsonResponse({'status': 'Paper list is saved successfully!'}, status=200)
+    
+# POST api/follow/
+# username and password of follower should be in headers
+# username of followed should be in data
+
+@csrf_exempt
+def follow_user(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        follower_user = authenticate(request, username=username, password=password)
+        if follower_user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        follower_user = request.user
+        
+    query = request.POST
+    followed_username = query.get('followed_username')
+    if followed_username == None or followed_username == '':
+        return JsonResponse({"status":"Username of followed should be provided."}, status = 400)
+    
+    if User.objects.filter(username=followed_username).exists():
+        followed_user = User.objects.get(username=followed_username)
+        if models.Follower.objects.filter(user=follower_user, followed=followed_user).exists() and models.Follower.objects.filter(user=followed_user, follower=follower_user).exists():
+            return JsonResponse({"status":"You are already following this user."}, status=409)
+        elif models.FollowRequest.objects.filter(sender=follower_user, receiver=followed_user).exists():
+            return JsonResponse({"status":"You have already sent a following request this user."}, status=409)
+        else:
+            models.FollowRequest.objects.create(sender=follower_user, receiver=followed_user, status='pending')
+            return JsonResponse({"status":"User followed."}, status = 200)
+    else:
+        return JsonResponse({"status":"Username of followed is invalid."}, status = 404)
+
+@csrf_exempt
+def post_papers(request):
+    # Authentication
+    if request.user.is_anonymous: # user is not logged in
+        if 'username' not in request.headers or 'password' not in request.headers: # credentials are incomplete
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None: # credentials are incorrect
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        user = request.user
+
+    query = request.POST
+    if 'db' not in query.keys() or 'title' not in query.keys(): # db parameter or title parameter is not set
+        return JsonResponse({'status' : 'db and title parameters must be added to the request body.'},status=400)
+    db = query.get('db')
+    title = query.get('title')
+    if 'rows' not in query.keys(): # default rows value if it is not set
+        rows = 3
+    else:
+        rows = query.get('rows')
+
+    api_request = HttpRequest() # creating a GET request to pass to the API methods
+    api_request.method = 'GET'
+    api_request.user = user
+    api_request.META = request.META
+    api_request.GET.update({"title": title,'rows':rows})
+
+    if db == None or db == "": # db parameter is empty
+        return JsonResponse({'status': 'Database to search must be specified. Please select one : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    # calling the API method for the given db parameter
+    if db == 'semantic-scholar':
+        response = semantic_scholar(api_request)
+    elif db == 'doaj':
+        response = doaj_api(api_request)
+    elif db == 'core':
+        response = core_get(api_request)
+    elif db == 'zenodo':
+        response = zenodo(api_request)
+    elif db == 'eric':
+        response = eric_papers(api_request)
+    elif db == 'google-scholar':
+        response = google_scholar(api_request)
+    else: # db parameter doesn't match with any of the options available
+        return JsonResponse({'status': 'Invalid database name. Please select one of the following : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
+    if response.status_code != 200: # the call is not successful / something unexpected happened
+        return response
+    results = json.loads(response.content)['results'] # loading the json response
+    for result in results: # iterating over the response to save the results to the database
+        if models.Paper.objects.filter(source=result['source'],third_party_id=result['id'] ).exists(): # if the paper exists in the database, pass
+            continue
+        paper = models.Paper() # create Paper object
+        # Fill the fields
+        if 'url' in result.keys():
+            paper.url = result['url']
+        paper.title = result['title']
+        if 'authors' in result.keys():
+            paper.set_authors(result['authors'])
+        if 'date' in result.keys():
+            paper.year = result['date']
+        paper.third_party_id = result['id']
+        paper.source = result['source']
+        if 'abstract' in result.keys():
+            paper.abstract = result['abstract']
+        paper.like_count = 0
+        paper.save() # save to the DB
+    return JsonResponse({'status': 'Requested papers are saved successfully.'}, status=200) # success response
+
+
+@csrf_exempt
+def add_paper_to_list(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    
+    data = request.POST
+    list_id = data.get("list_id")
+    pid = data.get("paper_id")
+    
+    if not list_id.isnumeric() or not pid.isnumeric():
+        return JsonResponse({"status":"Either list id or paper id is missing, or they are not integer"}, status = 400)
+
+    paper_lists = models.PaperList.objects.filter(id=list_id)
+    if len(paper_lists) == 0:
+        return JsonResponse({"status":"No Such List"}, status = 400)
+    elif len(paper_lists) > 1:
+        return JsonResponse({"status":"More than 1 List Found"}, status = 400)
+    
+    papers = models.Paper.objects.filter(paper_id=pid)
+    if len(papers) == 0:
+        return JsonResponse({"status":"No Such Paper"}, status = 400)
+    elif len(papers) > 1:
+        return JsonResponse({"status":"More than 1 Paper Found"}, status = 400)
+
+    paper_lists[0].paper.add(papers[0])
+    return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
+
+#returns the followers of the user
+def get_followers(request):
+    user = request.user
+    follow_object = models.Follower.objects.filter(user=user)
+    response = []
+    if len(follow_object) == 0:
+        return JsonResponse({'followers': response}, status=200)
+    for _user in  follow_object[0].follower.all():
+        res = {}
+        res['user_id'] = _user.username
+        res['name'] = user.first_name
+        res['surname'] = user.last_name
+        response.append(res.copy())
+    return  JsonResponse({'followers' : response} , status=200)
+
+
+#returns the following of the user
+def get_following(request):
+    user = request.user
+    follow_object = models.Follower.objects.filter(user=user)
+    response = []
+    if len(follow_object) == 0:
+        return JsonResponse({'following': response}, status=200)
+    for _user in follow_object[0].followed.all():
+        res = {}
+        res['user_id'] = _user.username
+        res['name'] = user.first_name
+        res['surname'] = user.last_name
+        response.append(res.copy())
+    return JsonResponse({'following': response}, status=200)

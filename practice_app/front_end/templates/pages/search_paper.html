@@ -1,29 +1,7 @@
-{% extends "base.html" %}
-{% block start %}
-<head>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<div class="container mt-5">
-  <ul class="nav justify-content-center">
-    <li class="nav-item">
-      <a class="nav-link" href="/profile_page/">Profile</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link " href="/search_paper/">Search Paper</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" href="/search_user/">Search User</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link " href="/my_lists/"> My Lists</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link " href="/following_lists/">Following Lists</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link " href="/follow_requests/">Follow Requests</a>
-    </li>
-  </ul>
+{% extends "header.html" %}
+{% block header %}
+
+
 
   <hr>
   <h2 class="h2 text-center">Search Paper</h2>
@@ -114,6 +92,5 @@
     </table>
       </div>
   </div>
-</div>
 
 {% endblock %}
