@@ -436,9 +436,9 @@ class create_paper_list_test_cases(TestCase):
         print("POST method tests for creating paper list completed!")
 
     def test_for_success(self): # Test for successful case
-        h = {"username": "testuser", "password": "testpass", "title": "testlistname1"}
+        h = {"username": "testuser", "password": "testpass"}
 
-        r = self.c.post("/api/create-paper-list/", headers=h)
+        r = self.c.post("/api/create-paper-list/", {"list_title": "testlistname1"}, headers=h)
         self.assertEquals(r.status_code, 200, "Fail: status code is not 200 for a request expected as success!") # check the status code
 
         a = models.PaperList.objects.filter(id = 1)
