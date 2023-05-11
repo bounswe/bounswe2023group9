@@ -441,6 +441,8 @@ def post_papers(request):
         user = authenticate(request, username=username, password=password)
         if user == None: # credentials are incorrect
             return JsonResponse({'status' : 'user credentials are incorrect.'},status=401)
+    else:
+        user = request.user
 
     query = request.POST
     if 'db' not in query.keys() or 'title' not in query.keys(): # db parameter or title parameter is not set
@@ -454,7 +456,7 @@ def post_papers(request):
 
     api_request = HttpRequest() # creating a GET request to pass to the API methods
     api_request.method = 'GET'
-    api_request.user = request.user
+    api_request.user = user
     api_request.META = request.META
     api_request.GET.update({"title": title,'rows':rows})
 
