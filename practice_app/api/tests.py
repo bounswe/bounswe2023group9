@@ -431,12 +431,12 @@ class FollowUserTestCase(TestCase):
         # no followed username is provided
         response = self.c.post("/api/follow_user/", headers = Headers)
         
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['status'], "Username of followed should be provided.")
 
         # empty followed username is provided
         response = self.c.post("/api/follow_user/", headers = Headers, data = {'followed_username':''})
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['status'], "Username of followed should be provided.")
 
         # followed is not a valid username
