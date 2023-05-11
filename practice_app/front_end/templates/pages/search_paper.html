@@ -1,8 +1,8 @@
 {% extends "header.html" %}
 {% block header %}
-
-
-
+<head>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
   <hr>
   <h2 class="h2 text-center">Search Paper</h2>
   <div class="mt-5">
@@ -77,7 +77,6 @@
               {% csrf_token %}
               <input type='hidden' value="add_list" name='id'>
               <input type='hidden' value={{paper.id}} name='paper_id'>
-              <input type='hidden' value={{papers}} name='papers'>
               <select class = "form-select" form-id="add_list" name="list_id">
                 {% for list in lists %}
                 <option value={{list.id}}>{{list.name}}</option>

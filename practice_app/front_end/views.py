@@ -9,7 +9,8 @@ def home(request):
     return HttpResponse("<h1>Hey this is a home page</h1>")
 
 def search_paper(request):
-    context = {'page': 'Search Paper', 'warning': "","papers": {} ,"lists":{}}
+    lists = {}
+    papers = {}
     if request.method == "POST":  # if the search button clicked
         if request.POST.get('id') == "search":
             database = request.POST.get("database")
@@ -40,22 +41,20 @@ def search_paper(request):
         elif request.POST.get('id') == "add_list":
             list_id = request.POST.get("list_id")
             paper_id = request.POST.get("paper_id")
-            papers = request.POST.get("papers")
             add_paper_request = HttpRequest()
             add_paper_request.method = 'POST'
             add_paper_request.user = request.user
             add_paper_request.META = request.META
             add_paper_request.session = request.session
             add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
-            lists = models.PaperList.objects.filter(owner = request.user)
             add_paper_to_list(add_paper_request)
 
             
-        context = {'page': 'Search Paper', 'warning': "","papers": papers ,"lists":lists}
+        
     logged_in = 1
     if request.user.is_anonymous:
         logged_in = 0
-    context = {'page': 'Search Paper', 'logged_in' : logged_in}
+    context = {'page': 'Search Paper', 'warning': "","papers": papers ,"lists":lists, 'logged_in' : logged_in}
     return render(request, "pages/search_paper.html", context)
 
 def search_user(request):
