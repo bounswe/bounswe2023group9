@@ -478,7 +478,7 @@ def create_paper_list(request):
     try:
         list_title = request.headers['title']
     except KeyError:
-        return JsonResponse({'status': 'Paper name must be provided!'}, status=404)
+        return JsonResponse({'status': 'Paper name must be provided!'}, status=400)
 
     paper_list = models.PaperList.objects.create(list_title=list_title, owner=user) # create instance
     paper_list.save() # Insert to the database 
