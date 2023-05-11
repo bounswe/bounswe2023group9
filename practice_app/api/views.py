@@ -524,7 +524,7 @@ def post_papers(request):
     if db == 'semantic-scholar':
         response = semantic_scholar(api_request)
     elif db == 'doaj':
-        response = doaj_get(api_request)
+        response = doaj_api(api_request)
     elif db == 'core':
         response = core_get(api_request)
     elif db == 'zenodo':
