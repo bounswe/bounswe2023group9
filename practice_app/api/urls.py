@@ -11,6 +11,7 @@ urlpatterns = [
     path('eric/', views.eric_papers, name='eric_papers'),
     path("zenodo/",views.zenodo, name="zenodo"),
     path('semantic-scholar/', views.semantic_scholar, name='semantic-scholar'),
+    path("nasa-sti/",views.nasa_sti, name="nasa-sti"),
     path("orcid-api/", views.orcid_api, name="orcid_api"),
     path("log-in/", views.log_in, name="log_in"),
     path("log-out/", views.log_out, name="log_out"),

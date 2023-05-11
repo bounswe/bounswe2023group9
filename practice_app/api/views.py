@@ -333,6 +333,53 @@ def semantic_scholar(request):
             results.append(paper_info.copy())
         response['results'] = results
         return JsonResponse(response)
+    
+# GET Method for NASA STI OpenAPI
+# params -> title, rows
+# title: required, title of the paper to be searched
+# rows: not required, number of papers to be returned, if not provided or nonnumeric value provided then default value is 3
+# response type: {"results": [{"title": string, "url": string, "authors": [string], "abstract": string, "date": int, "position": int, "source": string}]}
+def nasa_sti(request):
+    query = request.GET.get("title", None)
+    paper_number = request.GET.get('rows')
+    default_paper_number = 3
+
+    if query is None or query == "":
+        return JsonResponse({'status': 'Title to search must be given.'}, status=400)
+    
+    if paper_number is None or default_paper_number == "" or not paper_number.isnumeric():
+        paper_number = default_paper_number
+    
+    request = requests.get('https://ntrs.nasa.gov/api/citations/search', params={'abstract': query, 'page.size': paper_number})
+
+    if request.status_code == 200:
+        papers = request.json()["results"]
+        response = {}
+        results = []
+        for paper in papers:
+            paper_info = {}
+            paper_info['id'] = paper['id']
+            paper_info['title'] = paper['title']
+            if len(paper['downloads']) > 0:
+                paper_info['url'] = "https://ntrs.nasa.gov" + paper['downloads'][0]['links']['original']
+            else:
+                paper_info['url'] = None
+            paper_info['authors'] = []
+            if 'authorAffiliations' in paper:
+                authors = paper['authorAffiliations']
+                for author in authors:
+                    paper_info['authors'].append(author['meta']['author']['name'])
+            paper_info['abstract'] = paper['abstract']
+            paper_info['date'] = int(paper['created'].split("-")[0])
+            paper_info['position'] = papers.index(paper)
+            paper_info['source'] = 'Nasa STI'
+            results.append(paper_info.copy())
+        response['results'] = results
+        return JsonResponse(response, status=200)
+    elif request.status_code == 404:
+        return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
+    else:
+        return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 # GET api/orcid_api/
 # Utilizes the orcid api to get user credentials
