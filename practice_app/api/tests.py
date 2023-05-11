@@ -302,24 +302,24 @@ class orcid_api_test_cases(TestCase):
         print('Tests for GET requests using ORCID API completed!')
 
     def test_404_responses(self):
-        self.assertEquals(self.c.get("/api/orcid_api/").status_code, 404)
-        self.assertEquals(self.c.get("/api/orcid_api/?").status_code, 404)
-        self.assertEquals(self.c.get("/api/orcid_api/?user_id=").status_code, 404)
-        self.assertEquals(self.c.get("/api/orcid_api/?user=").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/?").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/?user_id=").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/?user=").status_code, 404)
 
     def test_invalid_orcid_id(self):
-        self.assertEquals(self.c.get("/api/orcid_api/?user_id=123456789").status_code, 404)
-        self.assertEquals(self.c.get("/api/orcid_api/?user_id=12-345-67-89").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/?user_id=123456789").status_code, 404)
+        self.assertEquals(self.c.get("/api/orcid-api/?user_id=12-345-67-89").status_code, 404)
 
     def test_valid_orcid_id(self):
-        response = self.c.get("/api/orcid_api/?user_id=0009-0005-5924-1831")
+        response = self.c.get("/api/orcid-api/?user_id=0009-0005-5924-1831")
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "user_id")
         self.assertContains(response, "name")
         self.assertContains(response, "surname")
     
     def test_compare_results(self):
-        response = self.c.get("/api/orcid_api/?user_id=0009-0005-5924-1831")
+        response = self.c.get("/api/orcid-api/?user_id=0009-0005-5924-1831")
 
         Headers = {"Accept": "application/json"}
         orcid_api_response = requests.get("https://orcid.org/0009-0005-5924-1831", headers=Headers).json()
@@ -341,16 +341,16 @@ class registration_test_cases(TestCase):
         print('Tests for POST requests using user_registration completed!')
 
     def test_404_responses(self):
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':'password'}).status_code, 404)
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'','password':''}).status_code, 404)
-        self.assertEquals(self.c.post("/api/user_registration/", headers = {'username':'username','password':''}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user-registration/", headers = {'username':'','password':'password'}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user-registration/", headers = {'username':'','password':''}).status_code, 404)
+        self.assertEquals(self.c.post("/api/user-registration/", headers = {'username':'username','password':''}).status_code, 404)
 
 
     def test_unique_username(self):
         Header = {'username': '0009-0005-5924-1831', 'password': 'mypassword'}
         Json = {'name': 'Nicola', 'surname': 'Tesla'}
 
-        response = self.c.post("/api/user_registration/", headers = Header)
+        response = self.c.post("/api/user-registration/", headers = Header)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(len(User.objects.filter(username= "0009-0005-5924-1831")), 1)
 
@@ -358,7 +358,7 @@ class registration_test_cases(TestCase):
         Header = {'username': '0009-0005-5924-0000', 'password': 'mypassword'}
         Json = {'name': 'Nicola', 'surname': 'Tesla'}
 
-        response = self.c.post("/api/user_registration/", headers = Header)
+        response = self.c.post("/api/user-registration/", headers = Header)
         self.assertEquals(response.status_code, 404)
         self.assertEquals(len(User.objects.filter(username= "0009-0005-5924-0000")), 1)
 
@@ -374,17 +374,17 @@ class log_in_test_cases(TestCase):
         print('Tests for POST requests using log_in completed!')
 
     def test_404_responses(self):
-        self.assertEquals(self.c.post("/api/log_in/",headers={'username': '','password':''}).status_code, 404)
-        self.assertEquals(self.c.post("/api/log_in/",headers = {'username':'username','password':''}).status_code, 404)
+        self.assertEquals(self.c.post("/api/log-in/",headers={'username': '','password':''}).status_code, 404)
+        self.assertEquals(self.c.post("/api/log-in/",headers = {'username':'username','password':''}).status_code, 404)
     
     def test_valid_login(self):
         Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
-        response = self.c.post("/api/log_in/",headers = Headers)
+        response = self.c.post("/api/log-in/",headers = Headers)
         self.assertEquals(response.status_code, 200)
     
     def test_invalid_login(self):
         Headers = {'username': "0000-0002-0753-0000", "password": "strong"}
-        self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
+        self.assertEquals(self.c.post("/api/log-in/", headers = Headers).status_code, 404)
         Headers = {'username': "0000-0002-0753-1111", "password": "strong"}
         self.assertEquals(self.c.post("/api/log_in/", headers = Headers).status_code, 404)
 
@@ -393,10 +393,10 @@ class log_out_test_cases(TestCase):
         self.c = Client()
 
     def tearDown(self):
-        print('Tests for GET requests using log_out completed!')
+        print('Tests for GET requests using log-out completed!')
 
     def test_logout(self):
-        self.assertEquals(self.c.get("/api/log_out/").status_code, 200)
+        self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
 
 class FollowUserTestCase(TestCase):
     def setUp(self):
@@ -414,17 +414,17 @@ class FollowUserTestCase(TestCase):
     
     def test_unauthorized_follower(self):
         # no headers are provided
-        response = self.c.post("/api/follow_user/")
+        response = self.c.post("/api/follow-user/")
         self.assertEquals(response.status_code, 407)
         self.assertEquals(response.json()['status'], "username and password fields can not be empty")
 
         # empty credentials are provided
-        response = self.c.post("/api/follow_user/", headers = {'username':'','password':''})
+        response = self.c.post("/api/follow-user/", headers = {'username':'','password':''})
         self.assertEquals(response.status_code, 401)
         self.assertEquals(response.json()['status'], "user credentials are incorrect.")
 
         # invalid follower is provided
-        response = self.c.post("/api/follow_user/", headers = {'username':'dummy','password':'dummy'})
+        response = self.c.post("/api/follow-user/", headers = {'username':'dummy','password':'dummy'})
         self.assertEquals(response.status_code, 401)
         self.assertEquals(response.json()['status'], "user credentials are incorrect.")
 
@@ -432,18 +432,18 @@ class FollowUserTestCase(TestCase):
         Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
 
         # no followed username is provided
-        response = self.c.post("/api/follow_user/", headers = Headers)
+        response = self.c.post("/api/follow-user/", headers = Headers)
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['status'], "Username of followed should be provided.")
 
         # empty followed username is provided
-        response = self.c.post("/api/follow_user/", headers = Headers, data = {'followed_username':''})
+        response = self.c.post("/api/follow-user/", headers = Headers, data = {'followed_username':''})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['status'], "Username of followed should be provided.")
 
         # followed is not a valid username
-        response = self.c.post("/api/follow_user/", headers = Headers, data = {'followed_username':'dummy'})
+        response = self.c.post("/api/follow-user/", headers = Headers, data = {'followed_username':'dummy'})
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()['status'], "Username of followed is invalid.")
 
@@ -451,12 +451,12 @@ class FollowUserTestCase(TestCase):
         # follow request is sent for the first time
         Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
         Body = {'followed_username':'0009-0005-5924-1832'}
-        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        response = self.c.post("/api/follow-user/", headers = Headers, data = Body)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['status'], "User followed.")
 
         # follow request is sent for the second time
-        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        response = self.c.post("/api/follow-user/", headers = Headers, data = Body)
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json()['status'], "You have already sent a following request this user.")
 
@@ -464,7 +464,7 @@ class FollowUserTestCase(TestCase):
         # follower_user is already following followed_user
         Headers = {'username': "0009-0005-5924-1831", "password": "strongpassword"}
         Body = {'followed_username':'0009-0005-5924-1833'}
-        response = self.c.post("/api/follow_user/", headers = Headers, data = Body)
+        response = self.c.post("/api/follow-user/", headers = Headers, data = Body)
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json()['status'], "You are already following this user.")
 

@@ -17,4 +17,5 @@ urlpatterns = [
     path("user-registration/", views.user_registration, name="user_registration"),
     path("follow-user/", views.follow_user, name="follow_user"),
     path('add-interest/',views.add_interest,name='add-interest'),
+    path('post-papers/',views.post_papers,name='post-papers'),
 ]
