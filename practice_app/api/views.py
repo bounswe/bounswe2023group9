@@ -441,7 +441,7 @@ def follow_user(request):
     query = request.POST
     followed_username = query.get('followed_username')
     if followed_username == None or followed_username == '':
-        return JsonResponse({"status":"Username of followed should be provided."}, status = 404)
+        return JsonResponse({"status":"Username of followed should be provided."}, status = 400)
     
     if User.objects.filter(username=followed_username).exists():
         followed_user = User.objects.get(username=followed_username)
