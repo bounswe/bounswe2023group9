@@ -573,6 +573,9 @@ def add_paper_to_list(request):
     data = request.POST
     list_id = data.get("list_id")
     pid = data.get("paper_id")
+    
+    if not list_id.isnumeric() or not pid.isnumeric():
+        return JsonResponse({"status":"Either list id or paper id is missing, or they are not integer"}, status = 400)
 
     paper_lists = models.PaperList.objects.filter(id=list_id)
     if len(paper_lists) == 0:
