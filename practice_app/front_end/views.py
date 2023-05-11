@@ -2,16 +2,15 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpRequest
 
 from api.views import *
+from api.models import *
 
 
 def home(request):
     return HttpResponse("<h1>Hey this is a home page</h1>")
 
-
 def search_paper(request):
     context = {'page': 'Search Paper'}
     return render(request, "pages/search_paper.html", context)
-
 
 def search_user(request):
     context = {'page': 'Search User'}
@@ -78,7 +77,18 @@ def sign_in(request):
 
 
 def profile_page(request):
-    context = {'page': 'Profile Page'}
+    profile = {
+        'orcid_id': request.user.username,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'date_joined': request.user.date_joined,
+        'interests': [],
+    }
+
+    if len(UserInterest.objects.filter(user=request.user)) > 0:
+        profile['interests'] = [user_interest.interest for user_interest in UserInterest.objects.filter(user=request.user)]
+
+    context = {'page': 'Profile Page', 'profile': profile}
     return render(request, "pages/profile_page.html", context)
 
 
@@ -123,3 +133,7 @@ def follow_requests(request):
     ]
     context = {'page': 'Follow Requests', 'follow_requests': reqs}
     return render(request, "pages/follow_requests.html", context)
+
+
+
+
