@@ -319,6 +319,76 @@ class SemanticScholarTestCase(TestCase):
             # self.assertEquals(semantic_scholar_api_response[count]['url'], result['url']) # This API usually returns different results for same query
             self.assertEquals(count, result['position'])
 
+class NasaStiTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def tearDown(self):
+        print('GET Tests of Nasa STI Completed Successfully')
+
+    def test_4xx_responses(self):
+        self.assertEquals(self.client.get("/api/nasa-sti/?title=").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/?").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/?rows=9").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/title=space").status_code, 404)
+        self.assertEquals(self.client.get("/api/nasa-sti/?title=&").status_code, 400)
+
+    def test_valid_title_valid_rows(self):
+        # test when valid title and rows are provided
+
+        field_count = 8
+        rows = 10
+
+        response = self.client.get('/api/nasa-sti/?title=space&rows='+str(rows))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), rows)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'authors')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+    
+    def test_valid_title_no_rows(self):
+        # test when valid title and no rows are provided
+
+        field_count = 8
+
+        response = self.client.get('/api/nasa-sti/?title=space')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), 3)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+
+    def test_valid_title_non_numeric_rows(self):
+        # test when valid title and non-numeric rows are provided
+
+        field_count = 8
+
+        response = self.client.get('/api/nasa-sti/?title=space&rows=abc')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), 3)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+
 class orcid_api_test_cases(TestCase):
 
     def setUp(self):
