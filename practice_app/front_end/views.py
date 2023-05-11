@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpRequest
 import json
 from api.views import *
+from api.models import *
 
 
 def home(request):
     return HttpResponse("<h1>Hey this is a home page</h1>")
-
 
 def search_paper(request):
     logged_in = 1
@@ -14,7 +14,6 @@ def search_paper(request):
         logged_in = 0
     context = {'page': 'Search Paper', 'logged_in' : logged_in}
     return render(request, "pages/search_paper.html", context)
-
 
 def search_user(request):
     if request.user.is_anonymous:
@@ -91,7 +90,19 @@ def sign_out(request):
 def profile_page(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
-    context = {'page': 'Profile Page', 'logged_in' : 1}
+
+    profile = {
+        'orcid_id': request.user.username,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'date_joined': request.user.date_joined,
+        'interests': [],
+    }
+
+    if len(UserInterest.objects.filter(user=request.user)) > 0:
+        profile['interests'] = [user_interest.interest for user_interest in UserInterest.objects.filter(user=request.user)]
+
+    context = {'page': 'Profile Page', 'profile': profile , 'logged_in' : 1}
     return render(request, "pages/profile_page.html", context)
 
 
@@ -168,3 +179,7 @@ def follow_requests(request):
     ]
     context = {'page': 'Follow Requests', 'follow_requests': reqs, 'logged_in' : 1}
     return render(request, "pages/follow_requests.html", context)
+
+
+
+

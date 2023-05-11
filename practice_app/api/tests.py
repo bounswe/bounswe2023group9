@@ -1,3 +1,4 @@
+from wsgiref import headers
 from django.test import TestCase, Client
 from unittest import skip
 import requests
@@ -422,6 +423,42 @@ class log_out_test_cases(TestCase):
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
+
+class create_paper_list_test_cases(TestCase):
+    def setUp(self): # Setting up a test user object and a test paper list object
+
+        self.c = Client()
+        self.user = User.objects.create_user(
+            username='testuser', password='testpass'
+        )
+
+    def tearDown(self): # When the tests are completed
+        print("POST method tests for creating paper list completed!")
+
+    def test_for_success(self): # Test for successful case
+        h = {"username": "testuser", "password": "testpass"}
+
+        r = self.c.post("/api/create-paper-list/", {"list_title": "testlistname1"}, headers=h)
+        self.assertEquals(r.status_code, 200, "Fail: status code is not 200 for a request expected as success!") # check the status code
+
+        a = models.PaperList.objects.filter(id = 1)
+        self.assertEquals(a[0].list_title, "testlistname1", "Fail: paper list name didn't match!") # check the record
+    
+    def test_for_empty_title(self): # Test for empty title
+        h = {"username": "testuser", "password": "testpass"}
+
+        r = self.c.post("/api/create-paper-list/", headers=h)
+        self.assertEquals(r.status_code, 400, "Fail: status code is not 400 for a request expected as bad request (empty title)!") # check the status code
+
+    def test_for_invalid_credentials(self): # Test for invalid credentials
+        h = {"username": "invalid", "password": "invalid"}
+
+        r = self.c.post("/api/create-paper-list/", headers=h)
+        self.assertEquals(r.status_code, 401, "Fail: status code is not 401 for a request expected as unauthorized (invalid credentials)!") # check the status code
+
+    def test_for_empty_credentials(self): # Test for no credentials
+        r = self.c.post("/api/create-paper-list/")
+        self.assertEquals(r.status_code, 407, "Fail: status code is not 407 for a request with empty credentials!") # check the status code
 
 class SavePaperListTest(TestCase):
 

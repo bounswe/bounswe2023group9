@@ -455,6 +455,38 @@ def user_registration(request):
     else:
         return JsonResponse({"status":"Username is already taken."}, status = 409)
 
+# POST Method to create paper list
+@csrf_exempt
+def create_paper_list(request):
+    user = request.user
+
+    if user.is_anonymous:
+        # If user is anonymous and credentials are not provided in headers return an error
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'Username and password must be supplied!'}, status=407)
+
+        # If there are credential information in headers authenticate the user
+        username = request.headers['username']
+        password = request.headers['password']
+
+        user = authenticate(request, username=username, password=password)
+        if user == None:
+            # If the authentication is failed return an error
+            return JsonResponse({'status' : 'Incorrect username or password!'}, status=401)
+    
+    # Get the paper name with the POST method
+    try:
+        list_title = request.POST['list_title']
+    except KeyError:
+        return JsonResponse({'status': 'Paper list title must be provided!'}, status=400)
+
+    paper_list = models.PaperList.objects.create(list_title=list_title, owner=user) # create instance
+    paper_list.save() # Insert to the database 
+
+    # Return a success response
+    return JsonResponse({'status': 'Paper list created successfully!'}, status=200)
+
+
 @csrf_exempt
 def save_paper_list(request):
 
