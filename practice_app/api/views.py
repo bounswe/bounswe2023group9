@@ -14,7 +14,6 @@ from django.views.decorators.csrf import csrf_exempt
 # GET Method for DOAJ API
 def doaj_api(request):
     DOAJ_MAX_ROW = 10
-
     # Parse the parameters (title and rows)
     params = request.GET
     query = params.get('title')
@@ -26,7 +25,6 @@ def doaj_api(request):
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
     if rows is None or rows == "" or not rows.isnumeric():
         rows = 3
-
     # Check whether the row exceeds the limit
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
 
@@ -217,7 +215,6 @@ def eric_papers(request):
 
     #params --> title, rows
     default_rows = '3'
-
     search_title = request.GET.get('title')
     rows = request.GET.get('rows', default_rows)
 
@@ -228,7 +225,6 @@ def eric_papers(request):
         int(rows)
     except ValueError:
         return JsonResponse({'message':'Row count must be valid.'}, status=404)
-
     #response --> source, authors, id, date, abstract, title, url, position
 
     baseURL = "https://api.ies.ed.gov/eric/"
@@ -239,7 +235,6 @@ def eric_papers(request):
 
     if response.status_code == 200:
         papers = response.json()['response']['docs']
-
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
@@ -253,27 +248,29 @@ def eric_papers(request):
                 paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
-
         return JsonResponse({'results':papers})
     elif response.status_code == 404:
         return JsonResponse({'message':'Resource not found'}, status=404)
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
+# GET api/zenodo
+# params -> title , rows    
 def zenodo(request):
-    ACCESS_TOKEN = api_keys.api_keys['zenodo_api']
+    ACCESS_TOKEN = api_keys.api_keys['zenodo_api'] #Getting the third party api key from api_keys
+    #Getting the parameters
     search_title = request.GET.get("title", None)
     rows = request.GET.get('rows', 3)
-    if search_title is None or search_title == "" or search_title.isspace() is True:
+    if search_title is None or search_title == "" or search_title.isspace() is True: #If title is empty raise error
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
-
+    #Third party API call
     request = requests.get('https://zenodo.org/api/records',
                      params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
 
-    if request.status_code == 200:
-        papers = request.json()["hits"]["hits"]
+    if request.status_code == 200:  #Status code check
+        papers = request.json()["hits"]["hits"] #Getting the papers
         response = {}
         results = []
-        for paper in papers:
+        for paper in papers: #For every paper, get the wanted attributes
             paper_info = {}
             paper_info['id'] = paper['id']
             paper_info['title'] = paper['metadata']['title']
@@ -286,9 +283,9 @@ def zenodo(request):
             authors = paper['metadata']['creators']
             for author in authors:
                 paper_info['authors'].append(author['name'])
-            results.append(paper_info.copy())
-        response['results'] = results
-        return JsonResponse(response, status=200)
+            results.append(paper_info.copy()) #Add the paper attributes into results
+        response['results'] = results 
+        return JsonResponse(response, status=200) #Return results as response
     elif request.status_code == 404:
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
     else:
@@ -299,7 +296,6 @@ def semantic_scholar(request):
     search = query.get("title")
     limit = query.get("rows")
     default_limit = 3
-
     if search is None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     if limit is None or limit == "" or not limit.isnumeric():
@@ -339,7 +335,6 @@ def semantic_scholar(request):
 # params -> user_id
 # response type: {"user_id": string, "name": string, "surname": string}
 def orcid_api(request):
-
     # user_id should be a valid ORCID ID
     user_id = request.GET.get('user_id')
 
@@ -347,7 +342,6 @@ def orcid_api(request):
 
     if user_id == None or user_id == '':
         return JsonResponse({"status":"ORCID ID should be provided as user_id"}, status = 404)
-
     # third party api call
     # returns a json file that contains all public information related with given ORCID ID
     api_request = requests.get("https://orcid.org/"+user_id, headers=Headers)
@@ -359,7 +353,6 @@ def orcid_api(request):
             api_request = api_request.json()
         except:
             return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
-
         response = {}
         response["user_id"] = user_id
         response["name"] = api_request["person"]["name"]["given-names"]["value"]
