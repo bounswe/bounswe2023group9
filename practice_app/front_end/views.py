@@ -17,6 +17,31 @@ def search_user(request):
     context = {'page': 'Search User'}
     return render(request, "pages/search_user.html", context)
 
+def sign_up(request):
+    # warning will be used to warn the user if the credentials are invalid or for any other warning
+    context = {'page': 'Sign Up', 'warning': ""}
+
+    if request.user.is_authenticated:  # if the user is authenticated, then redirect to search paper page
+        return redirect("/search_paper/")
+
+    if request.method == "POST":  # if the sign in button clicked
+        username = request.POST.get("user_name")
+        password = request.POST.get("password")
+
+        #create a request to call user_registration
+        signup_request = HttpRequest()
+        signup_request.method = 'POST'
+        signup_request.user = request.user
+        signup_request.META = request.META
+        signup_request.session = request.session
+        signup_request.headers = {"username": username, "password": password}
+        signup_response = user_registration(signup_request)
+
+        if signup_response.status_code == 200:  # if the user is created, redirect to  sign in page
+            return redirect("/sign_in/")
+        else:
+            context["warning"] = "Invalid credentials!"  # if not registered
+    return render(request, "pages/sign_up.html", context)
 
 def sign_in(request):
     # uncomment below and get sign_in page before testing.
