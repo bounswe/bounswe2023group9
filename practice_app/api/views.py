@@ -476,11 +476,11 @@ def create_paper_list(request):
     
     # Get the paper name with the POST method
     try:
-        paper_list_name = request.POST['paper_list_name']
+        list_title = request.headers['title']
     except KeyError:
         return JsonResponse({'status': 'Paper name must be provided!'}, status=404)
 
-    paper_list = models.PaperList(list_title=paper_list_name, owner=user) # create instance
+    paper_list = models.PaperList.objects.create(list_title=list_title, owner=user) # create instance
     paper_list.save() # Insert to the database 
 
     # Return a success response
