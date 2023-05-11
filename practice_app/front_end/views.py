@@ -5,6 +5,7 @@ from api.views import *
 from api.models import *
 
 
+
 def home(request):
     return HttpResponse("<h1>Hey this is a home page</h1>")
 
@@ -13,8 +14,26 @@ def search_paper(request):
     return render(request, "pages/search_paper.html", context)
 
 def search_user(request):
-    context = {'page': 'Search User'}
+    users = {}
+    if request.method == "POST": 
+        if request.POST.get("id") == "search": # if the search button clicked
+            name = request.POST.get("name")
+            users = User.objects.filter(first_name__istartswith = name ).values()
+        elif request.POST.get("id") == "follow": # if follow button is clicked
+            followed_user = request.POST.get("followed_user")
+            follow_request = HttpRequest()
+            follow_request.method = 'POST'
+            follow_request.user = request.user
+            follow_request.META = request.META
+            follow_request.session = request.session
+            follow_request.POST.update({"followed_username":followed_user})
+            follow_user(follow_request) #post follow_user 
+            
+
+    context = {'page': 'Search User', 'warning': "","users": users}
+
     return render(request, "pages/search_user.html", context)
+
 
 def sign_up(request):
     # warning will be used to warn the user if the credentials are invalid or for any other warning
