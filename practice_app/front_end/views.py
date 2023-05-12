@@ -221,12 +221,19 @@ def following_lists(request):
 
 
 def list_content(request, paper_list_id):
-    if request.user.is_anonymous:
+    # if user is anonymous should not see list contents
+    if request.user.is_anonymous: 
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
-    if len(PaperList.objects.filter(list_title = paper_list_id)) >0 :
-        papers = PaperList.objects.filter(list_title = paper_list_id)[0]
-        context["papers"] = papers
+    #check if the PaperList object exists
+    if len(PaperList.objects.filter(id = paper_list_id)) >0 :
+        #find paper_list object
+        paper_list = PaperList.objects.filter(id = paper_list_id)[0]
+        print(paper_list)
+        print(paper_list.paper.all())
+        # add all papers to context
+        context["papers"] = paper_list.paper.all()
+        context["list_title"] = paper_list.list_title
     return render(request, "pages/list_content.html", context)
 
 
