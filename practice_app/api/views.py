@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 # GET Method for DOAJ API
 
 def doaj_get(request):
-    doaj_api(request)
+    return doaj_api(request)
 
 def doaj_api(request):
     DOAJ_MAX_ROW = 10
