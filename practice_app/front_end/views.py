@@ -41,9 +41,6 @@ def search_paper(request):
                 req.method = 'POST'
                 post_papers(req)
 
-
-
-
             if database == "semantic_scholar":
                 response = semantic_scholar(search_request)
             elif database == "eric_papers":
@@ -58,10 +55,14 @@ def search_paper(request):
                 response = core_get(search_request)
             elif database == "nasa-sti":
                 response = nasa_sti(search_request)
+
             if request.user.is_authenticated:
                 lists = PaperList.objects.filter(owner = request.user).values()
             papers = json.loads(response.content.decode()).get('results')
+
         elif request.POST.get('id') == "add_list":
+            if request.user.is_anonymous:
+                return redirect("/sign_in/") 
             list_id = request.POST.get("list_id")
             third_party_paper_id = request.POST.get("paper_id")
             paper_id = str(Paper.objects.filter(third_party_id = third_party_paper_id).values()[0]["paper_id"])
@@ -72,6 +73,19 @@ def search_paper(request):
             add_paper_request.session = request.session
             add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
             add_paper_to_list(add_paper_request)
+
+        elif request.POST.get('id') == "like":
+            if request.user.is_anonymous:
+                return redirect("/sign_in/")
+            third_party_paper_id = request.POST.get("paper_id")
+            paper_id = str(Paper.objects.filter(third_party_id = third_party_paper_id).values()[0]["paper_id"])
+            like_paper_request = HttpRequest()
+            like_paper_request.method = 'POST'
+            like_paper_request.user = request.user
+            like_paper_request.META = request.META
+            like_paper_request.session = request.session
+            like_paper_request.POST.update({'paper_id':paper_id})
+            like_paper(like_paper_request)
     logged_in = 1
     if request.user.is_anonymous:
         logged_in = 0
