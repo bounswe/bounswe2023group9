@@ -59,7 +59,7 @@ def doaj_api(request):
 
             if "bibjson" in result.keys():
                 if "author" in result["bibjson"].keys():
-                    result_dict["authors"] = [author["name"] for author in result["bibjson"]["author"]]
+                    result_dict["authors"].append({'name' : author["name"] for author in result["bibjson"]["author"]}.copy())
                 if "abstract" in result["bibjson"].keys():
                     result_dict["abstract"] = result["bibjson"]["abstract"]
                 if "title" in result["bibjson"].keys():
@@ -94,7 +94,6 @@ def google_scholar(request):
         number = 3
     else:
         number = int(number)
-
     # send the request to the third party api
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
@@ -170,7 +169,7 @@ def searchPaperOnCore(keyword, limit):
         for i, r in enumerate(resp["results"]):
             authors = []
             for a in r['authors']:
-                authors.append(a['name'])
+                authors.append({'name' : a['name']}.copy())
 
             res_dic = {
                 'title': r['title'],
@@ -242,6 +241,11 @@ def eric_papers(request):
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
+            a = []
+            if 'author' in paper.keys():
+                for auth in paper['author']:
+                    a.append({'name':auth}.copy())
+            paper['author'] = a
             if 'publicationdateyear' in paper.keys():
                 paper['date'] = paper.pop('publicationdateyear')
             else:
@@ -286,7 +290,7 @@ def zenodo(request):
             paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
             for author in authors:
-                paper_info['authors'].append(author['name'])
+                paper_info['authors'].append({'name':author['name']}) 
             results.append(paper_info.copy()) #Add the paper attributes into results
         response['results'] = results 
         return JsonResponse(response, status=200) #Return results as response
@@ -368,7 +372,7 @@ def nasa_sti(request):
             if 'authorAffiliations' in paper:
                 authors = paper['authorAffiliations']
                 for author in authors:
-                    paper_info['authors'].append(author['meta']['author']['name'])
+                    paper_info['authors'].append({'name' : author['meta']['author']['name']}.copy())
             paper_info['abstract'] = paper['abstract']
             paper_info['date'] = int(paper['created'].split("-")[0])
             paper_info['position'] = papers.index(paper)
@@ -735,6 +739,38 @@ def add_paper_to_list(request):
     paper_lists[0].paper.add(papers[0])
     return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
 
+
+# POST api/like-paper/
+@csrf_exempt
+def like_paper(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'Username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        current_user = authenticate(request, username=username, password=password)
+        if current_user == None:
+            return JsonResponse({'status' : 'User credentials are incorrect.'},status=401)
+    else:
+        current_user = request.user
+
+    query = request.POST
+    liked_paper = query.get('paper_id')
+    if liked_paper == None or liked_paper == '':
+        return JsonResponse({"status":"Paper should be provided."}, status = 400)
+
+    if models.Paper.objects.filter(paper_id=liked_paper).exists():
+        paper = models.Paper.objects.get(paper_id=liked_paper)
+        if models.Like.objects.filter(user=current_user, paper=paper).exists():
+            return JsonResponse({"status":"You are already liked this paper."}, status=409)
+        else:
+            models.Like.objects.create(user=current_user, paper=paper)
+            paper.like_count +=1
+            paper.save()
+            return JsonResponse({"status":"Paper liked."}, status = 200)
+    else:
+        return JsonResponse({"status":"Paper id is invalid."}, status = 404)
+    
 #returns the followers of the user
 def get_followers(request):
     user = request.user

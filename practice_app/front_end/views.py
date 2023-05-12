@@ -93,12 +93,15 @@ def search_paper(request):
     return render(request, "pages/search_paper.html", context)
 
 def search_user(request):
+    if request.user.is_anonymous:
+        return redirect("/sign_in/")
+    context = {'page': 'Search User', 'logged_in' : 1}
 
-    users = {}
     if request.method == "POST": 
         if request.POST.get("id") == "search": # if the search button clicked
             name = request.POST.get("name")
             users = User.objects.filter(first_name__istartswith = name ).values()
+            context["users"] = users
         elif request.POST.get("id") == "follow": # if follow button is clicked
             followed_user = request.POST.get("followed_user")
             follow_request = HttpRequest()
@@ -107,15 +110,7 @@ def search_user(request):
             follow_request.META = request.META
             follow_request.session = request.session
             follow_request.POST.update({"followed_username":followed_user})
-            follow_user(follow_request) #post follow_user 
-            
-
-    context = {'page': 'Search User', 'warning': "","users": users}
-
-    if request.user.is_anonymous:
-        return redirect("/sign_in/")
-    context = {'page': 'Search User', 'logged_in' : 1}
-
+            follow_user(follow_request) #post follow_user             
     return render(request, "pages/search_user.html", context)
 
 
@@ -189,7 +184,17 @@ def profile_page(request):
         'date_joined': request.user.date_joined,
         'interests': [],
     }
-
+    context = {'page': 'Profile Page', 'profile': profile, 'logged_in': 1}
+    if request.method == "POST":  # if the button clicked
+            newInterest = request.POST.get("newInterest")
+            add_request = HttpRequest()
+            add_request.method = 'POST'
+            add_request.user = request.user
+            add_request.META = request.META
+            add_request.session = request.session
+            add_request.headers = {"username": request.user.username, "password": request.user.password}
+            add_request.POST.update({'interest': newInterest})
+            add_response = add_interest(add_request)
     if len(UserInterest.objects.filter(user=request.user)) > 0:
         profile['interests'] = [user_interest.interest for user_interest in UserInterest.objects.filter(user=request.user)]
 
@@ -240,9 +245,19 @@ def following_lists(request):
 
 
 def list_content(request, paper_list_id):
-    if request.user.is_anonymous:
+    # if user is anonymous should not see list contents
+    if request.user.is_anonymous: 
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
+    #check if the PaperList object exists
+    if len(PaperList.objects.filter(id = paper_list_id)) >0 :
+        #find paper_list object
+        paper_list = PaperList.objects.filter(id = paper_list_id)[0]
+        print(paper_list)
+        print(paper_list.paper.all())
+        # add all papers to context
+        context["papers"] = paper_list.paper.all()
+        context["list_title"] = paper_list.list_title
     return render(request, "pages/list_content.html", context)
 
 
