@@ -1,10 +1,16 @@
 from django.urls import path
 from . import views
 
+from django.views.generic import TemplateView
+
+
 
 
 app_name = "api"
 urlpatterns = [
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html'
+    ), name='swagger-ui'),
     path("doaj-api/", views.doaj_api, name="doaj_api"),
     path("google-scholar/", views.google_scholar, name="google-scholar"),
     path("core/", views.core_get, name="core"),
