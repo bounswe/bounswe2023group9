@@ -677,6 +677,30 @@ class Add_Paper_To_List_Test_Cases(TestCase):
         self.assertTrue(paper1 in p_list.paper.all() and paper2 in p_list.paper.all() and paper3 in p_list.paper.all() and paper4 in p_list.paper.all())
 
 
+class pubchem_api_test_cases(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def tearDown(self):
+        print('Tests for Pubchem API completed!')
+
+    def test_empty_compount_id(self):
+        response = self.client.post("/api/pubchem-api/", data={'compound_id': ''})
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json()['status'], "Compound ID can't be empty")
+
+    def test_invalid_compount_id(self):
+        response = self.client.post("/api/pubchem-api/", data={'compound_id': 'dummy'})
+        self.assertEquals(response.status_code, 404)
+        self.assertEquals(response.json()['status'], "There isn't any compounds with the requested compound ID")
+
+    def test_valid_compount_id(self):
+        response = self.client.post("/api/pubchem-api/", data={'compound_id': '1'})
+        print(response)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.json()['status'], "Compound found")
+
+
 class accept_follow_request_test_cases(TestCase):
     def setUp(self):
         self.c = Client()
@@ -743,7 +767,7 @@ class reject_follow_request_test_cases(TestCase):
         request2 = models.FollowRequest.objects.create(sender=user_1, receiver=user_3, status='accepted')
 
     def tearDown(self):
-        print('Tests for POST requests using accept_follow_request completed!')
+        print('Tests for POST requests using reject_follow_request completed!')
 
     def test_unauthorized_receiver(self):
         # no headers are provided
