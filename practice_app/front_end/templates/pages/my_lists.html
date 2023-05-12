@@ -8,19 +8,19 @@
 
     <table class="container">
         <tr>
-            <th>Index</th>
-            <th>Paper Title</th>
-            <th>Abstract</th>
-            <th>Year</th>
+            <th>Paper List ID</th>
+            <th>Paper List Title</th>
+            <th>Owner</th>
         </tr>
 
-        {% for paper in papers %}
-        <tr>
-            <td>{{forloop.counter}}</td>
-            <td>{{paper.title}}</td>
-            <td>{{paper.abstract}}</td>
-            <td>{{paper.year}}</td>
-        </tr>
+        {% for p_list in paper_lists %}
+        <a href="{% url 'List Content' p_list.id %}">
+            <tr>
+                <td>{{p_list.id}}</td>
+                <td>{{p_list.list_title}}</td>
+                <td>{{p_list.owner}}</td>
+            </tr>
+        </a>
         {% endfor %}
     </table>
 

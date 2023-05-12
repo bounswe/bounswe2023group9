@@ -107,15 +107,21 @@ def profile_page(request):
 
 
 def my_lists(request):
+    user = request.user
     if request.user.is_anonymous:
         return redirect("/sign_in/")
+
+    p_lists = PaperList.objects.filter(owner = user)
+
     papers = [
         {'title': '<PAPER TITLE1>', 'abstract': "<ABSTRACT1>", 'year': 2000},
         {'title': '<PAPER TITLE2>', 'abstract': "<ABSTRACT2>", 'year': 2001},
         {'title': '<PAPER TITLE3>', 'abstract': "<ABSTRACT3>", 'year': 2002},
         {'title': '<PAPER TITLE4>', 'abstract': "<ABSTRACT4>", 'year': 2003},
     ]
-    context = {'page': 'My Lists', "papers": papers, 'logged_in' : 1}
+
+    context = {'page': 'My Lists', "paper_lists": p_lists, 'logged_in' : 1}
+
     return render(request, "pages/my_lists.html", context)
 
 
