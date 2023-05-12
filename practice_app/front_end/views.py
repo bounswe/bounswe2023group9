@@ -18,12 +18,15 @@ def search_paper(request):
     return render(request, "pages/search_paper.html", context)
 
 def search_user(request):
+    if request.user.is_anonymous:
+        return redirect("/sign_in/")
+    context = {'page': 'Search User', 'logged_in' : 1}
 
-    users = {}
     if request.method == "POST": 
         if request.POST.get("id") == "search": # if the search button clicked
             name = request.POST.get("name")
             users = User.objects.filter(first_name__istartswith = name ).values()
+            context["users"] = users
         elif request.POST.get("id") == "follow": # if follow button is clicked
             followed_user = request.POST.get("followed_user")
             follow_request = HttpRequest()
@@ -32,15 +35,7 @@ def search_user(request):
             follow_request.META = request.META
             follow_request.session = request.session
             follow_request.POST.update({"followed_username":followed_user})
-            follow_user(follow_request) #post follow_user 
-            
-
-    context = {'page': 'Search User', 'warning': "","users": users}
-
-    if request.user.is_anonymous:
-        return redirect("/sign_in/")
-    context = {'page': 'Search User', 'logged_in' : 1}
-
+            follow_user(follow_request) #post follow_user             
     return render(request, "pages/search_user.html", context)
 
 
@@ -164,7 +159,7 @@ def following_lists(request):
     return render(request, "pages/following_lists.html", context)
 
 
-def list_content(request, paper_list_id):
+def list_content(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
