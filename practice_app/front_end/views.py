@@ -126,7 +126,7 @@ def following_lists(request):
     if user.is_anonymous:
         return redirect('/sign_in/')
     
-    saved_lists = models.PaperList.objects.filter(saver=user)
+    saved_lists = PaperList.objects.filter(saver=user)
     context = {'page': 'Following Lists', 'lists': saved_lists}
     return render(request, "pages/following_lists.html", context)
 
