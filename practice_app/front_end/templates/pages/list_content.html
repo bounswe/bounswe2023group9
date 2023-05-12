@@ -1,34 +1,41 @@
-{% extends "base.html" %}
-{% block start %}
+{% extends "header.html" %}
+{% block header %}
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+</head>
 
-<div class="container mt-5">
-    <a href="/search_paper/">
-        Search Paper
-      </a>
-      |
-      <a href="/search_user/">
-        Search User
-      </a>
-      |
-      <a href="/my_lists/">
-        My Lists
-      </a>
-      |
-      <a href="/profile_page/">
-        Profile
-      </a>
-      |
-      <a href="/following_lists/">
-        Following Lists
-      </a>
-      <a href="/follow_requests/">
-        Follow Requests
-      </a>
       
     <hr>
-    <h1>List Content</h1>
+    <h1>{{list_title}}</h1>
+    <table class="table">
+        <tr>
+            <th class ="col-1">Index</th>
+            <th class ="col-2">Paper Title</th>
+            <th class ="col-3">Abstract</th>
+            <th class ="col-2">Authors</th>
+            <th class ="col-2">Source</th>
+            <th class ="col-2">Date</th>
+            <th class = "col-1">Likes</th>
+        </tr>
+        {% for paper in papers %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td><a href={{paper.url}}>{{paper.title}}</a></td>
+            <td>{{paper.abstract}}</td>
+            <td>{% for author in paper.get_authors %}
+              {{author.name}},
+              {% endfor %}
+            </td>
+            <td>{{paper.source}}</td>
+            <td>{{paper.year}}</td>
+            <td>{{paper.like_count}}</td>
+        </tr>
+        
+        {% endfor %}
 
-</div>
+    </table>
+
 
 {% endblock %}
 

@@ -1,26 +1,6 @@
-{% extends "base.html" %}
-{% block start %}
+{% extends "header.html" %}
+{% block header %}
 
-<div class="container mt-5">
-    <a href="/search_paper/">
-        Search Paper
-      </a>
-      |
-      <a href="/search_user/">
-        Search User
-      </a>
-      |
-      <a href="/profile_page/">
-        Profile
-      </a>
-      |
-      <a href="/my_lists/">
-        My Lists
-      </a>
-      |
-      <a href="/follow_requests/">
-        Follow Requests
-      </a>
 
     <hr>
     <h1>Following Lists</h1>
@@ -29,16 +9,17 @@
         <tr>
             <th>Index</th>
             <th>List Name</th>
+            <th>List Owner</th>
         </tr>
 
         {% for list in lists %}
         <tr>
             <td>{{forloop.counter}}</td>
-            <td>{{list}}</td>
+            <td><a href="{% url 'List Content' list.id %}">{{list.list_title}}</a></td>
+            <td>{{ list.owner.username }}</td>
         </tr>
         {% endfor %}
     </table>
-</div>
 
 {% endblock %}
 
