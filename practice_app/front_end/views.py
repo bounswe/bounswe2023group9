@@ -36,7 +36,7 @@ def search_paper(request):
             elif database == "core":
                 response = core_get(search_request)
             if request.user.is_authenticated:
-                lists = models.PaperList.objects.filter(owner = request.user)
+                lists = PaperList.objects.filter(owner = request.user)
             papers = json.loads(response.content.decode()).get('results')
 
         elif request.POST.get('id') == "add_list":
@@ -48,10 +48,7 @@ def search_paper(request):
             add_paper_request.META = request.META
             add_paper_request.session = request.session
             add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
-            add_paper_to_list(add_paper_request)
-
-            
-        
+            add_paper_to_list(add_paper_request)  
     logged_in = 1
     if request.user.is_anonymous:
         logged_in = 0
