@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "PRACTICE APP API",
-    "description": "This is a simple API for our practice app",
+    "description": "This is the the API documentation for practice app of Group 9",
     "contact": {
       "url": "https://github.com/bounswe/bounswe2023group9/wiki"
     },
@@ -10,12 +10,12 @@
   },
   "servers": [
     {
-      "url": "https://virtserver.swaggerhub.com/HAKANAKTAS7887/API/1.0.0",
-      "description": "SwaggerHub API Auto Mocking"
+      "url": "http://localhost:8000/",
+      "description": "localhost"
     },
     {
-      "url": "https://github.com/bounswe/bounswe2023group9/wiki",
-      "description": "SwaggerHub API Auto Mocking"
+      "url": "http://35.171.9.117:8000/",
+      "description": "Remote instance"
     }
   ],
   "tags": [
@@ -35,7 +35,7 @@
           "all users"
         ],
         "summary": "returns results from Google Scholar using given parameters",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "This endpoint allows users to get results from Google Scholar for given search parameters. THIS API REQUIRES A THIRD PARTY API KEY. Key should be set as an environment variable named serp_api_key",
         "parameters": [
           {
             "name": "title",
@@ -75,10 +75,24 @@
             }
           },
           "404": {
-            "description": "bad input parameter"
+            "description": "search title missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
           },
           "500": {
-            "description": "internal error"
+            "description": "Internal Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500"
+                }
+              }
+            }
           }
         }
       }
@@ -89,12 +103,12 @@
           "all users"
         ],
         "summary": "returns results from ERIC using given parameters",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "This endpoint returns the list of scientific papers in the ERIC database with the provided \"title\". The count of papers returned in the response is specified by the \"rows\" parameter.",
         "parameters": [
           {
             "name": "title",
             "in": "query",
-            "description": "pass a search string for making the search",
+            "description": "Specifies the title of the papers to be searched.",
             "required": true,
             "allowEmptyValue": false,
             "style": "form",
@@ -106,7 +120,7 @@
           {
             "name": "rows",
             "in": "query",
-            "description": "number of papers returned, if not given default is 3",
+            "description": "Specifies the count of the papers to be returned.",
             "required": false,
             "allowEmptyValue": true,
             "style": "form",
@@ -129,10 +143,24 @@
             }
           },
           "404": {
-            "description": "bad input parameter"
+            "description": "search title missing / rows missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_1"
+                }
+              }
+            }
           },
-          "500": {
-            "description": "internal error"
+          "503": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_503"
+                }
+              }
+            }
           }
         }
       }
@@ -143,7 +171,7 @@
           "all users"
         ],
         "summary": "returns results from DOAJ using given parameters",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "This get method returns a list of articles from the database of the DOAJ API. It needs tow parameters: title and rows. title determines the content of the articles while rows specifies the number of articles returned.",
         "parameters": [
           {
             "name": "title",
@@ -183,10 +211,14 @@
             }
           },
           "404": {
-            "description": "bad input parameter"
-          },
-          "500": {
-            "description": "internal error"
+            "description": "Check your parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_2"
+                }
+              }
+            }
           }
         }
       }
@@ -197,7 +229,7 @@
           "all users"
         ],
         "summary": "returns results from CORE.AC.UK using given parameters",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "This end point is for allowing users to search papers on CORE.AC.UK database via our servers. THIS API REQUIRES A THIRD PARTY API KEY. Key should be set as an environment variable named core_api_key",
         "parameters": [
           {
             "name": "title",
@@ -236,11 +268,45 @@
               }
             }
           },
+          "204": {
+            "description": "Server Busy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_204"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "title / rows missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400"
+                }
+              }
+            }
+          },
           "404": {
-            "description": "bad input parameter"
+            "description": "No response from CORE.AC.UK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_3"
+                }
+              }
+            }
           },
           "500": {
-            "description": "internal error"
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500_1"
+                }
+              }
+            }
           }
         }
       }
@@ -251,7 +317,7 @@
           "all users"
         ],
         "summary": "returns results from ZENODO using given parameters",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "This endpoint enables users to search specific paper titles from Zenodo API through our servers. It takes two parameters: title and rows. Title is the search word user wants to search and rows is the count of the papers to be returned. Title can't be empty but rows can be empty and its' default value is 5. THIS API REQUIRES A THIRD PARTY API KEY. Key should be set as an environment variable named zenodo_api_key",
         "parameters": [
           {
             "name": "title",
@@ -291,10 +357,24 @@
             }
           },
           "404": {
-            "description": "bad input parameter"
+            "description": "title missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
           },
-          "500": {
-            "description": "internal error"
+          "503": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500"
+                }
+              }
+            }
           }
         }
       }
@@ -345,10 +425,92 @@
             }
           },
           "404": {
-            "description": "bad input parameter"
+            "description": "title missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/nasa-sti/": {
+      "get": {
+        "tags": [
+          "all users"
+        ],
+        "summary": "returns results from NASA STI using given parameters",
+        "description": "This endpoint allows users to retrieve the details of a specific paper in the NASA-STI database by using following endpoint: https://ntrs.nasa.gov/api/citations/search with a search key as 'title' and size as 'rows'. User can also specify the number of results by setting 'rows' parameter. Default number of results returned is 3.",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "pass a search string for making the search",
+            "required": true,
+            "allowEmptyValue": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
           },
-          "500": {
-            "description": "internal error"
+          {
+            "name": "rows",
+            "in": "query",
+            "description": "number of papers returned, if not given default is 3",
+            "required": false,
+            "allowEmptyValue": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "format": "int"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "search results matching criteria",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Title to search must be given.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unsuccessful Search.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_4"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "An internal server error has occured. Please try again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_500"
+                }
+              }
+            }
           }
         }
       }
@@ -359,7 +521,7 @@
           "all users"
         ],
         "summary": "returns the details of the researcher given their ORCID ID",
-        "description": "By passing in the appropriate options, you can make a search using the API\n",
+        "description": "Utilizes ORCID API to get user's public information. A valid ORCID ID should be given as 'user_id'. Third party ORCID API returns a long list of user information. Our api selects name and surname fields from the response form ORCID API. In addition, it checks the validity of user id before calling ORCID API.",
         "parameters": [
           {
             "name": "user_id",
@@ -386,7 +548,59 @@
             }
           },
           "404": {
-            "description": "Invalid ORCID ID"
+            "description": "user_id missing / Invalid ORCID ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_5"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pubchem-api/": {
+      "get": {
+        "tags": [
+          "all users"
+        ],
+        "summary": "This endpoint returns a specific compound from Pubchem database.",
+        "description": "The method that is run by the endpoint calls the Third Party API of Pubchem to query compounds. It takes only one parameter, 'compound_id', and return the corresponding compound from Pubchem database.",
+        "parameters": [
+          {
+            "name": "compound_id",
+            "in": "query",
+            "description": "Specifies the id of the compount to be searched.",
+            "required": true,
+            "allowEmptyValue": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compound found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Compound ID can't be empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_1"
+                }
+              }
+            }
           }
         }
       }
@@ -397,7 +611,7 @@
           "registered users"
         ],
         "summary": "Allows the users to log in",
-        "description": "Allows the users to log in",
+        "description": "Allows users to log in by using Django's built-in functions. User credentials should be provided in headers. If there is an user registered to our database with the provided username and password, authenticates that user. Else, gives an error.",
         "parameters": [
           {
             "name": "username",
@@ -424,23 +638,42 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_login_body"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "user logged in",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
+                  "$ref": "#/components/schemas/inline_response_200_1"
                 }
               }
             }
           },
           "404": {
-            "description": "Invalid Creditentials",
+            "description": "id / password missing",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404"
+                  "$ref": "#/components/schemas/inline_response_404_6"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "username and password fields can not be empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
                 }
               }
             }
@@ -454,14 +687,23 @@
           "registered users"
         ],
         "summary": "Allows the users to log out",
-        "description": "Allows the users to log out",
+        "description": "Allows users to log out by using Django's built-in functions.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_logout_body"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "User logged out.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_1"
+                  "$ref": "#/components/schemas/inline_response_200_2"
                 }
               }
             }
@@ -475,7 +717,7 @@
           "all users"
         ],
         "summary": "Allows the users to register",
-        "description": "Allows the users to register using their ORCID",
+        "description": "Allows users to register to the platform. A valid and unique ORCID ID should be provided. Users can be registered at most once with the same ORCID ID. Creation of user on the database is handled by Django's built_in functions that encrypt passwords.",
         "parameters": [
           {
             "name": "username",
@@ -502,13 +744,22 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_userregistration_body"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "user registered",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200"
+                  "$ref": "#/components/schemas/inline_response_200_1"
                 }
               }
             }
@@ -518,7 +769,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404_1"
+                  "$ref": "#/components/schemas/inline_response_404_7"
                 }
               }
             }
@@ -552,7 +803,7 @@
           "registered users"
         ],
         "summary": "Allows the users to save the papers returned from search",
-        "description": "Allows the users to save the papers returned from search to DB",
+        "description": "This endpoint allows users to save the results of a search query sent to a third party to the Database. Parameter \"db\" is for database name. User must be authenticated to make this call.",
         "parameters": [
           {
             "name": "username",
@@ -581,7 +832,7 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/api_postpapers_body"
               }
@@ -594,7 +845,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_2"
+                  "$ref": "#/components/schemas/inline_response_200_3"
                 }
               }
             }
@@ -628,7 +879,7 @@
           "registered users"
         ],
         "summary": "Allows users to follow each other",
-        "description": "Allows users to follow each other",
+        "description": "This endpoint allows users to follow another user. Authentication is needed to access this endpoint. User should be registered or authenticate through its username and password in the headers.",
         "parameters": [
           {
             "name": "username",
@@ -657,7 +908,7 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/api_followuser_body"
               }
@@ -670,7 +921,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_200_3"
+                  "$ref": "#/components/schemas/inline_response_200_4"
                 }
               }
             }
@@ -680,7 +931,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_400"
+                  "$ref": "#/components/schemas/inline_response_400_2"
                 }
               }
             }
@@ -700,7 +951,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/inline_response_404_2"
+                  "$ref": "#/components/schemas/inline_response_404_8"
                 }
               }
             }
@@ -721,6 +972,618 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/inline_response_409_1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/add-interest/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to add their interests",
+        "description": "This endpoint allows users to add interest into their profile page. Authentication is required to reach this endpoint. Username and password are taken through headers and method raises error in the cases of invalid or empty credentials. It takes the interest to be added from body and interest name can't be empty or an interest can't be added twice.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_addinterest_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Interest successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_5"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Interest not provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_3"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials / Interest already added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407_1"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/save-paper-list/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to save paper lists",
+        "description": "This endpoint saves the current logged in user to the saver array of the paper list whose id is provided with the POST method. A status message is returned according to success or failure type of the request.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_savepaperlist_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper list successfully added to user's saved lists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_6"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Paper list id missing / Paper list with this id doesn't exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_9"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/add-paper-to-list/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to add papers to a paperlist",
+        "description": "This POST request allows users to add a paper to their lists. Users need to be authorised to do that.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_addpapertolist_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paper successfully added to list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_7"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_4"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/create-paper-list/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to create paper lists",
+        "description": "This end point is for allowing users to create new paper lists in the database. Authentication needed: username and password should be supplied in the header. list_title should be supplied in the body form-data.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_createpaperlist_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "paper list successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_8"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing paper title",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_5"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/like-paper/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to like papers",
+        "description": "Provide like paper utility to users. You can not like same paper twice.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_likepaper_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Paper id missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_6"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Invalid Paper Id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_404_10"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Paper already liked by the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_409_2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/accept-follow-request/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to accept follow requests",
+        "description": "This endpoint takes sender_id and receiver_id as parameters and adds user with id=sender_id to followers list of the user with id=receiver_id.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_acceptfollowrequest_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Follow request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_9"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User/users not found - Follow request is already answered - There is no such follow request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_7"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reject-follow-request/": {
+      "post": {
+        "tags": [
+          "registered users"
+        ],
+        "summary": "Allows users to reject follow requests",
+        "description": "This endpoint takes sender_id and receiver_id as parameters and rejects the follow request of the sender.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "header",
+            "description": "pass a valid username",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "0000-0002-5022-178X"
+            }
+          },
+          {
+            "name": "password",
+            "in": "header",
+            "description": "pass the password",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "strongpassword"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_rejectfollowrequest_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Follow request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_10"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User/users not found - Follow request is already answered - There is no such follow request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_400_7"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_401"
+                }
+              }
+            }
+          },
+          "407": {
+            "description": "Missing Creditentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_407"
                 }
               }
             }
@@ -759,21 +1622,168 @@
           }
         }
       },
-      "inline_response_200": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "User logged in."
-          }
-        }
-      },
       "inline_response_404": {
         "type": "object",
         "properties": {
           "status": {
             "type": "string",
-            "example": "Authentication failed"
+            "example": "Title to search must be given."
+          }
+        }
+      },
+      "inline_response_500": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "An internal server error has occured. Please try again."
+          }
+        }
+      },
+      "inline_response_404_1": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "A paper title must be given."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Row count must be valid."
+              }
+            }
+          }
+        ]
+      },
+      "inline_response_503": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Internal server error"
+          }
+        }
+      },
+      "inline_response_404_2": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3"
+          }
+        }
+      },
+      "inline_response_400": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "title param is required!"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "rows param must be numeric if exist!"
+              }
+            }
+          }
+        ]
+      },
+      "inline_response_404_3": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "There is no such content with the specified title on this source!"
+          }
+        }
+      },
+      "inline_response_204": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "The server is too busy for this request. Please try again later."
+          }
+        }
+      },
+      "inline_response_500_1": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "An internal server error has occured. Please try again later."
+          }
+        }
+      },
+      "inline_response_404_4": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Unsuccessful Search."
+          }
+        }
+      },
+      "inline_response_404_5": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "ORCID ID should be provided as user_id"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Invalid ORCID ID"
+              }
+            }
+          }
+        ]
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Compound found"
+          }
+        }
+      },
+      "inline_response_400_1": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Compound ID can't be empty"
+          }
+        }
+      },
+      "api_login_body": {
+        "type": "object",
+        "properties": {
+          "warn": {
+            "type": "string",
+            "example": "do not change this part"
           }
         }
       },
@@ -782,18 +1792,31 @@
         "properties": {
           "status": {
             "type": "string",
-            "example": "User logged out."
+            "example": "User logged in."
           }
         }
       },
-      "inline_response_404_1": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "Valid ORCID ID should be provided."
+      "inline_response_404_6": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "ORCID ID should be provided."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Password should be provided."
+              }
+            }
           }
-        }
+        ]
       },
       "inline_response_407": {
         "type": "object",
@@ -801,6 +1824,42 @@
           "status": {
             "type": "string",
             "example": "username and password fields can not be empty"
+          }
+        }
+      },
+      "api_logout_body": {
+        "type": "object",
+        "properties": {
+          "warn": {
+            "type": "string",
+            "example": "do not change this part"
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "User logged out."
+          }
+        }
+      },
+      "api_userregistration_body": {
+        "type": "object",
+        "properties": {
+          "warn": {
+            "type": "string",
+            "example": "do not change this part"
+          }
+        }
+      },
+      "inline_response_404_7": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Valid ORCID ID should be provided."
           }
         }
       },
@@ -830,7 +1889,7 @@
           }
         }
       },
-      "inline_response_200_2": {
+      "inline_response_200_3": {
         "type": "object",
         "properties": {
           "status": {
@@ -857,7 +1916,7 @@
           }
         }
       },
-      "inline_response_200_3": {
+      "inline_response_200_4": {
         "type": "object",
         "properties": {
           "status": {
@@ -866,7 +1925,7 @@
           }
         }
       },
-      "inline_response_400": {
+      "inline_response_400_2": {
         "type": "object",
         "properties": {
           "status": {
@@ -875,7 +1934,7 @@
           }
         }
       },
-      "inline_response_404_2": {
+      "inline_response_404_8": {
         "type": "object",
         "properties": {
           "status": {
@@ -906,6 +1965,282 @@
           }
         ]
       },
+      "api_addinterest_body": {
+        "type": "object",
+        "properties": {
+          "interest": {
+            "type": "string",
+            "example": "Russian"
+          }
+        }
+      },
+      "inline_response_200_5": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Interest has been added to profile successfully!"
+          }
+        }
+      },
+      "inline_response_400_3": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Name of the interest can't be empty."
+          }
+        }
+      },
+      "inline_response_407_1": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "username and password fields can not be empty"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "This interest has already been added"
+              }
+            }
+          }
+        ]
+      },
+      "api_savepaperlist_body": {
+        "type": "object",
+        "properties": {
+          "paper_list_id": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "inline_response_200_6": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper list is saved successfully!"
+          }
+        }
+      },
+      "inline_response_404_9": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Paper list id must be provided!"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Paper list is not found!"
+              }
+            }
+          }
+        ]
+      },
+      "api_addpapertolist_body": {
+        "type": "object",
+        "properties": {
+          "list_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "paper_id": {
+            "type": "integer",
+            "example": 3
+          }
+        }
+      },
+      "inline_response_200_7": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper Has Been Added To The List"
+          }
+        }
+      },
+      "inline_response_400_4": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "No Such List"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "More than 1 List Found"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "No Such Paper"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "More than 1 Paper Found"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "example": "Either list id or paper id is missing, or they are not integer"
+              }
+            }
+          }
+        ]
+      },
+      "api_createpaperlist_body": {
+        "type": "object",
+        "properties": {
+          "list_title": {
+            "type": "string",
+            "example": "list-title"
+          }
+        }
+      },
+      "inline_response_400_5": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper list title must be provided!"
+          }
+        }
+      },
+      "inline_response_200_8": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper list created successfully!"
+          }
+        }
+      },
+      "api_likepaper_body": {
+        "type": "object",
+        "properties": {
+          "paper_id": {
+            "type": "integer",
+            "example": 1
+          }
+        }
+      },
+      "inline_response_400_6": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper should be provided."
+          }
+        }
+      },
+      "inline_response_409_2": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "You are already liked this paper."
+          }
+        }
+      },
+      "inline_response_404_10": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Paper id is invalid."
+          }
+        }
+      },
+      "api_acceptfollowrequest_body": {
+        "type": "object",
+        "properties": {
+          "sender_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "receiver_id": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "inline_response_400_7": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "User/users not found"
+          }
+        }
+      },
+      "inline_response_200_9": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Follow request accepted"
+          }
+        }
+      },
+      "api_rejectfollowrequest_body": {
+        "type": "object",
+        "properties": {
+          "sender_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "receiver_id": {
+            "type": "integer",
+            "example": 2
+          }
+        }
+      },
+      "inline_response_200_10": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Follow request rejected"
+          }
+        }
+      },
       "GetResponse_authors": {
         "type": "object",
         "properties": {
@@ -931,18 +2266,17 @@
           },
           "title": {
             "type": "string",
-            "example": "paper title"
+            "example": "The title of the paper. If a title is not found then it is NO TITLE."
           },
           "date": {
-            "type": "integer",
-            "example": 2015
+            "type": "integer"
           },
           "position": {
-            "type": "integer",
-            "example": 2
+            "type": "integer"
           },
           "source": {
-            "type": "string"
+            "type": "string",
+            "example": "The third-party source of the paper."
           },
           "authors": {
             "type": "array",
