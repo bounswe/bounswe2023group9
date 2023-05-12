@@ -2,7 +2,9 @@
 {% extends "header.html" %}
 {% block header %}
 
-
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
 
   <hr>
   <h2 class="h2 text-center">Search User</h2>
@@ -55,7 +57,8 @@
               {% csrf_token %}
               <input type="hidden" value="follow" name="id">
               <input type="hidden" value={{user.username}} name="followed_user">
-              <button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button></form>
+              <button type="submit" class="btn" name="follow-button"><i class="material-icons">playlist_add</i></button></form>
+            
             </td>
             
         </tr>
