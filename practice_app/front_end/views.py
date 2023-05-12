@@ -98,7 +98,17 @@ def profile_page(request):
         'date_joined': request.user.date_joined,
         'interests': [],
     }
-
+    context = {'page': 'Profile Page', 'profile': profile, 'logged_in': 1}
+    if request.method == "POST":  # if the button clicked
+            newInterest = request.POST.get("newInterest")
+            add_request = HttpRequest()
+            add_request.method = 'POST'
+            add_request.user = request.user
+            add_request.META = request.META
+            add_request.session = request.session
+            add_request.headers = {"username": request.user.username, "password": request.user.password}
+            add_request.POST.update({'interest': newInterest})
+            add_response = add_interest(add_request)
     if len(UserInterest.objects.filter(user=request.user)) > 0:
         profile['interests'] = [user_interest.interest for user_interest in UserInterest.objects.filter(user=request.user)]
 
