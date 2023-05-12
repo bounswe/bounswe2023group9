@@ -738,6 +738,7 @@ def add_paper_to_list(request):
     paper_lists[0].paper.add(papers[0])
     return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
 
+@csrf_exempt
 def accept_follow_request(request):
 
     if request.user.is_anonymous:
@@ -781,6 +782,7 @@ def accept_follow_request(request):
     else:
         return JsonResponse({"status": "There is no such follow request"}, status=400)
 
+@csrf_exempt
 def reject_follow_request(request):
     if request.user.is_anonymous:
         if 'username' not in request.headers or 'password' not in request.headers:
