@@ -11,8 +11,12 @@ from django.contrib.auth import authenticate, login, logout
 
 from django.views.decorators.csrf import csrf_exempt
 
+# GET Method for DOAJ API
 
 def doaj_get(request):
+    return doaj_api(request)
+
+def doaj_api(request):
     DOAJ_MAX_ROW = 10
     # Parse the parameters (title and rows)
     params = request.GET
@@ -29,67 +33,89 @@ def doaj_get(request):
     rows = int(rows) if int(rows) <= DOAJ_MAX_ROW else DOAJ_MAX_ROW
 
     # send GET request
-    api_url = "https://doaj.org/api/search/articles/" + \
-        query + "?page=1&" + "pageSize=" + str(rows)
+    api_url = "https://doaj.org/api/search/articles/" + query + "?page=1&" + "pageSize=" + str(rows)
     res = requests.get(api_url)
     response = res.json()
 
     # parse the dictionary
     # all fields are assumed to exist in the response
     if res.status_code == 200:
-        try:
-            return JsonResponse(
-                {
-                    "status_code": 200,
-                    "count": response["total"] if response["total"] < rows else rows,
-                    "results": [
-                        {
-                            "id": result["id"],
-                            "source": "DOAJ",
-                            "position": index + 1,
-                            "authors": [author["name"] for author in result["bibjson"]["author"]],
-                            "date": int(result["created_date"][0:4]),
-                            "abstract": result["bibjson"]["abstract"],
-                            "title": result["bibjson"]["title"],
-                            "url": result["bibjson"]["link"][0]["url"]
-                        } for index, result in enumerate(response["results"])
-                    ]
-                }
-            )
-        except:
-            return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
+        response_dict = {
+        "status_code": 200, 
+        "count": response["total"] if response["total"] < rows else rows,
+        "results": [],
+        }
+        for index, result in enumerate(response["results"]):
+            result_dict = {
+                "id": result["id"],
+                "source": "DOAJ",
+                "position": index,
+                "authors": [],
+                "date": 0,
+                "abstract": "NO ABSTRACT",
+                "title": "NO TITLE",
+                "url": "NO URL",
+            }
+
+            if "bibjson" in result.keys():
+                if "author" in result["bibjson"].keys():
+                    result_dict["authors"] = [author["name"] for author in result["bibjson"]["author"]]
+                if "abstract" in result["bibjson"].keys():
+                    result_dict["abstract"] = result["bibjson"]["abstract"]
+                if "title" in result["bibjson"].keys():
+                    result_dict["title"] = result["bibjson"]["title"]
+                if "link" in result["bibjson"].keys() and len(result["bibjson"]["link"]) > 0 and "url" in result["bibjson"]["link"][0].keys():
+                    result_dict["url"] = result["bibjson"]["link"][0]["url"]
+
+            if "created_date" in result.keys():
+                result_dict["date"] = int(result["created_date"][0:4])
+
+            response_dict["results"].append(result_dict)
+        return JsonResponse(response_dict, status=200)
+    
     else:
         return JsonResponse({"status": 'Check your parameters. Example url: http://127.0.0.1:8000/api/doaj-api/?title=sun&row=3'}, status=404)
 
 
+# GET api/google-scholar/
+# Utilizes the serpAPI to get results from google scholar
+# params -> title , rows
+# response type: 200 -> {'resutls' : [{'pos' : <position> , 'source' : google_scholar, 'authors' : [ {'name' : <author-name>},{} ... ] ,
+#  'date': <pub-year> , 'title' : <paper_title> , 'url' : <link-to-source> ,'abstract' : <abstract>   } ,{} ... ]}
 def google_scholar(request):
+    # getting the parameters
     number = request.GET.get("rows")
     search = request.GET.get("title")
+    # if search title is empty return 404
     if search == None or search == "":
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
+    # if rows parameter is empty / invalid use the default value = 3
     if number == None or number == "" or not number.isnumeric():
         number = 3
     else:
         number = int(number)
 
+    # send the request to the third party api
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
-    if request.status_code == 200:
+
+    if request.status_code == 200: # successful request
+        # get the results
         request = request.json()
         papers = request['organic_results']
         response = {}
         results = []
-        for paper in papers:
+        for paper in papers: # iterate over the results to get necessary fields
             pub_info = paper['publication_info']
             paper_info = {}
-            paper_info['source'] = 'google_scholar'
+            paper_info['source'] = 'google_scholar' # source is set
 
-            if 'authors' in pub_info.keys():
+            if 'authors' in pub_info.keys(): # only take the names of the authors
                 paper_info['authors'] = []
                 for author in pub_info['authors']:
                     a = {'name': author['name']}
                     paper_info['authors'].append(a.copy())
-            else:
+            else: # if authors field is not present in the result, get them from the summary field
                 temp = pub_info['summary'].split('-')[0].strip()
                 temp = temp.split(',')
                 authors = []
@@ -100,27 +126,29 @@ def google_scholar(request):
                     authors.append(author.copy())
                 paper_info['authors'] = authors
 
-            paper_info['id'] = paper['result_id']
+            paper_info['id'] = paper['result_id'] # third party id of the paper
+            # this api doesn't return year / date as a field, so we get it from summary using regex
             summary = pub_info['summary']
             summary = '-' + summary + '-'
             year = re.findall('[\W|\s](\d{4})[\W|\s]', summary)
-            if len(year) == 0:
+            if len(year) == 0: # if not found set 0
                 year = None
-                paper_info['date'] = 'Not found'
+                paper_info['date'] = 0000
             else:
                 year = int(year[0])
                 paper_info['date'] = year
 
-            paper_info['abstract'] = paper['snippet']
-            paper_info['title'] = paper['title']
-            paper_info['url'] = paper['link']
-            paper_info['pos'] = paper['position']
+            paper_info['abstract'] = paper['snippet'] # no abstract is returned from the third party so we used snippet
+            paper_info['title'] = paper['title'] # title is set
+            if 'link' in paper.keys():
+                paper_info['url'] = paper['link'] # url is set
+            paper_info['pos'] = paper['position'] # position is set
             results.append(paper_info.copy())
         response['results'] = results
-        return JsonResponse(response)
-    elif request.status_code == 404:
+        return JsonResponse(response) # results are returned
+    elif request.status_code == 404: # third party returned 404
         return JsonResponse({'status': 'Unsuccessful Search.'}, status=404)
-    else:
+    else: # third party returned something unexpected
         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
 
@@ -205,8 +233,7 @@ def eric_papers(request):
 
     baseURL = "https://api.ies.ed.gov/eric/"
     response_fields = "&fields=id AND title AND author AND publicationdateyear AND url AND description AND source"
-    endpoint = baseURL + "?search=title:" + \
-        search_title + "&rows=" + rows + response_fields
+    endpoint = baseURL + "?search=title:" + search_title + "&rows=" + str(rows) + response_fields
 
     response = requests.get(endpoint)
 
@@ -215,13 +242,19 @@ def eric_papers(request):
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
-            paper['date'] = paper.pop('publicationdateyear')
-            paper['abstract'] = paper.pop('description')
+            if 'publicationdateyear' in paper.keys():
+                paper['date'] = paper.pop('publicationdateyear')
+            else:
+                paper['date'] = 0
+            if 'description' in paper.keys():
+                paper['abstract'] = paper.pop('description')
+            else:
+                paper['abstract'] = 'NO ABSTRACT'
             paper['position'] = i
             i += 1
         return JsonResponse({'results':papers})
     elif response.status_code == 404:
-        return JsonResponse({'message': 'Resource not found'}, status=404)
+        return JsonResponse({'message':'Resource not found'}, status=404)
     else:
         return JsonResponse({'message':'Internal server error'}, status=503)
 # GET api/zenodo
@@ -235,7 +268,7 @@ def zenodo(request):
         return JsonResponse({'status': 'Title to search must be given.'}, status=404)
     #Third party API call
     request = requests.get('https://zenodo.org/api/records',
-                           params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
+                     params={'q': search_title, 'sort': 'bestmatch', 'size': rows, 'access_token': ACCESS_TOKEN})
 
     if request.status_code == 200:  #Status code check
         papers = request.json()["hits"]["hits"] #Getting the papers
@@ -248,8 +281,7 @@ def zenodo(request):
             paper_info['url'] = paper['links']['doi']
             paper_info['authors'] = []
             paper_info['abstract'] = paper['metadata']['description']
-            paper_info['date'] = int(
-                paper['metadata']['publication_date'].split("-")[0])
+            paper_info['date'] = int(paper['metadata']['publication_date'].split("-")[0])
             paper_info['position'] = papers.index(paper)
             paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
@@ -263,7 +295,6 @@ def zenodo(request):
     else:
         return JsonResponse({'status': 'An internal server error has occured. Please try again.'}, status=503)
 
-
 def semantic_scholar(request):
     query = request.GET
     search = query.get("title")
@@ -276,7 +307,8 @@ def semantic_scholar(request):
     else:
         limit = int(limit)
 
-    fields = ['url', 'abstract', 'authors', 'title', 'year']
+
+    fields = ['url','abstract','authors','title','year']
     endpoint = f'https://api.semanticscholar.org/graph/v1/paper/search?query={search}&fields={",".join(fields)}&offset=0&limit={limit}'
 
     response = requests.get(endpoint)
@@ -285,12 +317,12 @@ def semantic_scholar(request):
         papers = response['data']
         response = {}
         results = []
-        for position, paper in enumerate(papers):
+        for position,paper in enumerate(papers):
             paper_info = {}
             paper_info['source'] = 'semantic_scholar'
             paper_info['authors'] = []
             for author in paper['authors']:
-                author_name = {'name': author['name']}
+                author_name = {'name' : author['name']}
                 paper_info['authors'].append(author_name.copy())
             paper_info['id'] = paper['paperId']
             paper_info['abstract'] = paper['abstract']
@@ -331,7 +363,7 @@ def nasa_sti(request):
             if len(paper['downloads']) > 0:
                 paper_info['url'] = "https://ntrs.nasa.gov" + paper['downloads'][0]['links']['original']
             else:
-                paper_info['url'] = "/"
+                paper_info['url'] = '/'
             paper_info['authors'] = []
             if 'authorAffiliations' in paper:
                 authors = paper['authorAffiliations']
@@ -353,8 +385,6 @@ def nasa_sti(request):
 # Utilizes the orcid api to get user credentials
 # params -> user_id
 # response type: {"user_id": string, "name": string, "surname": string}
-
-
 def orcid_api(request):
     # user_id should be a valid ORCID ID
     user_id = request.GET.get('user_id')
@@ -368,7 +398,7 @@ def orcid_api(request):
     api_request = requests.get("https://orcid.org/"+user_id, headers=Headers)
 
     if api_request.status_code != 200:
-        return JsonResponse({"status": "Invalid ORCID ID"}, status=404)
+        return JsonResponse({"status":"Invalid ORCID ID"}, status = 404)
     else:
         try:
             api_request = api_request.json()
@@ -387,8 +417,6 @@ def orcid_api(request):
 # POST api/log_in/
 # implements log in functionality
 # username and password should be provided in Headers
-
-
 @csrf_exempt
 def log_in(request):
     if 'username' not in request.headers or 'password' not in request.headers:
@@ -409,19 +437,17 @@ def log_in(request):
     # if the user is authenticated log in by built-in login function
     if user is not None:
         login(request, user)
-        return JsonResponse({"status": "User logged in."}, status=200)
+        return JsonResponse({"status":"User logged in."}, status = 200)
 
     else:
-        return JsonResponse({"status": "Authentication failed"}, status=404)
+        return JsonResponse({"status":"Authentication failed"}, status = 404)
 
 # GET api/log_out/
 # get user to log out by built-in logout function
-
-
 @csrf_exempt
 def log_out(request):
     logout(request)
-    return JsonResponse({"status": "User logged out."}, status=200)
+    return JsonResponse({"status":"User logged out."}, status = 200)
 
 # POST api/user_registration
 # username and password should be in headers
@@ -429,11 +455,10 @@ def log_out(request):
 # name and surname should be provided in data
 # username, name, password must be provided, surname is optional
 
-
 @csrf_exempt
 def user_registration(request):
     if 'username' not in request.headers or 'password' not in request.headers:
-        return JsonResponse({'status': 'username and password fields can not be empty '}, status=407)
+        return JsonResponse({'status' : 'username and password fields can not be empty '},status=407)
     user_id = request.headers["username"]
     password = request.headers['password']
 
@@ -448,10 +473,9 @@ def user_registration(request):
 
     if orcid_api_response.status_code == 200:
         name = json.loads(orcid_api_response.content.decode()).get("name")
-        surname = json.loads(
-            orcid_api_response.content.decode()).get("surname")
+        surname = json.loads(orcid_api_response.content.decode()).get("surname")
     else:
-        return JsonResponse({"status": "Valid ORCID ID should be provided."}, status=404)
+        return JsonResponse({"status":"Valid ORCID ID should be provided."}, status = 404)
 
     if user_id == None or user_id == '':
         return JsonResponse({"status":"ORCID ID should be provided."}, status = 404)
@@ -614,7 +638,7 @@ def post_papers(request):
     if db == 'semantic-scholar':
         response = semantic_scholar(api_request)
     elif db == 'doaj':
-        response = doaj_get(api_request)
+        response = doaj_api(api_request)
     elif db == 'core':
         response = core_get(api_request)
     elif db == 'zenodo':
