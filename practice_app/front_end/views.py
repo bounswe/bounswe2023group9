@@ -11,19 +11,83 @@ def home(request):
     return HttpResponse("<h1>Hey this is a home page</h1>")
 
 def search_paper(request):
+    lists = {}
+    papers = {}
+    if request.method == "POST":  # if the search button clicked
+        if request.POST.get('id') == "search":
+            database = request.POST.get("database")
+            query = request.POST.get("search_paper")
+            rows = request.POST.get("rows")
+            search_request = HttpRequest()
+            search_request.method = 'POST'
+            search_request.user = request.user
+            search_request.META = request.META
+            search_request.session = request.session
+            search_request.GET.update({"title": query, "rows": rows})
+
+            if request.user.is_authenticated:
+                req = HttpRequest()
+                db = database
+                if database == 'semantic_scholar':
+                    db = 'semantic-scholar'
+                if database == 'eric_papers':
+                    db = 'eric'
+                if database == 'google_scholar':
+                    db = 'google-scholar'
+                req.POST.update({"title": query, "rows": rows, "db": db})
+                req.user = request.user
+                req.META = request.META
+                req.session = request.session
+                req.method = 'POST'
+                post_papers(req)
+
+
+
+
+            if database == "semantic_scholar":
+                response = semantic_scholar(search_request)
+            elif database == "eric_papers":
+                response = eric_papers(search_request)
+            elif database == "zenodo":
+                response = zenodo(search_request)
+            elif database == "doaj":
+                response = doaj_get(search_request)
+            elif database == "google_scholar":
+                response = google_scholar(search_request)
+            elif database == "core":
+                response = core_get(search_request)
+            elif database == "nasa-sti":
+                response = nasa_sti(search_request)
+            if request.user.is_authenticated:
+                lists = PaperList.objects.filter(owner = request.user).values()
+            papers = json.loads(response.content.decode()).get('results')
+        elif request.POST.get('id') == "add_list":
+            list_id = request.POST.get("list_id")
+            third_party_paper_id = request.POST.get("paper_id")
+            paper_id = str(Paper.objects.filter(third_party_id = third_party_paper_id).values()[0]["paper_id"])
+            add_paper_request = HttpRequest()
+            add_paper_request.method = 'POST'
+            add_paper_request.user = request.user
+            add_paper_request.META = request.META
+            add_paper_request.session = request.session
+            add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
+            add_paper_to_list(add_paper_request)
     logged_in = 1
     if request.user.is_anonymous:
         logged_in = 0
-    context = {'page': 'Search Paper', 'logged_in' : logged_in}
+    context = {'page': 'Search Paper', 'warning': "","papers": papers ,"lists":lists, 'logged_in' : logged_in}
     return render(request, "pages/search_paper.html", context)
 
 def search_user(request):
+    if request.user.is_anonymous:
+        return redirect("/sign_in/")
+    context = {'page': 'Search User', 'logged_in' : 1}
 
-    users = {}
     if request.method == "POST": 
         if request.POST.get("id") == "search": # if the search button clicked
             name = request.POST.get("name")
             users = User.objects.filter(first_name__istartswith = name ).values()
+            context["users"] = users
         elif request.POST.get("id") == "follow": # if follow button is clicked
             followed_user = request.POST.get("followed_user")
             follow_request = HttpRequest()
@@ -32,15 +96,7 @@ def search_user(request):
             follow_request.META = request.META
             follow_request.session = request.session
             follow_request.POST.update({"followed_username":followed_user})
-            follow_user(follow_request) #post follow_user 
-            
-
-    context = {'page': 'Search User', 'warning': "","users": users}
-
-    if request.user.is_anonymous:
-        return redirect("/sign_in/")
-    context = {'page': 'Search User', 'logged_in' : 1}
-
+            follow_user(follow_request) #post follow_user             
     return render(request, "pages/search_user.html", context)
 
 
@@ -175,9 +231,19 @@ def following_lists(request):
 
 
 def list_content(request, paper_list_id):
-    if request.user.is_anonymous:
+    # if user is anonymous should not see list contents
+    if request.user.is_anonymous: 
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
+    #check if the PaperList object exists
+    if len(PaperList.objects.filter(id = paper_list_id)) >0 :
+        #find paper_list object
+        paper_list = PaperList.objects.filter(id = paper_list_id)[0]
+        print(paper_list)
+        print(paper_list.paper.all())
+        # add all papers to context
+        context["papers"] = paper_list.paper.all()
+        context["list_title"] = paper_list.list_title
     return render(request, "pages/list_content.html", context)
 
 

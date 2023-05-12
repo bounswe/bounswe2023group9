@@ -1,55 +1,50 @@
 {% extends "base.html" %}
 {% block base %}
 <div class="container mt-5">
-    <a href="/search_paper/">
-        Search Paper
-      </a>
-      |
-      <a href="/search_user/">
-        Search User
-      </a>
-      |
-      <a href="/my_lists/">
-        My Lists
-      </a>
-      |
-      <a href="/following_lists/">
-        Following Lists
-      </a>
-      |
-      <a href="/followers/">
-        Followers
-      </a>
-      |
-      <a href="/following/">
-        Following
-      </a>
-      |
-      <a href="/follow_requests/">
-        Follow Requests
-      </a>
-      |
-      <a href="/profile_page/">
-        Profile
-      </a>
-        {% if logged_in == 0 %}
-        |
-        <a href="/sign_in/">
-        Sign In
-        </a>
-        {% endif %}
-        {% if logged_in == 0 %}
-        |
-        <a href="/sign_up/">
-        Sign Up
-        </a>
-        {% endif %}
-        {% if logged_in == 1 %}
-        |
-        <a href="/sign_out/">
-        Sign out
-        </a>
-        {% endif %}
+
+  <ul class="nav justify-content-center">
+    <li class="nav-item">
+      <a class="nav-link" href="/profile_page/">Profile</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/search_paper/">Search Paper</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/search_user/">Search User</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/my_lists/"> My Lists</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/following_lists/">Following Lists</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/follow_requests/">Follow Requests</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/following/">Following</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link " href="/followers/">Followers</a>
+    </li>
+    {% if logged_in == 0 %}
+    <li class="nav-item">
+      <a class="nav-link " href="/sign_in/">Sign In</a>
+    </li>
+    {% endif %}
+    {% if logged_in == 0 %}
+    <li class="nav-item">
+      <a class="nav-link " href="/sign_up/">Sign Up</a>
+    </li>
+    {% endif %}
+    {% if logged_in == 1 %}
+    <li class="nav-item">
+      <a class="nav-link " href="/sign_out/">Sign Out</a>
+    </li>
+    {% endif %}
+
+  </ul>
+
     {% block header %}
     {% endblock %}
 

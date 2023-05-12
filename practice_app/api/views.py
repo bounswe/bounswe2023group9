@@ -12,6 +12,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 
 # GET Method for DOAJ API
+
+def doaj_get(request):
+    return doaj_api(request)
+
 def doaj_api(request):
     DOAJ_MAX_ROW = 10
     # Parse the parameters (title and rows)
@@ -363,7 +367,7 @@ def nasa_sti(request):
             if len(paper['downloads']) > 0:
                 paper_info['url'] = "https://ntrs.nasa.gov" + paper['downloads'][0]['links']['original']
             else:
-                paper_info['url'] = None
+                paper_info['url'] = '/'
             paper_info['authors'] = []
             if 'authorAffiliations' in paper:
                 authors = paper['authorAffiliations']
@@ -647,6 +651,8 @@ def post_papers(request):
         response = eric_papers(api_request)
     elif db == 'google-scholar':
         response = google_scholar(api_request)
+    elif db == 'nasa-sti':
+        response = nasa_sti(api_request)
     else: # db parameter doesn't match with any of the options available
         return JsonResponse({'status': 'Invalid database name. Please select one of the following : semantic-scholar , doaj , core , zenodo , eric , google-scholar'}, status=404)
     if response.status_code != 200: # the call is not successful / something unexpected happened
