@@ -759,6 +759,8 @@ def like_paper(request):
             return JsonResponse({"status":"You are already liked this paper."}, status=409)
         else:
             models.Like.objects.create(user=current_user, paper=paper)
+            paper.like_count +=1
+            paper.save()
             return JsonResponse({"status":"Paper liked."}, status = 200)
     else:
         return JsonResponse({"status":"Paper id is invalid."}, status = 404)
