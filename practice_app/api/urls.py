@@ -21,6 +21,8 @@ urlpatterns = [
     path('post-papers/',views.post_papers,name='post-papers'),
     path('save-paper-list/', views.save_paper_list, name = 'save_paper_list'),
     path('add-paper-to-list/', views.add_paper_to_list, name="add_paper_to_list"),
+    path('accept-follow-request/', views.accept_follow_request, name='accept_follow_request'),
+    path('reject-follow-request/', views.reject_follow_request, name='reject_follow_request'),
     path('create-paper-list/', views.create_paper_list , name="create-paper-list"),
-    path('like-paper/',views.like_paper,name='like-paper')
+    path('like-paper/',views.like_paper,name='like-paper'),
 ]

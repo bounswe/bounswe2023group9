@@ -213,7 +213,6 @@ def core_get(request):  # this method parses the parameters of given get request
     else:  # any other problem
         return JsonResponse({'status': 'An internal server error has occured. Please try again later.'}, status=500)
 
-
 def eric_papers(request):
 
     #params --> title, rows
@@ -738,6 +737,82 @@ def add_paper_to_list(request):
 
     paper_lists[0].paper.add(papers[0])
     return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
+
+def accept_follow_request(request):
+
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        follower_user = authenticate(request, username=username, password=password)
+        if follower_user == None:
+            return JsonResponse({'status': 'user credentials are incorrect.'}, status=401)
+
+    query = request.POST
+    sender_id = query.get('sender_id')
+    receiver_id = query.get('receiver_id')
+
+    if not User.objects.filter(username=sender_id).exists():
+        return JsonResponse({"status": "User/users not found"}, status=400)
+
+    if not User.objects.filter(username=receiver_id).exists():
+        return JsonResponse({"status": "User/users not found"}, status=400)
+
+    sender = User.objects.get(username=sender_id)
+    receiver = User.objects.get(username=receiver_id)
+
+    if models.FollowRequest.objects.filter(sender=sender, receiver=receiver).exists():
+        if models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending').exists():
+            if not models.Follower.objects.filter(user=receiver).exists():
+                models.Follower.objects.create(user=receiver)
+            receiver_follower = models.Follower.objects.get(user=receiver)
+            if not models.Follower.objects.filter(user=sender).exists():
+                models.Follower.objects.create(user=sender)
+            receiver_follower.follower.add(sender)
+            sender_follower = models.Follower.objects.get(user=sender)
+            sender_follower.followed.add(receiver)
+            follow_request = models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending')[0]
+            follow_request.status = 'accepted'
+            return JsonResponse({"status": "Follow request accepted"}, status=200)
+        else:
+            return JsonResponse({"status": "Follow request is already answered"}, status=400)
+    else:
+        return JsonResponse({"status": "There is no such follow request"}, status=400)
+
+def reject_follow_request(request):
+    if request.user.is_anonymous:
+        if 'username' not in request.headers or 'password' not in request.headers:
+            return JsonResponse({'status': 'username and password fields can not be empty'}, status=407)
+        username = request.headers['username']
+        password = request.headers['password']
+        follower_user = authenticate(request, username=username, password=password)
+        if follower_user == None:
+            return JsonResponse({'status': 'user credentials are incorrect.'}, status=401)
+
+    query = request.POST
+    sender_id = query.get('sender_id')
+    receiver_id = query.get('receiver_id')
+
+    if not User.objects.filter(username=sender_id).exists():
+        return JsonResponse({"status": "User/users not found"}, status=400)
+
+    if not User.objects.filter(username=receiver_id).exists():
+        return JsonResponse({"status": "User/users not found"}, status=400)
+
+    sender = User.objects.get(username=sender_id)
+    receiver = User.objects.get(username=receiver_id)
+
+    if models.FollowRequest.objects.filter(sender=sender, receiver=receiver).exists():
+        if models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending').exists():
+            follow_request = models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending')
+            follow_request.status = 'rejected'
+            return JsonResponse({"status": "Follow request rejected"}, status=200)
+        else:
+            return JsonResponse({"status": "Follow request is already answered"}, status=400)
+    else:
+        return JsonResponse({"status": "There is no such follow request"}, status=400)
+
 
 
 # POST api/like-paper/

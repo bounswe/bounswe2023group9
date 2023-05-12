@@ -818,6 +818,112 @@ class Add_Paper_To_List_Test_Cases(TestCase):
         p_list = models.PaperList.objects.filter(id=paper_list.id)[0]
         self.assertTrue(paper1 in p_list.paper.all() and paper2 in p_list.paper.all() and paper3 in p_list.paper.all() and paper4 in p_list.paper.all())
 
+
+class accept_follow_request_test_cases(TestCase):
+    def setUp(self):
+        self.c = Client()
+        user_1 = User.objects.create_user(username="0009-0005-5924-2031", password="strongpassword", first_name = "user", last_name = "1")
+        user_2 = User.objects.create_user(username="0009-0005-5924-2032", password="strongpassword", first_name = "user", last_name = "2")
+        user_3 = User.objects.create_user(username="0009-0005-5924-2033", password="strongpassword", first_name = "followed", last_name = "3")
+        request1 = models.FollowRequest.objects.create(sender=user_1, receiver=user_2, status='pending')
+        request2 = models.FollowRequest.objects.create(sender=user_1, receiver=user_3, status='rejected')
+
+    def tearDown(self):
+        print('Tests for POST requests using accept_follow_request completed!')
+
+    def test_unauthorized_receiver(self):
+        # no headers are provided
+        response = self.c.post("/api/accept-follow-request/")
+        self.assertEquals(response.status_code, 407)
+        self.assertEquals(response.json()['status'], "username and password fields can not be empty")
+
+        # empty credentials are provided
+        response = self.c.post("/api/accept-follow-request/", headers = {'username':'','password':''})
+        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.json()['status'], "user credentials are incorrect.")
+
+        # invalid receiver is provided
+        response = self.c.post("/api/accept-follow-request/", headers = {'username':'dummy','password':'dummy'})
+        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.json()['status'], "user credentials are incorrect.")
+
+    def test_nonexisting_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2032", "password": "strongpassword"}
+
+        # wrong sender or receiver provided
+        response = self.c.post("/api/accept-follow-request/", headers=Headers, data={'sender_id': 'dummy', 'receiver_id': 'dummy'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], "User/users not found")
+
+    def test_answered_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2033", "password": "strongpassword"}
+
+        # an already answered follow request is provided
+        response = self.c.post("/api/accept-follow-request/", headers=Headers, data={'sender_id': '0009-0005-5924-2031', 'receiver_id': '0009-0005-5924-2033'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], "Follow request is already answered")
+
+    def test_unanswered_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2033", "password": "strongpassword"}
+
+        # an already answered follow request is provided
+        response = self.c.post("/api/accept-follow-request/", headers=Headers, data={'sender_id': '0009-0005-5924-2031', 'receiver_id': '0009-0005-5924-2032'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], "Follow request accepted")
+
+
+class reject_follow_request_test_cases(TestCase):
+    def setUp(self):
+        self.c = Client()
+        user_1 = User.objects.create_user(username="0009-0005-5924-2031", password="strongpassword", first_name="user",
+                                          last_name="1")
+        user_2 = User.objects.create_user(username="0009-0005-5924-2032", password="strongpassword", first_name="user",
+                                          last_name="2")
+        user_3 = User.objects.create_user(username="0009-0005-5924-2033", password="strongpassword",
+                                          first_name="followed", last_name="3")
+        request1 = models.FollowRequest.objects.create(sender=user_1, receiver=user_2, status='pending')
+        request2 = models.FollowRequest.objects.create(sender=user_1, receiver=user_3, status='accepted')
+
+    def tearDown(self):
+        print('Tests for POST requests using accept_follow_request completed!')
+
+    def test_unauthorized_receiver(self):
+        # no headers are provided
+        response = self.c.post("/api/reject-follow-request/")
+        self.assertEquals(response.status_code, 407)
+        self.assertEquals(response.json()['status'], "username and password fields can not be empty")
+
+        # invalid follower is provided
+        response = self.c.post("/api/reject-follow-request/", headers={'username': 'dummy', 'password': 'dummy'})
+        self.assertEquals(response.status_code, 401)
+        self.assertEquals(response.json()['status'], "user credentials are incorrect.")
+
+    def test_nonexisting_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2032", "password": "strongpassword"}
+
+        # wrong sender or receiver provided
+        response = self.c.post("/api/reject-follow-request/", headers=Headers,
+                               data={'sender_id': 'dummy', 'receiver_id': 'dummy'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], "User/users not found")
+
+    def test_answered_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2033", "password": "strongpassword"}
+
+        # an already answered follow request is provided
+        response = self.c.post("/api/reject-follow-request/", headers=Headers,
+                               data={'sender_id': '0009-0005-5924-2031', 'receiver_id': '0009-0005-5924-2033'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['status'], "Follow request is already answered")
+
+    def test_unanswered_follow_request(self):
+        Headers = {'username': "0009-0005-5924-2033", "password": "strongpassword"}
+
+        # an already answered follow request is provided
+        response = self.c.post("/api/reject-follow-request/", headers=Headers,
+                               data={'sender_id': '0009-0005-5924-2031', 'receiver_id': '0009-0005-5924-2032'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], "Follow request rejected")
 class like_paper_test_cases(TestCase):
     def setUp(self):
         self.client = Client()
