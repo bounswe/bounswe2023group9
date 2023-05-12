@@ -159,10 +159,13 @@ def following_lists(request):
     return render(request, "pages/following_lists.html", context)
 
 
-def list_content(request):
+def list_content(request, paper_list_id):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
+    if len(PaperList.objects.filter(list_title = paper_list_id)) >0 :
+        papers = PaperList.objects.filter(list_title = paper_list_id)[0]
+        context["papers"] = papers
     return render(request, "pages/list_content.html", context)
 
 

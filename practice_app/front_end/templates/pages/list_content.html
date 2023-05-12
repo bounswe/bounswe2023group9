@@ -1,10 +1,36 @@
 {% extends "header.html" %}
 {% block header %}
-
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+</head>
 
       
     <hr>
     <h1>List Content</h1>
+    <table class="table">
+        <tr>
+            <th class ="col-1">Index</th>
+            <th class ="col-2">Paper Title</th>
+            <th class ="col-3">Abstract</th>
+            <th class ="col-2">Authors</th>
+            <th class ="col-2">Date</th>
+        </tr>
+        {% for paper in papers %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td><a href={{paper.url}}>{{paper.title}}</a></td>
+            <td>{{paper.abstract}}</td>
+            <td>{% for author in paper.authors %}
+              {{author.name}},
+              {% endfor %}
+            </td>
+            <td>{{paper.date}}</td>
+        </tr>
+        
+        {% endfor %}
+
+    </table>
 
 
 {% endblock %}
