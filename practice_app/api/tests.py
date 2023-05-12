@@ -7,7 +7,7 @@ from . import api_keys, models
 from django.contrib.auth.models import User
 from . import models
 # Create your tests here.
-"""
+
 # TEST CASE FOR DOAJ API
 class DOAJ_API_Tester(TestCase):
     def setUp(self):
@@ -817,7 +817,7 @@ class Add_Paper_To_List_Test_Cases(TestCase):
         self.assertEquals(response.status_code, 200)
         p_list = models.PaperList.objects.filter(id=paper_list.id)[0]
         self.assertTrue(paper1 in p_list.paper.all() and paper2 in p_list.paper.all() and paper3 in p_list.paper.all() and paper4 in p_list.paper.all())
-"""
+
 class like_paper_test_cases(TestCase):
     def setUp(self):
         self.client = Client()
