@@ -176,7 +176,7 @@ def searchPaperOnCore(keyword, limit):
                 'authors': authors,
                 'source': "core.ac.uk",
                 'id': r['id'],
-                'date': r['publishedDate'],
+                'date': int(r['publishedDate'][0:4]),
                 'url': r['downloadUrl'],
                 'position': i,
                 'abstract': r['abstract']
@@ -244,7 +244,7 @@ def eric_papers(request):
             if 'author' in paper.keys():
                 for auth in paper['author']:
                     a.append({'name':auth}.copy())
-            paper['author'] = a
+            paper['authors'] = a
             if 'publicationdateyear' in paper.keys():
                 paper['date'] = paper.pop('publicationdateyear')
             else:
