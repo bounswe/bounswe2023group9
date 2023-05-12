@@ -2,6 +2,7 @@
 {% block header %}
 <head>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
   <hr>
   <h2 class="h2 text-center">Search Paper</h2>
@@ -59,6 +60,7 @@
             <th class ="col-2">Authors</th>
             <th class ="col-2">Date</th>
             <th class ="col-2">Add to List</th>
+            <th class ="col-1">Like</th>
         </tr>
         {% for paper in papers %}
         <tr>
@@ -84,6 +86,17 @@
                 {% endfor %}
               </select>
               <button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button>
+              </form>
+            </td>
+            <td>
+              <form
+              method="POST"
+              id = "like"
+              enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type='hidden' value="like" name='id'>
+              <input type='hidden' value={{paper.id}} name='paper_id'>
+              <button type="submit" class="btn" name="like"><i class="material-icons">favorite</i></button>
               </form>
              
             </td>
