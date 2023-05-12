@@ -23,6 +23,26 @@ def search_paper(request):
             search_request.META = request.META
             search_request.session = request.session
             search_request.GET.update({"title": query, "rows": rows})
+
+            if request.user.is_authenticated:
+                req = HttpRequest()
+                db = database
+                if database == 'semantic_scholar':
+                    db = 'semantic-scholar'
+                if database == 'eric_papers':
+                    db = 'eric'
+                if database == 'google_scholar':
+                    db = 'google-scholar'
+                req.POST.update({"title": query, "rows": rows, "db": db})
+                req.user = request.user
+                req.META = request.META
+                req.session = request.session
+                req.method = 'POST'
+                post_papers(req)
+
+
+
+
             if database == "semantic_scholar":
                 response = semantic_scholar(search_request)
             elif database == "eric_papers":
@@ -35,6 +55,8 @@ def search_paper(request):
                 response = google_scholar(search_request)
             elif database == "core":
                 response = core_get(search_request)
+            elif database == "nasa-sti":
+                response = nasa_sti(search_request)
             if request.user.is_authenticated:
                 lists = PaperList.objects.filter(owner = request.user)
             papers = json.loads(response.content.decode()).get('results')
