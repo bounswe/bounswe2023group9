@@ -695,8 +695,7 @@ class pubchem_api_test_cases(TestCase):
         self.assertEquals(response.json()['status'], "There isn't any compounds with the requested compound ID")
 
     def test_valid_compount_id(self):
-        response = self.client.post("/api/pubchem-api/", data={'compound_id': '1'})
-        print(response)
+        response = self.client.post("/api/pubchem-api/", data={'compound_id': '1'}
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.json()['status'], "Compound found")
 
