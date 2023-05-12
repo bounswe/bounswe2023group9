@@ -1,3 +1,4 @@
+from logging import warning
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse, HttpRequest
 import json
@@ -70,15 +71,8 @@ def sign_up(request):
     return render(request, "pages/sign_up.html", context)
 
 def sign_in(request):
-    # uncomment below and get sign_in page before testing.
-    # this is necessary until a user is created
-    # after the user is created, comment them again
-    """r_username = "omari"
-    r_password = "123456"
-    User.objects.create_user(
-        username=r_username, password=r_password, first_name="nam", last_name="surname")"""
 
-    # warning will bi used to warn the user if the credentials are invaild or for any other warning
+    # warning will be used to warn the user if the credentials are invaild or for any other warning
     context = {'page': 'Sign In', 'warning': ""}
     if request.user.is_authenticated:  # if the user is authenticated, then redirect to search paper page
         return redirect("/search_paper/")
@@ -129,15 +123,32 @@ def profile_page(request):
 
 
 def my_lists(request):
-    if request.user.is_anonymous:
+    user = request.user
+    if request.user.is_anonymous: # if not signed in
         return redirect("/sign_in/")
-    papers = [
-        {'title': '<PAPER TITLE1>', 'abstract': "<ABSTRACT1>", 'year': 2000},
-        {'title': '<PAPER TITLE2>', 'abstract': "<ABSTRACT2>", 'year': 2001},
-        {'title': '<PAPER TITLE3>', 'abstract': "<ABSTRACT3>", 'year': 2002},
-        {'title': '<PAPER TITLE4>', 'abstract': "<ABSTRACT4>", 'year': 2003},
-    ]
-    context = {'page': 'My Lists', "papers": papers, 'logged_in' : 1}
+
+    context = {'page': 'My Lists', 'logged_in' : 1, "warning": ""} # default context
+
+    if request.method == "POST": # if the user tries to create a new paper list
+        given_title = request.POST.get("paper_list_title") # get the specified new paper list title
+
+        # call your api to crate the new paper list
+        create_request = HttpRequest()
+        create_request.method = 'POST'
+        create_request.user = request.user
+        create_request.META = request.META
+        create_request.session = request.session
+        create_request.POST = {"list_title": given_title}
+        create_response = create_paper_list(create_request)
+
+        if create_response.status_code == 200:  # if the paper list created successfully
+            context["warning"] = "Paper list created successfully!"
+        else: # if failed
+            context["warning"] = "Paper list couldn't created!"  
+
+    p_lists = PaperList.objects.filter(owner = user) # fetch the paper lists owned by the user from database
+    context["paper_lists"] = p_lists # add to the context
+
     return render(request, "pages/my_lists.html", context)
 
 
