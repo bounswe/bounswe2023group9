@@ -622,6 +622,41 @@ class registration_test_cases(TestCase):
         self.assertEquals(len(User.objects.filter(
             username="0009-0005-5924-0000")), 1)
 
+class add_interest_test_cases(TestCase):
+    def setUp(self):
+        self.client = Client()
+        User.objects.create_user(username="0009-0005-5924-008", password="strongpassword", first_name="firstname", last_name="lastname")
+    def tearDown(self):
+        print('Tests for POST method add-interest has been completed!')
+    def test_Add_Interest(self): #Test for adding interest normally.
+        response = self.client.post('/api/add-interest/', {'interest': 'music'},headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),{'status': 'Interest has been added to profile successfully!'})
+    def test_Existing_Interest(self): #Interest already exists.
+        response = self.client.post('/api/add-interest/', {'interest': 'russian'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        response2 = self.client.post('/api/add-interest/', {'interest': 'russian'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response2.status_code, 407)
+        self.assertEqual(json.loads(response2.content.decode("UTF-8")),
+                         {'status': 'This interest has already been added'})
+    def test_Empty_Interest(self): #Interest is empty.
+        response = self.client.post('/api/add-interest/', {'interest': ''},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),
+                         {'status': 'Name of the interest can\'t be empty.'})
+    def test_Missing_Credentials(self): #Credentials are missing.
+        response = self.client.post('/api/add-interest/', {'interest': 'astronomy'})
+        self.assertEqual(response.status_code, 407)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),{'status': 'Username and password fields can not be empty'})
+
+    def test_Wrong_Credentials(self): #Wrong credentials are given.
+        response = self.client.post('/api/add-interest/', {'interest': 'literature'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'wrongpassword'})
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),
+                         {'status': 'User credentials are incorrect.'})
 
 class log_in_test_cases(TestCase):
 

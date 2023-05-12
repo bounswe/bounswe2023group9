@@ -16,6 +16,7 @@ urlpatterns = [
     path("log-out/", views.log_out, name="log_out"),
     path("user-registration/", views.user_registration, name="user_registration"),
     path("follow-user/", views.follow_user, name="follow_user"),
+    path('add-interest/',views.add_interest,name='add-interest'),
     path('post-papers/',views.post_papers,name='post-papers'),
     path('save-paper-list/', views.save_paper_list, name = 'save_paper_list'),
     path('add-paper-to-list/', views.add_paper_to_list, name="add_paper_to_list"),
