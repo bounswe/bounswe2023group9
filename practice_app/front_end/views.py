@@ -260,14 +260,6 @@ def list_content(request, paper_list_id):
         context["list_title"] = paper_list.list_title
     return render(request, "pages/list_content.html", context)
 
-
-def paper_content(request):
-    logged_in = 1
-    if request.user.is_anonymous:
-        logged_in = 0
-    context = {'page': 'Paper content','logged_in':logged_in}
-    return render(request, "pages/paper_content.html", context)
-
 def followers(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")

@@ -13,7 +13,6 @@ urlpatterns = [
     path('my_lists/', my_lists, name='My Lists'),
     path('following_lists/', following_lists, name='Following Lists'),
     path('<int:paper_list_id>/list_content/', list_content, name='List Content'),
-    path('paper_content/', paper_content, name='Paper Content'),
     path('follow_requests/', follow_requests, name='Follow Requests'),
     path('followers/', followers, name='Followers'),
     path('following/', following, name='Following'),
