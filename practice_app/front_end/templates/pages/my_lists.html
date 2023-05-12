@@ -5,24 +5,34 @@
 
     <hr>
     <h1>My Lists</h1>
-
     <table class="container">
         <tr>
-            <th>Index</th>
-            <th>Paper Title</th>
-            <th>Abstract</th>
-            <th>Year</th>
+            <th>Paper List ID</th>
+            <th>Paper List Title</th>
+            <th>Owner</th>
         </tr>
 
-        {% for paper in papers %}
+        {% for p_list in paper_lists %}
         <tr>
-            <td>{{forloop.counter}}</td>
-            <td>{{paper.title}}</td>
-            <td>{{paper.abstract}}</td>
-            <td>{{paper.year}}</td>
+            <td>{{p_list.id}}</td>
+            <td><a href="{% url 'List Content' p_list.id %}">{{p_list.list_title}}</a></td>
+            <td>{{p_list.owner}}</td>
         </tr>
         {% endfor %}
     </table>
+    <h2 class="mt-5">Create new paper list</h2>
+    <div>
+        <div class="col-6">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                <input name="paper_list_title" placeholder="Paper list title" type="text" required>
+                </div>
+                <button type="submit" value="Submit" name="Submit" class="btn btn-primary">Create new paper list</button>
+            </form>
+        </div>
+    </div>
+    <p>{{ warning }}</p>
 
 {% endblock %}
 
