@@ -1,0 +1,60 @@
+{% extends "header.html" %}
+{% block header %}
+
+      
+    <hr>
+    <h1>Profile</h1>
+
+    <table class="container">
+      <tr>
+        <td>ORCID ID</td>
+        <td>{{profile.orcid_id}}</td>
+      </tr>
+      <tr>
+        <td>FIRST NAME</td>
+        <td>{{profile.first_name}}</td>
+      </tr>
+      <tr>
+        <td>LAST NAME</td>
+        <td>{{profile.last_name}}</td>
+      </tr>
+      <tr>
+        <td>DATE JOINED</td>
+        <td>{{profile.date_joined}} GMT 0</td>
+      </tr>
+    </table>
+  
+  <hr>
+
+  <table class="container">
+    <tr>
+      <th>Index</th>
+      <th>Interests</th>
+    </tr>
+
+    {% for interest in profile.interests %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{interest}}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    <tr>
+     <div class="mb-3">
+      <div class="mx-auto col-3">
+        <form action= "/profile_page/" enctype="multipart/form-data" method="POST"  id = "search"
+        >
+            {% csrf_token %}
+        <input class="form-control" required type="text" name="newInterest" placeholder="Type your interest">
+        <button type="submit" class="btn btn-success" name="add">Add Interest to Your Profile</button>
+          <p>{{ profile.warning }}</p>
+        </form>
+          </div>
+         </div>
+    </td>
+  </tr>
+
+
+
+{% endblock %}
+

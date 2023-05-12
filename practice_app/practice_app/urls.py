@@ -18,7 +18,21 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path, include
 from . import settings
+from django.conf.urls.static import static
+from django.conf import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 urlpatterns = [
-    path("api/",include("api.urls")),
+    path("api/", include("api.urls")),
     path("admin/", admin.site.urls),
+    path('', include('front_end.urls')),
+
 ] + static(settings.STATIC_URL)
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
+
+urlpatterns += staticfiles_urlpatterns()
+

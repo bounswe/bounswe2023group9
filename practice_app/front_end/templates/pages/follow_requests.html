@@ -1,0 +1,30 @@
+{% extends "header.html" %}
+{% block header %}
+
+
+
+    <hr>
+    <h1>Follow Requests</h1>
+
+    <table class="container">
+        <tr>
+            <th>Index</th>
+            <th>Sender</th>
+            <th>Status</th>
+        </tr>
+
+        {% for request in follow_requests %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{request.sender}}</td>
+            <td>
+              <button type="accept" class="btn btn-success m-2">Accept</button>
+              <button type="reject" class="btn btn-danger m-2">Reject</button>
+            </td>
+       </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}
+

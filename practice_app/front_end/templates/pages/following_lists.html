@@ -1,0 +1,25 @@
+{% extends "header.html" %}
+{% block header %}
+
+
+    <hr>
+    <h1>Following Lists</h1>
+
+    <table class="container">
+        <tr>
+            <th>Index</th>
+            <th>List Name</th>
+            <th>List Owner</th>
+        </tr>
+
+        {% for list in lists %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td><a href="{% url 'List Content' list.id %}">{{list.list_title}}</a></td>
+            <td>{{ list.owner.username }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
+
