@@ -818,6 +818,22 @@ def reject_follow_request(request):
         return JsonResponse({"status": "There is no such follow request"}, status=400)
 
 
+def pubchem_api(request):
+    base_url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
+
+    query=request.GET
+    compound_id=query.get('compound_id')
+
+    if compound_id=='':
+        return JsonResponse({"status": "Compound ID can't be empty"}, status=400)
+
+    url = f'{base_url}/compound/cid/{compound_id}/json'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return JsonResponse({"status": "Compound found"}, status=200)
+    else:
+        return JsonResponse({"status": "There isn't any compounds with the requested compound ID"}, status=404)
 
 # POST api/like-paper/
 @csrf_exempt
