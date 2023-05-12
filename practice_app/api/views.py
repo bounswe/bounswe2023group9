@@ -90,8 +90,6 @@ def google_scholar(request):
         number = 3
     else:
         number = int(number)
-    print(search)
-    print(number)
     # send the request to the third party api
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
