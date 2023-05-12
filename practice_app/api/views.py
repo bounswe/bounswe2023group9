@@ -738,6 +738,7 @@ def add_paper_to_list(request):
     paper_lists[0].paper.add(papers[0])
     return JsonResponse({"status":"Paper Has Been Added To The List"}, status = 200)
 
+@csrf_exempt
 def accept_follow_request(request):
 
     if request.user.is_anonymous:
@@ -774,12 +775,14 @@ def accept_follow_request(request):
             sender_follower.followed.add(receiver)
             follow_request = models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending')[0]
             follow_request.status = 'accepted'
+            follow_request.save()
             return JsonResponse({"status": "Follow request accepted"}, status=200)
         else:
             return JsonResponse({"status": "Follow request is already answered"}, status=400)
     else:
         return JsonResponse({"status": "There is no such follow request"}, status=400)
 
+@csrf_exempt
 def reject_follow_request(request):
     if request.user.is_anonymous:
         if 'username' not in request.headers or 'password' not in request.headers:
@@ -805,8 +808,9 @@ def reject_follow_request(request):
 
     if models.FollowRequest.objects.filter(sender=sender, receiver=receiver).exists():
         if models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending').exists():
-            follow_request = models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending')
+            follow_request = models.FollowRequest.objects.filter(sender=sender, receiver=receiver, status='pending')[0]
             follow_request.status = 'rejected'
+            follow_request.save()
             return JsonResponse({"status": "Follow request rejected"}, status=200)
         else:
             return JsonResponse({"status": "Follow request is already answered"}, status=400)
@@ -856,8 +860,8 @@ def get_followers(request):
     for _user in  follow_object[0].follower.all():
         res = {}
         res['user_id'] = _user.username
-        res['name'] = user.first_name
-        res['surname'] = user.last_name
+        res['name'] = _user.first_name
+        res['surname'] = _user.last_name
         response.append(res.copy())
     return  JsonResponse({'followers' : response} , status=200)
 
@@ -872,7 +876,7 @@ def get_following(request):
     for _user in follow_object[0].followed.all():
         res = {}
         res['user_id'] = _user.username
-        res['name'] = user.first_name
-        res['surname'] = user.last_name
+        res['name'] = _user.first_name
+        res['surname'] = _user.last_name
         response.append(res.copy())
     return JsonResponse({'following': response}, status=200)

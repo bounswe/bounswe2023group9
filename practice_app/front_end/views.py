@@ -279,21 +279,36 @@ def following(request):
     return render(request, "pages/following.html", context)
 
 
-
-
-
 def follow_requests(request):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
-    reqs = [
-        {'sender': 'NAME1'},
-        {'sender': 'NAME2'},
-        {'sender': 'NAME3'},
-        {'sender': 'NAME4'}
-    ]
-    context = {'page': 'Follow Requests', 'follow_requests': reqs, 'logged_in' : 1}
+
+    if request.method == "POST": 
+        button_value = request.POST.get('accept') or request.POST.get('reject')
+        if button_value:
+            action, sender_username = button_value.split('$')
+        if action == 'accept': # if the accept button is clicked
+            # call your api to accept the follow request
+            accept_request = HttpRequest()
+            accept_request.method = 'POST'
+            accept_request.user = request.user
+            accept_request.META = request.META
+            accept_request.session = request.session
+            accept_request.POST.update({"sender_id": sender_username, "receiver_id": request.user.username})
+            accept_follow_request(accept_request) #post accept_follow_request       
+        elif action == 'reject': # if the accept button is clicked
+            # call your api to reject the follow request
+            reject_request = HttpRequest()
+            reject_request.method = 'POST'
+            reject_request.user = request.user
+            reject_request.META = request.META
+            reject_request.session = request.session
+            reject_request.POST.update({"sender_id": sender_username, "receiver_id": request.user.username})
+            reject_follow_request(reject_request) #post reject_follow_request
+
+    follow_requests = FollowRequest.objects.filter(receiver=request.user, status='pending')
+    formatted_requests = [{'sender': request.sender.username} for request in follow_requests]
+    context = {'page': 'Follow Requests', 'follow_requests': formatted_requests, 'logged_in' : 1}
+
     return render(request, "pages/follow_requests.html", context)
-
-
-
 
