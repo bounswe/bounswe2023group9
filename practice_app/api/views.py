@@ -817,7 +817,7 @@ def reject_follow_request(request):
 def pubchem_api(request):
     base_url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug'
 
-    query=request.POST
+    query=request.GET
     compound_id=query.get('compound_id')
 
     if compound_id=='':
