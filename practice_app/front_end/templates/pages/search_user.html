@@ -1,19 +1,67 @@
+
 {% extends "header.html" %}
 {% block header %}
 
 
 
   <hr>
-  <h2>Search User</h2>
+  <h2 class="h2 text-center">Search User</h2>
   <div class="mt-5">
       <div class="mx-auto col-6">
-          <form>
+          <form class="col-20 mx-auto card p-3 shadow-lg"
+          method="POST"
+          id = "search"
+          enctype="multipart/form-data"
+          action = "#search_results">
+          {% csrf_token %}
+          <input type='hidden' value="search" name='id'>
             <div class="mb-3">
-              <label for="search_user" class="form-label">Name Surname</label>
-              <input name="search_user" value="" type="text">
+              <label for="search_user" class="form-label">User's name</label>
+              <input
+              class="form-control"
+              required
+              name="name" 
+              value="" 
+              type="text">
             </div>
-            <button type="search" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary" name="search">Search</button>
+            <p>{{ warning }}</p>
           </form>
+      </div>
+    
+
+    <div id = "search_results"  class="mx-auto  card p-3 shadow-lg">
+        <h1>Search Results</h1>
+
+    <table class="table">
+        <tr>
+            <th class ="col-1">Index</th>
+            <th class ="col-2">ORCID ID</th>
+            <th class ="col-3">Name</th>
+            <th class ="col-2">Surname</th>
+            <th class ="col-2">Follow</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{user.username}}</td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.last_name}}</td>
+            <td>
+              <form
+              method="POST"
+              id = "follow"
+              enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" value="follow" name="id">
+              <input type="hidden" value={{user.username}} name="followed_user">
+              <button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button></form>
+            </td>
+            
+        </tr>
+        
+        {% endfor %}
+    </table>
       </div>
   </div>
 

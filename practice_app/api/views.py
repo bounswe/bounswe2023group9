@@ -55,7 +55,7 @@ def doaj_api(request):
 
             if "bibjson" in result.keys():
                 if "author" in result["bibjson"].keys():
-                    result_dict["authors"] = [author["name"] for author in result["bibjson"]["author"]]
+                    result_dict["authors"].append({'name' : author["name"] for author in result["bibjson"]["author"]}.copy())
                 if "abstract" in result["bibjson"].keys():
                     result_dict["abstract"] = result["bibjson"]["abstract"]
                 if "title" in result["bibjson"].keys():
@@ -90,7 +90,6 @@ def google_scholar(request):
         number = 3
     else:
         number = int(number)
-
     # send the request to the third party api
     request = requests.get('https://serpapi.com/search.json?engine=google_scholar&q=' +
                            search + '&hl=en&num=' + str(number) + '&api_key=' + api_keys.api_keys['serp_api'])
@@ -166,7 +165,7 @@ def searchPaperOnCore(keyword, limit):
         for i, r in enumerate(resp["results"]):
             authors = []
             for a in r['authors']:
-                authors.append(a['name'])
+                authors.append({'name' : a['name']}.copy())
 
             res_dic = {
                 'title': r['title'],
@@ -238,6 +237,11 @@ def eric_papers(request):
         i = 0
         for paper in papers:
             paper['source'] = 'eric-api'
+            a = []
+            if 'author' in paper.keys():
+                for auth in paper['author']:
+                    a.append({'name':auth}.copy())
+            paper['author'] = a
             if 'publicationdateyear' in paper.keys():
                 paper['date'] = paper.pop('publicationdateyear')
             else:
@@ -282,7 +286,7 @@ def zenodo(request):
             paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
             for author in authors:
-                paper_info['authors'].append({'name':author['name']})   
+                paper_info['authors'].append({ 'name' : author['name']}.copy
             results.append(paper_info.copy()) #Add the paper attributes into results
         response['results'] = results 
         return JsonResponse(response, status=200) #Return results as response
@@ -364,7 +368,7 @@ def nasa_sti(request):
             if 'authorAffiliations' in paper:
                 authors = paper['authorAffiliations']
                 for author in authors:
-                    paper_info['authors'].append(author['meta']['author']['name'])
+                    paper_info['authors'].append({'name' : author['meta']['author']['name']}.copy())
             paper_info['abstract'] = paper['abstract']
             paper_info['date'] = int(paper['created'].split("-")[0])
             paper_info['position'] = papers.index(paper)
