@@ -1,3 +1,4 @@
+from wsgiref import headers
 from django.test import TestCase, Client
 from unittest import skip
 import requests
@@ -318,6 +319,76 @@ class SemanticScholarTestCase(TestCase):
             # self.assertEquals(semantic_scholar_api_response[count]['url'], result['url']) # This API usually returns different results for same query
             self.assertEquals(count, result['position'])
 
+class NasaStiTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def tearDown(self):
+        print('GET Tests of Nasa STI Completed Successfully')
+
+    def test_4xx_responses(self):
+        self.assertEquals(self.client.get("/api/nasa-sti/?title=").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/?").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/?rows=9").status_code, 400)
+        self.assertEquals(self.client.get("/api/nasa-sti/title=space").status_code, 404)
+        self.assertEquals(self.client.get("/api/nasa-sti/?title=&").status_code, 400)
+
+    def test_valid_title_valid_rows(self):
+        # test when valid title and rows are provided
+
+        field_count = 8
+        rows = 10
+
+        response = self.client.get('/api/nasa-sti/?title=space&rows='+str(rows))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), rows)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'authors')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+    
+    def test_valid_title_no_rows(self):
+        # test when valid title and no rows are provided
+
+        field_count = 8
+
+        response = self.client.get('/api/nasa-sti/?title=space')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), 3)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+
+    def test_valid_title_non_numeric_rows(self):
+        # test when valid title and non-numeric rows are provided
+
+        field_count = 8
+
+        response = self.client.get('/api/nasa-sti/?title=space&rows=abc')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()['results'][0]), field_count)
+        self.assertEqual(len(response.json()['results']), 3)
+        self.assertContains(response, 'id')
+        self.assertContains(response, 'title')
+        self.assertContains(response, 'author')
+        self.assertContains(response, 'abstract')
+        self.assertContains(response, 'source')
+        self.assertContains(response, 'date')
+        self.assertContains(response, 'url')
+        self.assertContains(response, 'position')
+
 class orcid_api_test_cases(TestCase):
 
     def setUp(self):
@@ -422,6 +493,42 @@ class log_out_test_cases(TestCase):
 
     def test_logout(self):
         self.assertEquals(self.c.get("/api/log-out/").status_code, 200)
+
+class create_paper_list_test_cases(TestCase):
+    def setUp(self): # Setting up a test user object and a test paper list object
+
+        self.c = Client()
+        self.user = User.objects.create_user(
+            username='testuser', password='testpass'
+        )
+
+    def tearDown(self): # When the tests are completed
+        print("POST method tests for creating paper list completed!")
+
+    def test_for_success(self): # Test for successful case
+        h = {"username": "testuser", "password": "testpass"}
+
+        r = self.c.post("/api/create-paper-list/", {"list_title": "testlistname1"}, headers=h)
+        self.assertEquals(r.status_code, 200, "Fail: status code is not 200 for a request expected as success!") # check the status code
+
+        a = models.PaperList.objects.filter(id = 1)
+        self.assertEquals(a[0].list_title, "testlistname1", "Fail: paper list name didn't match!") # check the record
+    
+    def test_for_empty_title(self): # Test for empty title
+        h = {"username": "testuser", "password": "testpass"}
+
+        r = self.c.post("/api/create-paper-list/", headers=h)
+        self.assertEquals(r.status_code, 400, "Fail: status code is not 400 for a request expected as bad request (empty title)!") # check the status code
+
+    def test_for_invalid_credentials(self): # Test for invalid credentials
+        h = {"username": "invalid", "password": "invalid"}
+
+        r = self.c.post("/api/create-paper-list/", headers=h)
+        self.assertEquals(r.status_code, 401, "Fail: status code is not 401 for a request expected as unauthorized (invalid credentials)!") # check the status code
+
+    def test_for_empty_credentials(self): # Test for no credentials
+        r = self.c.post("/api/create-paper-list/")
+        self.assertEquals(r.status_code, 407, "Fail: status code is not 407 for a request with empty credentials!") # check the status code
 
 class SavePaperListTest(TestCase):
 
@@ -648,6 +755,41 @@ class post_paper_test_cases(TestCase):
         self.assertEquals(response.status_code,401)
         self.assertEquals(json.loads(response.content.decode("UTF-8")), {'status' : 'user credentials are incorrect.'})
 
+class add_interest_test_cases(TestCase):
+    def setUp(self):
+        self.client = Client()
+        User.objects.create_user(username="0009-0005-5924-008", password="strongpassword", first_name="firstname", last_name="lastname")
+    def tearDown(self):
+        print('Tests for POST method add-interest has been completed!')
+    def test_Add_Interest(self): #Test for adding interest normally.
+        response = self.client.post('/api/add-interest/', {'interest': 'music'},headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),{'status': 'Interest has been added to profile successfully!'})
+    def test_Existing_Interest(self): #Interest already exists.
+        response = self.client.post('/api/add-interest/', {'interest': 'russian'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        response2 = self.client.post('/api/add-interest/', {'interest': 'russian'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response2.status_code, 407)
+        self.assertEqual(json.loads(response2.content.decode("UTF-8")),
+                         {'status': 'This interest has already been added'})
+    def test_Empty_Interest(self): #Interest is empty.
+        response = self.client.post('/api/add-interest/', {'interest': ''},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'strongpassword'})
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),
+                         {'status': 'Name of the interest can\'t be empty.'})
+    def test_Missing_Credentials(self): #Credentials are missing.
+        response = self.client.post('/api/add-interest/', {'interest': 'astronomy'})
+        self.assertEqual(response.status_code, 407)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),{'status': 'Username and password fields can not be empty'})
+
+    def test_Wrong_Credentials(self): #Wrong credentials are given.
+        response = self.client.post('/api/add-interest/', {'interest': 'literature'},
+                                    headers={'username': '0009-0005-5924-008', 'password': 'wrongpassword'})
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json.loads(response.content.decode("UTF-8")),
+                         {'status': 'User credentials are incorrect.'})
 
 class Add_Paper_To_List_Test_Cases(TestCase):
     def setUp(self):
