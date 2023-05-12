@@ -282,7 +282,7 @@ def zenodo(request):
             paper_info['source'] = 'Zenodo'
             authors = paper['metadata']['creators']
             for author in authors:
-                paper_info['authors'].append(author['name'])
+                paper_info['authors'].append({'name':author['name']})   
             results.append(paper_info.copy()) #Add the paper attributes into results
         response['results'] = results 
         return JsonResponse(response, status=200) #Return results as response
