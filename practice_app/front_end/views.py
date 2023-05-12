@@ -226,7 +226,7 @@ def following_lists(request):
         return redirect('/sign_in/')
     
     saved_lists = PaperList.objects.filter(saver=user)
-    context = {'page': 'Following Lists', 'lists': saved_lists}
+    context = {'page': 'Following Lists', 'lists': saved_lists, 'logged_in':1}
     return render(request, "pages/following_lists.html", context)
 
 
