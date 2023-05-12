@@ -38,7 +38,22 @@
       <td>{{interest}}</td>
     </tr>
     {% endfor %}
-  </table>
+    </table>
+    <tr>
+     <div class="mb-3">
+      <div class="mx-auto col-3">
+        <form action= "/profile_page/" enctype="multipart/form-data" method="POST"  id = "search"
+        >
+            {% csrf_token %}
+        <input class="form-control" required type="text" name="newInterest" placeholder="Type your interest">
+        <button type="submit" class="btn btn-success" name="add">Add Interest to Your Profile</button>
+          <p>{{ profile.warning }}</p>
+        </form>
+          </div>
+         </div>
+    </td>
+  </tr>
+
 
 
 {% endblock %}
