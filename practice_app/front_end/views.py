@@ -59,19 +59,19 @@ def search_paper(request):
             elif database == "nasa-sti":
                 response = nasa_sti(search_request)
             if request.user.is_authenticated:
-                lists = PaperList.objects.filter(owner = request.user)
+                lists = PaperList.objects.filter(owner = request.user).values()
             papers = json.loads(response.content.decode()).get('results')
-
         elif request.POST.get('id') == "add_list":
             list_id = request.POST.get("list_id")
-            paper_id = request.POST.get("paper_id")
+            third_party_paper_id = request.POST.get("paper_id")
+            paper_id = str(Paper.objects.filter(third_party_id = third_party_paper_id).values()[0]["paper_id"])
             add_paper_request = HttpRequest()
             add_paper_request.method = 'POST'
             add_paper_request.user = request.user
             add_paper_request.META = request.META
             add_paper_request.session = request.session
             add_paper_request.POST.update({'list_id':list_id, 'paper_id':paper_id})
-            add_paper_to_list(add_paper_request)  
+            add_paper_to_list(add_paper_request)
     logged_in = 1
     if request.user.is_anonymous:
         logged_in = 0

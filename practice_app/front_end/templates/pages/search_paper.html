@@ -80,11 +80,12 @@
               <input type='hidden' value={{paper.id}} name='paper_id'>
               <select class = "form-select" form-id="add_list" name="list_id">
                 {% for list in lists %}
-                <option value={{list.id}}>{{list.name}}</option>
+                <option value={{list.id}}>{{list.list_title}}</option>
                 {% endfor %}
               </select>
-              </form>
               <button type="submit" class="btn" name="add_list"><i class="material-icons">playlist_add</i></button>
+              </form>
+             
             </td>
         </tr>
         
