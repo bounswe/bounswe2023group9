@@ -4,7 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="61e1523f-4ecd-4f00-bd9b-e4c2239f6b5a" name="Changes" comment="" />
+    <list default="true" id="61e1523f-4ecd-4f00-bd9b-e4c2239f6b5a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/front_end/templates/header.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/templates/pages/followers.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/templates/pages/following.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/front_end/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/practice_app.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/tests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/follow_requests.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/follow_requests.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/following_lists.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/following_lists.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/list_content.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/list_content.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/my_lists.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/my_lists.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/paper_content.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/paper_content.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/profile_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/profile_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/search_paper.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/search_paper.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/search_user.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/search_user.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/sign_in.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/sign_in.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/templates/pages/sign_up.html" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/templates/pages/sign_up.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/front_end/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/front_end/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/practice_app/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice_app/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/practice_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/practice_app/urls.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
