@@ -827,17 +827,17 @@ class pubchem_api_test_cases(TestCase):
         print('Tests for Pubchem API completed!')
 
     def test_empty_compount_id(self):
-        response = self.client.post("/api/pubchem-api/", data={'compound_id': ''})
+        response = self.client.get("/api/pubchem-api/", data={'compound_id': ''})
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response.json()['status'], "Compound ID can't be empty")
 
     def test_invalid_compount_id(self):
-        response = self.client.post("/api/pubchem-api/", data={'compound_id': 'dummy'})
+        response = self.client.get("/api/pubchem-api/", data={'compound_id': 'dummy'})
         self.assertEquals(response.status_code, 404)
         self.assertEquals(response.json()['status'], "There isn't any compounds with the requested compound ID")
 
     def test_valid_compount_id(self):
-        response = self.client.post("/api/pubchem-api/", data={'compound_id': '1'})
+        response = self.client.get("/api/pubchem-api/", data={'compound_id': '1'})
         print(response)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.json()['status'], "Compound found")
