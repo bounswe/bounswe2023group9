@@ -5,7 +5,6 @@
 
     <hr>
     <h1>My Lists</h1>
-
     <table class="container">
         <tr>
             <th>Paper List ID</th>
@@ -14,15 +13,26 @@
         </tr>
 
         {% for p_list in paper_lists %}
-        <a href="{% url 'List Content' p_list.id %}">
-            <tr>
-                <td>{{p_list.id}}</td>
-                <td>{{p_list.list_title}}</td>
-                <td>{{p_list.owner}}</td>
-            </tr>
-        </a>
+        <tr>
+            <td>{{p_list.id}}</td>
+            <td><a href="{% url 'List Content' p_list.id %}">{{p_list.list_title}}</a></td>
+            <td>{{p_list.owner}}</td>
+        </tr>
         {% endfor %}
     </table>
+    <h2 class="mt-5">Create new paper list</h2>
+    <div>
+        <div class="col-6">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                <input name="paper_list_title" placeholder="Paper list title" type="text" required>
+                </div>
+                <button type="submit" value="Submit" name="Submit" class="btn btn-primary">Create new paper list</button>
+            </form>
+        </div>
+    </div>
+    <p>{{ warning }}</p>
 
 {% endblock %}
 
