@@ -142,19 +142,18 @@ def my_lists(request):
 
 
 def following_lists(request):
-    if request.user.is_anonymous:
-        return redirect("/sign_in/")
-    lists = [
-        'list1',
-        'list2',
-        'list3',
-        'list4',
-    ]
-    context = {'page': 'Following Lists', 'lists': lists, 'logged_in' : 1}
+    
+    user = request.user
+
+    if user.is_anonymous:
+        return redirect('/sign_in/')
+    
+    saved_lists = PaperList.objects.filter(saver=user)
+    context = {'page': 'Following Lists', 'lists': saved_lists}
     return render(request, "pages/following_lists.html", context)
 
 
-def list_content(request):
+def list_content(request, paper_list_id):
     if request.user.is_anonymous:
         return redirect("/sign_in/")
     context = {'page': 'List Content', 'logged_in' : 1}
