@@ -294,7 +294,7 @@ def follow_requests(request):
     if request.method == "POST": 
         button_value = request.POST.get('accept') or request.POST.get('reject')
         if button_value:
-            action, sender_username = button_value.split('-')
+            action, sender_username = button_value.split('$')
         if action == 'accept': # if the accept button is clicked
             # call your api to accept the follow request
             accept_request = HttpRequest()
