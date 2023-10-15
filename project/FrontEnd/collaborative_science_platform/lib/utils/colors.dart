@@ -13,4 +13,6 @@ class AppColors {
   static const Color warningColor = Color(0xFFFFC107);
   static const Color dangerColor = Color(0xFFDC3545);
   static const Color infoColor = Color(0xFF17A2B8);
+
+  static const Color hyperTextColor = Color.fromARGB(255, 52, 75, 201);
 }

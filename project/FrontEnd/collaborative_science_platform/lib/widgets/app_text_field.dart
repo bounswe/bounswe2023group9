@@ -6,6 +6,7 @@ class AppTextField extends StatelessWidget {
   final FocusNode focusNode;
   final String hintText;
   final bool obscureText;
+  final Color color;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final double height;
@@ -16,6 +17,7 @@ class AppTextField extends StatelessWidget {
     required this.focusNode,
     required this.hintText,
     required this.obscureText,
+    this.color = AppColors.primaryColor,
     required this.prefixIcon,
     required this.suffixIcon,
     required this.height,
@@ -38,11 +40,11 @@ class AppTextField extends StatelessWidget {
           suffixIconColor: Colors.grey,
           suffixIcon: suffixIcon,
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: AppColors.primaryLightColor),
+            borderSide: BorderSide(color: color),
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: AppColors.primaryColor),
+            borderSide: const BorderSide(color: AppColors.primaryColor),
             borderRadius: BorderRadius.circular(10.0),
           ),
           fillColor: Colors.white,
