@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: Constants.appName,
       routes: {
-        '/': (context) => LoginPage(),
+        '/': (context) => const LoginPage(),
         SignUpPage.routeName: (context) => const SignUpPage(),
       },
       theme: ThemeData(

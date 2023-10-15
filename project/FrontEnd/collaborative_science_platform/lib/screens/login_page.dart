@@ -86,11 +86,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: SizedBox(
             width: Responsive.isMobile(context) ? double.infinity : 600,
-            child: SingleChildScrollView(
-              // To avoid Render Pixel Overflow
+            child: SingleChildScrollView( // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
               child: Column(
-                // mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -109,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: const Icon(Icons.person),
                     suffixIcon: null,
                     height: 64.0,
+                    onChanged: null,
                   ),
                   const SizedBox(height: 20.0),
                   AppTextField(
@@ -127,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
+                    onChanged: null,
                   ),
                   if (error)
                     Padding(
@@ -185,7 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

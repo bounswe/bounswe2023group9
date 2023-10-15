@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
+import 'package:collaborative_science_platform/widgets/strong_password_checks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool obscuredPassword = true;
   bool error = false;
   bool passwordMatchError = false;
+  bool weakPasswordError = false;
 
   String errorMessage = "";
 
@@ -55,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       setState(() {
         error = true;
-        errorMessage = "Something went wrong.";
+        errorMessage = "Something went wrong!";
       });
     }
   }
@@ -67,19 +69,27 @@ class _SignUpPageState extends State<SignUpPage> {
         confirmPasswordController.text.isEmpty) {
       setState(() {
         error = true;
-        errorMessage = "All fields are mandatory.";
+        errorMessage = "All fields are mandatory!";
+      });
+      return false;
+    } else if (!StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text)) {
+      setState(() {
+        error = true;
+        weakPasswordError = true;
+        errorMessage = "Your password is not strong enough!";
       });
       return false;
     } else if (passwordController.text != confirmPasswordController.text) {
       setState(() {
         error = true;
         passwordMatchError = true;
-        errorMessage = "Passwords do not match";
+        errorMessage = "Passwords do not match!";
       });
       return false;
     } else {
       setState(() {
         error = false;
+        weakPasswordError = false;
         passwordMatchError = false;
         errorMessage = "";
       });
@@ -99,7 +109,6 @@ class _SignUpPageState extends State<SignUpPage> {
             // To avoid Render Pixel Overflow
             scrollDirection: Axis.vertical,
             child: Column(
-              // mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -118,6 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   prefixIcon: const Icon(Icons.person),
                   suffixIcon: null,
                   height: 64.0,
+                  onChanged: null,
                 ),
                 const SizedBox(height: 10.0),
                 AppTextField(
@@ -129,13 +139,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   prefixIcon: const Icon(Icons.person),
                   suffixIcon: null,
                   height: 64.0,
+                  onChanged: null,
                 ),
                 const SizedBox(height: 10.0),
                 AppTextField(
                   controller: passwordController,
                   focusNode: passwordFocusNode,
                   hintText: 'Password',
-                  color: error && (passwordMatchError || passwordController.text.isEmpty)
+                  color: error && (passwordMatchError || passwordController.text.isEmpty || weakPasswordError)
                       ? AppColors.dangerColor
                       : AppColors.primaryColor,
                   obscureText: obscuredPassword,
@@ -149,7 +160,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
+                  onChanged: (text) {
+                    setState(() { });
+                  },
                 ),
+                const SizedBox(height: 10.0),
+                StrongPasswordChecks(password: passwordController.text),
                 const SizedBox(height: 10.0),
                 AppTextField(
                   controller: confirmPasswordController,
@@ -169,6 +185,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
+                  onChanged: null,
                 ),
                 const SizedBox(height: 10.0),
                 if (error)

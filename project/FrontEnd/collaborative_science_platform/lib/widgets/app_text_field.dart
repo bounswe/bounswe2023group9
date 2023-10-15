@@ -10,6 +10,7 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final double height;
+  final void Function(String)? onChanged;
 
   const AppTextField({
     super.key,
@@ -21,6 +22,7 @@ class AppTextField extends StatelessWidget {
     required this.prefixIcon,
     required this.suffixIcon,
     required this.height,
+    required this.onChanged,
   });
 
   @override
@@ -31,6 +33,7 @@ class AppTextField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         obscureText: obscureText,
+        onChanged: onChanged,
         keyboardType: TextInputType.text,
         cursorColor: Colors.grey.shade700,
         style: const TextStyle(color: Colors.black),
