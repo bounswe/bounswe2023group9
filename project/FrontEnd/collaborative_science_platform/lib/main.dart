@@ -1,4 +1,6 @@
 import 'package:collaborative_science_platform/screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/signup_page.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -11,12 +13,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: Constants.appName,
+      routes: {
+        '/': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(),
+      },
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
     );
   }
 }

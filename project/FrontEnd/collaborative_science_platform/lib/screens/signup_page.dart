@@ -1,22 +1,25 @@
-
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController();
 
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
+  final confirmPasswordFocusNode = FocusNode();
+  final nameFocusNode = FocusNode();
 
   bool obscuredPassword = true;
 
@@ -24,8 +27,12 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
+    nameController.dispose();
+    confirmPasswordController.dispose();
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
+    nameFocusNode.dispose();
+    confirmPasswordFocusNode.dispose();
     super.dispose();
   }
 
@@ -35,7 +42,8 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: SingleChildScrollView( // To avoid Render Pixel Overflow
+          child: SingleChildScrollView(
+            // To avoid Render Pixel Overflow
             scrollDirection: Axis.vertical,
             child: Column(
               // mainAxisSize: MainAxisSize.min,
@@ -49,6 +57,16 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 40.0),
                 AppTextField(
+                  controller: nameController,
+                  focusNode: nameFocusNode,
+                  hintText: 'Full Name',
+                  obscureText: false,
+                  prefixIcon: const Icon(Icons.person),
+                  suffixIcon: null,
+                  height: 64.0,
+                ),
+                const SizedBox(height: 10.0),
+                AppTextField(
                   controller: emailController,
                   focusNode: emailFocusNode,
                   hintText: 'Email',
@@ -57,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   suffixIcon: null,
                   height: 64.0,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 AppTextField(
                   controller: passwordController,
                   focusNode: passwordFocusNode,
@@ -70,38 +88,43 @@ class _LoginPageState extends State<LoginPage> {
                         obscuredPassword = !obscuredPassword;
                       });
                     },
-                    icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                    icon: obscuredPassword
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
                 ),
                 const SizedBox(height: 10.0),
-                Row(
-                  children: [
-                    const SizedBox(width: 16.0),
-                    GestureDetector(
-                      onTap: () { /* Direct user to the password recovery page */ },
-                      child: Text(
-                        "Forgot your password?",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                    ),
-                  ],
+                AppTextField(
+                  controller: confirmPasswordController,
+                  focusNode: confirmPasswordFocusNode,
+                  hintText: 'Confirm Password',
+                  obscureText: obscuredPassword,
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        obscuredPassword = !obscuredPassword;
+                      });
+                    },
+                    icon: obscuredPassword
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
+                  ),
+                  height: 64.0,
                 ),
                 const SizedBox(height: 20.0),
                 AppButton(
                   onTap: () {/* Button Functionality */},
-                    text: "Log in",
-                    height: 64,
+                  text: "Sign Up",
+                  height: 64,
                 ),
                 const SizedBox(height: 10.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account?",
+                      "Do you have an account?",
                       style: TextStyle(
                         color: Colors.grey.shade700,
                       ),
@@ -109,10 +132,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(width: 4.0),
                     GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/');
                       },
                       child: Text(
-                        "Sign up now",
+                        "Log in",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey.shade700,

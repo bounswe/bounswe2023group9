@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTextField extends StatelessWidget {
@@ -37,12 +38,12 @@ class AppTextField extends StatelessWidget {
           suffixIconColor: Colors.grey,
           suffixIcon: suffixIcon,
           enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.cyanAccent),
-            borderRadius: BorderRadius.circular(height/2.0),
+            borderSide: const BorderSide(color: AppColors.primaryLightColor),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.cyan.shade600),
-            borderRadius: BorderRadius.circular(height/2.0),
+            borderSide: BorderSide(color: AppColors.primaryColor),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           fillColor: Colors.white,
           filled: true,

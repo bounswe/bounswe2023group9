@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
@@ -20,7 +21,7 @@ class AppButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.cyan.shade800,
+            color: AppColors.primaryColor,
             borderRadius: BorderRadius.circular(height/2.0),
             border: Border.all(color: Colors.white54),
           ),
