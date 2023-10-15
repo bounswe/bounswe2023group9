@@ -1,9 +1,11 @@
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {
   static const routeName = '/signup';
@@ -43,9 +45,18 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void authenticate() {
+  void authenticate() async {
     if (!validate()) {
       return;
+    }
+    try {
+      await Provider.of<Auth>(context, listen: false)
+          .signup(nameController.text, emailController.text, passwordController.text);
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong.";
+      });
     }
   }
 

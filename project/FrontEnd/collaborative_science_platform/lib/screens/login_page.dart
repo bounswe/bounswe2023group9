@@ -1,3 +1,5 @@
+import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -5,6 +7,7 @@ import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
@@ -35,9 +38,27 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void authenticate() {
+  void authenticate() async {
     if (!validate()) {
       return;
+    }
+    try {
+      await Provider.of<Auth>(context, listen: false).login(emailController.text, passwordController.text);
+    } on NoUserFound {
+      setState(() {
+        error = true;
+        errorMessage = "User not found.";
+      });
+    } on WrongPasswordException {
+      setState(() {
+        error = true;
+        errorMessage = "Password is wrong.";
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong.";
+      });
     }
   }
 
