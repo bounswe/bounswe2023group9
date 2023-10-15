@@ -1,4 +1,5 @@
 
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,8 @@ class _LoginPageState extends State<LoginPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
+          child: Container(
+            width: Responsive.isMobile(context) ? double.infinity : 600,
           child: SingleChildScrollView( // To avoid Render Pixel Overflow
             scrollDirection: Axis.vertical,
             child: Column(
@@ -125,6 +128,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

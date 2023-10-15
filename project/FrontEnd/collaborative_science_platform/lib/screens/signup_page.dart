@@ -1,3 +1,5 @@
+import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,8 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
+            child: Container(
+          width: Responsive.isMobile(context) ? double.infinity : 600,
           child: SingleChildScrollView(
             // To avoid Render Pixel Overflow
             scrollDirection: Axis.vertical,
@@ -138,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         "Log in",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey.shade700,
+                          color: AppColors.secondaryColor,
                         ),
                       ),
                     ),
@@ -147,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ],
             ),
           ),
-        ),
+        )),
       ),
     );
   }
