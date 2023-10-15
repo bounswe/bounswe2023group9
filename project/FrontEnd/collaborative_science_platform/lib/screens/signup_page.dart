@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpPage extends StatefulWidget {
+  static const routeName = '/signup';
   const SignUpPage({super.key});
 
   @override
@@ -24,6 +25,10 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameFocusNode = FocusNode();
 
   bool obscuredPassword = true;
+  bool error = false;
+  bool passwordMatchError = false;
+
+  String errorMessage = "";
 
   @override
   void dispose() {
@@ -38,13 +43,46 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  void authenticate() {
+    if (!validate()) {
+      return;
+    }
+  }
+
+  bool validate() {
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      setState(() {
+        error = true;
+        errorMessage = "All fields are mandatory.";
+      });
+      return false;
+    } else if (passwordController.text != confirmPasswordController.text) {
+      setState(() {
+        error = true;
+        passwordMatchError = true;
+        errorMessage = "Passwords do not match";
+      });
+      return false;
+    } else {
+      setState(() {
+        error = false;
+        passwordMatchError = false;
+        errorMessage = "";
+      });
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-            child: Container(
+            child: SizedBox(
           width: Responsive.isMobile(context) ? double.infinity : 600,
           child: SingleChildScrollView(
             // To avoid Render Pixel Overflow
@@ -64,6 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: nameController,
                   focusNode: nameFocusNode,
                   hintText: 'Full Name',
+                  color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                   obscureText: false,
                   prefixIcon: const Icon(Icons.person),
                   suffixIcon: null,
@@ -74,6 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: emailController,
                   focusNode: emailFocusNode,
                   hintText: 'Email',
+                  color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                   obscureText: false,
                   prefixIcon: const Icon(Icons.person),
                   suffixIcon: null,
@@ -84,6 +124,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: passwordController,
                   focusNode: passwordFocusNode,
                   hintText: 'Password',
+                  color: error && (passwordMatchError || passwordController.text.isEmpty)
+                      ? AppColors.dangerColor
+                      : AppColors.primaryColor,
                   obscureText: obscuredPassword,
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
@@ -92,9 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         obscuredPassword = !obscuredPassword;
                       });
                     },
-                    icon: obscuredPassword
-                        ? const Icon(Icons.visibility)
-                        : const Icon(Icons.visibility_off),
+                    icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
                 ),
@@ -103,6 +144,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: confirmPasswordController,
                   focusNode: confirmPasswordFocusNode,
                   hintText: 'Confirm Password',
+                  color: error && (passwordMatchError || confirmPasswordController.text.isEmpty)
+                      ? AppColors.dangerColor
+                      : AppColors.primaryColor,
                   obscureText: obscuredPassword,
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
@@ -111,15 +155,22 @@ class _SignUpPageState extends State<SignUpPage> {
                         obscuredPassword = !obscuredPassword;
                       });
                     },
-                    icon: obscuredPassword
-                        ? const Icon(Icons.visibility)
-                        : const Icon(Icons.visibility_off),
+                    icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
                 ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
+                if (error)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      errorMessage,
+                      style: const TextStyle(color: AppColors.dangerColor),
+                    ),
+                  ),
+                const SizedBox(height: 10.0),
                 AppButton(
-                  onTap: () {/* Button Functionality */},
+                  onTap: authenticate,
                   text: "Sign Up",
                   height: 64,
                 ),
@@ -128,21 +179,24 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Do you have an account?",
+                      "Already have an account?",
                       style: TextStyle(
                         color: Colors.grey.shade700,
                       ),
                     ),
                     const SizedBox(width: 4.0),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/');
-                      },
-                      child: Text(
-                        "Log in",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.secondaryColor,
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/');
+                        },
+                        child: const Text(
+                          "Log in",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.hyperTextColor,
+                          ),
                         ),
                       ),
                     ),

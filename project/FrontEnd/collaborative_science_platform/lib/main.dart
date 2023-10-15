@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: Constants.appName,
       routes: {
         '/': (context) => LoginPage(),
-        '/signup': (context) => SignUpPage(),
+        SignUpPage.routeName: (context) => const SignUpPage(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
