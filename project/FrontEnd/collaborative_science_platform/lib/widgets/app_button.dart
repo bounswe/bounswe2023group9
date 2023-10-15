@@ -15,28 +15,21 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.primaryColor,
-            borderRadius: BorderRadius.circular(height/2.0),
-            border: Border.all(color: Colors.white54),
-          ),
-          child: Center(
-            child: Text(
-                text,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: height/3.0,
-                )
-            ),
-          ),
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(height / 2.0),
         ),
+        minimumSize: Size(double.infinity, height),
       ),
+      child: Text(text,
+          style: TextStyle(
+            fontSize: height / 3.0,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          )),
     );
   }
 }
