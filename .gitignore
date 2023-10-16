@@ -2,9 +2,3 @@
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-.idea/misc.xml
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/bounswe2023group9.iml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
