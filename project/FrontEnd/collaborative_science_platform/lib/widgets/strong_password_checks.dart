@@ -21,18 +21,21 @@ class StrongPasswordChecks extends StatelessWidget {
   }
 
   Widget conditionWidget(String message, bool conditionIsMet) {
-    return Row(
-      children: [
-        (conditionIsMet) ? const Icon(Icons.check, color: Colors.green)
-                         : const Icon(Icons.close, color: Colors.red),
-        const SizedBox(width: 6.0),
-        Text(
-          message,
-          style: TextStyle(
-            color: (conditionIsMet) ? Colors.green : Colors.red,
+    return SingleChildScrollView( // To avoid Render Pixel Overflow
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          (conditionIsMet) ? const Icon(Icons.check, color: Colors.green)
+                          : const Icon(Icons.close, color: Colors.red),
+          const SizedBox(width: 6.0),
+          Text(
+            message,
+            style: TextStyle(
+              color: (conditionIsMet) ? Colors.green : Colors.red,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
