@@ -58,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     try {
       await Provider.of<Auth>(context, listen: false)
-           .signup(nameController.text, emailController.text, passwordController.text);
+           .signup(nameController.text,surnameController.text, emailController.text, passwordController.text);
     } on UserExistException{
       setState(() {
         error = true;

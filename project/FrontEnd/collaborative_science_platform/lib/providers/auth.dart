@@ -64,7 +64,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(String name, String email, String password) async {
+  Future<void> signup(String name, String surname, String email, String password) async {
     Uri url = Uri.parse("${Constants.apiUrl}/signup/");
 
     final Map<String, String> headers = {
@@ -72,10 +72,10 @@ class Auth with ChangeNotifier {
     };
     
     final String body = json.encode({
-      'username' : name,
+      'username' : email,
       'email' : email,
       'first_name': name,
-      'last_name' : 'dummy surname',
+      'last_name' : surname,
       'password' : password,
       'password2' : password,
     });
