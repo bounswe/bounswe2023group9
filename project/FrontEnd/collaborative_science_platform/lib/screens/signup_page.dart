@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -51,8 +52,14 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     try {
       await Provider.of<Auth>(context, listen: false)
-          .signup(nameController.text, emailController.text, passwordController.text);
-    } catch (e) {
+           .signup(nameController.text, emailController.text, passwordController.text);
+    } on UserExistException{
+      setState(() {
+        error = true;
+        errorMessage = "A user with that username already exists";
+      });
+    }
+    catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong.";

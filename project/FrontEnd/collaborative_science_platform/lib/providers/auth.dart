@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -13,26 +14,91 @@ class Auth with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/login");
-    final Map<String, String> headers = {};
+    Uri url = Uri.parse("${Constants.apiUrl}/login/");
 
-    try {
-      final response = await http.get(url, headers: headers);
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type":"application/json"
+    };
+    
+    final String body = json.encode({
+      'username' : email, //kararlaştırılacak
+      'password' : password,
+    });
+
+    final response = await http.post(url, headers: headers, body:body);
+
+    if(response.statusCode == 200){
+
       final data = json.decode(response.body);
+      
+      Uri url = Uri.parse("${Constants.apiUrl}/get_authenticated_user/");
+      final tokenHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': "Token ${data['token']}"
+      };
 
-      user = User(
-        name: data['name'],
-        email: data['email'],
-        token: data['token'],
-      );
+      final tokenResponse = await http.get(url, headers: tokenHeaders);
 
+      if(tokenResponse.statusCode == 200){
+        final userData = json.decode(tokenResponse.body);
+
+        user = User(
+          username: userData['username'],
+          email: userData['email'],
+          firstName: userData['first_name'],
+          lastName: userData['last_name']
+        );
+      }
+      else{
+        throw Exception("Something has happened");
+      }
       notifyListeners();
-    } catch (error) {
-      throw Exception("Error");
+    }
+    else if(response.statusCode == 400){
+        throw WrongPasswordException(message: 'Your credentials are wrong');
+      }
+    else{
+        throw Exception("Something has happened");
     }
   }
 
-  Future<void> signup(String name, String email, String password) async {}
+  Future<void> signup(String name, String email, String password) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/signup/");
+
+    final Map<String, String> headers = {
+      'Content-Type': 'application/json; charset=UTF-8'
+    };
+    
+    final String body = json.encode({
+      'username' : name,
+      'email' : email,
+      'first_name': name,
+      'last_name' : 'dummy surname',
+      'password' : password,
+      'password2' : password,
+    });
+
+    final response = await http.post(url, headers: headers, body:body);
+
+    if(response.statusCode == 201){
+      final data = json.decode(response.body);
+      user = User(
+          username: data['username'],
+          email: data['email'],
+          firstName: data['first_name'],
+          lastName: data['last_name']
+        );
+      notifyListeners();
+    }
+    else if(response.statusCode == 400){
+      throw UserExistException(message: 'A user with that username already exists');
+    }
+    else{
+      throw Exception("Something has happened");
+    }
+  }
 
   Future<void> logout() async {}
 }
