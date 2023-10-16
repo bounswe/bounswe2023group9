@@ -82,15 +82,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0), //yanına 16 pixel padding, boşluk ekliyor
         child: Center(
           child: SizedBox(
             width: Responsive.isMobile(context) ? double.infinity : 600,
-            child: SingleChildScrollView(
-              // To avoid Render Pixel Overflow
+            child: SingleChildScrollView( // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
               child: Column(
-                // mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -99,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 394.0,
                     height: 120.0,
                   ),
-                  const SizedBox(height: 40.0),
+                  const SizedBox(height: 40.0),  //to add space
                   AppTextField(
                     controller: emailController,
                     focusNode: emailFocusNode,
@@ -109,8 +107,9 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: const Icon(Icons.person),
                     suffixIcon: null,
                     height: 64.0,
+                    onChanged: null,
                   ),
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: .0),
                   AppTextField(
                     controller: passwordController,
                     focusNode: passwordFocusNode,
@@ -121,14 +120,15 @@ class _LoginPageState extends State<LoginPage> {
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
-                          obscuredPassword = !obscuredPassword;
+                          obscuredPassword = !obscuredPassword;  //eye icon to work
                         });
                       },
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
+                    onChanged: null,
                   ),
-                  if (error)
+                  if (error)  //all error messages
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
@@ -137,23 +137,26 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   const SizedBox(height: 10.0),
-                  Row(
-                    children: [
-                      const SizedBox(width: 16.0),
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () {/* Direct user to the password recovery page */},
-                          child: const Text(
-                            "Forgot your password?",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.hyperTextColor,
+                  SingleChildScrollView( // To avoid Render Pixel Overflow
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 16.0),
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {/* Direct user to the password recovery page */},
+                            child: const Text(
+                              "Forgot your password?",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.hyperTextColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 20.0),
                   AppButton(
@@ -162,30 +165,33 @@ class _LoginPageState extends State<LoginPage> {
                     height: 64,
                   ),
                   const SizedBox(height: 10.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account?",
-                        style: TextStyle(
-                          color: Colors.grey.shade700,
-                        ),
-                      ),
-                      const SizedBox(width: 4.0),
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, SignUpPage.routeName);
-                          },
-                          child: const Text(
-                            "Sign up now",
-                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                  SingleChildScrollView( // To avoid Render Pixel Overflow
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account?",
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
                           ),
                         ),
-                      ),
-                    ],
-                  )
+                        const SizedBox(width: 4.0),
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, SignUpPage.routeName);
+                            },
+                            child: const Text(
+                              "Sign up now",
+                              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
