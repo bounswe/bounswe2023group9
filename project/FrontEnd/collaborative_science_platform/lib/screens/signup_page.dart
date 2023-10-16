@@ -21,11 +21,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
+  final surnameController = TextEditingController();
 
   final emailFocusNode = FocusNode();
   final passwordFocusNode = FocusNode();
   final confirmPasswordFocusNode = FocusNode();
   final nameFocusNode = FocusNode();
+  final surnameFocusNode = FocusNode();
 
   bool obscuredPassword = true;
   bool error = false;
@@ -40,10 +42,12 @@ class _SignUpPageState extends State<SignUpPage> {
     passwordController.dispose();
     nameController.dispose();
     confirmPasswordController.dispose();
+    surnameController.dispose();
     emailFocusNode.dispose();
     passwordFocusNode.dispose();
     nameFocusNode.dispose();
     confirmPasswordFocusNode.dispose();
+    surnameFocusNode.dispose();
     super.dispose();
   }
 
@@ -52,8 +56,8 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
     try {
-      await Provider.of<Auth>(context, listen: false)
-          .signup(nameController.text, emailController.text, passwordController.text);
+      await Provider.of<Auth>(context, listen: false).signup(
+          nameController.text, emailController.text, passwordController.text);
     } catch (e) {
       setState(() {
         error = true;
@@ -64,6 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   bool validate() {
     if (nameController.text.isEmpty ||
+        surnameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
@@ -72,7 +77,8 @@ class _SignUpPageState extends State<SignUpPage> {
         errorMessage = "All fields are mandatory!";
       });
       return false;
-    } else if (!StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text)) {
+    } else if (!StrongPasswordChecks.passedAllPasswordCriteria(
+        passwordController.text)) {
       setState(() {
         error = true;
         weakPasswordError = true;
@@ -118,25 +124,52 @@ class _SignUpPageState extends State<SignUpPage> {
                   height: 120.0,
                 ),
                 const SizedBox(height: 40.0),
-                AppTextField(
-                  controller: nameController,
-                  focusNode: nameFocusNode,
-                  hintText: 'Full Name',
-                  color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
-                  obscureText: false,
-                  prefixIcon: const Icon(Icons.person),
-                  suffixIcon: null,
-                  height: 64.0,
-                  onChanged: null,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: AppTextField(
+                        controller: nameController,
+                        focusNode: nameFocusNode,
+                        hintText: 'Name',
+                        color: error && nameController.text.isEmpty
+                            ? AppColors.dangerColor
+                            : AppColors.primaryColor,
+                        obscureText: false,
+                        prefixIcon: const Icon(Icons.person),
+                        suffixIcon: null,
+                        height: 64.0,
+                        onChanged: null,
+                      ),
+                    ),
+                    SizedBox(width: 10.0),
+                    Expanded(
+                      child: AppTextField(
+                        controller: surnameController,
+                        focusNode: surnameFocusNode,
+                        hintText: 'Surname',
+                        color: error && surnameController.text.isEmpty
+                            ? AppColors.dangerColor
+                            : AppColors.primaryColor,
+                        obscureText: false,
+                        prefixIcon: const Icon(Icons.person),
+                        suffixIcon: null,
+                        height: 64.0,
+                        onChanged: null,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10.0),
                 AppTextField(
                   controller: emailController,
                   focusNode: emailFocusNode,
                   hintText: 'Email',
-                  color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                  color: error && emailController.text.isEmpty
+                      ? AppColors.dangerColor
+                      : AppColors.primaryColor,
                   obscureText: false,
-                  prefixIcon: const Icon(Icons.person),
+                  prefixIcon: const Icon(Icons.mail),
                   suffixIcon: null,
                   height: 64.0,
                   onChanged: null,
@@ -146,7 +179,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: passwordController,
                   focusNode: passwordFocusNode,
                   hintText: 'Password',
-                  color: error && (passwordMatchError || passwordController.text.isEmpty || weakPasswordError)
+                  color: error &&
+                          (passwordMatchError ||
+                              passwordController.text.isEmpty ||
+                              weakPasswordError)
                       ? AppColors.dangerColor
                       : AppColors.primaryColor,
                   obscureText: obscuredPassword,
@@ -157,11 +193,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         obscuredPassword = !obscuredPassword;
                       });
                     },
-                    icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                    icon: obscuredPassword
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
                   onChanged: (text) {
-                    setState(() { });
+                    setState(() {});
                   },
                 ),
                 const SizedBox(height: 10.0),
@@ -171,7 +209,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   controller: confirmPasswordController,
                   focusNode: confirmPasswordFocusNode,
                   hintText: 'Confirm Password',
-                  color: error && (passwordMatchError || confirmPasswordController.text.isEmpty)
+                  color: error &&
+                          (passwordMatchError ||
+                              confirmPasswordController.text.isEmpty)
                       ? AppColors.dangerColor
                       : AppColors.primaryColor,
                   obscureText: obscuredPassword,
@@ -182,7 +222,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         obscuredPassword = !obscuredPassword;
                       });
                     },
-                    icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                    icon: obscuredPassword
+                        ? const Icon(Icons.visibility)
+                        : const Icon(Icons.visibility_off),
                   ),
                   height: 64.0,
                   onChanged: null,
