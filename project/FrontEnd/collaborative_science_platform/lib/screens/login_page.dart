@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
 
   bool obscuredPassword = true;
   bool error = false;
+  bool isLoading = false;
 
   String errorMessage = "";
 
@@ -43,21 +44,25 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     try {
-      await Provider.of<Auth>(context, listen: false).login(emailController.text, passwordController.text);
-    } on NoUserFound {
+      final auth = Provider.of<Auth>(context, listen: false);
       setState(() {
-        error = true;
-        errorMessage = "User not found.";
+        isLoading = true;
       });
+      await auth.login(emailController.text, passwordController.text);
+      print(auth.user != null ? "Authenticated" : "Not authenticated");
     } on WrongPasswordException {
       setState(() {
         error = true;
-        errorMessage = "Password is wrong.";
+        errorMessage = "Username or password is wrong.";
       });
     } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong.";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -86,7 +91,8 @@ class _LoginPageState extends State<LoginPage> {
         child: Center(
           child: SizedBox(
             width: Responsive.isMobile(context) ? double.infinity : 600,
-            child: SingleChildScrollView( // To avoid Render Pixel Overflow
+            child: SingleChildScrollView(
+              // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 394.0,
                     height: 120.0,
                   ),
-                  const SizedBox(height: 40.0),  //to add space
+                  const SizedBox(height: 40.0), //to add space
                   AppTextField(
                     controller: emailController,
                     focusNode: emailFocusNode,
@@ -109,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 64.0,
                     onChanged: null,
                   ),
-                  const SizedBox(height: .0),
+                  const SizedBox(height: 8.0),
                   AppTextField(
                     controller: passwordController,
                     focusNode: passwordFocusNode,
@@ -120,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
-                          obscuredPassword = !obscuredPassword;  //eye icon to work
+                          obscuredPassword = !obscuredPassword; //eye icon to work
                         });
                       },
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
@@ -128,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 64.0,
                     onChanged: null,
                   ),
-                  if (error)  //all error messages
+                  if (error) //all error messages
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
@@ -137,7 +143,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView( // To avoid Render Pixel Overflow
+                  SingleChildScrollView(
+                    // To avoid Render Pixel Overflow
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
@@ -163,34 +170,35 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: authenticate,
                     text: "Log in",
                     height: 64,
+                    isLoading: isLoading,
                   ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView( // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
                           "Don't have an account?",
+                          maxLines: 2,
                           style: TextStyle(
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        const SizedBox(width: 4.0),
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, SignUpPage.routeName);
-                            },
-                            child: const Text(
-                              "Sign up now",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
-                            ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, SignUpPage.routeName);
+                          },
+                          child: const Text(
+                            "Sign up now",
+                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),

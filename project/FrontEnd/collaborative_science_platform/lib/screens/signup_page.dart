@@ -30,8 +30,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameFocusNode = FocusNode();
   final surnameFocusNode = FocusNode();
 
+  bool buttonState = false;
+  bool isLoading = false;
+
   bool obscuredPassword = true;
   bool error = false;
+
   bool passwordMatchError = false;
   bool weakPasswordError = false;
 
@@ -57,18 +61,38 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
     try {
-      await Provider.of<Auth>(context, listen: false)
-           .signup(nameController.text,surnameController.text, emailController.text, passwordController.text);
-    } on UserExistException{
+      final auth = Provider.of<Auth>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await auth.signup(nameController.text, surnameController.text, emailController.text, passwordController.text);
+      print(auth.user != null ? "Authenticated" : "Not authenticated");
+    } on UserExistException {
       setState(() {
         error = true;
         errorMessage = "A user with that username already exists";
       });
-    }
-    catch (e) {
+    } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  void validateStrongPassword() {
+    if (StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text, confirmPasswordController.text) &&
+        nameController.text.isNotEmpty &&
+        surnameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty) {
+      setState(() {
+        buttonState = true;
+      });
+    } else {
+      setState(() {
+        buttonState = false;
       });
     }
   }
@@ -85,7 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
       });
       return false;
     } else if (!StrongPasswordChecks.passedAllPasswordCriteria(
-        passwordController.text)) {
+        passwordController.text, confirmPasswordController.text)) {
       setState(() {
         error = true;
         weakPasswordError = true;
@@ -116,171 +140,171 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-            child: SizedBox(
-              width: Responsive.isMobile(context) ? double.infinity : 600,
-              child: SingleChildScrollView(   // To avoid Render Pixel Overflow
-                scrollDirection: Axis.vertical,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/images/logo.svg",
-                          width: 394.0,
-                          height: 120.0,
-                        ), 
-                        const SizedBox(height: 40.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: AppTextField(
-                                controller: nameController,
-                                focusNode: nameFocusNode,
-                                hintText: 'Name',
-                                color: error && nameController.text.isEmpty
-                                    ? AppColors.dangerColor
-                                    : AppColors.primaryColor,
-                                obscureText: false,
-                                prefixIcon: const Icon(Icons.person),
-                                suffixIcon: null,
-                                height: 64.0,
-                                onChanged: null,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                              child: AppTextField(
-                                controller: surnameController,
-                                focusNode: surnameFocusNode,
-                                hintText: 'Surname',
-                                color: error && surnameController.text.isEmpty
-                                    ? AppColors.dangerColor
-                                    : AppColors.primaryColor,
-                                obscureText: false,
-                                prefixIcon: const Icon(Icons.person),
-                                suffixIcon: null,
-                                height: 64.0,
-                                onChanged: null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: emailController,
-                          focusNode: emailFocusNode,
-                          hintText: 'Email',
-                          color: error && emailController.text.isEmpty
-                              ? AppColors.dangerColor
-                              : AppColors.primaryColor,
+          child: SizedBox(
+            width: Responsive.isMobile(context) ? double.infinity : 600,
+            child: SingleChildScrollView(
+              // To avoid Render Pixel Overflow
+              scrollDirection: Axis.vertical,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/logo.svg",
+                    width: 394.0,
+                    height: 120.0,
+                  ),
+                  const SizedBox(height: 40.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: AppTextField(
+                          controller: nameController,
+                          focusNode: nameFocusNode,
+                          hintText: 'Name',
+                          color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                           obscureText: false,
-                          prefixIcon: const Icon(Icons.mail),
+                          prefixIcon: const Icon(Icons.person),
                           suffixIcon: null,
                           height: 64.0,
-                          onChanged: null,
-                        ),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: passwordController,
-                          focusNode: passwordFocusNode,
-                          hintText: 'Password',
-                          color: error &&
-                                  (passwordMatchError ||
-                                      passwordController.text.isEmpty ||
-                                      weakPasswordError)
-                              ? AppColors.dangerColor
-                              : AppColors.primaryColor,
-                          obscureText: obscuredPassword,
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                obscuredPassword = !obscuredPassword;
-                              });
-                            },
-                          icon: obscuredPassword
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                          ),
-                          height: 64.0,
-                          onChanged: (text) {  
-                            setState(() {});
+                          onChanged: (text) {
+                            validateStrongPassword();
                           },
                         ),
-                        const SizedBox(height: 10.0),
-                        if(passwordController.text.isNotEmpty) StrongPasswordChecks(password: passwordController.text),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: confirmPasswordController,
-                          focusNode: confirmPasswordFocusNode,
-                          hintText: 'Confirm Password',
-                          color: error &&
-                                  (passwordMatchError ||
-                                      confirmPasswordController.text.isEmpty)
-                              ? AppColors.dangerColor
-                              : AppColors.primaryColor,
-                          obscureText: obscuredPassword,
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                obscuredPassword = !obscuredPassword;
-                              });
-                            },
-                          icon: obscuredPassword
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                          ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: AppTextField(
+                          controller: surnameController,
+                          focusNode: surnameFocusNode,
+                          hintText: 'Surname',
+                          color:
+                              error && surnameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                          obscureText: false,
+                          prefixIcon: const Icon(Icons.person),
+                          suffixIcon: null,
                           height: 64.0,
-                          onChanged: null,
+                          onChanged: (text) {
+                            validateStrongPassword();
+                          },
                         ),
-                        const SizedBox(height: 10.0),
-                if (error)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      errorMessage,
-                      style: const TextStyle(color: AppColors.dangerColor),
-                    ),
+                      ),
+                    ],
                   ),
-                const SizedBox(height: 10.0),
-                AppButton(
-                  onTap: authenticate,
-                  text: "Sign Up",
-                  height: 64,
-                ),
-                const SizedBox(height: 10.0),
-                SingleChildScrollView( // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: emailController,
+                    focusNode: emailFocusNode,
+                    hintText: 'Email',
+                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    obscureText: false,
+                    prefixIcon: const Icon(Icons.mail),
+                    suffixIcon: null,
+                    height: 64.0,
+                    onChanged: (text) {
+                      validateStrongPassword();
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: passwordController,
+                    focusNode: passwordFocusNode,
+                    hintText: 'Password',
+                    color: error && (passwordMatchError || passwordController.text.isEmpty || weakPasswordError)
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
+                    obscureText: obscuredPassword,
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          obscuredPassword = !obscuredPassword;
+                        });
+                      },
+                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                    ),
+                    height: 64.0,
+                    onChanged: (text) {
+                      validateStrongPassword();
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  if (passwordController.text.isNotEmpty)
+                    StrongPasswordChecks(
+                      password: passwordController.text,
+                      confirmPassword: confirmPasswordController.text,
+                    ),
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: confirmPasswordController,
+                    focusNode: confirmPasswordFocusNode,
+                    hintText: 'Confirm Password',
+                    color: error && (passwordMatchError || confirmPasswordController.text.isEmpty)
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
+                    obscureText: obscuredPassword,
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          obscuredPassword = !obscuredPassword;
+                        });
+                      },
+                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                    ),
+                    height: 64.0,
+                    onChanged: (text) {
+                      validateStrongPassword();
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  if (error)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        errorMessage,
+                        style: const TextStyle(color: AppColors.dangerColor),
+                      ),
+                    ),
+                  const SizedBox(height: 10.0),
+                  AppButton(
+                    onTap: authenticate,
+                    text: "Sign Up",
+                    height: 64,
+                    isActive: buttonState,
+                    isLoading: isLoading,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
                           "Already have an account?",
                           style: TextStyle(
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        const SizedBox(width: 4.0),
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/');
-                            },
-                            child: const Text(
-                              "Log in",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.hyperTextColor,
-                              ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/');
+                          },
+                          child: const Text(
+                            "Log in",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.hyperTextColor,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),  
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
