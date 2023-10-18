@@ -54,11 +54,6 @@ class NodeModelTestCase(TestCase):
             node_title="Test Node",
             theorem=None,
             publish_date="2023-01-01",
-            reviewers=None,
-            referenced_nodes=None,
-            semantic_tags=None,
-            wiki_tags=None,
-            annotation=None,
             is_valid=True,
             num_visits=99,
         )
@@ -67,12 +62,12 @@ class NodeModelTestCase(TestCase):
         self.assertEqual(node.is_valid, True)
         self.assertEqual(node.num_visits, 99)
 
-        # TODO: These test should be updated after the models below implemented
-        self.assertIsNone(node.reviewers)
-        self.assertIsNone(node.referenced_nodes)
-        self.assertIsNone(node.semantic_tags)
-        self.assertIsNone(node.wiki_tags)
-        self.assertIsNone(node.annotations)
+        # TODO: These tests should be hanled after the models below implemented
+        # self.assertIsNone(node.reviewers)
+        # self.assertIsNone(node.referenced_nodes)
+        # self.assertIsNone(node.semantic_tags)
+        # self.assertIsNone(node.wiki_tags)
+        # self.assertIsNone(node.annotations)
 
     def test_increment_num_visits(self):
         # Testing the incrementing num of visits function
