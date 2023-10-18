@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/widgets/home_page_node.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/responsive/responsive.dart';
+import '../widgets/app_bottom_navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home';
@@ -13,10 +14,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final searchBarController = TextEditingController();
   final searchBarFocusNode = FocusNode();
-
   bool searchBarActive = false;
 
   @override
@@ -29,6 +29,12 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Home"),
+        centerTitle: true,
+      ),
+      bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 0),
       body: Padding(
         padding: const EdgeInsets.all(16.0), // 16 pixels padding in 4 directions
         child: Center(
@@ -40,7 +46,6 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40.0), // Placeholder for AppBar
                   AppSearchBar(
                     controller: searchBarController,
                     focusNode: searchBarFocusNode,
@@ -52,6 +57,7 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                   ),
+                  const SizedBox(height: 10.0),
                   ListView.builder(
                     physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
                     scrollDirection: Axis.vertical,

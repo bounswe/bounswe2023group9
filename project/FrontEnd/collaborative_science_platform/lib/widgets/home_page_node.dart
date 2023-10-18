@@ -1,4 +1,5 @@
 
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class HomePageNode extends StatelessWidget {
@@ -20,6 +21,7 @@ class HomePageNode extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap, // Navigate to the Screen of the Node
         child: Card(
+          color: AppColors.primaryLightColor,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -40,7 +42,6 @@ class HomePageNode extends StatelessWidget {
               ],
             ),
           ),
-
         ),
       ),
     );
