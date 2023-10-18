@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/home_page.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   bool obscuredPassword = true;
   bool error = false;
   bool isLoading = false;
+  bool buttonState = false;
 
   String errorMessage = "";
 
@@ -39,9 +41,9 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void authenticate() async {
+  Future<bool> authenticate() async {
     if (!validate()) {
-      return;
+      return false;
     }
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -49,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = true;
       });
       await auth.login(emailController.text, passwordController.text);
-      print(auth.user != null ? "Authenticated" : "Not authenticated");
     } on WrongPasswordException {
       setState(() {
         error = true;
@@ -65,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = false;
       });
     }
+    return error ? false : true;
   }
 
   bool validate() {
@@ -87,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0), //yanına 16 pixel padding, boşluk ekliyor
+        padding: const EdgeInsets.all(16.0), // 16 pixels padding in 4 directions
         child: Center(
           child: SizedBox(
             width: Responsive.isMobile(context) ? double.infinity : 600,
@@ -111,9 +113,18 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: false,
                     color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.person),
-                    suffixIcon: null,
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
                   ),
                   const SizedBox(height: 8.0),
                   AppTextField(
@@ -132,7 +143,17 @@ class _LoginPageState extends State<LoginPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
                   ),
                   if (error) //all error messages
                     Padding(
@@ -167,10 +188,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20.0),
                   AppButton(
-                    onTap: authenticate,
+                    onTap: () async {
+                      if (await authenticate() && mounted) { // Navigate to home page if authentication is successful
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      }
+                    },
                     text: "Log in",
                     height: 64,
                     isLoading: isLoading,
+                    isActive: buttonState,
                   ),
                   const SizedBox(height: 10.0),
                   Row(

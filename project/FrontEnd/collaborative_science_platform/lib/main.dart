@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/home_page.dart';
 import 'package:collaborative_science_platform/screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -21,8 +22,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
         routes: {
-          '/': (context) => LoginPage(),
+          '/': (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
+          HomePage.routeName: (context) => const HomePage(),
         },
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),

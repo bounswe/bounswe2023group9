@@ -66,7 +66,6 @@ class _SignUpPageState extends State<SignUpPage> {
         isLoading = true;
       });
       await auth.signup(nameController.text, surnameController.text, emailController.text, passwordController.text);
-      print(auth.user != null ? "Authenticated" : "Not authenticated");
     } on UserExistException {
       setState(() {
         error = true;
@@ -78,7 +77,9 @@ class _SignUpPageState extends State<SignUpPage> {
         errorMessage = "Something went wrong!";
       });
     } finally {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -166,9 +167,8 @@ class _SignUpPageState extends State<SignUpPage> {
                           color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
-                          suffixIcon: null,
                           height: 64.0,
-                          onChanged: (text) {
+                          onChanged: (_) {
                             validateStrongPassword();
                           },
                         ),
@@ -183,9 +183,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               error && surnameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
-                          suffixIcon: null,
                           height: 64.0,
-                          onChanged: (text) {
+                          onChanged: (_) {
                             validateStrongPassword();
                           },
                         ),
@@ -200,9 +199,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                     obscureText: false,
                     prefixIcon: const Icon(Icons.mail),
-                    suffixIcon: null,
                     height: 64.0,
-                    onChanged: (text) {
+                    onChanged: (_) {
                       validateStrongPassword();
                     },
                   ),
@@ -225,7 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: (text) {
+                    onChanged: (_) {
                       validateStrongPassword();
                     },
                   ),
@@ -254,7 +252,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: (text) {
+                    onChanged: (_) {
                       validateStrongPassword();
                     },
                   ),
