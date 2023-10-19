@@ -2,6 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 # Create your models here.
+class Workspace(models.Model):
+    """
+     This class definition is written beforehand (to be implemented afterwards) 
+     in order to be referred from other classes. e.g. Contributor
+    """
+    pass
 
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -12,12 +18,6 @@ class BasicUser(models.Model):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
-class Workspace(models.Model):
-    """
-     This class definition is written beforehand (to be implemented afterwards) 
-     in order to be referred from other classes. e.g. Contributor
-    """
-    pass
 
 class Contributor(BasicUser):
     workspaces = models.ManyToManyField(Workspace)
@@ -37,6 +37,21 @@ class Contributor(BasicUser):
     def delete_workspace(self, workspace_to_delete):        # Note that this function doesn't delete the
         if workspace_to_delete in self.workspaces.all():    # Workspace but pops from the list to prevent 
             self.workspaces.remove(workspace_to_delete)     # errors if multiple Contributors present
+                                            
+class Reviewer(Contributor):
 
-                                                            
-    
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
+
+class Request(models.Model):
+    """
+     This class definition is written beforehand (to be implemented afterwards) 
+     in order to be referred from other classes. e.g. ReviewRequest
+    """
+    pass
+class ReviewRequest(Request):
+    """
+     This class definition is written beforehand (to be implemented afterwards) 
+     in order to be referred from other classes. e.g. Reviewer, Contributor
+    """
+    pass
