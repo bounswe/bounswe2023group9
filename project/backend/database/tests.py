@@ -1,10 +1,71 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import BasicUser
+from .models import Workspace, BasicUser, Contributor
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
 
+class ContributorModelTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        print("All tests for the Contributor Model are completed!")
+
+    def test_contributor_create(self):
+        # Testing the creation of a new Contributor
+
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        contributor = Contributor.objects.create(user=user, bio="Test Bio")
+
+        self.assertEqual(contributor.user, user)
+        self.assertEqual(contributor.bio, "Test Bio")
+
+        # Testing with default values
+        self.assertFalse(contributor.email_notification_preference)
+        self.assertTrue(contributor.show_activity_preference)
+
+    def test_create_workspace(self):
+        # Test the create_workspace method
+        contributor = Contributor.objects.create(user=User.objects.create())
+        workspace = contributor.create_workspace()
+        self.assertIn(workspace, contributor.workspaces.all())
+        
+        # We should collect our garbages
+        contributor.delete() 
+        workspace.delete()
+
+
+    def test_delete_workspace(self):
+        # Create a workspace and add it to the contributor
+        contributor = Contributor.objects.create(user=User.objects.create())
+        workspace = Workspace.objects.create()
+        contributor.workspaces.add(workspace)
+
+        # Test the delete_workspace method
+        contributor.delete_workspace(workspace)
+        self.assertNotIn(workspace, contributor.workspaces.all())
+        
+        # We should collect our garbages
+        contributor.delete() 
+        workspace.delete() 
+
+
+    def test_delete_nonexistent_workspace(self):
+        # Create a workspace, but don't add it to the contributor
+        contributor = Contributor.objects.create(user=User.objects.create())
+        workspace = Workspace.objects.create()
+
+        # Test the delete_workspace method with a non-existent workspace
+        contributor.delete_workspace(workspace)  # This should not raise an error
+        
+        # We should collect our garbages 
+        contributor.delete() 
+        workspace.delete()
 
 class BasicUserModelTestCase(TestCase):
     def tearDown(self):
