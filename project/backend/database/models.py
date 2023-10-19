@@ -39,7 +39,7 @@ class Contributor(BasicUser):
             self.workspaces.remove(workspace_to_delete)     # errors if multiple Contributors present
                                             
 class Reviewer(Contributor):
-
+    
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
@@ -54,4 +54,5 @@ class ReviewRequest(Request):
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
+    reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
     pass
