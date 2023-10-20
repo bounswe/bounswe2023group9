@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import ReviewRequest, Workspace, BasicUser, Contributor, Reviewer
-from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
+from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 
 # Create your tests here.
 
@@ -257,5 +257,41 @@ class BasicUserSerializerTestCase(TestCase):
         serializer = BasicUserSerializer(basic_user)
         expected_fields = set(
             ["user", "bio", "email_notification_preference", "show_activity_preference"]
+        )
+        self.assertEqual(set(serializer.data.keys()), expected_fields)
+
+class ContributorSerializerTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        Contributor.objects.all().delete()
+        print("All tests for the ContributorSerializer are completed!")
+
+    def test_contributor_serializer_fields(self):
+        # Testing the fiels of the serializer
+        
+        contributor = Contributor.objects.create(user=User.objects.create())
+        workspace = contributor.create_workspace()
+
+        serializer = ContributorSerializer(contributor)
+        expected_fields = set(
+            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+        )
+        self.assertEqual(set(serializer.data.keys()), expected_fields)
+
+class ReviewerSerializerTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        Reviewer.objects.all().delete()
+        print("All tests for the ReviewerSerializer are completed!")
+
+    def test_reviewer_serializer_fields(self):
+        # Testing the fiels of the serializer
+        
+        reviewer = Reviewer.objects.create(user=User.objects.create())
+        workspace = reviewer.create_workspace()
+
+        serializer = ReviewerSerializer(reviewer)
+        expected_fields = set(
+            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
