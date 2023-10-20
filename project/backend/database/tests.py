@@ -111,7 +111,7 @@ class ReviewerModelTestCase(TestCase):
         Contributor.objects.all().delete()
         Reviewer.objects.all().delete
         print("All tests for the Reviewer Model are completed!")
-
+    
     def test_reviewer_create(self):
         # Testing the creation of a new Reviewer
         user = User.objects.create(
@@ -156,7 +156,29 @@ class ReviewerModelTestCase(TestCase):
         review_request2.delete() 
         reviewer1.delete() 
         reviewer2.delete() 
+    
+    def test_inheritance(self):
+        # Create a contributor and it's workspace
+        contributor = Contributor.objects.create(user=User.objects.create())
+        workspace = contributor.create_workspace()
 
+        # Suppose this particular contributor becomes a reviewer
+        contributor.__class__= Reviewer
+        contributor.save()
+        reviewer = contributor
+
+        # Review request is issued to new reviewer
+        review_request = ReviewRequest.objects.create(reviewer=reviewer)
+        self.assertIn(review_request, reviewer.get_review_requests())
+
+        # Check if workspace is inherited
+        self.assertIn(workspace, reviewer.workspaces.all())
+        
+        # We should collect our garbages
+        review_request.delete()
+        workspace.delete()
+        reviewer.delete()
+        
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
         self.data = {
