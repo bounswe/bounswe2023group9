@@ -58,8 +58,8 @@ class ReviewRequest(Request):
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
 
-    # Note that reviewer is accessed by directly Reviewer instance,
-    # not by "receiverUserID" as proposed in project class diagram.
+    # Note that reviewer is accessed directly by Reviewer instance,
+    # not via "receiverUserID" as proposed in project class diagram.
     reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
     pass
 
