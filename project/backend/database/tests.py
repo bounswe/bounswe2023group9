@@ -83,6 +83,59 @@ class NodeModelTestCase(TestCase):
         self.assertEqual(node.num_visits, 100)
 
 
+class NodeReferenceTestCase(TestCase):
+    def setUp(self):
+        self.node_A = Node.objects.create(
+            node_id=1,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node_B = Node.objects.create(
+            node_id=2,
+            node_title="Test Node B",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node_C = Node.objects.create(
+            node_id=3,
+            node_title="Test Node C",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        print("All tests for the Node Reference Model are completed!")
+
+    def test_references(self):
+        self.node_B.from_referenced_nodes.add(self.node_A)
+        self.node_C.from_referenced_nodes.add(self.node_B)
+
+        self.assertEqual(self.node_B.from_referenced_nodes.first(), self.node_A)
+        self.assertEqual(self.node_B.to_referenced_nodes.first(), self.node_C)
+
+    def test_reference_symmetry(self):
+        self.node_A.from_referenced_nodes.add(self.node_B)
+        self.node_B.from_referenced_nodes.add(self.node_A)
+
+        from_reference_A = self.node_A.from_referenced_nodes.first()
+        to_reference_A = self.node_A.to_referenced_nodes.first()
+        from_reference_B = self.node_B.from_referenced_nodes.first()
+        to_reference_B = self.node_B.to_referenced_nodes.first()
+
+        self.assertEqual(from_reference_A, self.node_B)
+        self.assertEqual(to_reference_A, self.node_B)
+        self.assertEqual(from_reference_B, self.node_A)
+        self.assertEqual(to_reference_B, self.node_A)
+
+
 class ProofModelTestCase(TestCase):
     def tearDown(self):
         Node.objects.all().delete()
@@ -113,6 +166,7 @@ class ProofModelTestCase(TestCase):
         self.assertEqual(proof.is_valid, True)
         self.assertEqual(proof.is_disproof, False)
         self.assertIsNotNone(proof.node)
+        self.assertEqual(len(test_node.proofs.all()), 1)
 
 
 class TheoremModelTestCase(TestCase):
@@ -212,4 +266,3 @@ class BasicUserSerializerTestCase(TestCase):
             ["user", "bio", "email_notification_preference", "show_activity_preference"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
-

@@ -30,14 +30,18 @@ class Theorem(models.Model):
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
 
+
 class SemanticTag(models.Model):
     pass
+
 
 class WikiTag(models.Model):
     pass
 
+
 class Annotation(models.Model):
     pass
+
 
 class Node(models.Model):
     node_id = models.IntegerField(primary_key=True)
@@ -46,7 +50,9 @@ class Node(models.Model):
     theorem = models.OneToOneField(Theorem, null=True, on_delete=models.SET_NULL)
     publish_date = models.DateField()
     reviewers = models.ManyToManyField(Reviewer)
-    referenced_nodes = models.ManyToManyField("self", symmetrical=True)
+    from_referenced_nodes = models.ManyToManyField(
+        "self", related_name="to_referenced_nodes", symmetrical=False
+    )
     semantic_tags = models.ManyToManyField(SemanticTag)
     wiki_tags = models.ManyToManyField(WikiTag)
     annotations = models.ManyToManyField(Annotation)
@@ -65,9 +71,8 @@ class Proof(models.Model):
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
 
-    node = models.ForeignKey(Node, on_delete=models.CASCADE)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
 
 # class Question(models.Model):
 #     node = models.ForeignKey(Node,models.CASCADE)
-
