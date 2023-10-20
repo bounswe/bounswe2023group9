@@ -1,14 +1,51 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Workspace, BasicUser, Contributor
+from .models import ReviewRequest, Workspace, BasicUser, Contributor, Reviewer
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
+
+
+class BasicUserModelTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        print("All tests for the Basic User Model are completed!")
+
+    def test_basic_user_create(self):
+        # Testing the creation of a new basic user
+
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        basic_user = BasicUser.objects.create(user=user, bio="Test Bio")
+
+        self.assertEqual(basic_user.user, user)
+        self.assertEqual(basic_user.bio, "Test Bio")
+
+        # Testing with default values
+        self.assertFalse(basic_user.email_notification_preference)
+        self.assertTrue(basic_user.show_activity_preference)
+
+    def test_basic_user_str(self):
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        basic_user = BasicUser.objects.create(user=user)
+
+        self.assertEqual(str(basic_user), f"{user.first_name} {user.last_name}")
 
 class ContributorModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
         BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
         print("All tests for the Contributor Model are completed!")
 
     def test_contributor_create(self):
@@ -67,41 +104,58 @@ class ContributorModelTestCase(TestCase):
         contributor.delete() 
         workspace.delete()
 
-class BasicUserModelTestCase(TestCase):
+class ReviewerModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
         BasicUser.objects.all().delete()
-        print("All tests for the Basic User Model are completed!")
+        Contributor.objects.all().delete()
+        Reviewer.objects.all().delete
+        print("All tests for the Reviewer Model are completed!")
 
-    def test_basic_user_create(self):
-        # Testing the creation of a new basic user
-
+    def test_reviewer_create(self):
+        # Testing the creation of a new Reviewer
         user = User.objects.create(
             username="testuser",
             email="test@example.com",
             first_name="User",
             last_name="Test",
         )
-        basic_user = BasicUser.objects.create(user=user, bio="Test Bio")
+        reviewer = Reviewer.objects.create(user=user)
 
-        self.assertEqual(basic_user.user, user)
-        self.assertEqual(basic_user.bio, "Test Bio")
+        self.assertEqual(reviewer.user, user)
 
         # Testing with default values
-        self.assertFalse(basic_user.email_notification_preference)
-        self.assertTrue(basic_user.show_activity_preference)
+        self.assertFalse(reviewer.email_notification_preference)
+        self.assertTrue(reviewer.show_activity_preference)
 
-    def test_basic_user_str(self):
-        user = User.objects.create(
-            username="testuser",
-            email="test@example.com",
-            first_name="User",
-            last_name="Test",
-        )
-        basic_user = BasicUser.objects.create(user=user)
+    def test_get_review_requests(self):
+        # Create reviewer instances, note that username is a key.
+        reviewer1=Reviewer.objects.create(user=User.objects.create(username="First"))
+        reviewer2=Reviewer.objects.create(user=User.objects.create(username="Second"))
 
-        self.assertEqual(str(basic_user), f"{user.first_name} {user.last_name}")
+        # Create review requests associated with the reviewer1
+        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1)
+        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1)
 
+        # Create a review request not associated with the reviewer1
+        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2)
+
+        review_requests = reviewer1.get_review_requests()
+
+        # Ensure that the reviewer's review requests are in the queryset
+        self.assertIn(review_request1, review_requests)
+        self.assertIn(review_request2, review_requests)
+
+        # Ensure that the other_review_request is not in the queryset
+        self.assertNotIn(other_review_request, review_requests)
+        
+        # We should collect our garbages
+        other_review_request.delete() 
+        review_requests.delete()
+        review_request1.delete() 
+        review_request2.delete() 
+        reviewer1.delete() 
+        reviewer2.delete() 
 
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):

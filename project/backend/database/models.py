@@ -42,6 +42,9 @@ class Reviewer(Contributor):
     
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
+    
+    def get_review_requests(self):                          
+        return ReviewRequest.objects.filter(reviewer=self)
 
 class Request(models.Model):
     """
@@ -54,5 +57,9 @@ class ReviewRequest(Request):
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
+
+    # Note that reviewer is accessed by directly Reviewer instance,
+    # not by "receiverUserID" as proposed in project class diagram.
     reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
     pass
+
