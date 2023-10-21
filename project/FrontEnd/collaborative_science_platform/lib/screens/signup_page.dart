@@ -109,142 +109,145 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-            child: SizedBox(
-              width: Responsive.isMobile(context) ? double.infinity : 600,
-              child: SingleChildScrollView(   // To avoid Render Pixel Overflow
-                scrollDirection: Axis.vertical,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          "assets/images/logo.svg",
-                          width: 394.0,
-                          height: 120.0,
-                        ), 
-                        const SizedBox(height: 40.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: AppTextField(
-                                controller: nameController,
-                                focusNode: nameFocusNode,
-                                hintText: 'Name',
-                                color: error && nameController.text.isEmpty
-                                    ? AppColors.dangerColor
-                                    : AppColors.primaryColor,
-                                obscureText: false,
-                                prefixIcon: const Icon(Icons.person),
-                                suffixIcon: null,
-                                height: 64.0,
-                                onChanged: null,
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Expanded(
-                              child: AppTextField(
-                                controller: surnameController,
-                                focusNode: surnameFocusNode,
-                                hintText: 'Surname',
-                                color: error && surnameController.text.isEmpty
-                                    ? AppColors.dangerColor
-                                    : AppColors.primaryColor,
-                                obscureText: false,
-                                prefixIcon: const Icon(Icons.person),
-                                suffixIcon: null,
-                                height: 64.0,
-                                onChanged: null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: emailController,
-                          focusNode: emailFocusNode,
-                          hintText: 'Email',
-                          color: error && emailController.text.isEmpty
+          child: SizedBox(
+            width: Responsive.isMobile(context) ? double.infinity : 600,
+            child: SingleChildScrollView(
+              // To avoid Render Pixel Overflow
+              scrollDirection: Axis.vertical,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/logo.svg",
+                    width: 394.0,
+                    height: 120.0,
+                  ),
+                  const SizedBox(height: 40.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: AppTextField(
+                          controller: nameController,
+                          focusNode: nameFocusNode,
+                          hintText: 'Name',
+                          color: error && nameController.text.isEmpty
                               ? AppColors.dangerColor
                               : AppColors.primaryColor,
                           obscureText: false,
-                          prefixIcon: const Icon(Icons.mail),
+                          prefixIcon: const Icon(Icons.person),
                           suffixIcon: null,
                           height: 64.0,
                           onChanged: null,
                         ),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: passwordController,
-                          focusNode: passwordFocusNode,
-                          hintText: 'Password',
-                          color: error &&
-                                  (passwordMatchError ||
-                                      passwordController.text.isEmpty ||
-                                      weakPasswordError)
+                      ),
+                      const SizedBox(width: 10.0),
+                      Expanded(
+                        child: AppTextField(
+                          controller: surnameController,
+                          focusNode: surnameFocusNode,
+                          hintText: 'Surname',
+                          color: error && surnameController.text.isEmpty
                               ? AppColors.dangerColor
                               : AppColors.primaryColor,
-                          obscureText: obscuredPassword,
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                obscuredPassword = !obscuredPassword;
-                              });
-                            },
-                          icon: obscuredPassword
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                          ),
-                          height: 64.0,
-                          onChanged: (text) {  
-                            setState(() {});
-                          },
-                        ),
-                        const SizedBox(height: 10.0),
-                        if(passwordController.text.isNotEmpty) StrongPasswordChecks(password: passwordController.text),
-                        const SizedBox(height: 10.0),
-                        AppTextField(
-                          controller: confirmPasswordController,
-                          focusNode: confirmPasswordFocusNode,
-                          hintText: 'Confirm Password',
-                          color: error &&
-                                  (passwordMatchError ||
-                                      confirmPasswordController.text.isEmpty)
-                              ? AppColors.dangerColor
-                              : AppColors.primaryColor,
-                          obscureText: obscuredPassword,
-                          prefixIcon: const Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                obscuredPassword = !obscuredPassword;
-                              });
-                            },
-                          icon: obscuredPassword
-                              ? const Icon(Icons.visibility)
-                              : const Icon(Icons.visibility_off),
-                          ),
+                          obscureText: false,
+                          prefixIcon: const Icon(Icons.person),
+                          suffixIcon: null,
                           height: 64.0,
                           onChanged: null,
                         ),
-                        const SizedBox(height: 10.0),
-                if (error)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      errorMessage,
-                      style: const TextStyle(color: AppColors.dangerColor),
-                    ),
+                      ),
+                    ],
                   ),
-                const SizedBox(height: 10.0),
-                AppButton(
-                  onTap: authenticate,
-                  text: "Sign Up",
-                  height: 64,
-                ),
-                const SizedBox(height: 10.0),
-                SingleChildScrollView( // To avoid Render Pixel Overflow
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: emailController,
+                    focusNode: emailFocusNode,
+                    hintText: 'Email',
+                    color: error && emailController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
+                    obscureText: false,
+                    prefixIcon: const Icon(Icons.mail),
+                    suffixIcon: null,
+                    height: 64.0,
+                    onChanged: null,
+                  ),
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: passwordController,
+                    focusNode: passwordFocusNode,
+                    hintText: 'Password',
+                    color: error &&
+                            (passwordMatchError ||
+                                passwordController.text.isEmpty ||
+                                weakPasswordError)
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
+                    obscureText: obscuredPassword,
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          obscuredPassword = !obscuredPassword;
+                        });
+                      },
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
+                    ),
+                    height: 64.0,
+                    onChanged: (text) {
+                      setState(() {});
+                    },
+                  ),
+                  const SizedBox(height: 10.0),
+                  if (passwordController.text.isNotEmpty)
+                    StrongPasswordChecks(password: passwordController.text),
+                  const SizedBox(height: 10.0),
+                  AppTextField(
+                    controller: confirmPasswordController,
+                    focusNode: confirmPasswordFocusNode,
+                    hintText: 'Confirm Password',
+                    color: error &&
+                            (passwordMatchError ||
+                                confirmPasswordController.text.isEmpty)
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
+                    obscureText: obscuredPassword,
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          obscuredPassword = !obscuredPassword;
+                        });
+                      },
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
+                    ),
+                    height: 64.0,
+                    onChanged: null,
+                  ),
+                  const SizedBox(height: 10.0),
+                  if (error)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        errorMessage,
+                        style: const TextStyle(color: AppColors.dangerColor),
+                      ),
+                    ),
+                  const SizedBox(height: 10.0),
+                  AppButton(
+                    onTap: authenticate,
+                    text: "Sign Up",
+                    height: 64,
+                  ),
+                  const SizedBox(height: 10.0),
+                  SingleChildScrollView(
+                    // To avoid Render Pixel Overflow
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -273,7 +276,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       ],
                     ),
-                  ),  
+                  ),
                 ],
               ),
             ),

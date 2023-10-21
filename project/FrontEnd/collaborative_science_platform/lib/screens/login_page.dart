@@ -43,7 +43,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     try {
-      await Provider.of<Auth>(context, listen: false).login(emailController.text, passwordController.text);
+      await Provider.of<Auth>(context, listen: false)
+          .login(emailController.text, passwordController.text);
     } on NoUserFound {
       setState(() {
         error = true;
@@ -82,11 +83,13 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(16.0), //yanına 16 pixel padding, boşluk ekliyor
+        padding: const EdgeInsets.all(
+            16.0), //yanına 16 pixel padding, boşluk ekliyor
         child: Center(
           child: SizedBox(
             width: Responsive.isMobile(context) ? double.infinity : 600,
-            child: SingleChildScrollView( // To avoid Render Pixel Overflow
+            child: SingleChildScrollView(
+              // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -97,13 +100,15 @@ class _LoginPageState extends State<LoginPage> {
                     width: 394.0,
                     height: 120.0,
                   ),
-                  const SizedBox(height: 40.0),  //to add space
+                  const SizedBox(height: 40.0), //to add space
                   AppTextField(
                     controller: emailController,
                     focusNode: emailFocusNode,
                     hintText: 'Email',
                     obscureText: false,
-                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    color: error && emailController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.person),
                     suffixIcon: null,
                     height: 64.0,
@@ -115,20 +120,25 @@ class _LoginPageState extends State<LoginPage> {
                     focusNode: passwordFocusNode,
                     hintText: 'Password',
                     obscureText: obscuredPassword,
-                    color: error && passwordController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    color: error && passwordController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
-                          obscuredPassword = !obscuredPassword;  //eye icon to work
+                          obscuredPassword =
+                              !obscuredPassword; //eye icon to work
                         });
                       },
-                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
                     onChanged: null,
                   ),
-                  if (error)  //all error messages
+                  if (error) //all error messages
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
@@ -137,15 +147,18 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView( // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,
+                  SingleChildScrollView(
+                    // To avoid Render Pixel Overflow
+                    scrollDirection: Axis.horizontal,                    
                     child: Row(
                       children: [
                         const SizedBox(width: 16.0),
                         MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
-                            onTap: () {/* Direct user to the password recovery page */},
+                            onTap: () {
+                              /* Direct user to the password recovery page */
+                            },
                             child: const Text(
                               "Forgot your password?",
                               style: TextStyle(
@@ -165,7 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                     height: 64,
                   ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView( // To avoid Render Pixel Overflow
+                  SingleChildScrollView(
+                    // To avoid Render Pixel Overflow
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -181,11 +195,14 @@ class _LoginPageState extends State<LoginPage> {
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, SignUpPage.routeName);
+                              Navigator.pushNamed(
+                                  context, SignUpPage.routeName);
                             },
                             child: const Text(
                               "Sign up now",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.hyperTextColor),
                             ),
                           ),
                         ),
