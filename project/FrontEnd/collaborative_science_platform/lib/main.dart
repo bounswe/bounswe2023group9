@@ -1,7 +1,8 @@
 import 'package:collaborative_science_platform/screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
+import 'package:collaborative_science_platform/screens/profile_page.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';  //delete later
+import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart'; //delete later
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: Constants.appName,
       routes: {
-      //  '/': (context) => const LoginPage(),
-      //  SignUpPage.routeName: (context) => const SignUpPage(),   //change later
-        '/': (context) => const AccountSettingsPage(),
-        AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
+        '/': (context) => const LoginPage(),
+        SignUpPage.routeName: (context) => const SignUpPage(),
+        ProfilePage.routeName: (context) => const ProfilePage(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
