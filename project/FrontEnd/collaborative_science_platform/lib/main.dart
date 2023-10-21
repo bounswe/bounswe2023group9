@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginPage(),
         SignUpPage.routeName: (context) => const SignUpPage(),
+        ProfilePage.routeName: (context) => const ProfilePage(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
