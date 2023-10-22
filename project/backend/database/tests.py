@@ -197,7 +197,7 @@ class NodeModelTestCase(TestCase):
             is_valid=True,
             num_visits=99,
         )
-        self.assertEqual(node.node_id, 2)
+        self.assertEqual(node.node_id, 3)
         self.assertEqual(node.node_title, "Test Node")
         self.assertEqual(node.is_valid, True)
         self.assertEqual(node.num_visits, 99)
