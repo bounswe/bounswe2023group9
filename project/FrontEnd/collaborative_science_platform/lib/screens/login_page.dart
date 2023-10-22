@@ -189,7 +189,8 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20.0),
                   AppButton(
                     onTap: () async {
-                      if (await authenticate() && mounted) { // Navigate to home page if authentication is successful
+                      if (await authenticate() && mounted) {
+                        // Navigate to home page if authentication is successful
                         Navigator.pushNamed(context, HomePage.routeName);
                       }
                     },
