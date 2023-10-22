@@ -1,8 +1,7 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/screens/home_page.dart';
-import 'package:collaborative_science_platform/screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page.dart';
-import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';

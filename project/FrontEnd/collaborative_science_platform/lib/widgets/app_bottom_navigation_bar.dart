@@ -1,9 +1,7 @@
-
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:flutter/material.dart';
-
-import '../screens/home_page.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -18,9 +16,11 @@ class AppBottomNavigationBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) {
-        String routeName = (index == 0) ? HomePage.routeName
-            : (index == 1) ? WorkspacesPage.routeName
-            : ProfilePage.routeName;
+        String routeName = (index == 0)
+            ? HomePage.routeName
+            : (index == 1)
+                ? WorkspacesPage.routeName
+                : ProfilePage.routeName;
         Navigator.pushNamed(context, routeName);
       },
       items: const [

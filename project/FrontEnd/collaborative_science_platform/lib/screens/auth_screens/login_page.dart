@@ -1,7 +1,7 @@
 import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/screens/home_page.dart';
-import 'package:collaborative_science_platform/screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
