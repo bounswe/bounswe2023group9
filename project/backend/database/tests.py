@@ -50,14 +50,13 @@ class NodeModelTestCase(TestCase):
     def test_node_model(self):
         # Testing the creation of a node
         node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             theorem=None,
             publish_date="2023-01-01",
             is_valid=True,
             num_visits=99,
         )
-        self.assertEqual(node.node_id, 1)
+        self.assertEqual(node.node_id, 3)
         self.assertEqual(node.node_title, "Test Node")
         self.assertEqual(node.is_valid, True)
         self.assertEqual(node.num_visits, 99)
@@ -72,7 +71,6 @@ class NodeModelTestCase(TestCase):
     def test_increment_num_visits(self):
         # Testing the incrementing num of visits function
         node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             theorem=None,
             publish_date="2023-01-01",
@@ -86,7 +84,6 @@ class NodeModelTestCase(TestCase):
 class NodeReferenceTestCase(TestCase):
     def setUp(self):
         self.node_A = Node.objects.create(
-            node_id=1,
             node_title="Test Node A",
             theorem=None,
             publish_date="2023-01-01",
@@ -94,7 +91,6 @@ class NodeReferenceTestCase(TestCase):
             num_visits=0,
         )
         self.node_B = Node.objects.create(
-            node_id=2,
             node_title="Test Node B",
             theorem=None,
             publish_date="2023-01-01",
@@ -102,7 +98,6 @@ class NodeReferenceTestCase(TestCase):
             num_visits=0,
         )
         self.node_C = Node.objects.create(
-            node_id=3,
             node_title="Test Node C",
             theorem=None,
             publish_date="2023-01-01",
@@ -144,7 +139,6 @@ class ProofModelTestCase(TestCase):
 
     def test_proof_model(self):
         test_node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             publish_date="2023-01-01",
             is_valid=True,
@@ -152,7 +146,6 @@ class ProofModelTestCase(TestCase):
         )
 
         proof = Proof.objects.create(
-            proof_id=1,
             proof_title="Test Proof",
             proof_content="This is a test proof content.",
             is_valid=True,
@@ -176,7 +169,6 @@ class TheoremModelTestCase(TestCase):
 
     def test_theorem_model(self):
         theorem = Theorem.objects.create(
-            theorem_id=1,
             theorem_title="Test Theorem",
             theorem_content="This is a test theorem content.",
             publish_date="2023-01-01",
