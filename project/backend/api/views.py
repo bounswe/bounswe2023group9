@@ -41,6 +41,8 @@ class UserDetailAPI(APIView):
 def get_proof_from_id(request):
     id = int(request.GET.get("proof_id"))
     proof = models.Theorem.objects.filter(theorem_id=id)
+    if proof.count() == 0:
+        return JsonResponse({'message':'There is no proof with this id.'},status=404)
     return JsonResponse({'proof_id': proof[0].proof_id,
                          'proof_title': proof[0].proof_title,
                          'proof_content': proof[0].proof_content,
@@ -54,6 +56,9 @@ def get_proof_from_id(request):
 def get_theorem_from_id(request):
     id = int(request.GET.get("theorem_id"))
     theorem = models.Theorem.objects.filter(theorem_id=id)
+    if theorem.count() == 0:
+        return JsonResponse({'message':'There is no theorem with this id.'},status=404)
+
     return JsonResponse({'theorem_id': theorem[0].theorem_id,
                          'theorem_title': theorem[0].theorem_title,
                          'theorem_content': theorem[0].theorem_content,
@@ -64,6 +69,8 @@ def get_theorem_from_id(request):
 def get_node_from_id(request):
     id = int(request.GET.get("node_id"))
     node = models.Node.objects.filter(node_id=id)
+    if node.count() == 0:
+        return JsonResponse({'message':'There is no node with this id.'},status=404)
     return JsonResponse({'node_title':node[0].node_title,
                          'theorem': node[0].theorem.theorem_id,
                          'publish_date': node[0].publish_date,
