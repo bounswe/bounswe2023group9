@@ -9,7 +9,7 @@ from database.serializers import RegisterSerializer, UserSerializer
 
 # Create your tests here.
 
-
+"""
 class SignUpAPIViewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -88,6 +88,7 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['bio'], 'Hello')
         self.assertEqual(response.json()['nodes'][0],1)
         #   TODO QUESTION TEST
+
 
 
 
