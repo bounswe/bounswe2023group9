@@ -8,7 +8,6 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
         routes: {
-          '/': (context) => const LoginPage(),
+          '/': (context) => const HomePage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           HomePage.routeName: (context) => const HomePage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(), // May not be needed
