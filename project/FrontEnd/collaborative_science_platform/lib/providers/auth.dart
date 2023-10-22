@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 class Auth with ChangeNotifier {
   User? user;
 
-  bool get isAuth {
+  bool get isSignedIn {
     return user != null;
   }
 

@@ -1,6 +1,9 @@
 import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/login_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/widgets/strong_password_checks.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -137,12 +140,15 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SizedBox(
-            width: Responsive.isMobile(context) ? double.infinity : 600,
+    return PageWithAppBar(
+      appBar: const LoginPageAppBar(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
+            padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
               // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
@@ -290,7 +296,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, '/');
+                            Navigator.pushNamed(context, LoginPage.routeName);
                           },
                           child: const Text(
                             "Log in",
@@ -307,7 +313,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

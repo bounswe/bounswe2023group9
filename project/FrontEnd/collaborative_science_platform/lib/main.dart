@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page.dart';
@@ -23,8 +24,8 @@ class MyApp extends StatelessWidget {
         title: Constants.appName,
         routes: {
           '/': (context) => const HomePage(),
+          LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
-          HomePage.routeName: (context) => const HomePage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(), // May not be needed
           ProfilePage.routeName: (context) => const ProfilePage(), // May not be needed
         },

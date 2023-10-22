@@ -1,12 +1,13 @@
+import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/responsive/responsive.dart';
-import '../../widgets/app_bottom_navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
-  static const routeName = '/home';
+  static const routeName = '/';
   const HomePage({super.key});
 
   @override
@@ -27,16 +28,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text("Home"),
-        centerTitle: true,
-      ),
-      bottomNavigationBar: const AppBottomNavigationBar(
-        currentIndex: 0,
-      ),
-      body: Padding(
+    return PageWithAppBar(
+      appBar: const HomePageAppBar(),
+      child: Padding(
         padding: const EdgeInsets.all(16.0), // 16 pixels padding in 4 directions
         child: Center(
           child: SizedBox(

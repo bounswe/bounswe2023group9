@@ -27,15 +27,16 @@ class PageWithAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        body: CustomScrollView(
+        body: NestedScrollView(
           physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-          slivers: [
+          headerSliverBuilder: (_, __) => [
             SliverAppBar(
               backgroundColor: Colors.white,
               elevation: 5,
               floating: true,
               snap: true,
               surfaceTintColor: Colors.transparent,
+              leading: const SizedBox(),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(0),
                 child: Divider(
@@ -52,13 +53,11 @@ class PageWithAppBar extends StatelessWidget {
                 ),
               ),
             ),
-            SliverFillRemaining(
-              child: Container(
-                color: pageColor,
-                child: child,
-              ),
-            ),
           ],
+          body: Container(
+            color: pageColor,
+            child: child,
+          ),
         ));
   }
 }
