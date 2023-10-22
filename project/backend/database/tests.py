@@ -16,7 +16,7 @@ class BasicUserModelTestCase(TestCase):
         # Testing the creation of a new basic user
 
         user = User.objects.create(
-            username="testuser",
+            username="test@example.com",
             email="test@example.com",
             first_name="User",
             last_name="Test",
@@ -32,7 +32,7 @@ class BasicUserModelTestCase(TestCase):
 
     def test_basic_user_str(self):
         user = User.objects.create(
-            username="testuser",
+            username="test@example.com",
             email="test@example.com",
             first_name="User",
             last_name="Test",
@@ -45,9 +45,7 @@ class BasicUserModelTestCase(TestCase):
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
         self.data = {
-            "username": "testuser",
             "password": "testpassword",
-            "password2": "testpassword",
             "email": "test@example.com",
             "first_name": "User",
             "last_name": "Test",
@@ -63,12 +61,12 @@ class RegisterSerializerTestCase(TestCase):
         serializer = RegisterSerializer(data=self.data)
         self.assertTrue(serializer.is_valid())
 
-    def test_validate_false(self):
-        # Testing the validate function for invalid credentials
-        data = self.data
-        data["password2"] = "wrong"
-        serializer = RegisterSerializer(data=data)
-        self.assertFalse(serializer.is_valid())
+    # def test_validate_false(self):
+    #     # Testing the validate function for invalid credentials
+    #     data = self.data
+    #     data["password2"] = "wrong"
+    #     serializer = RegisterSerializer(data=data)
+    #     self.assertFalse(serializer.is_valid())
 
     def test_create(self):
         # Testing the create function
@@ -77,7 +75,7 @@ class RegisterSerializerTestCase(TestCase):
 
         user = serializer.create(serializer.validated_data)
         self.assertIsInstance(user, User)
-        self.assertEqual(user.username, self.data["username"])
+        # self.assertEqual(user.username, self.data["username"])
         self.assertEqual(user.email, self.data["email"])
         self.assertEqual(user.first_name, self.data["first_name"])
         self.assertEqual(user.last_name, self.data["last_name"])
@@ -98,7 +96,7 @@ class UserSerializerTestCase(TestCase):
             last_name="Test",
         )
         serializer = UserSerializer(user)
-        expected_fields = set(["id", "email", "first_name", "last_name", "username"])
+        expected_fields = set(["id", "email", "first_name", "last_name"])
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
 
