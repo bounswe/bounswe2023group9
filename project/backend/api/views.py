@@ -105,7 +105,7 @@ def search(request):
             res = models.Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
-    if search_type == 'author' or search_type == 'both':
+    if search_type == 'author' or search_type == 'both':    # TODO This method is too inefficient
         for el in search_elements:
             res_name = models.User.objects.filter(first_name__icontains=el)
             res_surname = models.User.objects.filter(last_name__icontains=el)
