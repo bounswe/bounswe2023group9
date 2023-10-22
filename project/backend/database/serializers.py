@@ -18,6 +18,18 @@ class BasicUserSerializer(serializers.ModelSerializer):
     model = BasicUser
     fields = ["user", "bio", "email_notification_preference", "show_activity_preference"]
 
+# Serializer to get Contributor details
+class ContributorSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Contributor
+    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+    
+# Serializer to get Reviewer details
+class ReviewerSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Reviewer
+    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+
 # Serializer to Register User
 class RegisterSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(
