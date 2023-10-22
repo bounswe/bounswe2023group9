@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import BasicUser
+from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
@@ -40,6 +40,150 @@ class BasicUserModelTestCase(TestCase):
         basic_user = BasicUser.objects.create(user=user)
 
         self.assertEqual(str(basic_user), f"{user.first_name} {user.last_name}")
+
+
+class NodeModelTestCase(TestCase):
+    def tearDown(self):
+        Node.objects.all().delete()
+        print("All tests for the Node Model are completed!")
+
+    def test_node_model(self):
+        # Testing the creation of a node
+        node = Node.objects.create(
+            node_id=1,
+            node_title="Test Node",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=99,
+        )
+        self.assertEqual(node.node_id, 1)
+        self.assertEqual(node.node_title, "Test Node")
+        self.assertEqual(node.is_valid, True)
+        self.assertEqual(node.num_visits, 99)
+
+        # TODO: These tests should be hanled after the models below implemented
+        # self.assertIsNone(node.reviewers)
+        # self.assertIsNone(node.referenced_nodes)
+        # self.assertIsNone(node.semantic_tags)
+        # self.assertIsNone(node.wiki_tags)
+        # self.assertIsNone(node.annotations)
+
+    def test_increment_num_visits(self):
+        # Testing the incrementing num of visits function
+        node = Node.objects.create(
+            node_id=1,
+            node_title="Test Node",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=99,
+        )
+        node.increment_num_visits()
+        self.assertEqual(node.num_visits, 100)
+
+
+class NodeReferenceTestCase(TestCase):
+    def setUp(self):
+        self.node_A = Node.objects.create(
+            node_id=1,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node_B = Node.objects.create(
+            node_id=2,
+            node_title="Test Node B",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node_C = Node.objects.create(
+            node_id=3,
+            node_title="Test Node C",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        print("All tests for the Node Reference Model are completed!")
+
+    def test_references(self):
+        self.node_B.from_referenced_nodes.add(self.node_A)
+        self.node_C.from_referenced_nodes.add(self.node_B)
+
+        self.assertEqual(self.node_B.from_referenced_nodes.first(), self.node_A)
+        self.assertEqual(self.node_B.to_referenced_nodes.first(), self.node_C)
+
+    def test_reference_symmetry(self):
+        self.node_A.from_referenced_nodes.add(self.node_B)
+        self.node_B.from_referenced_nodes.add(self.node_A)
+
+        from_reference_A = self.node_A.from_referenced_nodes.first()
+        to_reference_A = self.node_A.to_referenced_nodes.first()
+        from_reference_B = self.node_B.from_referenced_nodes.first()
+        to_reference_B = self.node_B.to_referenced_nodes.first()
+
+        self.assertEqual(from_reference_A, self.node_B)
+        self.assertEqual(to_reference_A, self.node_B)
+        self.assertEqual(from_reference_B, self.node_A)
+        self.assertEqual(to_reference_B, self.node_A)
+
+
+class ProofModelTestCase(TestCase):
+    def tearDown(self):
+        Node.objects.all().delete()
+        Proof.objects.all().delete()
+        print("All tests for the Proof Model are completed!")
+
+    def test_proof_model(self):
+        test_node = Node.objects.create(
+            node_id=1,
+            node_title="Test Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+        proof = Proof.objects.create(
+            proof_id=1,
+            proof_title="Test Proof",
+            proof_content="This is a test proof content.",
+            is_valid=True,
+            is_disproof=False,
+            publish_date="2023-01-01",
+            node=test_node,
+        )
+        self.assertEqual(proof.proof_id, 1)
+        self.assertEqual(proof.proof_title, "Test Proof")
+        self.assertEqual(proof.proof_content, "This is a test proof content.")
+        self.assertEqual(proof.is_valid, True)
+        self.assertEqual(proof.is_disproof, False)
+        self.assertIsNotNone(proof.node)
+        self.assertEqual(len(test_node.proofs.all()), 1)
+
+
+class TheoremModelTestCase(TestCase):
+    def tearDown(self):
+        Theorem.objects.all().delete()
+        print("All tests for the Theorem Model are completed!")
+
+    def test_theorem_model(self):
+        theorem = Theorem.objects.create(
+            theorem_id=1,
+            theorem_title="Test Theorem",
+            theorem_content="This is a test theorem content.",
+            publish_date="2023-01-01",
+        )
+        self.assertEqual(theorem.theorem_id, 1)
+        self.assertEqual(theorem.theorem_title, "Test Theorem")
+        self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
 
 class RegisterSerializerTestCase(TestCase):
