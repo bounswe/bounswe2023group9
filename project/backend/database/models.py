@@ -92,10 +92,10 @@ class Annotation(models.Model):
 class Node(models.Model):
     node_id = models.IntegerField(primary_key=True)
     node_title = models.CharField(max_length=100)
-    contributors = models.ManyToManyField(Contributor)
+    contributors = models.ManyToManyField(Contributor,related_name='NodeContributors')
     theorem = models.OneToOneField(Theorem, null=True, on_delete=models.SET_NULL)
     publish_date = models.DateField()
-    reviewers = models.ManyToManyField(Reviewer)
+    reviewers = models.ManyToManyField(Reviewer,related_name='NodeReviewers')
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
