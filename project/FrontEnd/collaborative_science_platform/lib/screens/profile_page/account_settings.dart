@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
-import 'package:collaborative_science_platform/widgets/settings_widget.dart';
+import 'package:collaborative_science_platform/screens/profile_page/components/settings_widget.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 
 class AccountSettingsPage extends StatefulWidget {
-  static const routeName = '/account-settings';
+  static const routeName = '/profile-page/account-settings';
   const AccountSettingsPage({super.key});
 
   @override
@@ -11,139 +12,128 @@ class AccountSettingsPage extends StatefulWidget {
 }
 
 class _AccountSettingsPage extends State<AccountSettingsPage> {
+  final passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final surnameController = TextEditingController();
+  final aboutMeController = TextEditingController();
+  final passwordFocusNode = FocusNode();
+  final nameFocusNode = FocusNode();
+  final surnameFocusNode = FocusNode();
+  final aboutMeFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    nameController.dispose();
+    surnameController.dispose();
+    aboutMeController.dispose();
+    passwordFocusNode.dispose();
+    nameFocusNode.dispose();
+    surnameFocusNode.dispose();
+    aboutMeFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              Icons.close,
-              color: Colors.white,
+        title: SingleChildScrollView(
+          // To avoid Render Pixel Overflow
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: Responsive.isMobile(context) ? double.infinity : 450,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile-page');
+                  },
+                  icon: const Icon(Icons.close),
+                  color: Colors.white,
+                ),
+                const Text(
+                  'Account Settings',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile-page');
+                  },
+                  icon: const Icon(
+                    Icons.done,
+                  ),
+                  color: Colors.white,
+                ),
+              ],
             ),
-            Text(
-              'Account Settings',
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-            Icon(
-              Icons.done,
-              color: Colors.white,
-            )
-          ],
+          ),
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(6.0),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: AppColors.primaryColor), // Line below the text
+        child: SizedBox(
+          width: Responsive.isMobile(context) ? double.infinity : 450,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: SettingsWidget(
+                  controller: nameController,
+                  focusNode: nameFocusNode,
+                  textType: "Name:",
+                  textContent: "Bengisu",
+                  prefixIcon: const Icon(
+                    Icons.person,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
               ),
-              child: SettingsWidget(
-                textType: "Name:",
-                textContent: const Text(
-                  "Bengisu",
-                  style:
-                      TextStyle(color: AppColors.primaryColor, fontSize: 20.0),
-                ),
-                prefixIcon: const Icon(
-                  Icons.person,
-                  color: AppColors.primaryColor,
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit, color: AppColors.primaryColor),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: SettingsWidget(
+                  controller: surnameController,
+                  focusNode: surnameFocusNode,
+                  textType: "Surname:",
+                  textContent: "Takkin",
+                  prefixIcon: const Icon(
+                    Icons.person,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: AppColors.primaryColor), // Line below the text
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: SettingsWidget(
+                  controller: aboutMeController,
+                  focusNode: aboutMeFocusNode,
+                  textType: "About Me:",
+                  textContent:
+                      "Hello, I am a senior computer engineering student in Bogazici University!",
+                  prefixIcon:
+                      const Icon(Icons.info, color: AppColors.primaryColor),
                 ),
               ),
-              child: SettingsWidget(
-                textType: "Surname:",
-                textContent: const Text(
-                  "Takkin",
-                  style:
-                      TextStyle(color: AppColors.primaryColor, fontSize: 20.0),
-                ),
-                prefixIcon: const Icon(
-                  Icons.person,
-                  color: AppColors.primaryColor,
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit, color: AppColors.primaryColor),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: SettingsWidget(
+                  controller: passwordController,
+                  focusNode: passwordFocusNode,
+                  textType: "Password:",
+                  textContent: "***********",
+                  prefixIcon: const Icon(
+                    Icons.lock,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: AppColors.primaryColor), // Line below the text
-                ),
-              ),
-              child: SettingsWidget(
-                textType: "About Me:",
-                textContent: const Text(
-                  "Hello, I am a senior computer engineering student in Bogazici University!",
-                  style:
-                      TextStyle(color: AppColors.primaryColor, fontSize: 17.0),
-                ),
-                prefixIcon:
-                    const Icon(Icons.info, color: AppColors.primaryColor),
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit, color: AppColors.primaryColor),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      width: 1.0,
-                      color: AppColors.primaryColor), // Line below the text
-                ),
-              ),
-              child: SettingsWidget(
-                textType: "Password:",
-                textContent: const Text(
-                  "***********",
-                  style:
-                      TextStyle(color: AppColors.primaryColor, fontSize: 20.0),
-                ),
-                prefixIcon: const Icon(
-                  Icons.lock,
-                  color: AppColors.primaryColor,
-                ),
-                suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.edit, color: AppColors.primaryColor),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
