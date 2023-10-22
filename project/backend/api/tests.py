@@ -9,7 +9,7 @@ from database.serializers import RegisterSerializer, UserSerializer
 
 # Create your tests here.
 
-"""
+
 class SignUpAPIViewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
