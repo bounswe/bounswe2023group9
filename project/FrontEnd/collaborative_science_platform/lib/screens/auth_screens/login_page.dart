@@ -1,6 +1,9 @@
 import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/login_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -26,6 +29,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool obscuredPassword = true;
   bool error = false;
+  bool isLoading = false;
+  bool buttonState = false;
 
   String errorMessage = "";
 
@@ -38,29 +43,32 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void authenticate() async {
+  Future<bool> authenticate() async {
     if (!validate()) {
-      return;
+      return false;
     }
     try {
-      await Provider.of<Auth>(context, listen: false)
-          .login(emailController.text, passwordController.text);
-    } on NoUserFound {
+      final auth = Provider.of<Auth>(context, listen: false);
       setState(() {
-        error = true;
-        errorMessage = "User not found.";
+        isLoading = true;
       });
+      await auth.login(emailController.text, passwordController.text);
     } on WrongPasswordException {
       setState(() {
         error = true;
-        errorMessage = "Password is wrong.";
+        errorMessage = "Username or password is wrong.";
       });
     } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong.";
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
+    return error ? false : true;
   }
 
   bool validate() {
@@ -81,13 +89,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(
-            16.0), //yanına 16 pixel padding, boşluk ekliyor
-        child: Center(
-          child: SizedBox(
-            width: Responsive.isMobile(context) ? double.infinity : 600,
+    return PageWithAppBar(
+      appBar: const LoginPageAppBar(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
+            padding: const EdgeInsets.only(top: 40.0, right: 16, left: 16),
             child: SingleChildScrollView(
               // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
@@ -106,37 +116,49 @@ class _LoginPageState extends State<LoginPage> {
                     focusNode: emailFocusNode,
                     hintText: 'Email',
                     obscureText: false,
-                    color: error && emailController.text.isEmpty
-                        ? AppColors.dangerColor
-                        : AppColors.primaryColor,
+                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.person),
-                    suffixIcon: null,
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
                   ),
-                  const SizedBox(height: .0),
+                  const SizedBox(height: 8.0),
                   AppTextField(
                     controller: passwordController,
                     focusNode: passwordFocusNode,
                     hintText: 'Password',
                     obscureText: obscuredPassword,
-                    color: error && passwordController.text.isEmpty
-                        ? AppColors.dangerColor
-                        : AppColors.primaryColor,
+                    color: error && passwordController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       onPressed: () {
                         setState(() {
-                          obscuredPassword =
-                              !obscuredPassword; //eye icon to work
+                          obscuredPassword = !obscuredPassword; //eye icon to work
                         });
                       },
-                      icon: obscuredPassword
-                          ? const Icon(Icons.visibility)
-                          : const Icon(Icons.visibility_off),
+                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
                   ),
                   if (error) //all error messages
                     Padding(
@@ -149,16 +171,14 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 10.0),
                   SingleChildScrollView(
                     // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,                    
+                    scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
                         const SizedBox(width: 16.0),
                         MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
-                            onTap: () {
-                              /* Direct user to the password recovery page */
-                            },
+                            onTap: () {/* Direct user to the password recovery page */},
                             child: const Text(
                               "Forgot your password?",
                               style: TextStyle(
@@ -173,47 +193,50 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20.0),
                   AppButton(
-                    onTap: authenticate,
+                    onTap: () async {
+                      if (await authenticate() && mounted) {
+                        // Navigate to home page if authentication is successful
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      }
+                    },
                     text: "Log in",
                     height: 64,
+                    isLoading: isLoading,
+                    isActive: buttonState,
                   ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView(
-                    // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
                           "Don't have an account?",
+                          maxLines: 2,
                           style: TextStyle(
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        const SizedBox(width: 4.0),
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, SignUpPage.routeName);
-                            },
-                            child: const Text(
-                              "Sign up now",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.hyperTextColor),
-                            ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, SignUpPage.routeName);
+                          },
+                          child: const Text(
+                            "Sign up now",
+                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
