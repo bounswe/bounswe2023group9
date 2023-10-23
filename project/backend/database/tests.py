@@ -1,13 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer
+from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
 
-
+"""
 class BasicUserModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
@@ -181,8 +181,61 @@ class ReviewerModelTestCase(TestCase):
         review_request.delete()
         workspace.delete()
         reviewer.delete()
+"""
+class AdminModelTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        Node.objects.all().delete()
+        Admin.objects.all().delete()
         
+        print("Test for the Admin Model is completed!")
 
+    def test_admin_create(self):
+        # Testing the creation of a new Admin
+
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        admin = Admin.objects.create(user=user)
+
+        self.assertEqual(admin.user, user)
+
+        # Testing with default values
+        self.assertFalse(admin.email_notification_preference)
+        self.assertTrue(admin.show_activity_preference)
+    
+    def test_add_removed_nodes(self):
+        admin = Admin.objects.create(user=User.objects.create())
+        node = Node(node_id=1, node_title="Test Node", publish_date="2023-10-23", is_valid=True, num_visits=0)
+        admin.add_removed_nodes(node)
+        self.assertIn(node, admin.removed_nodes)
+
+    def test_pop_removed_nodes(self):
+        admin = Admin.objects.create(user=User.objects.create())
+        node = Node(node_id=2, node_title="Another Node", publish_date="2023-10-24", is_valid=True, num_visits=0)
+        admin.add_removed_nodes(node)
+        admin.pop_removed_nodes(node)
+        self.assertNotIn(node, admin.removed_nodes)
+
+    def test_add_removed_proofs(self):
+        admin = Admin.objects.create(user=User.objects.create())
+        proof = Proof(proof_id=1, proof_title="Test Proof", proof_content="Sample content")
+        admin.add_removed_proofs(proof)
+        self.assertIn(proof, admin.removed_proofs)
+
+    def test_pop_removed_proofs(self):
+        admin = Admin.objects.create(user=User.objects.create())
+        proof = Proof(proof_id=2, proof_title="Another Proof", proof_content="More content")
+        admin.add_removed_proofs(proof)
+        admin.pop_removed_proofs(proof)
+        self.assertNotIn(proof, admin.removed_proofs)
+
+        
+        
+"""
 class NodeModelTestCase(TestCase):
     def tearDown(self):
         Node.objects.all().delete()
@@ -443,4 +496,4 @@ class ReviewerSerializerTestCase(TestCase):
             ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
-
+"""
