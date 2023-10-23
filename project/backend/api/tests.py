@@ -86,9 +86,10 @@ class ProfileGETAPITestCase(TestCase):
         node.contributors.add(cont)
         self.get_profile_url = reverse('get_profile')
     def tearDown(self):
-        Contributor.objects.all().delete()
-        User.objects.all().delete()
         Node.objects.all().delete()
+        # Contributor.objects.all().delete()
+        User.objects.all().delete()
+
 
     def test_get_user_profile(self):
         data = {'mail':'test@example.com'}
