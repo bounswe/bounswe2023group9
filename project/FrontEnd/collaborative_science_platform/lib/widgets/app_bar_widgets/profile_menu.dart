@@ -1,6 +1,8 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_options.dart';
+import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +32,8 @@ class AuthenticatedProfileMenu extends StatelessWidget {
       onSelected: (String result) async {
         switch (result) {
           case 'profile':
-            break;
-          case 'settings':
+            Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(ScreenTab.profileOptions);
+            Navigator.pushNamed(context, ProfileOptions.routeName);
             break;
           case 'logout':
             await auth.logout();
@@ -48,10 +50,6 @@ class AuthenticatedProfileMenu extends StatelessWidget {
         const PopupMenuItem<String>(
           value: 'profile',
           child: Text("Profile"),
-        ),
-        const PopupMenuItem<String>(
-          value: 'settings',
-          child: Text("Settings"),
         ),
         const PopupMenuItem<String>(
           value: 'logout',

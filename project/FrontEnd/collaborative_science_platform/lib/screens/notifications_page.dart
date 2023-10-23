@@ -1,3 +1,5 @@
+import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:flutter/material.dart';
 
 class NotificationPage extends StatelessWidget {
@@ -6,6 +8,6 @@ class NotificationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text("Notifications"); // Profile Page Content
+    return const PageWithAppBar(appBar: HomePageAppBar(), child: Text("Notifications")); // Profile Page Content
   }
 }

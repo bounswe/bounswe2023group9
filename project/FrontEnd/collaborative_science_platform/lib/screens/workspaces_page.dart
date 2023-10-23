@@ -1,3 +1,5 @@
+import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:flutter/material.dart';
 
 class WorkspacesPage extends StatelessWidget {
@@ -6,8 +8,6 @@ class WorkspacesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text("Workspace"), // Workspaces Page Content
-    );
+    return const PageWithAppBar(appBar: HomePageAppBar(), child: Text("Workspaces")); // Profile Page Content
   }
 }

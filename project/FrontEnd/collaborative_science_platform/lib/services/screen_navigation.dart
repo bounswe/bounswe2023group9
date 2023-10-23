@@ -1,15 +1,15 @@
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
-import 'package:collaborative_science_platform/screens/profile_options.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_options.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:flutter/material.dart';
 
-enum ScreenTab { home, graph, workspace, notifications, profileOptions }
+enum ScreenTab { home, graph, workspace, notifications, profileOptions, none }
 
 class ScreenNavigation extends ChangeNotifier {
   ScreenTab _selectedTab = ScreenTab.home;
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   ScreenTab get selectedTab => _selectedTab;
 
@@ -30,6 +30,8 @@ class ScreenNavigation extends ChangeNotifier {
         break;
       case ScreenTab.profileOptions:
         navigatorKey.currentState?.pushNamed(ProfileOptions.routeName);
+        break;
+      case ScreenTab.none:
         break;
     }
     notifyListeners();

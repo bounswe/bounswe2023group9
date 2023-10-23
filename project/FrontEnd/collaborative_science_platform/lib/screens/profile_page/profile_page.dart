@@ -3,7 +3,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
-import 'package:collaborative_science_platform/screens/profile_page/components/about_me.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
 import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

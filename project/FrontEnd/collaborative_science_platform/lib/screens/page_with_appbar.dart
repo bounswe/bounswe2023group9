@@ -32,51 +32,48 @@ class PageWithAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        body: NestedScrollView(
-          physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-          headerSliverBuilder: (_, __) => [
-            SliverAppBar(
-              backgroundColor: Colors.white,
-              elevation: 5,
-              floating: true,
-              snap: true,
-              surfaceTintColor: Colors.transparent,
-              leading: const SizedBox(),
-              bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(0),
-                child: Divider(
-                  height: 0,
-                  thickness: 2,
-                  color: Colors.grey[300],
-                ),
-              ),
-              collapsedHeight: Responsive.isMobile(context) ? 80 : 75,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
-                  child: appBar,
-                ),
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      body: NestedScrollView(
+        physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+        headerSliverBuilder: (_, __) => [
+          SliverAppBar(
+            backgroundColor: Colors.white,
+            elevation: 5,
+            floating: true,
+            snap: true,
+            surfaceTintColor: Colors.transparent,
+            leading: const SizedBox(),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0),
+              child: Divider(
+                height: 0,
+                thickness: 2,
+                color: Colors.grey[300],
               ),
             ),
-          ],
-          body: navigator != null
-              ? navigator!
-              : Stack(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: pageColor,
-                          child: child,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-        ));
+            collapsedHeight: Responsive.isMobile(context) ? 80 : 75,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
+                child: appBar,
+              ),
+            ),
+          ),
+        ],
+        body: navigator != null
+            ? navigator!
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    color: pageColor,
+                    child: child,
+                  ),
+                ],
+              ),
+      ),
+    );
   }
 }

@@ -1,13 +1,12 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/builder_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
-import 'package:collaborative_science_platform/screens/profile_options.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_options.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
         routes: {
-          '/': (context) => const BuilderPage(),
+          '/': (context) => const HomePage(),
           LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
@@ -41,8 +40,8 @@ class MyApp extends StatelessWidget {
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
           AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
-          ProfilePage.routeName: (context) => const ProfilePage(),
         },
+        navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
           useMaterial3: true,
