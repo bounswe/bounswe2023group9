@@ -7,7 +7,7 @@ from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
 
-"""
+
 class BasicUserModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
@@ -181,7 +181,7 @@ class ReviewerModelTestCase(TestCase):
         review_request.delete()
         workspace.delete()
         reviewer.delete()
-"""
+
 class AdminModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
@@ -207,7 +207,7 @@ class AdminModelTestCase(TestCase):
         self.assertFalse(admin.email_notification_preference)
         self.assertTrue(admin.show_activity_preference)
         
-"""
+
 class NodeModelTestCase(TestCase):
     def tearDown(self):
         Node.objects.all().delete()
@@ -468,4 +468,4 @@ class ReviewerSerializerTestCase(TestCase):
             ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
-"""
+
