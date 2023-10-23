@@ -12,16 +12,15 @@ class Entry {
   List<Contributor> contributors;
   int entryNumber;
 
-  Entry({
-    required this.entryId,
-    required this.workspaceID,
-    required this.content, 
-    required this.entryDate,
-    required this.isTheoremEntry,
-    required this.isFinalEntry,
-    required this.isEditable,
-    required this.creator,
-    required this.contributors,
-    required this.entryNumber
-    });
+  Entry(
+      {required this.entryId,
+      required this.workspaceID,
+      required this.content,
+      required this.entryDate,
+      required this.isTheoremEntry,
+      required this.isFinalEntry,
+      required this.isEditable,
+      required this.creator,
+      required this.contributors,
+      required this.entryNumber});
 }

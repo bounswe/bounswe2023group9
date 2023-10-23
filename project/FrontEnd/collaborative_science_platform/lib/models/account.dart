@@ -12,16 +12,15 @@ class Account {
   String aboutMe;
   bool notificationsEnabled;
 
-  Account({
-    required this.user,
-    required this.firstName,
-    required this.lastName, 
-    required this.email,
-    required this.password,
-    required this.profilePictureURL,
-    required this.idDocumentURL,
-    required this.registrationDate,
-    required this.aboutMe,
-    required this.notificationsEnabled
-    });
+  Account(
+      {required this.user,
+      required this.firstName,
+      required this.lastName,
+      required this.email,
+      required this.password,
+      required this.profilePictureURL,
+      required this.idDocumentURL,
+      required this.registrationDate,
+      required this.aboutMe,
+      required this.notificationsEnabled});
 }

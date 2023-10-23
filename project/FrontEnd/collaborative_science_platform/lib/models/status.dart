@@ -1,5 +1,5 @@
 enum Status {
-  Sended,
-  Approved,
-  Rejected,
+  sended,
+  approved,
+  rejected,
 }

@@ -6,8 +6,8 @@ class WorkspacesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: const Text("Workspace"), // Workspaces Page Content
+    return const Scaffold(
+      body: Text("Workspace"), // Workspaces Page Content
     );
   }
 }

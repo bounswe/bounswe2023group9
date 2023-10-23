@@ -1,7 +1,11 @@
 import 'package:collaborative_science_platform/models/profile_data.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
-import 'package:collaborative_science_platform/screens/profile_page/components/aboutMe.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/profile_page/components/about_me.dart';
+import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,22 +24,25 @@ class _ProfilePageState extends State<ProfilePage> {
   String errorMessage = "";
   bool isLoading = false;
 
+  bool _isFirstTime = true;
+
   @override
-  void initState() {
-    super.initState();
-    getUserData();
+  void didChangeDependencies() {
+    if (_isFirstTime) {
+      getUserData();
+      _isFirstTime = false;
+    }
+    super.didChangeDependencies();
   }
 
   void getUserData() async {
     try {
-      final email = Provider.of<Auth>(context).user?.email ?? "";
-
-      final profileDataProvider =
-          Provider.of<ProfileDataProvider>(context, listen: true);
+      final User user = Provider.of<Auth>(context).user!;
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
       setState(() {
         isLoading = true;
       });
-      await profileDataProvider.getData(email);
+      await profileDataProvider.getData(user);
       setState(() {
         profileData = (profileDataProvider.profileData ?? {} as ProfileData);
         noWorks = profileData.nodeIDs.length;
@@ -50,28 +57,28 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text("Profile"),
-        centerTitle: true,
-      ),
+    return PageWithAppBar(
+      appBar: Row(children: [AppBarButton(icon: CupertinoIcons.back, text: "Back", onPressed: () {})]),
       //bottomNavigationBar: const AppBottomNavigationBar(currentIndex: 2),
-      body: Container(
+      child: SizedBox(
         width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            AboutMe(
-              aboutMe: profileData.aboutMe,
-              email: profileData.email,
-              name: profileData.name,
-              surname: profileData.surname,
-              noWorks: noWorks,
-            )
-          ],
-        ),
+        child: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AboutMe(
+                    aboutMe: profileData.aboutMe,
+                    email: profileData.email,
+                    name: profileData.name,
+                    surname: profileData.surname,
+                    noWorks: noWorks,
+                  )
+                ],
+              ),
       ),
     );
   }

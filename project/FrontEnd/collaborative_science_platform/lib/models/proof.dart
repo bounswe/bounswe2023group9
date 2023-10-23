@@ -9,9 +9,9 @@ class Proof {
   Proof({
     required this.proofID,
     required this.proofTitle,
-    required this.proofContent, 
-    required this.isValid, 
-    required this.isDisproof, 
-    required this.publishDate, 
-    });
+    required this.proofContent,
+    required this.isValid,
+    required this.isDisproof,
+    required this.publishDate,
+  });
 }

@@ -6,6 +6,6 @@ abstract class BaseUser {
   BaseUser({
     required this.sessionID,
     required this.logDate,
-    required this.privacyPoliciesAccepted, 
-    });
+    required this.privacyPoliciesAccepted,
+  });
 }

@@ -8,12 +8,11 @@ abstract class Request {
   String body;
   Status status;
 
-  Request({
-    required this.requestID,
-    required this.senderUserID,
-    required this.receiverUserID, 
-    required this.title,
-    required this.body,
-    required this.status
-    });
+  Request(
+      {required this.requestID,
+      required this.senderUserID,
+      required this.receiverUserID,
+      required this.title,
+      required this.body,
+      required this.status});
 }

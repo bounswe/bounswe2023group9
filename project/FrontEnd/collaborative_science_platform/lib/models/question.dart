@@ -12,9 +12,9 @@ class Question {
   Question({
     required this.questionID,
     required this.askedBy,
-    required this.questionContent, 
-    required this.answer, 
-    required this.publishDate, 
-    required this.respondedBy, 
-    });
+    required this.questionContent,
+    required this.answer,
+    required this.publishDate,
+    required this.respondedBy,
+  });
 }

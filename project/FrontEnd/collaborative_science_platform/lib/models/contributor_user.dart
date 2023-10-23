@@ -21,12 +21,11 @@ class Contributor extends BasicUser {
     required this.workspaces,
     required this.collaborationRequestsGotten,
   }) : super(
-          sessionID: sessionID,
-          logDate: logDate,
-          privacyPoliciesAccepted: privacyPoliciesAccepted,
-          userId: userId,
-          account: account,
-          notifications: notifications,
-          annotations: annotations
-        );
+            sessionID: sessionID,
+            logDate: logDate,
+            privacyPoliciesAccepted: privacyPoliciesAccepted,
+            userId: userId,
+            account: account,
+            notifications: notifications,
+            annotations: annotations);
 }

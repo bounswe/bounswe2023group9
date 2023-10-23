@@ -23,7 +23,7 @@ class Node {
   bool isValid;
   int noVisits;
 
-   Node({
+  Node({
     required this.nodeId,
     required this.nodeTitle,
     required this.contributors,

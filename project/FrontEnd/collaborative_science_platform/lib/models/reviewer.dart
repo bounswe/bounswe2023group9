@@ -20,16 +20,14 @@ class Reviewer extends Contributor {
     required List<Workspace> workspaces,
     required List<CollaborationRequest> collaborationRequestsGotten,
     required this.reviewRequestsGotten,
-
   }) : super(
-          sessionID: sessionID,
-          logDate: logDate,
-          privacyPoliciesAccepted: privacyPoliciesAccepted,
-          account: account,
-          notifications: notifications,
-          userId: userId,
-          workspaces: workspaces,
-          collaborationRequestsGotten: collaborationRequestsGotten,
-          annotations: annotations 
-        );
+            sessionID: sessionID,
+            logDate: logDate,
+            privacyPoliciesAccepted: privacyPoliciesAccepted,
+            account: account,
+            notifications: notifications,
+            userId: userId,
+            workspaces: workspaces,
+            collaborationRequestsGotten: collaborationRequestsGotten,
+            annotations: annotations);
 }
