@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
   User? user;
+  //User? user = User(username: "Abc", email: "Abc", firstName: "Omer", lastName: "Unal");
 
   bool get isSignedIn {
     return user != null;

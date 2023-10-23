@@ -91,155 +91,152 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return PageWithAppBar(
       appBar: const LoginPageAppBar(),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0), // 16 pixels padding in 4 directions
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
-              padding: const EdgeInsets.only(top: 40.0),
-              child: SingleChildScrollView(
-                // To avoid Render Pixel Overflow
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      "assets/images/logo.svg",
-                      width: 394.0,
-                      height: 120.0,
-                    ),
-                    const SizedBox(height: 40.0), //to add space
-                    AppTextField(
-                      controller: emailController,
-                      focusNode: emailFocusNode,
-                      hintText: 'Email',
-                      obscureText: false,
-                      color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
-                      prefixIcon: const Icon(Icons.person),
-                      height: 64.0,
-                      onChanged: (_) {
-                        if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-                          setState(() {
-                            buttonState = false;
-                          });
-                        } else {
-                          setState(() {
-                            buttonState = true;
-                          });
-                        }
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
+            padding: const EdgeInsets.only(top: 40.0, right: 16, left: 16),
+            child: SingleChildScrollView(
+              // To avoid Render Pixel Overflow
+              scrollDirection: Axis.vertical,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    "assets/images/logo.svg",
+                    width: 394.0,
+                    height: 120.0,
+                  ),
+                  const SizedBox(height: 40.0), //to add space
+                  AppTextField(
+                    controller: emailController,
+                    focusNode: emailFocusNode,
+                    hintText: 'Email',
+                    obscureText: false,
+                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    prefixIcon: const Icon(Icons.person),
+                    height: 64.0,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 8.0),
+                  AppTextField(
+                    controller: passwordController,
+                    focusNode: passwordFocusNode,
+                    hintText: 'Password',
+                    obscureText: obscuredPassword,
+                    color: error && passwordController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          obscuredPassword = !obscuredPassword; //eye icon to work
+                        });
                       },
+                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
-                    const SizedBox(height: 8.0),
-                    AppTextField(
-                      controller: passwordController,
-                      focusNode: passwordFocusNode,
-                      hintText: 'Password',
-                      obscureText: obscuredPassword,
-                      color: error && passwordController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            obscuredPassword = !obscuredPassword; //eye icon to work
-                          });
-                        },
-                        icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
-                      ),
-                      height: 64.0,
-                      onChanged: (_) {
-                        if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-                          setState(() {
-                            buttonState = false;
-                          });
-                        } else {
-                          setState(() {
-                            buttonState = true;
-                          });
-                        }
-                      },
-                    ),
-                    if (error) //all error messages
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          errorMessage,
-                          style: const TextStyle(color: AppColors.dangerColor),
-                        ),
-                      ),
-                    const SizedBox(height: 10.0),
-                    SingleChildScrollView(
-                      // To avoid Render Pixel Overflow
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 16.0),
-                          MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: GestureDetector(
-                              onTap: () {/* Direct user to the password recovery page */},
-                              child: const Text(
-                                "Forgot your password?",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.hyperTextColor,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                    height: 64.0,
+                    onChanged: (_) {
+                      if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                        setState(() {
+                          buttonState = false;
+                        });
+                      } else {
+                        setState(() {
+                          buttonState = true;
+                        });
+                      }
+                    },
+                  ),
+                  if (error) //all error messages
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        errorMessage,
+                        style: const TextStyle(color: AppColors.dangerColor),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-                    AppButton(
-                      onTap: () async {
-                        if (await authenticate() && mounted) {
-                          // Navigate to home page if authentication is successful
-                          Navigator.pushNamed(context, HomePage.routeName);
-                        }
-                      },
-                      text: "Log in",
-                      height: 64,
-                      isLoading: isLoading,
-                      isActive: buttonState,
-                    ),
-                    const SizedBox(height: 10.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  const SizedBox(height: 10.0),
+                  SingleChildScrollView(
+                    // To avoid Render Pixel Overflow
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
                       children: [
-                        Flexible(
-                          child: Text(
-                            "Don't have an account?",
-                            maxLines: 2,
-                            style: TextStyle(
-                              color: Colors.grey.shade700,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4.0),
+                        const SizedBox(width: 16.0),
                         MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, SignUpPage.routeName);
-                            },
+                            onTap: () {/* Direct user to the password recovery page */},
                             child: const Text(
-                              "Sign up now",
-                              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                              "Forgot your password?",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.hyperTextColor,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  AppButton(
+                    onTap: () async {
+                      if (await authenticate() && mounted) {
+                        // Navigate to home page if authentication is successful
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      }
+                    },
+                    text: "Log in",
+                    height: 64,
+                    isLoading: isLoading,
+                    isActive: buttonState,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          "Don't have an account?",
+                          maxLines: 2,
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, SignUpPage.routeName);
+                          },
+                          child: const Text(
+                            "Sign up now",
+                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

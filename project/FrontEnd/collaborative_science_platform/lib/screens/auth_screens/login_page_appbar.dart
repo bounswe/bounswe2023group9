@@ -7,9 +7,11 @@ class LoginPageAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppBarLogo(),
+        AppBarLogo(
+          logoPath: 'assets/images/logo.svg',
+        ),
       ],
     );
   }

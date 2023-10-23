@@ -148,7 +148,7 @@ class _SignUpPageState extends State<SignUpPage> {
         children: [
           Container(
             width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(top: 40.0, right: 16, left: 16),
             child: SingleChildScrollView(
               // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,

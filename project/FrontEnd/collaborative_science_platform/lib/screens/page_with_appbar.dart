@@ -13,6 +13,7 @@ class PageWithAppBar extends StatelessWidget {
   final Widget appBar;
   final Color pageColor;
   final bool isScrollable;
+  final Navigator? navigator;
 
   /// Creates a [PageWithAppBar] widget.
   ///
@@ -21,11 +22,17 @@ class PageWithAppBar extends StatelessWidget {
   /// The [pageColor] parameter specifies the background color of the content area (default: Colors.white).
   /// The [isScrollable] parameter indicates whether the content is scrollable (default: true).
   const PageWithAppBar(
-      {required this.child, required this.appBar, this.pageColor = Colors.white, this.isScrollable = true, super.key});
+      {required this.child,
+      required this.appBar,
+      this.pageColor = Colors.white,
+      this.isScrollable = true,
+      this.navigator,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         body: NestedScrollView(
           physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
@@ -45,19 +52,31 @@ class PageWithAppBar extends StatelessWidget {
                   color: Colors.grey[300],
                 ),
               ),
-              collapsedHeight: Responsive.isMobile(context) ? 60 : 70,
+              collapsedHeight: Responsive.isMobile(context) ? 80 : 75,
               flexibleSpace: FlexibleSpaceBar(
-                background: Padding(
-                  padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 20),
+                background: Container(
+                  padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
                   child: appBar,
                 ),
               ),
             ),
           ],
-          body: Container(
-            color: pageColor,
-            child: child,
-          ),
+          body: navigator != null
+              ? navigator!
+              : Stack(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: pageColor,
+                          child: child,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
         ));
   }
 }
