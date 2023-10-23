@@ -16,7 +16,7 @@ class Workspace(models.Model):
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(
-        max_length=200, default="This user has not told about herself / himself yet..."
+        max_length=200, default=""
     )
     email_notification_preference = models.BooleanField(default=False)
     show_activity_preference = models.BooleanField(default=True)
@@ -78,7 +78,7 @@ class ReviewRequest(Request):
 
 
 class Theorem(models.Model):
-    theorem_id = models.IntegerField(primary_key=True)
+    theorem_id = models.AutoField(primary_key=True)
     theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
@@ -126,7 +126,7 @@ class Annotation(models.Model):
 
 
 class Node(models.Model):
-    node_id = models.IntegerField(primary_key=True)
+    node_id = models.AutoField(primary_key=True)
     node_title = models.CharField(max_length=100)
     contributors = models.ManyToManyField(Contributor,related_name='NodeContributors')
     theorem = models.OneToOneField(Theorem, null=True, on_delete=models.SET_NULL)
@@ -147,7 +147,7 @@ class Node(models.Model):
 
 
 class Proof(models.Model):
-    proof_id = models.IntegerField(primary_key=True)
+    proof_id = models.AutoField(primary_key=True)
     proof_title = models.CharField(max_length=100, null=False)
     proof_content = models.TextField(null=False)
     is_valid = models.BooleanField()
