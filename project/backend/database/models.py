@@ -13,7 +13,7 @@ class Workspace(models.Model):
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(
-        max_length=200, default="This user has not told about herself / himself yet..."
+        max_length=200, default=""
     )
     email_notification_preference = models.BooleanField(default=False)
     show_activity_preference = models.BooleanField(default=True)
