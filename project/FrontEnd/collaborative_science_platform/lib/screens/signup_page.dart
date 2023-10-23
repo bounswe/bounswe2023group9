@@ -1,9 +1,9 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/widgets/strong_password_checks.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
-import 'package:collaborative_science_platform/widgets/strong_password_checks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +57,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     try {
       await Provider.of<Auth>(context, listen: false)
-          .signup(nameController.text, emailController.text, passwordController.text);
+          .signup(nameController.text, emailController.text, passwordController.text, confirmPasswordController.text);
     } catch (e) {
       setState(() {
         error = true;
@@ -77,7 +77,8 @@ class _SignUpPageState extends State<SignUpPage> {
         errorMessage = "All fields are mandatory!";
       });
       return false;
-    } else if (!StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text)) {
+    } else if (!StrongPasswordChecks.passedAllPasswordCriteria(
+        passwordController.text, confirmPasswordController.text)) {
       setState(() {
         error = true;
         weakPasswordError = true;
@@ -192,7 +193,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                   ),
                   const SizedBox(height: 10.0),
-                  if (passwordController.text.isNotEmpty) StrongPasswordChecks(password: passwordController.text),
+                  if (passwordController.text.isNotEmpty)
+                    StrongPasswordChecks(
+                      password: passwordController.text,
+                      confirmPassword: confirmPasswordController.text,
+                    ),
                   const SizedBox(height: 10.0),
                   AppTextField(
                     controller: confirmPasswordController,
