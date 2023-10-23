@@ -108,7 +108,7 @@ class Node(models.Model):
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
     num_visits = models.IntegerField()
-    removed_by_admin = models.BooleanField()
+    removed_by_admin = models.BooleanField(default=False)
 
     def increment_num_visits(self):
         self.num_visits += 1
@@ -121,7 +121,7 @@ class Proof(models.Model):
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
-    removed_by_admin = models.BooleanField()
+    removed_by_admin = models.BooleanField(default=False)
 
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
