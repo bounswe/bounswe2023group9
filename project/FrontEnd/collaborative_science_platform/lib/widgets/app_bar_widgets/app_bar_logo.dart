@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AppBarLogo extends StatelessWidget {
-  const AppBarLogo({super.key});
+  final String logoPath;
+  const AppBarLogo({this.logoPath = 'assets/images/logo_small.svg', super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +15,8 @@ class AppBarLogo extends StatelessWidget {
         child: Container(
           color: Colors.transparent,
           child: SvgPicture.asset(
-            'assets/images/logo_small.svg',
-            height: 80,
+            logoPath,
+            height: 60,
           ),
         ),
       ),

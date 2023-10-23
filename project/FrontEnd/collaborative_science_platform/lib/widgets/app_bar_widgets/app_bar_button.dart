@@ -9,7 +9,7 @@ class AppBarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Responsive(mobile: mobile(), desktop: desktop());
+    return Responsive(mobile: mobile(), desktop: mobile());
   }
 
   Widget desktop() {
@@ -25,8 +25,9 @@ class AppBarButton extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon),
           Text(text),
+          const SizedBox(width: 3),
+          Icon(icon),
         ],
       ),
     );

@@ -1,69 +1,60 @@
-
 import 'package:flutter/material.dart';
 
-import '../utils/colors.dart';
-
 class AppSearchBar extends StatelessWidget {
-  final TextEditingController controller;
+  final Function() onSearch;
   final FocusNode focusNode;
-  final double height;
-  final void Function(String)? onChanged;
-  final bool isActive;
-
-
-  const AppSearchBar({
-    super.key,
-    required this.controller,
-    required this.focusNode,
-    required this.height,
-    this.onChanged,
-    this.isActive = false,
-  });
+  final TextEditingController controller;
+  const AppSearchBar({required this.onSearch, required this.controller, required this.focusNode, super.key});
 
   @override
   Widget build(BuildContext context) {
-    double borderWidth = 3.0;
-    return SizedBox(
-        height: height,
-        child: TextField(
-          controller: controller,
-          focusNode: focusNode,
-          onChanged: onChanged,
-          keyboardType: TextInputType.text,
-          cursorColor: Colors.grey.shade700,
-          style: const TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-            suffixIconColor: Colors.white,
-            suffixIcon: CircleAvatar(
-              backgroundColor: isActive ? AppColors.primaryColor : Colors.grey.shade600,
-              child: IconButton(
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
+    return Container(
+      height: 38,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[400]!),
+      ),
+      child: Row(
+        children: [
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: onSearch,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomLeft: Radius.circular(8),
+                  ),
                 ),
-                onPressed: isActive ? () { /* Search the input text */ } : null,
+                width: 38,
+                height: 38,
+                child: Icon(
+                  Icons.search,
+                  color: Colors.indigo[500],
+                  size: 24,
+                ),
               ),
             ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: borderWidth,
-                  color: isActive ? AppColors.primaryColor : Colors.grey.shade600
-              ),
-              borderRadius: BorderRadius.circular(height/2.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: borderWidth,
-                  color: isActive ? AppColors.primaryColor : Colors.grey.shade600
-              ),
-              borderRadius: BorderRadius.circular(height/2.0),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-            hintText: "Search",
-            hintStyle: const TextStyle(color: Colors.grey),
           ),
-        ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              textAlignVertical: TextAlignVertical.center,
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintText: "Search",
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey[600]!),
+                isCollapsed: true,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
