@@ -8,7 +8,7 @@ from database.serializers import RegisterSerializer, UserSerializer
 
 # Create your tests here.
 
-"""
+
 class SignUpAPIViewTestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
@@ -62,4 +62,3 @@ class UserDetailAPITestCase(TestCase):
         # Testing the GET method for getting not authenticated user details
         response = self.client.get(self.get_user_detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-"""

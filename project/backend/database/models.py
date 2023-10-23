@@ -53,6 +53,10 @@ class Reviewer(Contributor):
     def get_review_requests(self):                          
         return ReviewRequest.objects.filter(reviewer=self)
 
+class Admin(BasicUser):
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
+    
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards) 
@@ -136,6 +140,7 @@ class Node(models.Model):
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
     num_visits = models.IntegerField()
+    removed_by_admin = models.BooleanField(default=False)
 
     def increment_num_visits(self):
         self.num_visits += 1
@@ -148,6 +153,7 @@ class Proof(models.Model):
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
+    removed_by_admin = models.BooleanField(default=False)
 
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
