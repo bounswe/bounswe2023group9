@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+import copy
+from datetime import datetime
+
 # Create your models here.
 class Workspace(models.Model):
     """
@@ -78,7 +81,36 @@ class Theorem(models.Model):
 
 
 class SemanticTag(models.Model):
-    pass
+    created_at = models.DateTimeField(auto_now_add=True)
+    label = models.CharField(max_length=50, unique=True)
+    desc = models.CharField(max_length=100)
+    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True, related_name="sub_tags")
+
+    @property
+    def count(self):
+        return self.node_set.all().count()
+    
+    @property
+    def nodes(self):
+        return self.node_set.all()
+    
+    @property
+    def recursive_nodes(self):
+        nodes = list(self.nodes)
+
+        for sub in self.sub_tags.all():
+            nodes.extend(sub.recursive_nodes)
+
+        return nodes
+
+    @property
+    def recursive_count(self):
+        return len(self.recursive_nodes)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['label', 'parent_tag'], name='semantictag_label_parenttag_unique_constraint')
+        ]
 
 
 class WikiTag(models.Model):
@@ -120,5 +152,26 @@ class Proof(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
 
-# class Question(models.Model):
-#     node = models.ForeignKey(Node,models.CASCADE)
+class Question(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
+
+    asker = models.ForeignKey(BasicUser, on_delete=models.PROTECT, related_name="asked_questions")
+    question_content = models.TextField(max_length=400)
+
+    answerer = models.ForeignKey(Contributor, on_delete=models.PROTECT, null=True, blank=True, related_name="answered_questions")
+    answer_content = models.TextField(max_length=600, null=True, blank=True)
+    answered_at = models.DateTimeField(null=True, blank=True)
+
+    def answer(self, answer, answerer):
+        if self.answer_content is None or self.answer_content == "":
+            print("first if")
+            if answerer in self.node.contributors.all():
+                print("second if")
+                self.answer_content = answer
+                self.answerer = answerer
+                self.answered_at = datetime.now()
+                self.save()
+                return True
+        
+        return False
