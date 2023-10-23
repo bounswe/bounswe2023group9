@@ -51,43 +51,9 @@ class Reviewer(Contributor):
         return ReviewRequest.objects.filter(reviewer=self)
 
 class Admin(BasicUser):
-
-    def __init__(self, *args, **kwargs):
-        super(Admin, self).__init__(*args, **kwargs)    # Constructor to specify inherited fields. 
-        self.removed_nodes  = []                        # Array keeping removed nodes  by this admin.
-        self.removed_proofs = []                        # Array keeping removed proofs by this admin.
-    
-    def add_removed_nodes(self, node):
-       if isinstance(node, Node):
-           self.removed_nodes.append(node)
-       else:
-           raise ValueError("Only Node objects can be added to the admin's list.")
-
-    def pop_removed_nodes(self, node):
-        if node in self.removed_nodes:
-            self.removed_nodes.remove(node)
-        else:
-            raise ValueError("Node not found in the admin's list.")
-        
-    def add_removed_proofs(self, proof):
-       if isinstance(proof, Proof):
-           self.removed_proofs.append(proof)
-       else:
-           raise ValueError("Only Proof objects can be added to the admin's list.")
-    
-    def pop_removed_proofs(self, proof):
-        if proof in self.removed_proofs:
-            self.removed_proofs.remove(proof)
-        else:
-            raise ValueError("Proof not found in the admin's list.")
-
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
-   
-class Trial(models.Model):
-    def __str__(self):
-        return "Trial"
-
+    
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards) 
@@ -142,6 +108,7 @@ class Node(models.Model):
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
     num_visits = models.IntegerField()
+    removed_by_admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
 
     def increment_num_visits(self):
         self.num_visits += 1
@@ -154,6 +121,7 @@ class Proof(models.Model):
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
+    removed_by_admin = models.ForeignKey(Admin, on_delete=models.CASCADE)
 
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 

@@ -206,34 +206,6 @@ class AdminModelTestCase(TestCase):
         # Testing with default values
         self.assertFalse(admin.email_notification_preference)
         self.assertTrue(admin.show_activity_preference)
-    
-    def test_add_removed_nodes(self):
-        admin = Admin.objects.create(user=User.objects.create())
-        node = Node(node_id=1, node_title="Test Node", publish_date="2023-10-23", is_valid=True, num_visits=0)
-        admin.add_removed_nodes(node)
-        self.assertIn(node, admin.removed_nodes)
-
-    def test_pop_removed_nodes(self):
-        admin = Admin.objects.create(user=User.objects.create())
-        node = Node(node_id=2, node_title="Another Node", publish_date="2023-10-24", is_valid=True, num_visits=0)
-        admin.add_removed_nodes(node)
-        admin.pop_removed_nodes(node)
-        self.assertNotIn(node, admin.removed_nodes)
-
-    def test_add_removed_proofs(self):
-        admin = Admin.objects.create(user=User.objects.create())
-        proof = Proof(proof_id=1, proof_title="Test Proof", proof_content="Sample content")
-        admin.add_removed_proofs(proof)
-        self.assertIn(proof, admin.removed_proofs)
-
-    def test_pop_removed_proofs(self):
-        admin = Admin.objects.create(user=User.objects.create())
-        proof = Proof(proof_id=2, proof_title="Another Proof", proof_content="More content")
-        admin.add_removed_proofs(proof)
-        admin.pop_removed_proofs(proof)
-        self.assertNotIn(proof, admin.removed_proofs)
-
-        
         
 """
 class NodeModelTestCase(TestCase):
