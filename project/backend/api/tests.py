@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from database.models import BasicUser,Contributor,Node,Question
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
-
+import datetime
 # Create your tests here.
 
 
@@ -63,7 +63,7 @@ class UserDetailAPITestCase(TestCase):
         # Testing the GET method for getting not authenticated user details
         response = self.client.get(self.get_user_detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-import datetime
+
 
 class ProfileGETAPITestCase(TestCase):
     def setUp(self):

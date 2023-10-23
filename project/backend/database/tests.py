@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer
+from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
@@ -181,6 +181,31 @@ class ReviewerModelTestCase(TestCase):
         review_request.delete()
         workspace.delete()
         reviewer.delete()
+
+class AdminModelTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        Node.objects.all().delete()
+        Admin.objects.all().delete()
+        
+        print("Test for the Admin Model is completed!")
+
+    def test_admin_create(self):
+        # Testing the creation of a new Admin
+
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        admin = Admin.objects.create(user=user)
+
+        self.assertEqual(admin.user, user)
+
+        # Testing with default values
+        self.assertFalse(admin.email_notification_preference)
+        self.assertTrue(admin.show_activity_preference)
         
 
 class NodeModelTestCase(TestCase):
