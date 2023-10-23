@@ -1,6 +1,6 @@
 import 'package:collaborative_science_platform/screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
-import 'package:collaborative_science_platform/screens/profile_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart'; //delete later
 import 'package:collaborative_science_platform/utils/colors.dart';
