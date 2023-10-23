@@ -71,6 +71,10 @@ def get_node_from_id(request):
     node = models.Node.objects.filter(node_id=id)
     if node.count() == 0:
         return JsonResponse({'message':'There is no node with this id.'},status=404)
+    proofs = models.Proof.objects.filter(node=node)
+    proof_l = []
+    for proof in proofs:
+        proof_l.append(proof.proof_id)
     return JsonResponse({'node_title':node[0].node_title,
                          'theorem': node[0].theorem.theorem_id,
                          'publish_date': node[0].publish_date,
@@ -81,6 +85,7 @@ def get_node_from_id(request):
                          'semantic_tags':node[0].semantic_tags,
                          'reviewers':node[0].reviewers,
                          'contributors':node[0].contributors,
+                         'proofs':proof_l,
                          }, status=200) # REFERENCE NODES MISSING
 
 def search(request):
