@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from database.models import BasicUser,Contributor,Node
+from database.models import BasicUser,Contributor,Node,Question
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
 
@@ -77,6 +77,12 @@ class ProfileGETAPITestCase(TestCase):
             publish_date="2023-01-01",
             is_valid=True,
             num_visits=0,)
+        Q = Question.objects.create(
+            node=node,
+            asker = cont,
+            question_content = "TEXT",
+            answerer = cont
+        )
         node.contributors.add(cont)
         self.get_profile_url = reverse('get_profile')
     def test_get_user_profile(self):
@@ -87,7 +93,8 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['surname'], 'Test')
         self.assertEqual(response.json()['bio'], 'Hello')
         self.assertEqual(response.json()['nodes'][0],1)
-        #   TODO QUESTION TEST
+        self.assertEqual(response.json()['answered_questions'][0],1)
+        self.assertEqual(response.json()['asked_questions'][0], 1)
 
 
 

@@ -36,15 +36,22 @@ def get_profile(request):
     basic_user = models.BasicUser.objects.get(user_id=user.id)
     cont =  models.Contributor.objects.filter(user_id=user.id)
     nodes = []
-    questions = []
+    asked_questions = []
+    answered_questions = []
 
     if cont.count() != 0:
         user_nodes = models.Node.objects.filter(contributors=cont[0].id)
         for node in user_nodes:
             nodes.append(node.node_id)
-    #   TODO  QUESTIONS
+        user_answered_qs = models.Question.objects.filter(answerer=cont[0].id)
+        for ans in user_answered_qs:
+            answered_questions.append(ans.question_id)
+    user_asked_qs = models.Question.objects.filter(asker=user.id)
+    for q in user_asked_qs:
+        asked_questions.append(q.question_id)
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,
                          'nodes': nodes,
-                         'questions':questions},status=200)
+                         'asked_questions':asked_questions,
+                         'answered_questions':answered_questions},status=200)
