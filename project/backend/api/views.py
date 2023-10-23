@@ -45,10 +45,10 @@ def get_profile(request):
             nodes.append(node.node_id)
         user_answered_qs = models.Question.objects.filter(answerer=cont[0].id)
         for ans in user_answered_qs:
-            answered_questions.append(ans.question_id)
+            answered_questions.append(ans.id)
     user_asked_qs = models.Question.objects.filter(asker=user.id)
     for q in user_asked_qs:
-        asked_questions.append(q.question_id)
+        asked_questions.append(q.id)
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,
