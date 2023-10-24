@@ -11,11 +11,16 @@ class ProfileDataProvider with ChangeNotifier {
   ProfileData? profileData;
 
   Future<void> getData(User user) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/get_profile_info/?mail=${user.email}");
-    final Map<String, String> headers = {"Accept": "application/json", "content-type": "application/json"};
+    Uri url =
+        Uri.parse("${Constants.apiUrl}/get_profile_info/?mail=${user.email}");
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type": "application/json"
+    };
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
+        
         final data = json.decode(response.body);
         profileData = ProfileData(
           name: data['name'],
@@ -23,7 +28,8 @@ class ProfileDataProvider with ChangeNotifier {
           email: user.email,
           aboutMe: data['bio'],
           nodeIDs: data['nodes'] as List<int>,
-          questionIDs: data['questions'] as List<int>,
+          answeredQuestionIDs: data['answered_questions'] as List<int>,
+          askedQuestionIDs: data['asked_questions'] as List<int>,
         );
         notifyListeners();
       } else if (response.statusCode == 400) {

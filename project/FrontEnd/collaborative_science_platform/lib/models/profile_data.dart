@@ -4,12 +4,14 @@ class ProfileData {
   String email;
   String aboutMe;
   List<int> nodeIDs;
-  List<int> questionIDs;
+  List<int> askedQuestionIDs;
+  List<int> answeredQuestionIDs;
   ProfileData(
       {this.aboutMe = "",
       this.email = "",
       this.name = "",
       this.surname = "",
       this.nodeIDs = const [],
-      this.questionIDs = const []});
+      this.askedQuestionIDs = const [],
+      this.answeredQuestionIDs = const []});
 }
