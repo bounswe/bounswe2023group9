@@ -15,6 +15,16 @@ class Responsive extends StatelessWidget {
     required this.desktop,
   }) : super(key: key);
 
+  static double desktopPageWidth = 1000;
+
+  static double getGenericPageWidth(BuildContext context) {
+    if (isDesktop(context)) {
+      return desktopPageWidth;
+    } else {
+      return MediaQuery.of(context).size.width;
+    }
+  }
+
   static bool isMobile(BuildContext context) => MediaQuery.of(context).size.width < tabletBreakpoint;
 
   static bool isTablet(BuildContext context) =>
@@ -24,16 +34,16 @@ class Responsive extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth >= desktopBreakpoint) {
-          return desktop;
-        } else if (constraints.maxWidth >= tabletBreakpoint && tablet != null) {
-          return tablet!;
-        } else {
-          return mobile;
-        }
-      },
-    );
+    final double screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth >= desktopBreakpoint) {
+      return desktop;
+    } else if (screenWidth >= tabletBreakpoint) {
+      if (tablet == null) {
+        return desktop;
+      }
+      return tablet!;
+    } else {
+      return mobile;
+    }
   }
 }
