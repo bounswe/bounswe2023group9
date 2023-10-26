@@ -97,22 +97,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
-    # contributors = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=Contributor.objects.all())
-    # reviewers = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=Reviewer.objects.all())
-    # from_referenced_nodes = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=Node.objects.all())
-    # semantic_tags = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=SemanticTag.objects.all())
-    # wiki_tags = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=WikiTag.objects.all())
-    # annotations = serializers.PrimaryKeyRelatedField(allow_empty=True, many=True, queryset=Annotation.objects.all())
-
     class Meta:
         model = Node
-        fields = [
-            "node_id",
-            "node_title",
-            "theorem",
-            "publish_date",
-            "from_referenced_nodes",
-            "is_valid",
-            "num_visits",
-        ]
-        # exclude = ['removed_by_admin']
+        exclude = ["removed_by_admin"]

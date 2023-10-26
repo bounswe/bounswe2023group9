@@ -88,7 +88,6 @@ class NodeAPIView(APIView):
             )
         node = node.first()
         serializer = NodeSerializer(node)
-        print(serializer)
         return Response(serializer.data)
 
 
