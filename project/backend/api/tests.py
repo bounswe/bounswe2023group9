@@ -5,7 +5,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
-
+from database import models
 # Create your tests here.
 
 
@@ -67,8 +67,16 @@ class SearchAPITestCase(TestCase):
     def setUp(self):
 
         self.client = APIClient()
-        self.user = User.objects.create_user(id=1, email= 'test@example.com', username='testuser', first_name='User', last_name='Test')
-        self.token = Token.objects.create(user=self.user)
+        user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        # basic_user = BasicUser.objects.create(user=user, bio='Hello')
+        cont = models.Contributor.objects.create(user=user, bio='Hello')
+        node = models.Node.objects.create(node_title='test',
+                                   theorem=None,
+                                   publish_date="2023-01-01",
+                                   is_valid=True,
+                                   num_visits=0, )
+        node.contributors.add(cont)
         self.search_url = reverse("search")
 
     def tearDown(self):
