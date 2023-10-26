@@ -103,7 +103,7 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['nodes'][0]['date'], '2023-01-01')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['surname'], 'Test')
-        self.assertEqual(response.json()['nodes'][0]['authors'][0]['id'], 1)
+        self.assertEqual(response.json()['nodes'][0]['authors'][0]['username'], 'test@example.com')
         self.assertEqual(response.json()['answered_questions'][0],1)
         self.assertEqual(response.json()['asked_questions'][0], 1)
 
