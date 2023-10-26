@@ -89,6 +89,6 @@ class SearchAPITestCase(TestCase):
         data = {'type': 'author'}
         response = self.client.get(self.search_url, data, format='json')
         self.assertEqual(response.status_code, 400)
-        data = {'query': 'search','type':'author'}
+        data = {'query': 'search','type':'node'}
         response = self.client.get(self.search_url, data, format='json')
         self.assertEqual(response.status_code, 200)
