@@ -53,7 +53,8 @@ def get_profile(request):
         node = models.Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
-            authors.append({'name':User.objects.get(id=cont.user_id).first_name,'surname':User.objects.get(id=cont.user_id).last_name,'id':cont.user_id})
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
         node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
     # TODO QUESTION RETURNS SHOULD BE CHANGED IN THE FUTURE.
     return JsonResponse({'name':user.first_name,
