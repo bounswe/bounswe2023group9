@@ -294,7 +294,6 @@ class ProofModelTestCase(TestCase):
 
         proof = Proof.objects.create(
             proof_id=1,
-            proof_title="Test Proof",
             proof_content="This is a test proof content.",
             is_valid=True,
             is_disproof=False,
@@ -302,7 +301,6 @@ class ProofModelTestCase(TestCase):
             node=test_node,
         )
         self.assertEqual(proof.proof_id, 1)
-        self.assertEqual(proof.proof_title, "Test Proof")
         self.assertEqual(proof.proof_content, "This is a test proof content.")
         self.assertEqual(proof.is_valid, True)
         self.assertEqual(proof.is_disproof, False)
@@ -318,12 +316,10 @@ class TheoremModelTestCase(TestCase):
     def test_theorem_model(self):
         theorem = Theorem.objects.create(
             theorem_id=1,
-            theorem_title="Test Theorem",
             theorem_content="This is a test theorem content.",
             publish_date="2023-01-01",
         )
         self.assertEqual(theorem.theorem_id, 1)
-        self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
 

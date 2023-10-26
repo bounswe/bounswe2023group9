@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from database.models import Node
 from database.serializers import RegisterSerializer, UserSerializer
 
 # Create your tests here.
@@ -16,7 +17,7 @@ class SignUpAPIViewTestCase(TestCase):
 
     def tearDown(self):
         User.objects.all().delete()
-        print('All tests for the Sign Up API are completed!')
+        print("All tests for the Sign Up API are completed!")
 
     def test_user_signup(self):
         # Testing the POST method for signing up
@@ -34,11 +35,15 @@ class SignUpAPIViewTestCase(TestCase):
 
 
 class UserDetailAPITestCase(TestCase):
-
     def setUp(self):
-
         self.client = APIClient()
-        self.user = User.objects.create_user(id=1, email= 'test@example.com', username='testuser', first_name='User', last_name='Test')
+        self.user = User.objects.create_user(
+            id=1,
+            email="test@example.com",
+            username="testuser",
+            first_name="User",
+            last_name="Test",
+        )
         self.token = Token.objects.create(user=self.user)
         self.get_user_detail_url = reverse("get_authenticated_user")
 
@@ -52,22 +57,28 @@ class UserDetailAPITestCase(TestCase):
         response = self.client.get(self.get_user_detail_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['id'], self.user.id)
-        self.assertEqual(response.data['email'], self.user.email)
+        self.assertEqual(response.data["id"], self.user.id)
+        self.assertEqual(response.data["email"], self.user.email)
         # self.assertEqual(response.data['username'], self.user.username)
-        self.assertEqual(response.data['first_name'], self.user.first_name)
-        self.assertEqual(response.data['last_name'], self.user.last_name)
+        self.assertEqual(response.data["first_name"], self.user.first_name)
+        self.assertEqual(response.data["last_name"], self.user.last_name)
 
     def test_get_user_detail_not_authenticated(self):
         # Testing the GET method for getting not authenticated user details
         response = self.client.get(self.get_user_detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class SearchAPITestCase(TestCase):
     def setUp(self):
-
         self.client = APIClient()
-        self.user = User.objects.create_user(id=1, email= 'test@example.com', username='testuser', first_name='User', last_name='Test')
+        self.user = User.objects.create_user(
+            id=1,
+            email="test@example.com",
+            username="testuser",
+            first_name="User",
+            last_name="Test",
+        )
         self.token = Token.objects.create(user=self.user)
         self.search_url = reverse("search")
 
@@ -75,12 +86,79 @@ class SearchAPITestCase(TestCase):
         User.objects.all().delete()
 
     def test_search(self):
-        data = {'query':'search'}
-        response = self.client.get(self.search_url,data,format='json')
-        self.assertEqual(response.status_code,400)
-        data = {'type': 'author'}
-        response = self.client.get(self.search_url, data, format='json')
+        data = {"query": "search"}
+        response = self.client.get(self.search_url, data, format="json")
         self.assertEqual(response.status_code, 400)
-        data = {'query': 'search','type':'author'}
-        response = self.client.get(self.search_url, data, format='json')
+        data = {"type": "author"}
+        response = self.client.get(self.search_url, data, format="json")
+        self.assertEqual(response.status_code, 400)
+        data = {"query": "search", "type": "author"}
+        response = self.client.get(self.search_url, data, format="json")
         self.assertEqual(response.status_code, 200)
+
+
+class NodeAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.node_url = reverse("get_node")
+
+        self.nodeA = Node.objects.create(
+            node_id=1,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+        Node.objects.create(
+            node_id=2,
+            node_title="Test Node B",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+        Node.objects.create(
+            node_id=3,
+            node_title="Test Node C",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        print("All tests for the Node API are completed!")
+
+    def test_get_valid(self):
+        data = {"node_id": "1"}
+        response = self.client.get(self.node_url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["node_id"], self.nodeA.node_id)
+        self.assertEqual(response.data["node_title"], self.nodeA.node_title)
+        self.assertEqual(response.data["is_valid"], self.nodeA.is_valid)
+        self.assertEqual(response.data["num_visits"], self.nodeA.num_visits)
+
+    def test_get_invalid(self):
+        data = {"node_id": "-1"}
+        response = self.client.get(self.node_url, data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_removed_node(self):
+        Node.objects.create(
+            node_id=4,
+            node_title="Test Node Removed",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+            removed_by_admin=True,
+        )
+
+        data = {"node_id": "4"}
+        response = self.client.get(self.node_url, data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

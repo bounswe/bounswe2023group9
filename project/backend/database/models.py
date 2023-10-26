@@ -72,7 +72,6 @@ class ReviewRequest(Request):
 
 class Theorem(models.Model):
     theorem_id = models.IntegerField(primary_key=True)
-    theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
 
@@ -99,11 +98,15 @@ class Node(models.Model):
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
+    # Nodes also have to_referenced_nodes list to access the nodes this node references
+    # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
     wiki_tags = models.ManyToManyField(WikiTag)
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
     num_visits = models.IntegerField()
+    removed_by_admin = models.BooleanField(default=False)
+
 
     def increment_num_visits(self):
         self.num_visits += 1
@@ -111,7 +114,6 @@ class Node(models.Model):
 
 class Proof(models.Model):
     proof_id = models.IntegerField(primary_key=True)
-    proof_title = models.CharField(max_length=100, null=False)
     proof_content = models.TextField(null=False)
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()
