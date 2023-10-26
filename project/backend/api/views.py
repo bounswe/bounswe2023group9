@@ -164,7 +164,7 @@ def search(request):
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
             authors.append({'name': User.objects.get(id=cont.user_id).first_name,
-                            'surname': User.objects.get(id=cont.user_id).last_name, 'id': user.username})
+                            'surname': User.objects.get(id=cont.user_id).last_name, 'username': user.username})
         node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
 
