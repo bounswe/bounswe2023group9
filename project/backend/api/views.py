@@ -127,4 +127,23 @@ def search(request):
             for e in res_surname:
                 if models.Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
-    return JsonResponse({'nodes' : nodes , 'authors' : list(set(contributors))},status=200)
+    contributors = list(set(contributors))
+    res_authors = []
+    for cont in contributors:
+        user = User.objects.get(username=cont)
+        cont = models.Contributor.objects.get(user=user)
+        res_authors.append({'name': User.objects.get(id=cont.user_id).first_name,
+                        'surname': User.objects.get(id=cont.user_id).last_name, 'username': cont.user.username})
+    node_infos = []
+    for node_id in nodes:
+        node = models.Node.objects.get(node_id=node_id)
+        authors = []
+        for cont in node.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': User.objects.get(id=cont.user_id).first_name,
+                            'surname': User.objects.get(id=cont.user_id).last_name, 'id': user.username})
+        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
+    return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
+
+
+
