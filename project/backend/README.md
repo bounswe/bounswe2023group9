@@ -2,7 +2,7 @@
 
 This project uses django 4.2.
 
-## With Dockerization
+## Dockerization
 
 To build a docker image, 
  - `docker build --tag <your-tag> .`
