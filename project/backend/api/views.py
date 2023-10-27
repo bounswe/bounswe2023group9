@@ -39,56 +39,6 @@ class UserDetailAPI(APIView):
 
 
 
-def get_proof_from_id(request):
-    id = int(request.GET.get("proof_id"))
-    proof = models.Theorem.objects.filter(theorem_id=id)
-    if proof.count() == 0:
-        return JsonResponse({'message':'There is no proof with this id.'},status=404)
-    return JsonResponse({'proof_id': proof[0].proof_id,
-                         'proof_title': proof[0].proof_title,
-                         'proof_content': proof[0].proof_content,
-                         'is_valid': proof[0].is_valid,
-                         'is_disproof': proof[0].is_disproof,
-                         'publish_date': proof[0].publish_date,
-                         }, status=200)
-
-
-
-def get_theorem_from_id(request):
-    id = int(request.GET.get("theorem_id"))
-    theorem = models.Theorem.objects.filter(theorem_id=id)
-    if theorem.count() == 0:
-        return JsonResponse({'message':'There is no theorem with this id.'},status=404)
-
-    return JsonResponse({'theorem_id': theorem[0].theorem_id,
-                         'theorem_title': theorem[0].theorem_title,
-                         'theorem_content': theorem[0].theorem_content,
-                         'publish_date': theorem[0].publish_date,
-                         }, status=200)
-
-
-def get_node_from_id(request):
-    id = int(request.GET.get("node_id"))
-    node = models.Node.objects.filter(node_id=id)
-    if node.count() == 0:
-        return JsonResponse({'message':'There is no node with this id.'},status=404)
-    proofs = models.Proof.objects.filter(node=node)
-    proof_l = []
-    for proof in proofs:
-        proof_l.append(proof.proof_id)
-    return JsonResponse({'node_title':node[0].node_title,
-                         'theorem': node[0].theorem.theorem_id,
-                         'publish_date': node[0].publish_date,
-                         'is_valid':node[0].is_valid,
-                         'annotations' : node[0].annotations,
-                         'wiki_tags':node[0].wiki_tags,
-                         'num_visits':node[0].num_visits,
-                         'semantic_tags':node[0].semantic_tags,
-                         'reviewers':node[0].reviewers,
-                         'contributors':node[0].contributors,
-                         'proofs':proof_l,
-                         }, status=200) # REFERENCE NODES MISSING
-
 def search(request):
     search = request.GET.get("query")
     search_type = request.GET.get("type")
