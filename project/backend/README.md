@@ -16,6 +16,7 @@ Dont forget to set the following environment variables,
 - DATABASE_PASSWORD
 - DATABASE_HOST
 - DATABASE_PORT
+
 You can set them while running the container like the following
 - `docker run -p 8000:8000 -e DJANGO_SECRET_KEY=<your-secret-key> <your-tag>`
 
