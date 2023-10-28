@@ -6,8 +6,9 @@ import 'package:collaborative_science_platform/screens/profile_page/account_sett
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_options.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
@@ -25,8 +26,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
-        ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
-        ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
+        ChangeNotifierProvider<ScreenNavigation>(
+            create: (context) => ScreenNavigation()),
+        ChangeNotifierProvider<ProfileDataProvider>(
+            create: (context) => ProfileDataProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -36,10 +39,11 @@ class MyApp extends StatelessWidget {
           LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
-          ProfileOptions.routeName: (context) => const ProfileOptions(),
-          GraphPage.routeName: (context) => const GraphPage(),
+          ProfilePage.routeName: (context) => const ProfilePage(),
+          //GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
-          AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
+          AccountSettingsPage.routeName: (context) =>
+              const AccountSettingsPage(),
         },
         navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(
