@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from database.serializers import UserSerializer, RegisterSerializer
+from database.serializers import UserSerializer, RegisterSerializer, NodeSerializer
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse, HttpRequest
