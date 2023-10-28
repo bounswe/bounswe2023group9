@@ -73,3 +73,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     return user
   
+# Serializer to Node
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        exclude = ["removed_by_admin"]

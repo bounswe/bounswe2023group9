@@ -174,6 +174,70 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['answered_questions'][0],1)
         self.assertEqual(response.json()['asked_questions'][0], 1)
 
+class NodeAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.node_url = reverse("get_node")
 
+        self.nodeA = Node.objects.create(
+            node_id=1,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+        Node.objects.create(
+            node_id=2,
+            node_title="Test Node B",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+        Node.objects.create(
+            node_id=3,
+            node_title="Test Node C",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        print("All tests for the Node API are completed!")
+
+    def test_get_valid(self):
+        data = {"node_id": "1"}
+        response = self.client.get(self.node_url, data=data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["node_id"], self.nodeA.node_id)
+        self.assertEqual(response.data["node_title"], self.nodeA.node_title)
+        self.assertEqual(response.data["is_valid"], self.nodeA.is_valid)
+        self.assertEqual(response.data["num_visits"], self.nodeA.num_visits)
+
+    def test_get_invalid(self):
+        data = {"node_id": "-1"}
+        response = self.client.get(self.node_url, data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_removed_node(self):
+        Node.objects.create(
+            node_id=4,
+            node_title="Test Node Removed",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+            removed_by_admin=True,
+        )
+
+        data = {"node_id": "4"}
+        response = self.client.get(self.node_url, data=data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 

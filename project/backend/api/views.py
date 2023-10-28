@@ -36,6 +36,21 @@ class UserDetailAPI(APIView):
     return Response(serializer.data)
 
 
+class NodeAPIView(APIView):
+    def get(self, request):
+        id = int(request.GET.get("node_id"))
+        node = models.Node.objects.filter(node_id=id)
+        if node.count() == 0:
+            return JsonResponse(
+                {"message": "There is no node with this id."}, status=404
+            )
+        elif node.first().removed_by_admin:
+            return JsonResponse(
+                {"message": "The node is removed by admin."}, status=404
+            )
+        node = node.first()
+        serializer = NodeSerializer(node)
+        return Response(serializer.data)
 
 
 
