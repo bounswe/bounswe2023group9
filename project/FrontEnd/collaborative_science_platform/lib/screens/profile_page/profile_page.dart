@@ -93,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         noWorks: noWorks,
                       ),
                       MyPadding(),
-                      EditProfileWeb(),
+                      EditProfileDesktop(),
                     ],
                   ),
                 ),
@@ -197,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class EditProfileWeb extends StatelessWidget {
+class EditProfileDesktop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -253,24 +253,7 @@ class EditProfileMobile extends StatelessWidget {
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
-          // Show Popup with EditProfileForm content
-          showDialog(
-              context: context,
-              builder: (context) => const AlertDialog(
-                    title: SizedBox(
-                      width: 500,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Edit Profile',
-                              style: TextStyle(fontSize: 20.0)),
-                        ],
-                      ),
-                    ),
-                    backgroundColor: Colors.white,
-                    shadowColor: Colors.white,
-                    content: EditProfileForm(),
-                  ));
+          Navigator.pushNamed(context, AccountSettingsPage.routeName);
         },
         child: Container(
           height: 40.0,
