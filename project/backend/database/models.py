@@ -71,7 +71,7 @@ class ReviewRequest(Request):
 
 
 class Theorem(models.Model):
-    theorem_id = models.IntegerField(primary_key=True)
+    theorem_id = models.AutoField(primary_key=True)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
 
@@ -89,7 +89,7 @@ class Annotation(models.Model):
 
 
 class Node(models.Model):
-    node_id = models.IntegerField(primary_key=True)
+    node_id = models.AutoField(primary_key=True)
     node_title = models.CharField(max_length=100)
     contributors = models.ManyToManyField(Contributor,related_name='NodeContributors')
     theorem = models.OneToOneField(Theorem, null=True, on_delete=models.SET_NULL)
@@ -113,7 +113,7 @@ class Node(models.Model):
 
 
 class Proof(models.Model):
-    proof_id = models.IntegerField(primary_key=True)
+    proof_id = models.AutoField(primary_key=True)
     proof_content = models.TextField(null=False)
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()
