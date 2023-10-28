@@ -14,6 +14,7 @@ class HomePageAppBar extends StatelessWidget {
       mobile: const TopNavigationBar(),
       desktop: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const AppBarLogo(),
           const TopNavigationBar(),
