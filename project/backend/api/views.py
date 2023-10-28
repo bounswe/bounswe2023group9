@@ -7,7 +7,15 @@ from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse, HttpRequest
 from rest_framework import generics
+from django.http import JsonResponse, HttpRequest
+from django.contrib.postgres.search import SearchVector
 from database import models
+
+
+# from nltk.corpus import wordnet as wn
+# import nltk
+#
+# nltk.download('wordnet')
 
 # Create your views here.
 
@@ -26,6 +34,91 @@ class UserDetailAPI(APIView):
     serializer = UserSerializer(user)
 
     return Response(serializer.data)
+
+
+
+
+
+def search(request):
+    search = request.GET.get("query")
+    search_type = request.GET.get("type")
+    if search == None or search == "":
+        return JsonResponse({'status': 'Title to search must be given.'}, status=400)
+    if search_type == None or search_type == "":
+        return JsonResponse({'status': 'Type to search must be given.'}, status=400)
+    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by':
+        return JsonResponse({'status': 'invalid search type.'}, status=400)
+    search_elements = search.split()
+    # similars = [] # TODO ADVANCED SEARCH
+    # also_sees = []
+    #
+    # for element in search_elements:
+    #     if  len(wn.synsets(element)) != 0:
+    #         for el in wn.synsets(element)[0].also_sees():
+    #             el = el.name()
+    #             el = el[:el.find('.')]
+    #             also_sees.append(el)
+    #         for el in wn.synsets(element)[0].similar_tos():
+    #             el = el.name()
+    #             el = el[:el.find('.')]
+    #             similars.append(el)
+    # start search with exact search
+    nodes = []
+
+    if search_type == 'by' or search_type == 'all':
+        print(search_elements)
+        for el in search_elements:
+            res_name = models.User.objects.filter(first_name__icontains=el)
+            res_surname = models.User.objects.filter(last_name__icontains=el)
+            for e in res_name:
+                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                    cont_nodes = models.Contributor.objects.get(user_id=e.id).NodeContributors.all()
+                    for node in cont_nodes:
+                        nodes.append(node.node_id)
+
+            for e in res_surname:
+                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                    cont_nodes = models.Contributor.objects.get(user_id=e.id).NodeContributors.all()
+                    for node in cont_nodes:
+                        nodes.append(node.node_id)
+
+
+    contributors = []
+    if search_type == 'node' or search_type == 'all':
+        for el in search_elements:
+            res = models.Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
+            for e in res:
+                nodes.append(e.node_id)
+    if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
+        for el in search_elements:
+            res_name = models.User.objects.filter(first_name__icontains=el)
+            res_surname = models.User.objects.filter(last_name__icontains=el)
+            for e in res_name:
+                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                    contributors.append(e.username)
+            for e in res_surname:
+                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                    contributors.append(e.username)
+    contributors = list(set(contributors))
+    nodes = list(set(nodes))
+    res_authors = []
+    for cont in contributors:
+        user = User.objects.get(username=cont)
+        cont = models.Contributor.objects.get(user=user)
+        res_authors.append({'name': User.objects.get(id=cont.user_id).first_name,
+                        'surname': User.objects.get(id=cont.user_id).last_name, 'username': cont.user.username})
+    node_infos = []
+    for node_id in nodes:
+        node = models.Node.objects.get(node_id=node_id)
+        authors = []
+        for cont in node.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': User.objects.get(id=cont.user_id).first_name,
+                            'surname': User.objects.get(id=cont.user_id).last_name, 'username': user.username})
+        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
+    return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
+
+
 
 def get_profile(request):
     mail = request.GET.get("mail")
