@@ -81,23 +81,26 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
         onTap: () => Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(widget.value),
         child: Container(
           color: Colors.transparent,
-          child: Column(children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Center(
-                    child: Row(
-                      children: [
-                        Icon(
-                          widget.icon,
-                          color: widget.isSelected
-                              ? Colors.indigo[600]
-                              : isHovering
-                                  ? Colors.indigo[200]
-                                  : Colors.grey[700],
-                        ),
-                        if (!Responsive.isMobile(context))
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: (Responsive.isMobile(context)) ? const EdgeInsets.all(4.0)
+                    : const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Row(
+                        children: [
+                          Icon(
+                            widget.icon,
+                            size: 28.0,
+                            color: widget.isSelected ? Colors.indigo[600]
+                              : isHovering ? Colors.indigo[200]
+                              : Colors.grey[700],
+                          ),
+                          if (!Responsive.isMobile(context))
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
@@ -105,15 +108,15 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: widget.isSelected
-                                    ? FontWeight.w700
-                                    : isHovering
-                                        ? FontWeight.w600
-                                        : FontWeight.w500,
+                                  ? FontWeight.w700
+                                  : isHovering
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
                                 color: widget.isSelected
-                                    ? Colors.indigo[600]
-                                    : isHovering
-                                        ? Colors.indigo[200]
-                                        : Colors.grey[700],
+                                  ? Colors.indigo[600]
+                                  : isHovering
+                                      ? Colors.indigo[200]
+                                      : Colors.grey[700],
                               ),
                             ),
                           ),

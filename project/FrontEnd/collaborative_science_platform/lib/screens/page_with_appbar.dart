@@ -52,7 +52,7 @@ class PageWithAppBar extends StatelessWidget {
                 color: Colors.grey[300],
               ),
             ),
-            collapsedHeight: Responsive.isMobile(context) ? 80 : 75,
+            collapsedHeight: Responsive.isMobile(context) ? 60 : 75,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
