@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer
+from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
@@ -181,6 +181,31 @@ class ReviewerModelTestCase(TestCase):
         review_request.delete()
         workspace.delete()
         reviewer.delete()
+
+class AdminModelTestCase(TestCase):
+    def tearDown(self):
+        User.objects.all().delete()
+        Node.objects.all().delete()
+        Admin.objects.all().delete()
+        
+        print("Test for the Admin Model is completed!")
+
+    def test_admin_create(self):
+        # Testing the creation of a new Admin
+
+        user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        admin = Admin.objects.create(user=user)
+
+        self.assertEqual(admin.user, user)
+
+        # Testing with default values
+        self.assertFalse(admin.email_notification_preference)
+        self.assertTrue(admin.show_activity_preference)
         
 
 class NodeModelTestCase(TestCase):
@@ -191,14 +216,13 @@ class NodeModelTestCase(TestCase):
     def test_node_model(self):
         # Testing the creation of a node
         node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             theorem=None,
             publish_date="2023-01-01",
             is_valid=True,
             num_visits=99,
         )
-        self.assertEqual(node.node_id, 1)
+        # self.assertEqual(node.node_id, 3) # after changing node_id to AutoField these tests became redundant
         self.assertEqual(node.node_title, "Test Node")
         self.assertEqual(node.is_valid, True)
         self.assertEqual(node.num_visits, 99)
@@ -213,7 +237,6 @@ class NodeModelTestCase(TestCase):
     def test_increment_num_visits(self):
         # Testing the incrementing num of visits function
         node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             theorem=None,
             publish_date="2023-01-01",
@@ -227,7 +250,6 @@ class NodeModelTestCase(TestCase):
 class NodeReferenceTestCase(TestCase):
     def setUp(self):
         self.node_A = Node.objects.create(
-            node_id=1,
             node_title="Test Node A",
             theorem=None,
             publish_date="2023-01-01",
@@ -235,7 +257,6 @@ class NodeReferenceTestCase(TestCase):
             num_visits=0,
         )
         self.node_B = Node.objects.create(
-            node_id=2,
             node_title="Test Node B",
             theorem=None,
             publish_date="2023-01-01",
@@ -243,7 +264,6 @@ class NodeReferenceTestCase(TestCase):
             num_visits=0,
         )
         self.node_C = Node.objects.create(
-            node_id=3,
             node_title="Test Node C",
             theorem=None,
             publish_date="2023-01-01",
@@ -285,7 +305,6 @@ class ProofModelTestCase(TestCase):
 
     def test_proof_model(self):
         test_node = Node.objects.create(
-            node_id=1,
             node_title="Test Node",
             publish_date="2023-01-01",
             is_valid=True,
