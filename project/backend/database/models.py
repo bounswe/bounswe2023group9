@@ -79,6 +79,7 @@ class ReviewRequest(Request):
 
 class Theorem(models.Model):
     theorem_id = models.AutoField(primary_key=True)
+    theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
 
@@ -143,13 +144,13 @@ class Node(models.Model):
     num_visits = models.IntegerField()
     removed_by_admin = models.BooleanField(default=False)
 
-
     def increment_num_visits(self):
         self.num_visits += 1
 
 
 class Proof(models.Model):
     proof_id = models.AutoField(primary_key=True)
+    proof_title = models.CharField(max_length=100, null=False)
     proof_content = models.TextField(null=False)
     is_valid = models.BooleanField()
     is_disproof = models.BooleanField()

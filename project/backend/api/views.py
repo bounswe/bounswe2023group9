@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from database.serializers import UserSerializer, RegisterSerializer, NodeSerializer
+from database.serializers import UserSerializer, RegisterSerializer
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse, HttpRequest
@@ -19,60 +19,21 @@ from database import models
 
 # Create your views here.
 
-
 # Class based view to register user
 class SignUpAPIView(generics.CreateAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,) 
     serializer_class = RegisterSerializer
-
 
 # Class based view to get User details using Token Authentication
 class UserDetailAPI(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
 
-    def get(self, request, *args, **kwargs):
-        user = User.objects.get(id=request.user.id)
-        serializer = UserSerializer(user)
+  def get(self, request, *args, **kwargs):
+    user = User.objects.get(id=request.user.id)
+    serializer = UserSerializer(user)
 
-        return Response(serializer.data)
-
-
-def get_proof_from_id(request):
-    id = int(request.GET.get("proof_id"))
-    proof = models.Theorem.objects.filter(theorem_id=id)
-    if proof.count() == 0:
-        return JsonResponse({"message": "There is no proof with this id."}, status=404)
-    return JsonResponse(
-        {
-            "proof_id": proof[0].proof_id,
-            "proof_title": proof[0].proof_title,
-            "proof_content": proof[0].proof_content,
-            "is_valid": proof[0].is_valid,
-            "is_disproof": proof[0].is_disproof,
-            "publish_date": proof[0].publish_date,
-        },
-        status=200,
-    )
-
-
-def get_theorem_from_id(request):
-    id = int(request.GET.get("theorem_id"))
-    theorem = models.Theorem.objects.filter(theorem_id=id)
-    if theorem.count() == 0:
-        return JsonResponse(
-            {"message": "There is no theorem with this id."}, status=404
-        )
-
-    return JsonResponse(
-        {
-            "theorem_id": theorem[0].theorem_id,
-            "theorem_title": theorem[0].theorem_title,
-            "theorem_content": theorem[0].theorem_content,
-            "publish_date": theorem[0].publish_date,
-        },
-        status=200,
-    )
+    return Response(serializer.data)
 
 
 class NodeAPIView(APIView):
@@ -92,17 +53,15 @@ class NodeAPIView(APIView):
         return Response(serializer.data)
 
 
-
 def search(request):
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if search == None or search == "":
-        return JsonResponse({"status": "Title to search must be given."}, status=400)
+        return JsonResponse({'status': 'Title to search must be given.'}, status=400)
     if search_type == None or search_type == "":
         return JsonResponse({'status': 'Type to search must be given.'}, status=400)
     if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by':
         return JsonResponse({'status': 'invalid search type.'}, status=400)
-
     search_elements = search.split()
     # similars = [] # TODO ADVANCED SEARCH
     # also_sees = []
@@ -141,9 +100,7 @@ def search(request):
     contributors = []
     if search_type == 'node' or search_type == 'all':
         for el in search_elements:
-            res = models.Node.objects.annotate(
-                search=SearchVector("node_title")
-            ).filter(node_title__icontains=el)
+            res = models.Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
@@ -156,7 +113,6 @@ def search(request):
             for e in res_surname:
                 if models.Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
-
     contributors = list(set(contributors))
     nodes = list(set(nodes))
     res_authors = []
@@ -189,7 +145,6 @@ def get_profile(request):
     nodes = []
     asked_questions = []
     answered_questions = []
-
     if cont.count() != 0:
         user_nodes = models.Node.objects.filter(contributors=cont[0].id)
         for node in user_nodes:
@@ -200,9 +155,18 @@ def get_profile(request):
     user_asked_qs = models.Question.objects.filter(asker=user.id)
     for q in user_asked_qs:
         asked_questions.append(q.id)
+    node_infos = []
+    for node_id in nodes:
+        node = models.Node.objects.get(node_id=node_id)
+        authors = []
+        for cont in node.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
+        node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
+    # TODO QUESTION RETURNS SHOULD BE CHANGED IN THE FUTURE.
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,
-                         'nodes': nodes,
+                         'nodes': node_infos,
                          'asked_questions':asked_questions,
                          'answered_questions':answered_questions},status=200)
