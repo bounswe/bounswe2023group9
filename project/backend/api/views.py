@@ -38,7 +38,6 @@ def get_profile(request):
     nodes = []
     asked_questions = []
     answered_questions = []
-
     if cont.count() != 0:
         user_nodes = models.Node.objects.filter(contributors=cont[0].id)
         for node in user_nodes:
@@ -49,9 +48,18 @@ def get_profile(request):
     user_asked_qs = models.Question.objects.filter(asker=user.id)
     for q in user_asked_qs:
         asked_questions.append(q.id)
+    node_infos = []
+    for node_id in nodes:
+        node = models.Node.objects.get(node_id=node_id)
+        authors = []
+        for cont in node.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
+        node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
+    # TODO QUESTION RETURNS SHOULD BE CHANGED IN THE FUTURE.
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,
-                         'nodes': nodes,
+                         'nodes': node_infos,
                          'asked_questions':asked_questions,
                          'answered_questions':answered_questions},status=200)
