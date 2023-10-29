@@ -9,12 +9,28 @@ class HomePageUserCard extends StatelessWidget {
   final String? profilePagePath;
 
   const HomePageUserCard({
-    Key? key,
+    super.key,
     required this.profileData,
     required this.onTap,
     required this.color,
     this.profilePagePath,
   });
+
+  // Remove this function when it is no longer needed
+  Widget profilePhoto() {
+    return CircleAvatar(
+      radius: 48.0,
+      backgroundColor: AppColors.primaryColor,
+      backgroundImage: profilePagePath != null ? AssetImage(profilePagePath!) : null,
+      child: profilePagePath == null
+          ? const Icon(
+        Icons.person,
+        size: 36.0,
+        color: Colors.white,
+      )
+          : null,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,40 +49,29 @@ class HomePageUserCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 48.0,
-                backgroundColor: AppColors.primaryColor,
-                backgroundImage: profilePagePath != null ? AssetImage(profilePagePath!) : null,
-                child: profilePagePath == null
-                    ? Icon(
-                        Icons.person,
-                        size: 36.0,
-                        color: Colors.white,
-                      )
-                    : null,
-              ),
-              SizedBox(width: 16.0),
+              profilePhoto(),
+              const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "${profileData.name} ${profileData.surname}",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       profileData.email,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 16.0,
                         color: Colors.grey,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       profileData.aboutMe,
                       maxLines: 3,

@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final searchBarController = TextEditingController();
   final searchBarFocusNode = FocusNode();
-  bool showUserNodes = false;
+  SearchType searchType = SearchHelper.searchType;
 
   @override
   void dispose() {
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   void search() {
     setState(() {
-      showUserNodes = SearchHelper.searchType == SearchType.user;
+      searchType = SearchHelper.searchType;
     });
   }
 
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
       searchBarFocusNode: searchBarFocusNode,
       searchBarController: searchBarController,
       onSearch: search,
-      showUserNodes: showUserNodes,
+      searchType: searchType,
     );
   }
 }
@@ -61,25 +61,25 @@ class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final TextEditingController searchBarController;
   final Function onSearch;
-  final bool showUserNodes;
+  final SearchType searchType;
 
   const MobileHomePage({
     super.key,
     required this.searchBarFocusNode,
     required this.searchBarController,
     required this.onSearch,
-    this.showUserNodes = false,
+    required this.searchType,
   });
 
   @override
   Widget build(BuildContext context) {
     return PageWithAppBar(
       appBar: const HomePageAppBar(),
-      child: SizedBox(
-        width: Responsive.getGenericPageWidth(context),
-        child: SingleChildScrollView(
-          primary: false,
-          scrollDirection: Axis.vertical,
+      child: SingleChildScrollView(
+        primary: false,
+        scrollDirection: Axis.vertical,
+        child: SizedBox(
+          width: Responsive.getGenericPageWidth(context),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -94,7 +94,7 @@ class MobileHomePage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: showUserNodes ? const UserCards() : const NodeCards(),
+                child: (searchType == SearchType.theorem) ? const NodeCards() : const UserCards(),
               ),
             ],
           ),

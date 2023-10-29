@@ -70,7 +70,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () => widget.onSearch,
+              onTap: () => widget.onSearch(),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
