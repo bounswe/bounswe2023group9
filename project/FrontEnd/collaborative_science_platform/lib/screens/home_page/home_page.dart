@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/providers/search.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_user_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
@@ -7,6 +8,7 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../utils/responsive/responsive.dart';
 
@@ -22,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   final searchBarController = TextEditingController();
   final searchBarFocusNode = FocusNode();
   bool searchBarActive = false;
+  bool error = false;
+  String errorMessage = "";
 
   @override
   void dispose() {
@@ -30,7 +34,18 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void search(SearchType searchType) { }
+  void search(SearchType searchType) async {
+    if (searchBarController.text.isEmpty) return;
+    try {
+      await Provider.of<SearchProvider>(context, listen: false)
+          .search(searchType, searchBarController.text);
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,16 +102,20 @@ class MobileHomePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+                  physics:
+                      const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return HomePageUserCard(
-                      profileData: ProfileData.getLoremIpsum(index+1),
-                      onTap: () { /* Navigate to the Profile Page of the User */ },
+                      profileData: ProfileData.getLoremIpsum(index + 1),
+                      onTap: () {
+                        /* Navigate to the Profile Page of the User */
+                      },
                       color: AppColors.primaryLightColor,
-                      profilePagePath: (index % 2 == 0) ? "assets/images/gumball.jpg" : null,
+                      profilePagePath:
+                          (index % 2 == 0) ? "assets/images/gumball.jpg" : null,
                     );
 
                     /*

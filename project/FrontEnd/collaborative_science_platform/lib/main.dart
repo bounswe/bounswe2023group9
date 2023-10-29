@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
+import 'package:collaborative_science_platform/providers/search.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
@@ -25,8 +26,12 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
-        ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
-        ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
+        ChangeNotifierProvider<ScreenNavigation>(
+            create: (context) => ScreenNavigation()),
+        ChangeNotifierProvider<ProfileDataProvider>(
+            create: (context) => ProfileDataProvider()),
+        ChangeNotifierProvider<SearchProvider>(
+            create: (context) => SearchProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -39,7 +44,8 @@ class MyApp extends StatelessWidget {
           ProfileOptions.routeName: (context) => const ProfileOptions(),
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
-          AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
+          AccountSettingsPage.routeName: (context) =>
+              const AccountSettingsPage(),
         },
         navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(
