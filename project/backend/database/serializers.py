@@ -28,6 +28,24 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
       return instance
 
+# Serializer to change password
+class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
+    bio = serializers.CharField()
+    email_notification_preference = serializers.BooleanField()
+    show_activity_preference = serializers.BooleanField()
+
+    class Meta:
+      model = BasicUser
+      fields = ('bio', 'email_notification_preference', 'show_activity_preference')
+    
+    def update(self, instance, validated_data):
+      instance.bio = validated_data['bio']
+      instance.email_notification_preference = validated_data['email_notification_preference']
+      instance.show_activity_preference = validated_data['show_activity_preference']
+      instance.save()
+
+      return instance
+
 # Serializer to get User details using Django Token Authentication
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
