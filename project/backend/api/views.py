@@ -48,7 +48,7 @@ class NodeAPIView(APIView):
   
     def get(self, request):
         id = int(request.GET.get("node_id"))
-        node = models.Node.objects.filter(node_id=id)
+        node = Node.objects.filter(node_id=id)
         if node.count() == 0:
             return JsonResponse(
                 {"message": "There is no node with this id."}, status=404
