@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class CardContainer extends StatelessWidget {

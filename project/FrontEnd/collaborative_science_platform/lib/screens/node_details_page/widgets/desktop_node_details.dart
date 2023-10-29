@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references.dart';
