@@ -10,5 +10,7 @@ urlpatterns = [
     path('get_node/', NodeAPIView.as_view(), name='get_node'),
     path('search/', search, name='search'),
     path('get_profile_info/', get_profile, name='get_profile'),
-    path('change_password/', ChangePasswordView.as_view(), name='change_password')
+    path('change_password/', ChangePasswordView.as_view(), name='change_password'),
+    path('get_proof/', get_proof_from_id, name='get_proof'),
+    path('get_theorem/', get_theorem_from_id, name='get_theorem'),
 ]
