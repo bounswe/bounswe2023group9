@@ -1,8 +1,7 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/desktop_node_details.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/mobile_node_details.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -103,12 +102,15 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                     contributors: node.contributors,
                     controller: controller1,
                   ),
-                  DesktopNodeDetails(
+                  NodeDetails(
                     node: node,
                     controller: controller2,
                   ),
                 ],
               )
-            : MobileNodeDetails(node: node));
+            : NodeDetails(
+                node: node,
+                controller: controller2,
+              ));
   }
 }

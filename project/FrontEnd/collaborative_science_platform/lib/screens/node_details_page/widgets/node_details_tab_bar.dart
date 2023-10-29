@@ -32,25 +32,47 @@ class _NodeDetailsTabBarState extends State<NodeDetailsTabBar> {
       children: [
         NavigationBarItem(
           callback: updateIndex,
-          icon: Icons.content_copy,
+          icon: Icons.my_library_books,
           index: 0,
-          text: "Content",
+          text: "Theorem",
           isSelected: currentIndex == 0,
         ),
         NavigationBarItem(
           callback: updateIndex,
-          icon: Icons.import_contacts,
+          icon: Icons.manage_search,
           index: 1,
-          text: "References",
+          text: "Proofs",
           isSelected: currentIndex == 1,
         ),
         NavigationBarItem(
           callback: updateIndex,
-          icon: Icons.question_answer,
+          icon: Icons.import_contacts,
           index: 2,
+          text: "References",
           isSelected: currentIndex == 2,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.format_quote,
+          index: 3,
+          text: "Citations",
+          isSelected: currentIndex == 3,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.question_answer,
+          index: 4,
+          isSelected: currentIndex == 4,
           text: "Q/A",
         ),
+        if (Responsive.isMobile(context))
+          NavigationBarItem(
+            callback: updateIndex,
+            icon: Icons.people,
+            index: 5,
+            isSelected: currentIndex == 5,
+            text: "Contributors",
+          ),
       ],
     ));
   }
