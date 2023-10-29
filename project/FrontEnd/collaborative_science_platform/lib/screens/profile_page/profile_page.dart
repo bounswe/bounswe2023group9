@@ -1,15 +1,10 @@
-import 'dart:html';
-
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

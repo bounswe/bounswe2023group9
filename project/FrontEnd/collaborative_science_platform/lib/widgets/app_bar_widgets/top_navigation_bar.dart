@@ -10,7 +10,8 @@ class TopNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ScreenNavigation screenNavigation = Provider.of<ScreenNavigation>(context);
+    final ScreenNavigation screenNavigation =
+        Provider.of<ScreenNavigation>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,8 +44,8 @@ class TopNavigationBar extends StatelessWidget {
         if (Responsive.isMobile(context))
           NavigationBarItem(
             icon: Icons.person,
-            value: ScreenTab.profileOptions,
-            isSelected: screenNavigation.selectedTab == ScreenTab.profileOptions,
+            value: ScreenTab.profile,
+            isSelected: screenNavigation.selectedTab == ScreenTab.profile,
             text: "Profile Options",
           ),
       ],
@@ -78,7 +79,8 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
       onEnter: (event) => setState(() => isHovering = true),
       onExit: (event) => setState(() => isHovering = false),
       child: GestureDetector(
-        onTap: () => Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(widget.value),
+        onTap: () => Provider.of<ScreenNavigation>(context, listen: false)
+            .setSelectedTab(widget.value),
         child: Container(
           color: Colors.transparent,
           child: Column(children: [
