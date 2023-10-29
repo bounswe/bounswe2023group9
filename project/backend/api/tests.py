@@ -101,7 +101,6 @@ class ChangePasswordAPITestCase(TestCase):
         }
 
         response = self.client.put(self.change_password_url, data)
-        print(response)
 
         self.assertEqual(response.status_code, 200)
 
