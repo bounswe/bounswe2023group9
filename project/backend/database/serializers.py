@@ -75,6 +75,9 @@ class RegisterSerializer(serializers.ModelSerializer):
   
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
+    to_referenced_nodes = serializers.PrimaryKeyRelatedField(many=True, queryset=Node.objects.all())
+    proofs = serializers.PrimaryKeyRelatedField(many=True, queryset=Proof.objects.all())
     class Meta:
         model = Node
-        exclude = ["removed_by_admin"]
+        fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
+                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'semantic_tags', 'wiki_tags', 'annotations']
