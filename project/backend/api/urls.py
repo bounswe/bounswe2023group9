@@ -10,4 +10,5 @@ urlpatterns = [
     path('get_node/', NodeAPIView.as_view(), name='get_node'),
     path('search/', search, name='search'),
     path('get_profile_info/', get_profile, name='get_profile'),
+    path('change_password/', ChangePasswordView.as_view(), name='change_password')
 ]

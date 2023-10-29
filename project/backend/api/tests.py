@@ -65,6 +65,46 @@ class UserDetailAPITestCase(TestCase):
         response = self.client.get(self.get_user_detail_url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+class ChangePasswordAPITestCase(TestCase):
+
+    def setUp(self):
+
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email= 'test@example.com', username='testuser', first_name='User', last_name='Test')
+        self.user.set_password("correct_old_password")
+        self.user.save()
+        self.token = Token.objects.create(user=self.user)
+        self.change_password_url = reverse("change_password")
+
+    def tearDown(self):
+        User.objects.all().delete()
+        print("All tests for the Change Password API are completed!")
+    
+    def test_wrong_old_password(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+
+        data = {
+            "old_password": "wrong_old_password",
+            "password": "new_password"
+        }
+
+        response = self.client.put(self.change_password_url, data)
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_success(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+
+        data = {
+            "old_password": "correct_old_password",
+            "password": "new_password"
+        }
+
+        response = self.client.put(self.change_password_url, data)
+
+        self.assertEqual(response.status_code, 200)
+
+
 
 class SearchAPITestCase(TestCase):
     def setUp(self):

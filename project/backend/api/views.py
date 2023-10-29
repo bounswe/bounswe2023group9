@@ -1,16 +1,16 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from database.serializers import UserSerializer, RegisterSerializer, NodeSerializer
+from database.serializers import UserSerializer, RegisterSerializer, ChangePasswordSerializer, NodeSerializer
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
-from django.http import JsonResponse, HttpRequest
-from rest_framework import generics
-from django.http import JsonResponse, HttpRequest
+from django.http import JsonResponse
+from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
-from database import models
-
+from database.models import *
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -35,8 +35,17 @@ class UserDetailAPI(APIView):
 
     return Response(serializer.data)
 
+class ChangePasswordView(generics.UpdateAPIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSerializer
 
+    def get_object(self):
+        return self.request.user
+      
 class NodeAPIView(APIView):
+  
     def get(self, request):
         id = int(request.GET.get("node_id"))
         node = models.Node.objects.filter(node_id=id)
@@ -51,8 +60,6 @@ class NodeAPIView(APIView):
         node = node.first()
         serializer = NodeSerializer(node)
         return Response(serializer.data)
-
-
 
 def search(request):
     search = request.GET.get("query")
@@ -83,17 +90,17 @@ def search(request):
     if search_type == 'by' or search_type == 'all':
         print(search_elements)
         for el in search_elements:
-            res_name = models.User.objects.filter(first_name__icontains=el)
-            res_surname = models.User.objects.filter(last_name__icontains=el)
+            res_name = User.objects.filter(first_name__icontains=el)
+            res_surname = User.objects.filter(last_name__icontains=el)
             for e in res_name:
-                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
-                    cont_nodes = models.Contributor.objects.get(user_id=e.id).NodeContributors.all()
+                if Contributor.objects.filter(user_id=e.id).count() != 0:
+                    cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
                         nodes.append(node.node_id)
 
             for e in res_surname:
-                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
-                    cont_nodes = models.Contributor.objects.get(user_id=e.id).NodeContributors.all()
+                if Contributor.objects.filter(user_id=e.id).count() != 0:
+                    cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
                         nodes.append(node.node_id)
 
@@ -101,30 +108,30 @@ def search(request):
     contributors = []
     if search_type == 'node' or search_type == 'all':
         for el in search_elements:
-            res = models.Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
+            res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
         for el in search_elements:
-            res_name = models.User.objects.filter(first_name__icontains=el)
-            res_surname = models.User.objects.filter(last_name__icontains=el)
+            res_name = User.objects.filter(first_name__icontains=el)
+            res_surname = User.objects.filter(last_name__icontains=el)
             for e in res_name:
-                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                if Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
             for e in res_surname:
-                if models.Contributor.objects.filter(user_id=e.id).count() != 0:
+                if Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
     contributors = list(set(contributors))
     nodes = list(set(nodes))
     res_authors = []
     for cont in contributors:
         user = User.objects.get(username=cont)
-        cont = models.Contributor.objects.get(user=user)
+        cont = Contributor.objects.get(user=user)
         res_authors.append({'name': User.objects.get(id=cont.user_id).first_name,
                         'surname': User.objects.get(id=cont.user_id).last_name, 'username': cont.user.username})
     node_infos = []
     for node_id in nodes:
-        node = models.Node.objects.get(node_id=node_id)
+        node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
@@ -141,24 +148,24 @@ def get_profile(request):
     if check.count() == 0:
         return JsonResponse({'message': "User with this mail adress does not exist."}, status=400)
     user = User.objects.get(username=mail)
-    basic_user = models.BasicUser.objects.get(user_id=user.id)
-    cont =  models.Contributor.objects.filter(user_id=user.id)
+    basic_user = BasicUser.objects.get(user_id=user.id)
+    cont =  Contributor.objects.filter(user_id=user.id)
     nodes = []
     asked_questions = []
     answered_questions = []
     if cont.count() != 0:
-        user_nodes = models.Node.objects.filter(contributors=cont[0].id)
+        user_nodes = Node.objects.filter(contributors=cont[0].id)
         for node in user_nodes:
             nodes.append(node.node_id)
-        user_answered_qs = models.Question.objects.filter(answerer=cont[0].id)
+        user_answered_qs = Question.objects.filter(answerer=cont[0].id)
         for ans in user_answered_qs:
             answered_questions.append(ans.id)
-    user_asked_qs = models.Question.objects.filter(asker=user.id)
+    user_asked_qs = Question.objects.filter(asker=user.id)
     for q in user_asked_qs:
         asked_questions.append(q.id)
     node_infos = []
     for node_id in nodes:
-        node = models.Node.objects.get(node_id=node_id)
+        node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
