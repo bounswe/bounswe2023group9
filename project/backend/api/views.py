@@ -162,3 +162,17 @@ def get_profile(request):
                          'nodes': node_infos,
                          'asked_questions':asked_questions,
                          'answered_questions':answered_questions},status=200)
+
+def get_proof_from_id(request):
+    id = int(request.GET.get("proof_id"))
+    proof = Proof.objects.filter(proof_id=id)
+    if proof.count() == 0:
+        return JsonResponse({'message':'There is no proof with this id.'},status=404)
+    data = {'proof_id': proof[0].proof_id,
+            'proof_title': proof[0].proof_title,
+            'proof_content': proof[0].proof_content,
+            'is_valid': proof[0].is_valid,
+            'is_disproof': proof[0].is_disproof,
+            'publish_date': proof[0].publish_date,
+            }
+    return JsonResponse(data, status=200)
