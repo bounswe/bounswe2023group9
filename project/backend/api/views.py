@@ -176,3 +176,16 @@ def get_proof_from_id(request):
             'publish_date': proof[0].publish_date,
             }
     return JsonResponse(data, status=200)
+
+def get_theorem_from_id(request):
+    id = int(request.GET.get("theorem_id"))
+    theorem = Theorem.objects.filter(theorem_id=id)
+    if theorem.count() == 0:
+        return JsonResponse({'message':'There is no theorem with this id.'},status=404)
+
+    data = {'theorem_id': theorem[0].theorem_id,
+            'theorem_title': theorem[0].theorem_title,
+            'theorem_content': theorem[0].theorem_content,
+            'publish_date': theorem[0].publish_date,
+            }
+    return JsonResponse(data, status=200)

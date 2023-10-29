@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from database.models import BasicUser,Contributor,Node,Question, Proof
+from database.models import BasicUser,Contributor,Node,Question, Proof, Theorem
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
 from database import models
@@ -214,7 +214,7 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['answered_questions'][0],1)
         self.assertEqual(response.json()['asked_questions'][0], 1)
 
-class ProofGETAPITest(TestCase):
+class ProofGETAPITestCase(TestCase):
     def setUp(self):
         # Create a sample Proof instance for testing
         self.sample_proof = Proof.objects.create(
@@ -257,5 +257,38 @@ class ProofGETAPITest(TestCase):
             {'message': 'There is no proof with this id.'}
         )
 
+class TheoremGETAPITestCase(TestCase):
+    def setUp(self):
+        # Create a sample Theorem instance for testing
+        self.sample_theorem = Theorem.objects.create(
+            theorem_id=0,
+            theorem_title="Sample Theorem Title",
+            theorem_content="Sample Theorem Content",
+            publish_date="2023-10-30",
+        )
 
+    def test_get_theorem_from_id_valid(self):
+        url = reverse('get_theorem')  # Replace 'get_theorem_from_id' with the actual URL name
+        response = self.client.get(url, {'theorem_id': 0})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content.decode('utf-8'),
+            {
+                'theorem_id': self.sample_theorem.theorem_id,
+                'theorem_title': self.sample_theorem.theorem_title,
+                'theorem_content': self.sample_theorem.theorem_content,
+                'publish_date': '2023-10-30',
+            }
+        )
+
+    def test_get_theorem_from_id_not_found(self):
+        url = reverse('get_theorem')  # Replace 'get_theorem_from_id' with the actual URL name
+        response = self.client.get(url, {'theorem_id': 999})  # Assuming an ID that doesn't exist
+
+        self.assertEqual(response.status_code, 404)
+        self.assertJSONEqual(
+            response.content.decode('utf-8'),
+            {'message': 'There is no theorem with this id.'}
+        )
 
