@@ -135,6 +135,8 @@ class Node(models.Model):
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
+    # Nodes also have to_referenced_nodes list to access the nodes this node references
+    # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
     wiki_tags = models.ManyToManyField(WikiTag)
     annotations = models.ManyToManyField(Annotation)
