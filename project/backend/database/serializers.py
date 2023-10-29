@@ -7,11 +7,33 @@ from rest_framework.validators import UniqueValidator
 
 from .models import *
 
+# Serializer to change password
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+      model = User
+      fields = ('old_password', 'password')
+    
+    def validate_old_password(self, value):
+      user = self.context['request'].user
+      if not user.check_password(value):
+          raise serializers.ValidationError({"error": "Old password is not correct"})
+      return value
+    
+    def update(self, instance, validated_data):
+      instance.set_password(validated_data['password'])
+      instance.save()
+
+      return instance
+
 # Serializer to get User details using Django Token Authentication
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = ["id", "email", "first_name", "last_name"]
+
 # Serializer to get BasicUser details
 class BasicUserSerializer(serializers.ModelSerializer):
   class Meta:
