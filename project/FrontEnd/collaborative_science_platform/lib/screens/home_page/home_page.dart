@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/helpers/search_helper.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
@@ -21,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final searchBarController = TextEditingController();
   final searchBarFocusNode = FocusNode();
-  bool searchBarActive = false;
+  bool showUserNodes = false;
 
   @override
   void dispose() {
@@ -30,7 +31,11 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void search(SearchType searchType) { }
+  void search() {
+    setState(() {
+      showUserNodes = SearchHelper.searchType == SearchType.user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +43,7 @@ class _HomePageState extends State<HomePage> {
       searchBarFocusNode: searchBarFocusNode,
       searchBarController: searchBarController,
       onSearch: search,
+      showUserNodes: showUserNodes,
     );
   }
 }
@@ -54,13 +60,15 @@ class DesktopMobilePage extends StatelessWidget {
 class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final TextEditingController searchBarController;
-  final Function(SearchType) onSearch;
+  final Function onSearch;
+  final bool showUserNodes;
 
   const MobileHomePage({
     super.key,
     required this.searchBarFocusNode,
     required this.searchBarController,
     required this.onSearch,
+    this.showUserNodes = false,
   });
 
   @override
@@ -86,32 +94,58 @@ class MobileHomePage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return HomePageUserCard(
-                      profileData: ProfileData.getLoremIpsum(index+1),
-                      onTap: () { /* Navigate to the Profile Page of the User */ },
-                      color: AppColors.primaryLightColor,
-                      profilePagePath: (index % 2 == 0) ? "assets/images/gumball.jpg" : null,
-                    );
-
-                    /*
-                    return HomePageNodeCard(
-                      smallNode: SmallNode.getLoremIpsum(index+1),
-                      onTap: () { /* Navigate to the Screen of the Node */ },
-                    );
-                     */
-                  },
-                ),
+                child: showUserNodes ? const UserCards() : const NodeCards(),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class NodeCards extends StatelessWidget {
+  const NodeCards({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return HomePageNodeCard(
+          smallNode: SmallNode.getLoremIpsum(index + 1),
+          onTap: () {/* Navigate to the Screen of the Node */},
+        );
+      },
+    );
+  }
+}
+
+class UserCards extends StatelessWidget {
+  const UserCards({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return HomePageUserCard(
+          profileData: ProfileData.getLoremIpsum(index + 1),
+          onTap: () {/* Navigate to the Profile Page of the User */},
+          color: AppColors.primaryLightColor,
+          profilePagePath: "assets/images/gumball.jpg",
+        );
+      },
     );
   }
 }
