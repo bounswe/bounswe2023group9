@@ -30,19 +30,33 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
 # Serializer to change password
 class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
-    bio = serializers.CharField()
-    email_notification_preference = serializers.BooleanField()
-    show_activity_preference = serializers.BooleanField()
+    bio = serializers.CharField(required=False)
+    email_notification_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
+    show_activity_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
 
     class Meta:
       model = BasicUser
       fields = ('bio', 'email_notification_preference', 'show_activity_preference')
     
     def update(self, instance, validated_data):
-      instance.bio = validated_data['bio']
-      instance.email_notification_preference = validated_data['email_notification_preference']
-      instance.show_activity_preference = validated_data['show_activity_preference']
-      instance.save()
+      change = False
+
+      if "bio" in validated_data:
+        instance.bio = validated_data['bio']
+        change = True
+      
+      if 'email_notification_preference' in validated_data:
+        if validated_data['email_notification_preference'] is not None:
+          instance.email_notification_preference = validated_data['email_notification_preference']
+          change = True
+
+      if 'show_activity_preference' in validated_data:
+        if validated_data['show_activity_preference'] is not None:
+          instance.show_activity_preference = validated_data['show_activity_preference']
+          change = True
+
+      if change:
+        instance.save()
 
       return instance
 
