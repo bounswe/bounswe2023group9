@@ -124,7 +124,7 @@ class MobileHomePage extends StatelessWidget {
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.only(top: 18.0),
                   child: isLoading
                       ? const Center(
                           child: CircularProgressIndicator(),
@@ -158,26 +158,27 @@ class NodeCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (nodeList.isEmpty && firstSearch) {
-      // Display a "no result" message when the list is empty.
-      return const Center(
-        child: Text("No results found."),
-      );
-    } else {
-      return ListView.builder(
-        physics:
-            const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: nodeList.length,
-        itemBuilder: (context, index) {
-          return HomePageNodeCard(
-            smallNode: nodeList[index],
-            onTap: () {/* Navigate to the Screen of the Node */},
-          );
-        },
-      );
-    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: firstSearch && nodeList.isEmpty
+          ? const Center(
+              child: Text("No results found."),
+            )
+          : ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: nodeList.length,
+              itemBuilder: (context, index) {
+                return HomePageNodeCard(
+                  smallNode: nodeList[index],
+                  onTap: () {
+                    // Navigate to the Screen of the Node
+                  },
+                );
+              },
+            ),
+    );
   }
 }
 
@@ -193,26 +194,26 @@ class UserCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (userList.isEmpty && firstSearch) {
-      return const Center(
-        child: Text("No results found."),
-      );
-    } else {
-      return ListView.builder(
-        physics:
-            const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: userList.length,
-        itemBuilder: (context, index) {
-          return HomePageUserCard(
-            profileData: userList[index],
-            onTap: () {/* Navigate to the Profile Page of the User */},
-            color: AppColors.primaryLightColor,
-            profilePagePath: "assets/images/gumball.jpg",
-          );
-        },
-      );
-    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: firstSearch && userList.isEmpty
+          ? const Center(
+              child: Text("No results found."),
+            )
+          : ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: userList.length,
+              itemBuilder: (context, index) {
+                return HomePageUserCard(
+                  profileData: userList[index],
+                  onTap: () {/* Navigate to the Profile Page of the User */},
+                  color: AppColors.primaryLightColor,
+                  profilePagePath: "assets/images/gumball.jpg",
+                );
+              },
+            ),
+    );
   }
 }
