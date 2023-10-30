@@ -393,3 +393,27 @@ class TheoremGETAPITestCase(TestCase):
             {'message': 'There is no theorem with this id.'}
         )
 
+
+
+class ContributorGETAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
+        self.url = reverse('get_cont')
+
+    def test_get_contributor_from_id(self):
+        response = self.client.get(self.url, {'id': 3})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content.decode('utf-8'),
+            {
+                'id': self.cont.id,
+                'name': self.user.first_name,
+                'surname': self.user.last_name,
+                'username': self.user.username,
+            }
+        )
+
