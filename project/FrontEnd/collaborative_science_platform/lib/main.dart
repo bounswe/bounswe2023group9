@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/providers/profile_data_provider.d
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
           NotificationPage.routeName: (context) => const NotificationPage(),
           AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
           PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
+          //NodeDetailsPage.routeName: (context) => const NodeDetailsPage(),
         },
         navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(

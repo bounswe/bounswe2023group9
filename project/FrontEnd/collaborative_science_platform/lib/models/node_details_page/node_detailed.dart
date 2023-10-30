@@ -2,7 +2,7 @@ class NodeDetailed {
   int nodeId;
   String nodeTitle;
   String publishDate;
-  //List<int> contributors;
+  List<int> contributors;
   List<int> proof;
   int theorem;
   //List<User> reviewers;
@@ -19,7 +19,7 @@ class NodeDetailed {
   NodeDetailed({
     this.nodeId = 0,
     this.nodeTitle = "",
-    //required this.contributors,
+    this.contributors = const [],
     this.proof = const [],
     this.theorem = 0,
     this.publishDate = "",
@@ -42,10 +42,10 @@ class NodeDetailed {
         referencesList.map((e) => int.parse(e.toString())).toList();
     List<int> citations =
         citationsList.map((e) => int.parse(e.toString())).toList();
-    //var contributorsList = jsonString['contributors'] as List;
+    var contributorsList = jsonString['contributors'] as List;
     //var reviewersList = jsonString['reviewers'] as List;
-    //List<User> contributors =
-    //  contributorsList.map((e) => User.fromJson(e)).toList();
+    List<int> contributors =
+        contributorsList.map((e) => int.parse(e.toString())).toList();
     //List<User> reviewers = reviewersList.map((e) => User.fromJson(e)).toList();
 
     var proofsList = jsonString['proofs'] as List;
@@ -55,7 +55,7 @@ class NodeDetailed {
     return NodeDetailed(
         nodeId: jsonString['node_id'],
         nodeTitle: jsonString['node_title'],
-        //contributors: contributors,
+        contributors: contributors,
         proof: proof,
         theorem: jsonString['theorem'],
         publishDate: jsonString['publish_date'],

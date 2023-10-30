@@ -19,14 +19,17 @@ class NodeDetails extends StatefulWidget {
   final ScrollController controller;
   final Theorem theorem;
   final List<Proof> proofs;
-  const NodeDetails(
-      {
+  final List<NodeDetailed> references;
+  final List<NodeDetailed> citations;
+  const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
     required this.contributors,
     required this.proofs,
     required this.theorem,
+    required this.citations,
+    required this.references,
   });
 
   @override
@@ -98,8 +101,8 @@ class _NodeDetailsState extends State<NodeDetails> {
             ),
             if (currentIndex == 0)
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Container(
                     width: Responsive.desktopPageWidth,
                     decoration: BoxDecoration(color: Colors.grey[200]),
@@ -133,8 +136,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                         ),
                       ],
                     )),
-                  )
-              ),
+                  )),
             if (currentIndex == 1)
               //proofs
               Padding(
@@ -144,22 +146,15 @@ class _NodeDetailsState extends State<NodeDetails> {
               ),
             if (currentIndex == 2)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: References(references: [
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1)
-                ]),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: ReferencesView(nodes: widget.references, ref: true),
               ),
             if (currentIndex == 3)
               //citations
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: References(references: [
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1)
-                ]),
+                child: ReferencesView(nodes: widget.citations),
               ),
             if (currentIndex == 4)
               //Q/A

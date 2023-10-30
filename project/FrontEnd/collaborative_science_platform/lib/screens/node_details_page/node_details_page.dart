@@ -14,9 +14,9 @@ import 'package:provider/provider.dart';
 
 class NodeDetailsPage extends StatefulWidget {
   static const routeName = '/node';
-  final Node inputNode;
-  const NodeDetailsPage(
-      {super.key, required this.inputNode});
+  //final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+  final int nodeID;
+  const NodeDetailsPage({super.key, required this.nodeID});
 
   @override
   State<NodeDetailsPage> createState() => _NodeDetailsPageState();
@@ -29,8 +29,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   NodeDetailed node = NodeDetailed();
   List<Proof> proof = [];
   Theorem theorem = Theorem();
-  List<Node> references = [];
-  List<Node> citations = [];
+  List<NodeDetailed> references = [];
+  List<NodeDetailed> citations = [];
+  List<User> contributors = [];
 
   bool error = false;
   String errorMessage = "";
@@ -58,12 +59,15 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       setState(() {
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.inputNode.id);
+      await nodeDetailsProvider.getNode(widget.nodeID);
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
         proof = nodeDetailsProvider.proof;
         theorem = nodeDetailsProvider.theorem as Theorem;
+        references = nodeDetailsProvider.references;
+        citations = nodeDetailsProvider.citations;
+        contributors = nodeDetailsProvider.contributors;
         isLoading = false;
       });
     } catch (e) {
@@ -77,8 +81,8 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return PageWithAppBar(
-        appBar: const HomePageAppBar(),
-        pageColor: Colors.grey.shade200,
+      appBar: const HomePageAppBar(),
+      pageColor: Colors.grey.shade200,
       child: isLoading
           ? Container(
               decoration: const BoxDecoration(color: Colors.white),
@@ -87,29 +91,35 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
               ),
             )
           : Responsive.isDesktop(context)
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Contributors(
-                      contributors: widget.inputNode.contributors,
-                    controller: controller1,
-                  ),
-                  NodeDetails(
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Contributors(
+                      contributors:
+                          contributors, //widget.inputNode.contributors,
+                      controller: controller1,
+                    ),
+                    NodeDetails(
                       proofs: proof,
-                      contributors: widget.inputNode.contributors,
+                      contributors:
+                          contributors, //widget.inputNode.contributors,
                       theorem: theorem,
-                    node: node,
-                    controller: controller2,
-                  ),
-                ],
-              )
-            : NodeDetails(
+                      references: references,
+                      citations: citations,
+                      node: node,
+                      controller: controller2,
+                    ),
+                  ],
+                )
+              : NodeDetails(
                   proofs: proof,
                   theorem: theorem,
-                  contributors: widget.inputNode.contributors,
-                node: node,
-                controller: controller2,
+                  references: references,
+                  citations: citations,
+                  contributors: contributors, // widget.inputNode.contributors,
+                  node: node,
+                  controller: controller2,
                 ),
     );
   }
