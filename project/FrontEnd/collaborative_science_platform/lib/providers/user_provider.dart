@@ -14,6 +14,7 @@ class UserProvider with ChangeNotifier {
   }
 
   Future<void> search(SearchType type, String query) async {
+    _searchUserResult.clear();
     if (type == SearchType.theorem || type == SearchType.by) {
       throw WrongSearchTypeError();
     }
@@ -31,12 +32,12 @@ class UserProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        _searchUserResult.addAll(data['authors'].map((author) => ProfileData(
-              name: author['name'],
-              surname: author['surname'],
-              email: author['username'],
-            )));
-
+        _searchUserResult.addAll(
+            (data['authors'] as List<dynamic>).map((author) => ProfileData(
+                  name: author['name'],
+                  surname: author['surname'],
+                  email: author['username'],
+                )));
         notifyListeners();
       } else if (response.statusCode == 400) {
         throw SearchError();

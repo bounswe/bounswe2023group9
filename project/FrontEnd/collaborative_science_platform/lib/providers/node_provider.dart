@@ -15,6 +15,7 @@ class NodeProvider with ChangeNotifier {
   }
 
   Future<void> search(SearchType type, String query) async {
+    _searchNodeResult.clear();
     if (type == SearchType.author) {
       throw WrongSearchTypeError();
     }
@@ -31,17 +32,18 @@ class NodeProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        _searchNodeResult.addAll(data['nodes'].map((node) => SmallNode(
-              contributors: node['authors']
-                  .map((author) => Contributor(
-                      name: author['name'],
-                      surname: author['surname'],
-                      email: author['email']))
-                  .toList(),
-              nodeId: node['id'],
-              nodeTitle: node['title'],
-              publishDate: DateTime.parse(node['date']),
-            )));
+        _searchNodeResult
+            .addAll((data['nodes'] as List<dynamic>).map((node) => SmallNode(
+                  contributors: node['authors']
+                      .map((author) => Contributor(
+                          name: author['name'],
+                          surname: author['surname'],
+                          email: author['email']))
+                      .toList(),
+                  nodeId: node['id'],
+                  nodeTitle: node['title'],
+                  publishDate: DateTime.parse(node['date']),
+                )));
 
         notifyListeners();
       } else if (response.statusCode == 400) {

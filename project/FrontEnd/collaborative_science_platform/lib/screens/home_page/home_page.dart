@@ -1,8 +1,10 @@
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
+import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_user_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -21,36 +23,44 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final searchBarController = TextEditingController();
   final searchBarFocusNode = FocusNode();
   bool searchBarActive = false;
   bool error = false;
+  bool isLoading = false;
   String errorMessage = "";
 
   @override
   void dispose() {
-    searchBarController.dispose();
     searchBarFocusNode.dispose();
     super.dispose();
   }
 
-  void search(SearchType searchType) async {
-    if (searchBarController.text.isEmpty) return;
+  void search(String text) async {
+    SearchType searchType = SearchHelper.searchType;
+    if (text.isEmpty) return;
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
       if (searchType == SearchType.author) {
-        await userProvider.search(searchType, searchBarController.text);
+        setState(() {
+          isLoading = true;
+        });
+        await userProvider.search(searchType, text);
       } else if (searchType == SearchType.both) {
-        await userProvider.search(searchType, searchBarController.text);
-        await nodeProvider.search(searchType, searchBarController.text);
+        await userProvider.search(searchType, text);
+        await nodeProvider.search(searchType, text);
       } else {
-        await nodeProvider.search(searchType, searchBarController.text);
+        await nodeProvider.search(searchType, text);
       }
     } catch (e) {
+      print(e);
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -59,9 +69,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MobileHomePage(
       searchBarFocusNode: searchBarFocusNode,
-      searchBarController: searchBarController,
       onSearch: search,
-      searchType: searchType,
+      isLoading: isLoading,
     );
   }
 }
@@ -77,20 +86,20 @@ class DesktopMobilePage extends StatelessWidget {
 
 class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
-  final TextEditingController searchBarController;
   final Function onSearch;
-  final SearchType searchType;
+  final bool isLoading;
 
   const MobileHomePage({
     super.key,
     required this.searchBarFocusNode,
-    required this.searchBarController,
     required this.onSearch,
-    required this.searchType,
+    required this.isLoading,
   });
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final nodeProvider = Provider.of<NodeProvider>(context);
     return PageWithAppBar(
       appBar: const HomePageAppBar(),
       child: SingleChildScrollView(
@@ -106,16 +115,18 @@ class MobileHomePage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10.0, 16.0, 8.0, 0.0),
                 child: AppSearchBar(
                   focusNode: searchBarFocusNode,
-                  controller: searchBarController,
                   onSearch: onSearch,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: (searchType == SearchType.theorem)
-                    ? const NodeCards()
-                    : const UserCards(),
-              ),
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : (SearchHelper.searchType == SearchType.author)
+                          ? UserCards(userList: userProvider.searchUserResult)
+                          : NodeCards(nodeList: nodeProvider.searchNodeResult)),
             ],
           ),
         ),
@@ -125,8 +136,10 @@ class MobileHomePage extends StatelessWidget {
 }
 
 class NodeCards extends StatelessWidget {
+  final List<SmallNode> nodeList;
   const NodeCards({
     super.key,
+    required this.nodeList,
   });
 
   @override
@@ -136,10 +149,10 @@ class NodeCards extends StatelessWidget {
           const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: nodeList.length,
       itemBuilder: (context, index) {
         return HomePageNodeCard(
-          smallNode: SmallNode.getLoremIpsum(index + 1),
+          smallNode: nodeList[index],
           onTap: () {/* Navigate to the Screen of the Node */},
         );
       },
@@ -148,8 +161,10 @@ class NodeCards extends StatelessWidget {
 }
 
 class UserCards extends StatelessWidget {
+  final List<ProfileData> userList;
   const UserCards({
     super.key,
+    required this.userList,
   });
 
   @override
@@ -159,10 +174,10 @@ class UserCards extends StatelessWidget {
           const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: userList.length,
       itemBuilder: (context, index) {
         return HomePageUserCard(
-          profileData: ProfileData.getLoremIpsum(index + 1),
+          profileData: userList[index],
           onTap: () {/* Navigate to the Profile Page of the User */},
           color: AppColors.primaryLightColor,
           profilePagePath: "assets/images/gumball.jpg",

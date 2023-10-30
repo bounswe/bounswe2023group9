@@ -1,3 +1,4 @@
+/*
 import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/contributor_user.dart';
 import 'package:collaborative_science_platform/models/proof.dart';
@@ -40,3 +41,4 @@ class Node {
     required this.noVisits,
   });
 }
+*/

@@ -7,13 +7,9 @@ enum SearchType { theorem, author, by, both }
 class AppSearchBar extends StatefulWidget {
   final Function onSearch;
   final FocusNode focusNode;
-  final TextEditingController controller;
 
   const AppSearchBar(
-      {required this.onSearch,
-      required this.controller,
-      required this.focusNode,
-      super.key});
+      {required this.onSearch, required this.focusNode, super.key});
 
   @override
   State<AppSearchBar> createState() => _AppSearchBarState();
@@ -21,6 +17,7 @@ class AppSearchBar extends StatefulWidget {
 
 class _AppSearchBarState extends State<AppSearchBar> {
   SearchType searchType = SearchHelper.searchType;
+  final TextEditingController _controller = TextEditingController();
 
   Widget searchTypeSelector() {
     if (Responsive.isMobile(context)) {
@@ -80,7 +77,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () => widget.onSearch(),
+              onTap: () => widget.onSearch(_controller.text),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
@@ -103,10 +100,10 @@ class _AppSearchBarState extends State<AppSearchBar> {
           Expanded(
             child: TextField(
               textAlignVertical: TextAlignVertical.center,
-              controller: widget.controller,
+              controller: _controller,
               focusNode: widget.focusNode,
               textInputAction: TextInputAction.search,
-              onSubmitted: (String value) => widget.onSearch(),
+              onSubmitted: (String value) => widget.onSearch(value),
               decoration: InputDecoration(
                 hintText: "Search",
                 border: InputBorder.none,

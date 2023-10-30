@@ -1,3 +1,4 @@
+/*
 import 'package:collaborative_science_platform/models/collaboration_request.dart';
 import 'package:collaborative_science_platform/models/contributor_user.dart';
 import 'package:collaborative_science_platform/models/entry.dart';
@@ -47,3 +48,4 @@ class Workspace {
     required this.wikiTags,
   });
 }
+*/
