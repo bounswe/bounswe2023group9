@@ -9,7 +9,6 @@ import 'package:collaborative_science_platform/screens/graph_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';

@@ -6,7 +6,15 @@ import 'package:collaborative_science_platform/screens/profile_page/profile_page
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:flutter/material.dart';
 
-enum ScreenTab { home, graph, workspace, notifications, profile, none }
+enum ScreenTab {
+  home,
+  graph,
+  workspace,
+  notifications,
+  profile,
+  pleaseLogin,
+  none
+}
 
 class ScreenNavigation extends ChangeNotifier {
   ScreenTab _selectedTab = ScreenTab.home;

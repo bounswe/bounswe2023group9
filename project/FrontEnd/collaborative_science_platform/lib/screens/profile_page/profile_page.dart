@@ -6,6 +6,7 @@ import 'package:collaborative_science_platform/screens/home_page/home_page_appba
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/logout_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
 import 'package:collaborative_science_platform/utils/textStyles.dart';
@@ -41,7 +42,6 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       currentIndex = index;
     });
-    print(currentIndex);
   }
 
   @override
@@ -76,6 +76,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
+    print(user?.email);
+    print(profileData.email + "hey");
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
@@ -104,7 +106,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
-                    child: MobileLogOut(),
+                    child: LogOutButton(),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -239,34 +241,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MobileLogOut extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          height: 40.0,
-          width: MediaQuery.of(context).size.width - 80,
-          decoration: BoxDecoration(
-              color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Logout',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0)),
             ],
           ),
         ),

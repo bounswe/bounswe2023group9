@@ -47,42 +47,42 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "omer",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "berberoglu"),
         User(
             firstName: "zulal",
             email: "omerberberoglu@gmail.com",
-            username: "omerberberoglu@gmail.com",
+            id: 0,
             lastName: "molla")
       ],
       content:
