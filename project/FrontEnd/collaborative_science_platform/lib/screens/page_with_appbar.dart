@@ -25,7 +25,7 @@ class PageWithAppBar extends StatelessWidget {
       {required this.child,
       required this.appBar,
       this.pageColor = Colors.white,
-      this.isScrollable = false,
+      this.isScrollable = true,
       this.navigator,
       super.key});
 
@@ -34,7 +34,7 @@ class PageWithAppBar extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      body: NestedScrollView(
+      body: (Responsive.isMobile(context)) ? NestedScrollView(
         physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
         headerSliverBuilder: (_, __) => [
           SliverAppBar(
@@ -52,7 +52,7 @@ class PageWithAppBar extends StatelessWidget {
                 color: Colors.grey[300],
               ),
             ),
-            collapsedHeight: Responsive.isMobile(context) ? 60 : 75,
+            collapsedHeight: 60,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
@@ -73,6 +73,21 @@ class PageWithAppBar extends StatelessWidget {
                   ),
                 ],
               ),
+      ) : SingleChildScrollView(
+        physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            appBar,
+            Divider(
+              height: 0,
+              thickness: 2,
+              color: Colors.grey[300],
+            ),
+            child,
+          ],
+        ),
       ),
     );
   }
