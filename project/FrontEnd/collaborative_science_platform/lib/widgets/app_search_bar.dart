@@ -1,10 +1,11 @@
+import 'package:collaborative_science_platform/helpers/search_helper.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
 enum SearchType { theorem, author, by, both }
 
 class AppSearchBar extends StatefulWidget {
-  final Function(SearchType) onSearch;
+  final Function onSearch;
   final FocusNode focusNode;
   final TextEditingController controller;
 
@@ -19,7 +20,7 @@ class AppSearchBar extends StatefulWidget {
 }
 
 class _AppSearchBarState extends State<AppSearchBar> {
-  SearchType searchType = SearchType.theorem;
+  SearchType searchType = SearchHelper.searchType;
 
   Widget searchTypeSelector() {
     if (Responsive.isMobile(context)) {
@@ -79,9 +80,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () {
-                widget.onSearch(searchType);
-              },
+              onTap: () => widget.onSearch(),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
@@ -106,6 +105,8 @@ class _AppSearchBarState extends State<AppSearchBar> {
               textAlignVertical: TextAlignVertical.center,
               controller: widget.controller,
               focusNode: widget.focusNode,
+              textInputAction: TextInputAction.search,
+              onSubmitted: (String value) => widget.onSearch(),
               decoration: InputDecoration(
                 hintText: "Search",
                 border: InputBorder.none,
@@ -121,6 +122,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
             onSelected: (SearchType newSearchType) {
               setState(() {
                 searchType = newSearchType;
+                SearchHelper.searchType = newSearchType;
               });
             },
             initialValue: searchType,

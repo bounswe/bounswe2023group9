@@ -1,4 +1,3 @@
-
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -17,82 +16,62 @@ class HomePageUserCard extends StatelessWidget {
     this.profilePagePath,
   });
 
+  // Remove this function when it is no longer needed
+  Widget profilePhoto() {
+    return CircleAvatar(
+      radius: 48.0,
+      backgroundColor: AppColors.primaryColor,
+      backgroundImage: profilePagePath != null ? AssetImage(profilePagePath!) : null,
+      child: profilePagePath == null
+          ? const Icon(
+        Icons.person,
+        size: 36.0,
+        color: Colors.white,
+      )
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: onTap, //Navigate to the Profile Page of the User
-            child: Card(
-              color: color,
-              elevation: 8.0,
-              shadowColor: AppColors.primaryColor,
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
+    return Card(
+      elevation: 2.0, // Reduced elevation for a subtle shadow
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: InkWell(
+        onTap: onTap, // Navigate to the Profile Page of the User
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              profilePhoto(),
+              const SizedBox(width: 16.0),
+              Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 32.0,
-                          backgroundColor: AppColors.primaryColor,
-                          child: (profilePagePath != null) ? Container(
-                            width: 60.0,
-                            height: 60.0,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: AssetImage(profilePagePath!),
-                                )
-                            )
-                          ) : const CircleAvatar(
-                            radius: 30.0,
-                            backgroundColor: Colors.grey,
-                            child: Icon(
-                              Icons.person,
-                              size: 36.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10.0),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "${profileData.name} ${profileData.surname}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              profileData.email,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    Text(
+                      "${profileData.name} ${profileData.surname}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
+                      ),
                     ),
-                    const SizedBox(height: 10.0),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      profileData.email,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
                     Text(
                       profileData.aboutMe,
                       maxLines: 3,
@@ -101,7 +80,8 @@ class HomePageUserCard extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
+            ],
+          ),
         ),
       ),
     );
