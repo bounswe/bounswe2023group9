@@ -34,46 +34,67 @@ class PageWithAppBar extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      body: NestedScrollView(
-        physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-        headerSliverBuilder: (_, __) => [
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            elevation: 5,
-            floating: true,
-            snap: true,
-            surfaceTintColor: Colors.transparent,
-            leading: const SizedBox(),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(0),
-              child: Divider(
-                height: 0,
-                thickness: 2,
-                color: Colors.grey[300],
-              ),
-            ),
-            collapsedHeight: Responsive.isMobile(context) ? 60 : 75,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
-                child: appBar,
-              ),
-            ),
-          ),
-        ],
-        body: navigator != null
-            ? navigator!
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    color: pageColor,
-                    child: child,
+      body: (Responsive.isMobile(context))
+          ? NestedScrollView(
+              physics: isScrollable
+                  ? const BouncingScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
+              headerSliverBuilder: (_, __) => [
+                SliverAppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 5,
+                  floating: true,
+                  snap: true,
+                  surfaceTintColor: Colors.transparent,
+                  leading: const SizedBox(),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(0),
+                    child: Divider(
+                      height: 0,
+                      thickness: 2,
+                      color: Colors.grey[300],
+                    ),
                   ),
+                  collapsedHeight: 60,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
+                      child: appBar,
+                    ),
+                  ),
+                ),
+              ],
+              body: navigator != null
+                  ? navigator!
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: pageColor,
+                          child: child,
+                        ),
+                      ],
+                    ),
+            )
+          : SingleChildScrollView(
+              physics: isScrollable
+                  ? const BouncingScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  appBar,
+                  Divider(
+                    height: 0,
+                    thickness: 2,
+                    color: Colors.grey[300],
+                  ),
+                  child,
                 ],
               ),
-      ),
+            ),
     );
   }
 }

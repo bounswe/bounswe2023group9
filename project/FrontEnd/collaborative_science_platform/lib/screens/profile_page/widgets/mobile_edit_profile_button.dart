@@ -1,7 +1,10 @@
-import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
+import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class MobileEditProfile extends StatelessWidget {
+class MobileEditProfileButton extends StatelessWidget {
+  const MobileEditProfileButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(

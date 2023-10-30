@@ -94,7 +94,9 @@ class MobileHomePage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: (searchType == SearchType.theorem) ? const NodeCards() : const UserCards(),
+                child: (searchType == SearchType.theorem)
+                    ? const NodeCards()
+                    : const UserCards(),
               ),
             ],
           ),
@@ -112,7 +114,8 @@ class NodeCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+      physics:
+          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       itemCount: 10,
@@ -134,13 +137,15 @@ class UserCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+      physics:
+          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       itemCount: 10,
       itemBuilder: (context, index) {
         return HomePageUserCard(
-          profileData: ProfileData.getLoremIpsum(index + 1),
+          profileData:
+              ProfileData(name: "Gumball", surname: "Watterson", email: ""),
           onTap: () {/* Navigate to the Profile Page of the User */},
           color: AppColors.primaryLightColor,
           profilePagePath: "assets/images/gumball.jpg",

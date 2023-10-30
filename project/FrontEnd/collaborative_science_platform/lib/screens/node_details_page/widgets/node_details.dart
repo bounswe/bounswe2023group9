@@ -3,7 +3,7 @@ import 'package:collaborative_science_platform/screens/node_details_page/node_de
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +11,7 @@ import 'package:flutter/material.dart';
 class NodeDetails extends StatefulWidget {
   final MockNode node;
   final ScrollController controller;
-  const NodeDetails(
-      {super.key, required this.node, required this.controller});
+  const NodeDetails({super.key, required this.node, required this.controller});
 
   @override
   State<NodeDetails> createState() => _NodeDetailsState();
@@ -107,8 +106,7 @@ class _NodeDetailsState extends State<NodeDetails> {
               ),
             if (currentIndex == 2)
               Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: References(references: [
                   SmallNode.getLoremIpsum(1),
                   SmallNode.getLoremIpsum(1),

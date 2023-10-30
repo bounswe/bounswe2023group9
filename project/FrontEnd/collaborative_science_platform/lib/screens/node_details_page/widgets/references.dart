@@ -1,7 +1,6 @@
 import 'package:collaborative_science_platform/models/small_node.dart';
-import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
@@ -24,13 +23,13 @@ class References extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             if (Responsive.isDesktop(context)) {
               return Padding(
-              padding: const EdgeInsets.all(5),
-              child: CardContainer(
-                child: Column(
+                padding: const EdgeInsets.all(5),
+                child: CardContainer(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+                    children: [
+                      Text(
                         "${references[index].nodeTitle}",
                         style: TextStyles.title4,
                         textAlign: TextAlign.start,
@@ -75,26 +74,25 @@ class References extends StatelessWidget {
                       children: [
                         Text(
                           "${references[index - 1].nodeTitle}",
-                      style: TextStyles.title4,
+                          style: TextStyles.title4,
                           textAlign: TextAlign.start,
-                    ),
-                    Text(
+                        ),
+                        Text(
                           "by ${references[index - 1].contributors.map((e) => e)}",
-                      style: TextStyles.bodyGrey,
+                          style: TextStyles.bodyGrey,
                           textAlign: TextAlign.start,
                         ),
                         Text(
                           references[index - 1].publishDate.toString(),
                           style: TextStyles.bodyGrey,
                           textAlign: TextAlign.start,
-                    )
-                  ],
-                ),
-              ),
-            );
+                        )
+                      ],
+                    ),
+                  ),
+                );
               }
             }
-            
           }),
     );
   }
