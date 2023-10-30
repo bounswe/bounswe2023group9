@@ -25,7 +25,7 @@ class PageWithAppBar extends StatelessWidget {
       {required this.child,
       required this.appBar,
       this.pageColor = Colors.white,
-      this.isScrollable = true,
+      this.isScrollable = false,
       this.navigator,
       super.key});
 
@@ -52,10 +52,10 @@ class PageWithAppBar extends StatelessWidget {
                 color: Colors.grey[300],
               ),
             ),
-            collapsedHeight: Responsive.isMobile(context) ? 80 : 75,
+            collapsedHeight: Responsive.isMobile(context) ? 60 : 75,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
+                //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
                 child: appBar,
               ),
             ),

@@ -1,11 +1,11 @@
 class User {
-  String username;
+  int id;
   String email;
   String firstName;
   String lastName;
 
   User(
-      {required this.username,
+      {this.id = 0,
       required this.email,
       required this.firstName,
       required this.lastName});
@@ -15,6 +15,6 @@ class User {
         email: jsonString['username'],
         firstName: jsonString['name'],
         lastName: jsonString['surname'],
-        username: jsonString['username']);
+        id: jsonString['id']);
   }
 }

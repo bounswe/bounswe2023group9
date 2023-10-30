@@ -8,11 +8,8 @@ import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
   //User? user;
-  User? user = User(
-      username: "oma11r@omar.com",
-      email: "oma11r@omar.com",
-      firstName: "omar",
-      lastName: "uyduran");
+  User? user =
+      User(email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
 
   bool get isSignedIn {
     return user != null;
@@ -47,9 +44,8 @@ class Auth with ChangeNotifier {
 
         if (tokenResponse.statusCode == 200) {
           final userData = json.decode(tokenResponse.body);
-
           user = User(
-              username: userData['username'],
+              id: userData['id'],
               email: userData['email'],
               firstName: userData['first_name'],
               lastName: userData['last_name']);
@@ -89,10 +85,17 @@ class Auth with ChangeNotifier {
     if (response.statusCode == 201) {
       final data = json.decode(response.body);
       user = User(
-          username: data['username'],
+          // TODO: fix this
+          id: data['id'],
           email: data['email'],
           firstName: data['first_name'],
           lastName: data['last_name']);
+      try {
+        await login(email, password);
+      } catch (e) {
+        throw Exception("Something has happened");
+      }
+
       notifyListeners();
     } else if (response.statusCode == 400) {
       throw UserExistException(
@@ -102,5 +105,8 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {}
+  void logout() {
+    user = null;
+    notifyListeners();
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
@@ -31,6 +32,9 @@ class ScreenNavigation extends ChangeNotifier {
         break;
       case ScreenTab.profile:
         navigatorKey.currentState?.pushNamed(ProfilePage.routeName);
+        break;
+      case ScreenTab.pleaseLogin:
+        navigatorKey.currentState?.pushNamed(PleaseLoginPage2.routeName);
         break;
       case ScreenTab.none:
         break;
