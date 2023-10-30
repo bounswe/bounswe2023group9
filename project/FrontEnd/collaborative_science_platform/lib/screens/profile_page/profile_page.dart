@@ -3,12 +3,14 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/logout_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_node_card.dart';
 import 'package:collaborative_science_platform/utils/textStyles.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -24,9 +26,7 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-// TODO: connect NodeActivity and QuestionActivity to profileData
 // TODO: add optional parameter to ProfilePage to get others profileData
-// TODO: make NodeTab clickable which directs to NodeDetailsPage
 class _ProfilePageState extends State<ProfilePage> {
   ProfileData profileData = ProfileData();
   int noWorks = 0;
@@ -76,8 +76,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
-    print(user?.email);
-    print(profileData.email + "hey");
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
@@ -100,13 +98,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: MobileEditProfile(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: LogOutButton(),
+                        horizontal: 30, vertical: 10),
+                    child: Row(
+                      children: [
+                        Expanded(child: MobileEditProfile()),
+                        Expanded(child: LogOutButton())
+                      ],
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -120,9 +118,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
-                          height: 400,
-                          child: NodeActivity(),
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: profileData.nodes.length,
+                          itemBuilder: (context, index) {
+                            return ProfileNodeCard(
+                              profileNode: profileData.nodes.elementAt(index),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    /* Navigate to the Screen of specific Node */
+                                    builder: (context) => NodeDetailsPage(),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -170,9 +183,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
-                          height: 400,
-                          child: NodeActivity(),
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: profileData.nodes.length,
+                          itemBuilder: (context, index) {
+                            return ProfileNodeCard(
+                              profileNode: profileData.nodes.elementAt(index),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    /* Navigate to the Screen of specific Node */
+                                    builder: (context) => NodeDetailsPage(),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -224,9 +252,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: CardContainer(
-                    child: Container(
-                      height: 400,
-                      child: NodeActivity(),
+                    child: ListView.builder(
+                      physics:
+                          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: profileData.nodes.length,
+                      itemBuilder: (context, index) {
+                        return ProfileNodeCard(
+                          profileNode: profileData.nodes.elementAt(index),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                /* Navigate to the Screen of specific Node */
+                                builder: (context) => NodeDetailsPage(),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -249,36 +294,58 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class NodeActivity extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: ListView.builder(
-        itemCount: 10, // Replace with the desired number of items
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title:
-                Text('Nodes Tab Content $index', style: TextStyles.bodyBlack),
-          );
-        },
-      ),
-    );
-  }
-}
-
+// TODO: currently no API to get questions
 class QuestionActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: ListView.builder(
-        itemCount: 10, // Replace with the desired number of items
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text('Questions Tab Content $index',
-                style: TextStyles.bodyBlack),
-          );
-        },
-      ),
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: 10,
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          elevation: 4.0,
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: InkWell(
+            // onTap: Navigate to the screen of the question/answer
+            customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "question/answer $index",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'some date',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
