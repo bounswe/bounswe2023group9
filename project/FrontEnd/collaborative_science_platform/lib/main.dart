@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
           ProfilePage.routeName: (context) => const ProfilePage(),
-          GraphPage.routeName: (context) => const GraphPage(),
+          //GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
           AccountSettingsPage.routeName: (context) =>
               const AccountSettingsPage(),
