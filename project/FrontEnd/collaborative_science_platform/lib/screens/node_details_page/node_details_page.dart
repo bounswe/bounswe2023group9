@@ -14,10 +14,9 @@ import 'package:provider/provider.dart';
 
 class NodeDetailsPage extends StatefulWidget {
   static const routeName = '/node';
-  final List<User> contributors;
-  final int nodeID;
+  final Node inputNode;
   const NodeDetailsPage(
-      {super.key, required this.contributors, required this.nodeID});
+      {super.key, required this.inputNode});
 
   @override
   State<NodeDetailsPage> createState() => _NodeDetailsPageState();
@@ -59,7 +58,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       setState(() {
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.nodeID);
+      await nodeDetailsProvider.getNode(widget.inputNode.id);
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
@@ -93,12 +92,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Contributors(
-                      contributors: widget.contributors,
+                      contributors: widget.inputNode.contributors,
                     controller: controller1,
                   ),
                   NodeDetails(
                       proofs: proof,
-                      contributors: widget.contributors,
+                      contributors: widget.inputNode.contributors,
                       theorem: theorem,
                     node: node,
                     controller: controller2,
@@ -108,7 +107,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
             : NodeDetails(
                   proofs: proof,
                   theorem: theorem,
-                  contributors: widget.contributors,
+                  contributors: widget.inputNode.contributors,
                 node: node,
                 controller: controller2,
                 ),
