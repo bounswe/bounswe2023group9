@@ -15,7 +15,7 @@ class LogOutButton extends StatelessWidget {
         },
         child: Container(
           height: 40.0,
-          width: MediaQuery.of(context).size.width - 80,
+          // width: MediaQuery.of(context).size.width - 80,
           decoration: BoxDecoration(
               color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
           child: const Row(
