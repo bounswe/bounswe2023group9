@@ -99,8 +99,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                 Padding(
                   padding: (Responsive.isMobile(context))
                       ? const EdgeInsets.symmetric(horizontal: 0, vertical: 0)
-                      : const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 4.0),
+                      : const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   child: Column(
                     children: [
                       Center(
