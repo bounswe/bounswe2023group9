@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
+import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
 import 'package:collaborative_science_platform/exceptions/profile_page_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
@@ -33,7 +35,7 @@ class NodeDetailsProvider with ChangeNotifier {
             final data = json.decode(response.body);
             theorem = Theorem.fromJson(data);
           } else if (response.statusCode == 400) {
-            throw ProfileDoesNotExist();
+            throw TheoremDoesNotExist();
           } else {
             throw Exception("Something has happened");
           }
@@ -50,7 +52,7 @@ class NodeDetailsProvider with ChangeNotifier {
               final data = json.decode(proofResponse.body);
               proof.add(Proof.fromJson(data));
             } else if (proofResponse.statusCode == 400) {
-              throw ProfileDoesNotExist();
+              throw ProofDoesNotExist();
             } else {
               throw Exception("Something has happened");
             }
@@ -61,7 +63,7 @@ class NodeDetailsProvider with ChangeNotifier {
 
         notifyListeners();
       } else if (response.statusCode == 400) {
-        throw ProfileDoesNotExist(); //değiştir
+        throw NodeDoesNotExist();
       } else {
         throw Exception("Something has happened");
       }
@@ -84,7 +86,7 @@ class NodeDetailsProvider with ChangeNotifier {
         proof.add(Proof.fromJson(data));
         notifyListeners();
       } else if (response.statusCode == 400) {
-        throw ProfileDoesNotExist();
+        throw ProofDoesNotExist();
       } else {
         throw Exception("Something has happened");
       }
@@ -106,7 +108,7 @@ class NodeDetailsProvider with ChangeNotifier {
         //theorem = Theorem.fromJson(data);
         notifyListeners();
       } else if (response.statusCode == 400) {
-        throw ProfileDoesNotExist();
+        throw TheoremDoesNotExist();
       } else {
         throw Exception("Something has happened");
       }
@@ -116,7 +118,7 @@ class NodeDetailsProvider with ChangeNotifier {
   }
 
   Future<void> getUser(int id) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/get_proof/?theorem_id=$id");
+    Uri url = Uri.parse("${Constants.apiUrl}/get_proof/?user_id=$id");
     final Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json"
@@ -128,7 +130,7 @@ class NodeDetailsProvider with ChangeNotifier {
 
         notifyListeners();
       } else if (response.statusCode == 400) {
-        throw ProfileDoesNotExist();
+        throw UserExistException();
       } else {
         throw Exception("Something has happened");
       }
