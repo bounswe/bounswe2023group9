@@ -29,7 +29,7 @@ class DesktopEditProfile extends StatelessWidget {
         },
         child: Container(
           height: 40.0,
-          width: MediaQuery.of(context).size.width - 80,
+          width: MediaQuery.of(context).size.width / 3,
           decoration: BoxDecoration(
               color: Colors.blue, borderRadius: BorderRadius.circular(5.0)),
           child: const Row(
