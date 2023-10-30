@@ -25,7 +25,7 @@ class PageWithAppBar extends StatelessWidget {
       {required this.child,
       required this.appBar,
       this.pageColor = Colors.white,
-      this.isScrollable = true,
+      this.isScrollable = false,
       this.navigator,
       super.key});
 
