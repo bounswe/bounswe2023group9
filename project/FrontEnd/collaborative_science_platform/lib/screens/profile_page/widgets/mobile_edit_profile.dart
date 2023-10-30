@@ -1,7 +1,9 @@
-import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
+import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:flutter/material.dart';
 
 class MobileEditProfile extends StatelessWidget {
+  const MobileEditProfile({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(

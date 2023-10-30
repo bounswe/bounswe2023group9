@@ -1,7 +1,10 @@
-import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
+import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 
-class DesktopEditProfile extends StatelessWidget {
+class DesktopEditProfileButton extends StatelessWidget {
+  const DesktopEditProfileButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -31,7 +34,8 @@ class DesktopEditProfile extends StatelessWidget {
           height: 40.0,
           width: MediaQuery.of(context).size.width - 80,
           decoration: BoxDecoration(
-              color: Colors.blue, borderRadius: BorderRadius.circular(5.0)),
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(10.0)),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

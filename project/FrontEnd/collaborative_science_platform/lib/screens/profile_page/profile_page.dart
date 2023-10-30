@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:collaborative_science_platform/widgets/card_container.dart';
+import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -5,14 +10,9 @@ import 'package:collaborative_science_platform/providers/profile_data_provider.d
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/widgets/card_container.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
@@ -96,14 +96,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     surname: profileData.surname,
                     noWorks: noWorks,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: MobileEditProfile(),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: MobileLogOut(),
                   ),
                   Padding(
@@ -114,22 +112,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   if (currentIndex == 0)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
+                        child: SizedBox(
                           height: 400,
                           child: NodeActivity(),
                         ),
                       ),
                     ),
                   if (currentIndex == 1)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
+                        child: SizedBox(
                           height: 400,
                           child: QuestionActivity(),
                         ),
@@ -151,10 +149,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     surname: profileData.surname,
                     noWorks: noWorks,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: DesktopEditProfile(),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child: DesktopEditProfileButton(),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -164,22 +161,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   if (currentIndex == 0)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
+                        child: SizedBox(
                           height: 400,
                           child: NodeActivity(),
                         ),
                       ),
                     ),
                   if (currentIndex == 1)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
+                    const Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: Container(
+                        child: SizedBox(
                           height: 400,
                           child: QuestionActivity(),
                         ),
@@ -218,22 +215,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               if (currentIndex == 0)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: CardContainer(
-                    child: Container(
+                    child: SizedBox(
                       height: 400,
                       child: NodeActivity(),
                     ),
                   ),
                 ),
               if (currentIndex == 1)
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: CardContainer(
-                    child: Container(
+                    child: SizedBox(
                       height: 400,
                       child: QuestionActivity(),
                     ),
@@ -248,6 +243,8 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 class MobileLogOut extends StatelessWidget {
+  const MobileLogOut({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -276,6 +273,8 @@ class MobileLogOut extends StatelessWidget {
 }
 
 class NodeActivity extends StatelessWidget {
+  const NodeActivity({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -293,6 +292,8 @@ class NodeActivity extends StatelessWidget {
 }
 
 class QuestionActivity extends StatelessWidget {
+  const QuestionActivity({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Material(

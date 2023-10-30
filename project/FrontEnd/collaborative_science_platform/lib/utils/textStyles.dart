@@ -46,4 +46,10 @@ class TextStyles {
     fontSize: 16,
     color: Colors.grey,
   );
+
+  static const TextStyle bodyBold = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: Colors.black,
+  );
 }
