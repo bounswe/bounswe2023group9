@@ -55,7 +55,7 @@ class PageWithAppBar extends StatelessWidget {
             collapsedHeight: Responsive.isMobile(context) ? 60 : 75,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
+                //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
                 child: appBar,
               ),
             ),

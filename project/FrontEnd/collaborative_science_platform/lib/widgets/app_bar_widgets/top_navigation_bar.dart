@@ -79,60 +79,71 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
       onExit: (event) => setState(() => isHovering = false),
       child: GestureDetector(
         onTap: () => Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(widget.value),
+        onLongPress: () => setState(() => isHovering = true),
         child: Container(
-          color: Colors.transparent,
+          color: isHovering ? Colors.grey[300] : Colors.transparent,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: (Responsive.isMobile(context)) ? const EdgeInsets.all(4.0)
-                    : const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Row(
-                        children: [
-                          Icon(
-                            widget.icon,
-                            size: 28.0,
-                            color: widget.isSelected ? Colors.indigo[600]
-                              : isHovering ? Colors.indigo[200]
-                              : Colors.grey[700],
-                          ),
-                          if (!Responsive.isMobile(context))
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0),
-                            child: Text(
-                              widget.text,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: widget.isSelected
-                                  ? FontWeight.w700
-                                  : isHovering
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
-                                color: widget.isSelected
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: (Responsive.isMobile(context))
+                      ? const EdgeInsets.symmetric(horizontal: 0, vertical: 0)
+                      : const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              widget.icon,
+                              size: isHovering ? 32 : 28.0,
+                              color: widget.isSelected
                                   ? Colors.indigo[600]
                                   : isHovering
                                       ? Colors.indigo[200]
                                       : Colors.grey[700],
-                              ),
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  //const SizedBox(height: 12),
-                  /*   Container(
+                            if (!Responsive.isMobile(context))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  widget.text,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: widget.isSelected
+                                        ? FontWeight.w700
+                                        : isHovering
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
+                                    color: widget.isSelected
+                                        ? Colors.indigo[600]
+                                        : isHovering
+                                            ? Colors.indigo[200]
+                                            : Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      //const SizedBox(height: 12),
+                      /*   Container(
                     color: widget.isSelected ? Colors.indigo[600] : Colors.transparent,
                     height: 4,
                     width: 150,
                   ) */
-                ],
-              ),
-            )
-          ]),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  color: widget.isSelected ? Colors.indigo[600] : Colors.transparent,
+                  height: 5,
+                  width: MediaQuery.of(context).size.width / 5,
+                ),
+              ]),
         ),
       ),
     );
