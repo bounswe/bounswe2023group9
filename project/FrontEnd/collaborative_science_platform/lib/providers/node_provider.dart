@@ -34,11 +34,11 @@ class NodeProvider with ChangeNotifier {
 
         _searchNodeResult
             .addAll((data['nodes'] as List<dynamic>).map((node) => SmallNode(
-                  contributors: node['authors']
+                  contributors: (node['authors'] as List<dynamic>)
                       .map((author) => Contributor(
                           name: author['name'],
                           surname: author['surname'],
-                          email: author['email']))
+                          email: author['username']))
                       .toList(),
                   nodeId: node['id'],
                   nodeTitle: node['title'],

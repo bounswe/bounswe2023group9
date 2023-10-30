@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   bool searchBarActive = false;
   bool error = false;
   bool isLoading = false;
+  bool firstSearch = false;
   String errorMessage = "";
 
   @override
@@ -41,10 +42,11 @@ class _HomePageState extends State<HomePage> {
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+        firstSearch = true;
+      });
       if (searchType == SearchType.author) {
-        setState(() {
-          isLoading = true;
-        });
         await userProvider.search(searchType, text);
       } else if (searchType == SearchType.both) {
         await userProvider.search(searchType, text);
@@ -71,6 +73,7 @@ class _HomePageState extends State<HomePage> {
       searchBarFocusNode: searchBarFocusNode,
       onSearch: search,
       isLoading: isLoading,
+      firstSearch: firstSearch,
     );
   }
 }
@@ -88,12 +91,14 @@ class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final Function onSearch;
   final bool isLoading;
+  final bool firstSearch;
 
   const MobileHomePage({
     super.key,
     required this.searchBarFocusNode,
     required this.onSearch,
     required this.isLoading,
+    required this.firstSearch,
   });
 
   @override
@@ -125,8 +130,14 @@ class MobileHomePage extends StatelessWidget {
                           child: CircularProgressIndicator(),
                         )
                       : (SearchHelper.searchType == SearchType.author)
-                          ? UserCards(userList: userProvider.searchUserResult)
-                          : NodeCards(nodeList: nodeProvider.searchNodeResult)),
+                          ? UserCards(
+                              userList: userProvider.searchUserResult,
+                              firstSearch: firstSearch,
+                            )
+                          : NodeCards(
+                              nodeList: nodeProvider.searchNodeResult,
+                              firstSearch: firstSearch,
+                            )),
             ],
           ),
         ),
@@ -137,52 +148,71 @@ class MobileHomePage extends StatelessWidget {
 
 class NodeCards extends StatelessWidget {
   final List<SmallNode> nodeList;
+  final bool firstSearch;
+
   const NodeCards({
     super.key,
     required this.nodeList,
+    required this.firstSearch,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics:
-          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: nodeList.length,
-      itemBuilder: (context, index) {
-        return HomePageNodeCard(
-          smallNode: nodeList[index],
-          onTap: () {/* Navigate to the Screen of the Node */},
-        );
-      },
-    );
+    if (nodeList.isEmpty && firstSearch) {
+      // Display a "no result" message when the list is empty.
+      return const Center(
+        child: Text("No results found."),
+      );
+    } else {
+      return ListView.builder(
+        physics:
+            const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: nodeList.length,
+        itemBuilder: (context, index) {
+          return HomePageNodeCard(
+            smallNode: nodeList[index],
+            onTap: () {/* Navigate to the Screen of the Node */},
+          );
+        },
+      );
+    }
   }
 }
 
 class UserCards extends StatelessWidget {
   final List<ProfileData> userList;
+  final bool firstSearch;
+
   const UserCards({
     super.key,
     required this.userList,
+    required this.firstSearch,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics:
-          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: userList.length,
-      itemBuilder: (context, index) {
-        return HomePageUserCard(
-          profileData: userList[index],
-          onTap: () {/* Navigate to the Profile Page of the User */},
-          color: AppColors.primaryLightColor,
-          profilePagePath: "assets/images/gumball.jpg",
-        );
-      },
-    );
+    if (userList.isEmpty && firstSearch) {
+      return const Center(
+        child: Text("No results found."),
+      );
+    } else {
+      return ListView.builder(
+        physics:
+            const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: userList.length,
+        itemBuilder: (context, index) {
+          return HomePageUserCard(
+            profileData: userList[index],
+            onTap: () {/* Navigate to the Profile Page of the User */},
+            color: AppColors.primaryLightColor,
+            profilePagePath: "assets/images/gumball.jpg",
+          );
+        },
+      );
+    }
   }
 }
