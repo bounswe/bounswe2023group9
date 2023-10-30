@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
@@ -267,7 +268,10 @@ class MobileProfileOptions extends StatelessWidget {
             MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Provider.of<Auth>(context, listen: false).logout();
+                  Navigator.pushNamed(context, PleaseLoginPage2.routeName);
+                },
                 child: Container(
                   height: 40.0,
                   width: MediaQuery.of(context).size.width - 80,

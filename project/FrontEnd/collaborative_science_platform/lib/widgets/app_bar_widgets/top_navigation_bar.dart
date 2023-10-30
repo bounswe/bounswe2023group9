@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -78,8 +79,15 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
       onEnter: (event) => setState(() => isHovering = true),
       onExit: (event) => setState(() => isHovering = false),
       child: GestureDetector(
-        onTap: () => Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(widget.value),
-        onLongPress: () => setState(() => isHovering = true),
+        onTap: () {
+          ScreenTab selected = widget.value;
+          if (selected == ScreenTab.profileOptions) {
+            if (!Provider.of<Auth>(context, listen: false).isSignedIn) {
+              selected = ScreenTab.pleaseLogin;
+            }
+          }
+          Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected);
+        },
         child: Container(
           color: isHovering ? Colors.grey[300] : Colors.transparent,
           child: Column(
