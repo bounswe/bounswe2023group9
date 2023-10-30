@@ -1,12 +1,11 @@
 import 'package:collaborative_science_platform/models/profile_data.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
-import 'package:collaborative_science_platform/providers/search.dart';
+import 'package:collaborative_science_platform/providers/node_provider.dart';
+import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_user_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
-import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,8 +36,16 @@ class _HomePageState extends State<HomePage> {
   void search(SearchType searchType) async {
     if (searchBarController.text.isEmpty) return;
     try {
-      await Provider.of<SearchProvider>(context, listen: false)
-          .search(searchType, searchBarController.text);
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      if (searchType == SearchType.author) {
+        await userProvider.search(searchType, searchBarController.text);
+      } else if (searchType == SearchType.both) {
+        await userProvider.search(searchType, searchBarController.text);
+        await nodeProvider.search(searchType, searchBarController.text);
+      } else {
+        await nodeProvider.search(searchType, searchBarController.text);
+      }
     } catch (e) {
       setState(() {
         error = true;

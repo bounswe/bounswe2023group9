@@ -1,4 +1,3 @@
-
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:flutter/material.dart';
@@ -64,11 +63,6 @@ class HomePageNodeCard extends StatelessWidget {
                       fontSize: 14.0,
                       color: Colors.grey.shade600,
                     ),
-                  ),
-                  Text(
-                    smallNode.theorem,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
