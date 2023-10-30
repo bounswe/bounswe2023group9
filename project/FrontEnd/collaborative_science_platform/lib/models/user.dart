@@ -15,6 +15,6 @@ class User {
         email: jsonString['username'],
         firstName: jsonString['name'],
         lastName: jsonString['surname'],
-        id: jsonString['id']);
+    );
   }
 }

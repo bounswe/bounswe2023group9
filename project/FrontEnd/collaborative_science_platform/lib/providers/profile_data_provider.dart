@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:collaborative_science_platform/exceptions/profile_page_exceptions.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
-import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
