@@ -40,7 +40,7 @@ class AuthenticatedProfileMenu extends StatelessWidget {
             Navigator.pushNamed(context, ProfilePage.routeName);
             break;
           case 'logout':
-            await auth.logout();
+            auth.logout();
             break;
           default:
         }

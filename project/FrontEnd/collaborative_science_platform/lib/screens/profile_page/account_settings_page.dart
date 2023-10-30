@@ -8,7 +8,7 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:provider/provider.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 
@@ -94,8 +94,6 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Provider.of<Auth>(context).user;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       width: Responsive.getGenericPageWidth(context),
@@ -105,8 +103,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('About',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              Text('About', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
             ],
           ),
           const SizedBox(height: 10),
@@ -124,8 +121,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
                 activeColor: AppColors.primaryColor,
                 onChanged: (value) {
                   setState(() {
-                    isSwitched =
-                        value; // Update the state when the switch is toggled
+                    isSwitched = value; // Update the state when the switch is toggled
                   });
                 },
               ),
@@ -143,8 +139,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
                 activeColor: AppColors.primaryColor,
                 onChanged: (value) {
                   setState(() {
-                    isSwitched2 =
-                        value; // Update the state when the switch is toggled
+                    isSwitched2 = value; // Update the state when the switch is toggled
                   });
                 },
               ),
@@ -158,17 +153,11 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,
-                decoration: BoxDecoration(
-                    color: AppColors.secondaryColor,
-                    borderRadius: BorderRadius.circular(5.0)),
+                decoration: BoxDecoration(color: AppColors.secondaryColor, borderRadius: BorderRadius.circular(5.0)),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Save',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0)),
+                    Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
                   ],
                 ),
               ),
@@ -188,8 +177,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Change Password',
-                              style: TextStyle(fontSize: 20.0)),
+                          Text('Change Password', style: TextStyle(fontSize: 20.0)),
                         ],
                       ),
                     ),
@@ -202,17 +190,12 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,
-                decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(5.0)),
+                decoration: BoxDecoration(color: AppColors.primaryColor, borderRadius: BorderRadius.circular(5.0)),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text('Change Password',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0)),
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
                   ],
                 ),
               ),

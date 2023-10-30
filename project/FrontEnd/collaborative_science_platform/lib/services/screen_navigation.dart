@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
@@ -5,12 +6,11 @@ import 'package:collaborative_science_platform/screens/profile_page/profile_page
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:flutter/material.dart';
 
-enum ScreenTab { home, graph, workspace, notifications, profile, none }
+enum ScreenTab { home, graph, workspace, notifications, profile, pleaseLogin, none }
 
 class ScreenNavigation extends ChangeNotifier {
   ScreenTab _selectedTab = ScreenTab.home;
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   ScreenTab get selectedTab => _selectedTab;
 
@@ -31,6 +31,9 @@ class ScreenNavigation extends ChangeNotifier {
         break;
       case ScreenTab.profile:
         navigatorKey.currentState?.pushNamed(ProfilePage.routeName);
+        break;
+      case ScreenTab.pleaseLogin:
+        navigatorKey.currentState?.pushNamed(PleaseLoginPage2.routeName);
         break;
       case ScreenTab.none:
         break;

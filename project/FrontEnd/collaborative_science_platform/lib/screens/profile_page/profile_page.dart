@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
@@ -105,16 +105,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: MobileLogOut(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: ProfileActivityTabBar(
                       callback: updateIndex,
                     ),
                   ),
                   if (currentIndex == 0)
                     const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -124,8 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   if (currentIndex == 1)
                     const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -154,16 +151,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: DesktopEditProfileButton(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: ProfileActivityTabBar(
                       callback: updateIndex,
                     ),
                   ),
                   if (currentIndex == 0)
                     const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -173,8 +168,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   if (currentIndex == 1)
                     const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -208,8 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 noWorks: noWorks,
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: ProfileActivityTabBar(
                   callback: updateIndex,
                 ),
@@ -254,16 +247,11 @@ class MobileLogOut extends StatelessWidget {
         child: Container(
           height: 40.0,
           width: MediaQuery.of(context).size.width - 80,
-          decoration: BoxDecoration(
-              color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
+          decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(5.0)),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Logout',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.0)),
+              Text('Logout', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
             ],
           ),
         ),
@@ -282,8 +270,7 @@ class NodeActivity extends StatelessWidget {
         itemCount: 10, // Replace with the desired number of items
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-            title:
-                Text('Nodes Tab Content $index', style: TextStyles.bodyBlack),
+            title: Text('Nodes Tab Content $index', style: TextStyles.bodyBlack),
           );
         },
       ),
@@ -301,8 +288,7 @@ class QuestionActivity extends StatelessWidget {
         itemCount: 10, // Replace with the desired number of items
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-            title: Text('Questions Tab Content $index',
-                style: TextStyles.bodyBlack),
+            title: Text('Questions Tab Content $index', style: TextStyles.bodyBlack),
           );
         },
       ),

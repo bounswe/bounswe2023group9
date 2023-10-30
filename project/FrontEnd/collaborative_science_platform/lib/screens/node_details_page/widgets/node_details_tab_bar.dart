@@ -1,20 +1,19 @@
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
-class ProfileActivityTabBar extends StatefulWidget {
+class NodeDetailsTabBar extends StatefulWidget {
   final Function callback;
-  const ProfileActivityTabBar({
+  const NodeDetailsTabBar({
     super.key,
     required this.callback,
   });
   @override
-  State<ProfileActivityTabBar> createState() => _ProfileActivityTabBar();
+  State<NodeDetailsTabBar> createState() => _NodeDetailsTabBarState();
 }
 
-class _ProfileActivityTabBar extends State<ProfileActivityTabBar> {
+class _NodeDetailsTabBarState extends State<NodeDetailsTabBar> {
   int currentIndex = 0;
 
   void updateIndex(int newIndex) {
@@ -27,35 +26,53 @@ class _ProfileActivityTabBar extends State<ProfileActivityTabBar> {
   @override
   Widget build(BuildContext context) {
     return CardContainer(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Center(
-          child: Text(
-            "Activities",
-            style: TextStyles.bodyBlack,
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.my_library_books,
+          index: 0,
+          text: "Theorem",
+          isSelected: currentIndex == 0,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.manage_search,
+          index: 1,
+          text: "Proofs",
+          isSelected: currentIndex == 1,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.import_contacts,
+          index: 2,
+          text: "References",
+          isSelected: currentIndex == 2,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.format_quote,
+          index: 3,
+          text: "Citations",
+          isSelected: currentIndex == 3,
+        ),
+        NavigationBarItem(
+          callback: updateIndex,
+          icon: Icons.question_answer,
+          index: 4,
+          isSelected: currentIndex == 4,
+          text: "Q/A",
+        ),
+        if (Responsive.isMobile(context))
+          NavigationBarItem(
+            callback: updateIndex,
+            icon: Icons.people,
+            index: 5,
+            isSelected: currentIndex == 5,
+            text: "Contributors",
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            NavigationBarItem(
-              callback: updateIndex,
-              icon: Icons.content_copy,
-              index: 0,
-              text: "Published Nodes",
-              isSelected: currentIndex == 0,
-            ),
-            NavigationBarItem(
-              callback: updateIndex,
-              icon: Icons.question_answer,
-              index: 1,
-              isSelected: currentIndex == 1,
-              text: "Q/A",
-            ),
-          ],
-        ),
       ],
     ));
   }

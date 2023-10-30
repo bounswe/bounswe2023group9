@@ -12,18 +12,22 @@ class HomePageAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Responsive(
       mobile: const TopNavigationBar(),
-      desktop: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const AppBarLogo(),
-          const TopNavigationBar(),
-          Row(children: [
-            if (!Responsive.isMobile(context))
-              AppBarButton(icon: Icons.notifications, text: "Notifications", onPressed: () {}),
-            const SizedBox(width: 10.0),
-            const ProfileMenu()
-          ]),
-        ],
+      desktop: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const AppBarLogo(height: 50.0),
+            const TopNavigationBar(),
+            Row(children: [
+              if (!Responsive.isMobile(context))
+                AppBarButton(icon: Icons.notifications, text: "Notifications", onPressed: () {}),
+              const SizedBox(width: 10.0),
+              const ProfileMenu(),
+            ]),
+          ],
+        ),
       ),
     );
   }

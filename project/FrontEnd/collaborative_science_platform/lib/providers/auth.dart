@@ -7,12 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
-  //User? user;
-  User? user = User(
-      username: "oma11r@omar.com",
-      email: "oma11r@omar.com",
-      firstName: "omar",
-      lastName: "uyduran");
+  User? user;
+  //User? user = User(username: "oma11r@omar.com", email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
 
   bool get isSignedIn {
     return user != null;
@@ -21,10 +17,7 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String password) async {
     Uri url = Uri.parse("${Constants.apiUrl}/login/");
 
-    final Map<String, String> headers = {
-      "Accept": "application/json",
-      "content-type": "application/json"
-    };
+    final Map<String, String> headers = {"Accept": "application/json", "content-type": "application/json"};
 
     final String body = json.encode({
       'username': email, //kararlaştırılacak
@@ -47,9 +40,8 @@ class Auth with ChangeNotifier {
 
         if (tokenResponse.statusCode == 200) {
           final userData = json.decode(tokenResponse.body);
-
           user = User(
-              username: userData['username'],
+              id: userData['id'],
               email: userData['email'],
               firstName: userData['first_name'],
               lastName: userData['last_name']);
@@ -67,13 +59,10 @@ class Auth with ChangeNotifier {
     }
   }
 
-  Future<void> signup(
-      String name, String surname, String email, String password) async {
+  Future<void> signup(String name, String surname, String email, String password) async {
     Uri url = Uri.parse("${Constants.apiUrl}/signup/");
 
-    final Map<String, String> headers = {
-      'Content-Type': 'application/json; charset=UTF-8'
-    };
+    final Map<String, String> headers = {'Content-Type': 'application/json; charset=UTF-8'};
 
     final String body = json.encode({
       'username': email,
@@ -87,20 +76,22 @@ class Auth with ChangeNotifier {
     final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 201) {
-      final data = json.decode(response.body);
-      user = User(
-          username: data['username'],
-          email: data['email'],
-          firstName: data['first_name'],
-          lastName: data['last_name']);
+      try {
+        await login(email, password);
+      } catch (e) {
+        throw Exception("Something has happened");
+      }
+
       notifyListeners();
     } else if (response.statusCode == 400) {
-      throw UserExistException(
-          message: 'A user with that username already exists');
+      throw UserExistException(message: 'A user with that username already exists');
     } else {
       throw Exception("Something has happened");
     }
   }
 
-  Future<void> logout() async {}
+  void logout() {
+    user = null;
+    notifyListeners();
+  }
 }

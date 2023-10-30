@@ -1,9 +1,8 @@
 import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/login_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/widgets/strong_password_checks.dart';
-import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -59,9 +58,9 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void authenticate() async {
+  Future<bool> authenticate() async {
     if (!validate()) {
-      return;
+      return false;
     }
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -84,6 +83,7 @@ class _SignUpPageState extends State<SignUpPage> {
         isLoading = false;
       });
     }
+    return error ? false : true;
   }
 
   void validateStrongPassword() {
@@ -140,9 +140,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PageWithAppBar(
-      appBar: const LoginPageAppBar(),
-      child: Row(
+    return Scaffold(
+      body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -156,10 +155,21 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(
-                    "assets/images/logo.svg",
-                    width: 394.0,
-                    height: 120.0,
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        child: SvgPicture.asset(
+                          "assets/images/logo.svg",
+                          width: 394.0,
+                          height: 120.0,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 40.0),
                   Row(
@@ -273,7 +283,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   const SizedBox(height: 10.0),
                   AppButton(
-                    onTap: authenticate,
+                    onTap: () async {
+                      if (await authenticate() && mounted) {
+                        // Navigate to home page if authentication is successful
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      }
+                    },
                     text: "Sign Up",
                     height: 64,
                     isActive: buttonState,

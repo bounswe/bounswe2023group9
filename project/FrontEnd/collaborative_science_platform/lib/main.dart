@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
@@ -26,10 +27,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
-        ChangeNotifierProvider<ScreenNavigation>(
-            create: (context) => ScreenNavigation()),
-        ChangeNotifierProvider<ProfileDataProvider>(
-            create: (context) => ProfileDataProvider()),
+        ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
+        ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -43,8 +42,7 @@ class MyApp extends StatelessWidget {
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
           ChangePasswordPage.routeName: (context) => const ChangePasswordPage(),
-          AccountSettingsPage.routeName: (context) =>
-              const AccountSettingsPage(),
+          AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
         },
         navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(

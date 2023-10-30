@@ -8,6 +8,9 @@ class GraphPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageWithAppBar(appBar: HomePageAppBar(), child: Text("Graph")); // Profile Page Content
+    return const PageWithAppBar(
+      appBar: HomePageAppBar(),
+      child: Text("Graph"),
+    ); // Profile Page Content
   }
 }

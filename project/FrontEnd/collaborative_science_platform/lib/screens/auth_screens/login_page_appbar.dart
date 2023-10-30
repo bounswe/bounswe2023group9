@@ -11,6 +11,7 @@ class LoginPageAppBar extends StatelessWidget {
       children: [
         AppBarLogo(
           logoPath: 'assets/images/logo.svg',
+          height: 60.0,
         ),
       ],
     );
