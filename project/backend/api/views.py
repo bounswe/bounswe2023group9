@@ -97,7 +97,7 @@ def search(request):
     nodes = []
 
     if search_type == 'by' or search_type == 'all':
-        print(search_elements)
+        # print(search_elements)
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
             res_surname = User.objects.filter(last_name__icontains=el)
@@ -212,5 +212,19 @@ def get_theorem_from_id(request):
             'theorem_title': theorem[0].theorem_title,
             'theorem_content': theorem[0].theorem_content,
             'publish_date': theorem[0].publish_date,
+            }
+    return JsonResponse(data, status=200)
+
+
+def get_contributor_from_id(request):
+    id = int(request.GET.get("id"))
+    cont = Contributor.objects.filter(id=id)
+    if cont.count() == 0:
+        return JsonResponse({'message':'There is no contributor with this id.'},status=404)
+    user = User.objects.get(id=cont[0].user_id)
+    data = {'id': cont[0].id,
+            'username': user.username,
+            'name': user.first_name,
+            'surname': user.last_name,
             }
     return JsonResponse(data, status=200)
