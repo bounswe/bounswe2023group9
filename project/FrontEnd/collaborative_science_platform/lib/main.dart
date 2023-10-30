@@ -11,6 +11,7 @@ import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
+import 'package:collaborative_science_platform/screens/profile_page/change_password_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           ProfilePage.routeName: (context) => const ProfilePage(),
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
+          ChangePasswordPage.routeName: (context) => const ChangePasswordPage(),
           AccountSettingsPage.routeName: (context) =>
               const AccountSettingsPage(),
         },

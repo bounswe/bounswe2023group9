@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/profile_page/change_password_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me_edit.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -19,21 +20,21 @@ class AccountSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const PageWithAppBar(
       appBar: AccountSettingsAppBar(),
-      child: EditProfileForm(),
+      child: AccountSettingsForm(),
     );
   }
 }
 
-class EditProfileForm extends StatefulWidget {
-  const EditProfileForm({
+class AccountSettingsForm extends StatefulWidget {
+  const AccountSettingsForm({
     super.key,
   });
 
   @override
-  State<EditProfileForm> createState() => _EditProfileFormState();
+  State<AccountSettingsForm> createState() => _AccountSettingsFormState();
 }
 
-class _EditProfileFormState extends State<EditProfileForm> {
+class _AccountSettingsFormState extends State<AccountSettingsForm> {
   ProfileData profileData = ProfileData();
   final passwordController = TextEditingController();
   final aboutMeController = TextEditingController();
@@ -110,7 +111,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
           ),
           const SizedBox(height: 10),
           AboutMeEdit(aboutMeController),
-          const SizedBox(height: 20),
+          const Divider(height: 40.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -149,11 +150,55 @@ class _EditProfileFormState extends State<EditProfileForm> {
               ),
             ],
           ),
-          const Divider(height: 40.0),
+          const SizedBox(height: 10.0),
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
               onTap: () {},
+              child: Container(
+                height: 40.0,
+                width: MediaQuery.of(context).size.width - 40,
+                decoration: BoxDecoration(
+                    color: AppColors.secondaryColor,
+                    borderRadius: BorderRadius.circular(5.0)),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Save',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.0)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const Divider(height: 40.0),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                // Show Popup with EditProfileForm content
+                showDialog(
+                  context: context,
+                  builder: (context) => const AlertDialog(
+                    title: SizedBox(
+                      width: 500,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Change Password',
+                              style: TextStyle(fontSize: 20.0)),
+                        ],
+                      ),
+                    ),
+                    backgroundColor: Colors.white,
+                    shadowColor: Colors.white,
+                    content: ChangePasswordForm(),
+                  ),
+                );
+              },
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,
@@ -163,7 +208,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Save',
+                    Text('Change Password',
                         style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,

@@ -1,8 +1,9 @@
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class MobileEditProfile extends StatelessWidget {
-  const MobileEditProfile({super.key});
+class MobileEditProfileButton extends StatelessWidget {
+  const MobileEditProfileButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,8 @@ class MobileEditProfile extends StatelessWidget {
           height: 40.0,
           width: MediaQuery.of(context).size.width - 80,
           decoration: BoxDecoration(
-              color: Colors.blue, borderRadius: BorderRadius.circular(5.0)),
+              color: AppColors.primaryColor,
+              borderRadius: BorderRadius.circular(5.0)),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -12,7 +12,7 @@ class AccountSettingsAppBar extends StatelessWidget {
             IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.arrow_back_rounded)),
-            const Text("Edit Profile",
+            const Text("Account Settings",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
           ],
         )

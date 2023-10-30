@@ -13,22 +13,22 @@ class DesktopEditProfileButton extends StatelessWidget {
         onTap: () {
           // Show Popup with EditProfileForm content
           showDialog(
-              context: context,
-              builder: (context) => const AlertDialog(
-                    title: SizedBox(
-                      width: 500,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Edit Profile',
-                              style: TextStyle(fontSize: 20.0)),
-                        ],
-                      ),
-                    ),
-                    backgroundColor: Colors.white,
-                    shadowColor: Colors.white,
-                    content: EditProfileForm(),
-                  ));
+            context: context,
+            builder: (context) => const AlertDialog(
+              title: SizedBox(
+                width: 500,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Edit Profile', style: TextStyle(fontSize: 20.0)),
+                  ],
+                ),
+              ),
+              backgroundColor: Colors.white,
+              shadowColor: Colors.white,
+              content: AccountSettingsForm(),
+            ),
+          );
         },
         child: Container(
           height: 40.0,

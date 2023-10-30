@@ -11,7 +11,7 @@ import 'package:collaborative_science_platform/screens/home_page/home_page_appba
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile_button.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -98,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: MobileEditProfile(),
+                    child: MobileEditProfileButton(),
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
