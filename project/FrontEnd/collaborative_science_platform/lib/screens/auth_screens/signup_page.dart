@@ -1,5 +1,8 @@
+import 'package:collaborative_science_platform/exceptions/auth_exceptions.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/widgets/strong_password_checks.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -29,8 +32,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final nameFocusNode = FocusNode();
   final surnameFocusNode = FocusNode();
 
+  bool buttonState = false;
+  bool isLoading = false;
+
   bool obscuredPassword = true;
   bool error = false;
+
   bool passwordMatchError = false;
   bool weakPasswordError = false;
 
@@ -51,17 +58,45 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void authenticate() async {
+  Future<bool> authenticate() async {
     if (!validate()) {
-      return;
+      return false;
     }
     try {
-      await Provider.of<Auth>(context, listen: false)
-          .signup(nameController.text, emailController.text, passwordController.text, confirmPasswordController.text);
+      final auth = Provider.of<Auth>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await auth.signup(nameController.text, surnameController.text, emailController.text, passwordController.text);
+    } on UserExistException {
+      setState(() {
+        error = true;
+        errorMessage = "A user with that username already exists";
+      });
     } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+    return error ? false : true;
+  }
+
+  void validateStrongPassword() {
+    if (StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text, confirmPasswordController.text) &&
+        nameController.text.isNotEmpty &&
+        surnameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty) {
+      setState(() {
+        buttonState = true;
+      });
+    } else {
+      setState(() {
+        buttonState = false;
       });
     }
   }
@@ -106,11 +141,13 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: SizedBox(
-            width: Responsive.isMobile(context) ? double.infinity : 600,
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width : 600,
+            padding: const EdgeInsets.only(top: 40.0, right: 16, left: 16),
             child: SingleChildScrollView(
               // To avoid Render Pixel Overflow
               scrollDirection: Axis.vertical,
@@ -118,10 +155,21 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(
-                    "assets/images/logo.svg",
-                    width: 394.0,
-                    height: 120.0,
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        child: SvgPicture.asset(
+                          "assets/images/logo.svg",
+                          width: 394.0,
+                          height: 120.0,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 40.0),
                   Row(
@@ -135,9 +183,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
-                          suffixIcon: null,
                           height: 64.0,
-                          onChanged: null,
+                          onChanged: (_) {
+                            validateStrongPassword();
+                          },
                         ),
                       ),
                       const SizedBox(width: 10.0),
@@ -150,9 +199,10 @@ class _SignUpPageState extends State<SignUpPage> {
                               error && surnameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
-                          suffixIcon: null,
                           height: 64.0,
-                          onChanged: null,
+                          onChanged: (_) {
+                            validateStrongPassword();
+                          },
                         ),
                       ),
                     ],
@@ -165,9 +215,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
                     obscureText: false,
                     prefixIcon: const Icon(Icons.mail),
-                    suffixIcon: null,
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      validateStrongPassword();
+                    },
                   ),
                   const SizedBox(height: 10.0),
                   AppTextField(
@@ -188,8 +239,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: (text) {
-                      setState(() {});
+                    onChanged: (_) {
+                      validateStrongPassword();
                     },
                   ),
                   const SizedBox(height: 10.0),
@@ -217,7 +268,9 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
-                    onChanged: null,
+                    onChanged: (_) {
+                      validateStrongPassword();
+                    },
                   ),
                   const SizedBox(height: 10.0),
                   if (error)
@@ -230,47 +283,52 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   const SizedBox(height: 10.0),
                   AppButton(
-                    onTap: authenticate,
+                    onTap: () async {
+                      if (await authenticate() && mounted) {
+                        // Navigate to home page if authentication is successful
+                        Navigator.pushNamed(context, HomePage.routeName);
+                      }
+                    },
                     text: "Sign Up",
                     height: 64,
+                    isActive: buttonState,
+                    isLoading: isLoading,
                   ),
                   const SizedBox(height: 10.0),
-                  SingleChildScrollView(
-                    // To avoid Render Pixel Overflow
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
                           "Already have an account?",
                           style: TextStyle(
                             color: Colors.grey.shade700,
                           ),
                         ),
-                        const SizedBox(width: 4.0),
-                        MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/');
-                            },
-                            child: const Text(
-                              "Log in",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.hyperTextColor,
-                              ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, LoginPage.routeName);
+                          },
+                          child: const Text(
+                            "Log in",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.hyperTextColor,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

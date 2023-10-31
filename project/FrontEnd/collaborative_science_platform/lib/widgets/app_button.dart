@@ -2,17 +2,17 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
-  final void Function()? onTap;
   final String text;
   final double height;
+  final void Function() onTap;
   final bool isActive;
   final bool isLoading;
 
   const AppButton({
     super.key,
-    required this.onTap,
     required this.text,
     required this.height,
+    required this.onTap,
     this.isActive = true,
     this.isLoading = false,
   });
