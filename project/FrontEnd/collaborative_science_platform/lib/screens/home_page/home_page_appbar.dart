@@ -22,10 +22,7 @@ class HomePageAppBar extends StatelessWidget {
             const TopNavigationBar(),
             Row(children: [
               if (!Responsive.isMobile(context))
-                AppBarButton(
-                    icon: Icons.notifications,
-                    text: "Notifications",
-                    onPressed: () {}),
+                AppBarButton(icon: Icons.notifications, text: "Notifications", onPressed: () {}),
               const SizedBox(width: 10.0),
               const ProfileMenu(),
             ]),

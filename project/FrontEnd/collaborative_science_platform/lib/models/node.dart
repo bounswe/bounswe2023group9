@@ -1,6 +1,7 @@
+/*
 import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/contributor_user.dart';
-import 'package:collaborative_science_platform/models/proof.dart';
+import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/question.dart';
 import 'package:collaborative_science_platform/models/reviewer.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
@@ -40,3 +41,4 @@ class Node {
     required this.noVisits,
   });
 }
+*/

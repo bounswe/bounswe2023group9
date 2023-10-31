@@ -11,8 +11,7 @@ class TopNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ScreenNavigation screenNavigation =
-        Provider.of<ScreenNavigation>(context);
+    final ScreenNavigation screenNavigation = Provider.of<ScreenNavigation>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -87,8 +86,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
               selected = ScreenTab.pleaseLogin;
             }
           }
-          Provider.of<ScreenNavigation>(context, listen: false)
-              .setSelectedTab(selected);
+          Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected);
         },
         child: Container(
           color: isHovering ? Colors.grey[300] : Colors.transparent,
@@ -99,8 +97,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                 Padding(
                   padding: (Responsive.isMobile(context))
                       ? const EdgeInsets.symmetric(horizontal: 0, vertical: 0)
-                      : const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 4.0),
+                      : const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                   child: Column(
                     children: [
                       Center(
@@ -150,9 +147,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  color: widget.isSelected
-                      ? Colors.indigo[600]
-                      : Colors.transparent,
+                  color: widget.isSelected ? Colors.indigo[600] : Colors.transparent,
                   height: 5,
                   width: MediaQuery.of(context).size.width / 5,
                 ),

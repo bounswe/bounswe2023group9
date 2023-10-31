@@ -1,7 +1,12 @@
+import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/small_node.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/models/theorem.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -9,9 +14,23 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:flutter/material.dart';
 
 class NodeDetails extends StatefulWidget {
-  final MockNode node;
+  final NodeDetailed node;
+  final List<User> contributors;
   final ScrollController controller;
-  const NodeDetails({super.key, required this.node, required this.controller});
+  final Theorem theorem;
+  final List<Proof> proofs;
+  final List<NodeDetailed> references;
+  final List<NodeDetailed> citations;
+  const NodeDetails({
+    super.key,
+    required this.node,
+    required this.controller,
+    required this.contributors,
+    required this.proofs,
+    required this.theorem,
+    required this.citations,
+    required this.references,
+  });
 
   @override
   State<NodeDetails> createState() => _NodeDetailsState();
@@ -36,7 +55,6 @@ class _NodeDetailsState extends State<NodeDetails> {
       child: SingleChildScrollView(
         primary: false,
         scrollDirection: Axis.vertical,
-        //controller: widget.controller,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -47,14 +65,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                      padding: Responsive.isDesktop(context)
-                          ? const EdgeInsets.all(70.0)
-                          : const EdgeInsets.all(10.0),
+                      padding: Responsive.isDesktop(context) ? const EdgeInsets.all(70.0) : const EdgeInsets.all(10.0),
                       child: Text(widget.node.nodeTitle,
                           textAlign: TextAlign.center,
-                          style: Responsive.isDesktop(context)
-                              ? TextStyles.title1
-                              : TextStyles.title2)),
+                          style: Responsive.isDesktop(context) ? TextStyles.title1 : TextStyles.title2)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -83,66 +97,76 @@ class _NodeDetailsState extends State<NodeDetails> {
             ),
             if (currentIndex == 0)
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: CardContainer(
-                  child: Text(
-                    widget.node.content,
-                    style: TextStyles.bodyBlack,
-                  ),
-                ),
-              ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Container(
+                    width: Responsive.desktopPageWidth,
+                    decoration: BoxDecoration(color: Colors.grey[200]),
+                    child: CardContainer(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.theorem.theoremTitle,
+                          style: TextStyles.title4,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: Text(widget.theorem.theoremContent, style: TextStyles.bodyBlack),
+                        ),
+                        RichText(
+                          textAlign: TextAlign.start,
+                          text: TextSpan(children: <TextSpan>[
+                            const TextSpan(
+                              text: "published on ",
+                              style: TextStyles.bodyGrey,
+                            ),
+                            TextSpan(
+                              text: widget.node.publishDate.toString(),
+                              style: TextStyles.bodyBlack,
+                            )
+                          ]),
+                        ),
+                      ],
+                    )),
+                  )),
             if (currentIndex == 1)
               //proofs
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: CardContainer(
-                  child: Text(
-                    widget.node.content,
-                    style: TextStyles.bodyBlack,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: ProofListView(proof: widget.proofs),
               ),
             if (currentIndex == 2)
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: References(references: [
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1)
-                ]),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: ReferencesView(nodes: widget.references, ref: true),
               ),
             if (currentIndex == 3)
               //citations
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: References(references: [
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1),
-                  SmallNode.getLoremIpsum(1)
-                ]),
+                child: ReferencesView(nodes: widget.citations),
               ),
             if (currentIndex == 4)
               //Q/A
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: CardContainer(
-                  child: Text(
-                    "",
-                    style: TextStyles.bodyBlack,
-                  ),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: QuestionsView(questions: [
+                  Question(
+                      question: "What is a Finite Automaton?",
+                      answer:
+                          "A Finite Automaton, also known as a Finite State Machine (FSM), is a theoretical model used in computer science and mathematics to describe computation processes. It consists of a finite set of states, an input alphabet, transition rules, an initial state, and a set of accepting (or final) states."),
+                  Question(
+                      question: "Can a Finite Automaton recognize context-free languages?",
+                      answer:
+                          "No, Finite Automata can only recognize regular languages, which are a subset of context-free languages. Context-free languages require more powerful models like Pushdown Automata or Turing Machines for recognition.")
+                ]),
               ),
             if (currentIndex == 5)
               //Q/A
               Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Contributors(
-                      contributors: widget.node.contributors,
-                      controller: widget.controller)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Contributors(contributors: widget.contributors, controller: widget.controller)),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+/*
 import 'package:collaborative_science_platform/models/account.dart';
 import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/collaboration_request.dart';
@@ -30,4 +31,4 @@ class Reviewer extends Contributor {
             workspaces: workspaces,
             collaborationRequestsGotten: collaborationRequestsGotten,
             annotations: annotations);
-}
+}*/
