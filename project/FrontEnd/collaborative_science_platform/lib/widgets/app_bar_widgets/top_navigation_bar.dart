@@ -44,9 +44,9 @@ class TopNavigationBar extends StatelessWidget {
         if (Responsive.isMobile(context))
           NavigationBarItem(
             icon: Icons.person,
-            value: ScreenTab.profileOptions,
-            isSelected: screenNavigation.selectedTab == ScreenTab.profileOptions,
-            text: "Profile Options",
+            value: ScreenTab.profile,
+            isSelected: screenNavigation.selectedTab == ScreenTab.profile,
+            text: "Profile",
           ),
       ],
     );
@@ -81,7 +81,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
       child: GestureDetector(
         onTap: () {
           ScreenTab selected = widget.value;
-          if (selected == ScreenTab.profileOptions) {
+          if (selected == ScreenTab.profile) {
             if (!Provider.of<Auth>(context, listen: false).isSignedIn) {
               selected = ScreenTab.pleaseLogin;
             }

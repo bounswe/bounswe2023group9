@@ -8,7 +8,8 @@ import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
   User? user;
-  //User? user = User(username: "Abc", email: "omer.unal@boun.edu.tr", firstName: "Omer", lastName: "Unal");
+  //User? user =
+  //  User(email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
 
   bool get isSignedIn {
     return user != null;
@@ -76,6 +77,13 @@ class Auth with ChangeNotifier {
     final response = await http.post(url, headers: headers, body: body);
 
     if (response.statusCode == 201) {
+      final data = json.decode(response.body);
+      user = User(
+          // TODO: fix this
+          id: data['id'],
+          email: data['email'],
+          firstName: data['first_name'],
+          lastName: data['last_name']);
       try {
         await login(email, password);
       } catch (e) {

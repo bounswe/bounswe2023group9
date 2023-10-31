@@ -1,15 +1,14 @@
-import 'package:collaborative_science_platform/helpers/date_to_string.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:flutter/material.dart';
 
-class HomePageNodeCard extends StatelessWidget {
-  final SmallNode smallNode;
+class ProfileNodeCard extends StatelessWidget {
+  final Node profileNode;
   final Color? color;
   final Function() onTap;
 
-  const HomePageNodeCard({
+  const ProfileNodeCard({
     super.key,
-    required this.smallNode,
+    required this.profileNode,
     this.color,
     required this.onTap,
   });
@@ -33,7 +32,7 @@ class HomePageNodeCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                smallNode.nodeTitle,
+                profileNode.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
@@ -41,9 +40,9 @@ class HomePageNodeCard extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Text(
-                smallNode.contributors
+                profileNode.contributors
                     .map((user) =>
-                        "${user.name} ${user.surname} (${user.email})")
+                        "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
@@ -56,7 +55,7 @@ class HomePageNodeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    getDurationFromNow(smallNode.publishDate),
+                    profileNode.publishDate,
                     style: const TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.w600,
@@ -64,15 +63,6 @@ class HomePageNodeCard extends StatelessWidget {
                   ),
                 ],
               ),
-              // SizedBox(height: 12.0),
-              // Text(
-              //   smallNode.theorem,
-              //   maxLines: 4,
-              //   overflow: TextOverflow.ellipsis,
-              //   style: TextStyle(
-              //     fontSize: 14.0,
-              //   ),
-              // ),
             ],
           ),
         ),

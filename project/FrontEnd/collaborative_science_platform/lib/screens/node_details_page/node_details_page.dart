@@ -95,14 +95,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Contributors(
-                      contributors:
-                          contributors, //widget.inputNode.contributors,
+                      contributors: contributors, //widget.inputNode.contributors,
                       controller: controller1,
                     ),
                     NodeDetails(
                       proofs: proof,
-                      contributors:
-                          contributors, //widget.inputNode.contributors,
+                      contributors: contributors, //widget.inputNode.contributors,
                       theorem: theorem,
                       references: references,
                       citations: citations,

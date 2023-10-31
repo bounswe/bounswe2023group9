@@ -1,7 +1,7 @@
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +18,7 @@ class ProofListView extends StatelessWidget {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           padding: const EdgeInsets.all(8),
-          itemCount:
-              Responsive.isDesktop(context) ? proof.length : proof.length + 1,
+          itemCount: Responsive.isDesktop(context) ? proof.length : proof.length + 1,
           itemBuilder: (BuildContext context, int index) {
             if (Responsive.isDesktop(context)) {
               return Padding(
@@ -50,9 +49,7 @@ class ProofListView extends StatelessWidget {
                         children: [
                           Icon(
                             proof[index].isValid ? Icons.check : Icons.clear,
-                            color: proof[index].isValid
-                                ? AppColors.successColor
-                                : AppColors.dangerColor,
+                            color: proof[index].isValid ? AppColors.successColor : AppColors.dangerColor,
                           ),
                           Text(
                             proof[index].isValid ? "valid" : "invalid",
@@ -79,17 +76,11 @@ class ProofListView extends StatelessWidget {
             } else {
               if (index == 0) {
                 return Padding(
-                  padding: Responsive.isDesktop(context)
-                      ? const EdgeInsets.all(10)
-                      : const EdgeInsets.all(5),
+                  padding: Responsive.isDesktop(context) ? const EdgeInsets.all(10) : const EdgeInsets.all(5),
                   child: Text(
                     "Proofs",
-                    style: Responsive.isDesktop(context)
-                        ? TextStyles.title2secondary
-                        : TextStyles.title3secondary,
-                    textAlign: Responsive.isDesktop(context)
-                        ? TextAlign.center
-                        : TextAlign.start,
+                    style: Responsive.isDesktop(context) ? TextStyles.title2secondary : TextStyles.title3secondary,
+                    textAlign: Responsive.isDesktop(context) ? TextAlign.center : TextAlign.start,
                   ),
                 );
               } else {
@@ -120,12 +111,8 @@ class ProofListView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Icon(
-                              proof[index - 1].isValid
-                                  ? Icons.check
-                                  : Icons.clear,
-                              color: proof[index - 1].isValid
-                                  ? AppColors.successColor
-                                  : AppColors.dangerColor,
+                              proof[index - 1].isValid ? Icons.check : Icons.clear,
+                              color: proof[index - 1].isValid ? AppColors.successColor : AppColors.dangerColor,
                             ),
                             Text(
                               proof[index - 1].isValid ? "valid" : "invalid",

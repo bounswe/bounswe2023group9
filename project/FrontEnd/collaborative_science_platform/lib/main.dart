@@ -7,11 +7,11 @@ import 'package:collaborative_science_platform/screens/auth_screens/login_page.d
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/account_settings.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_options.dart';
+import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -30,16 +30,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
-        ChangeNotifierProvider<ScreenNavigation>(
-            create: (context) => ScreenNavigation()),
-        ChangeNotifierProvider<ProfileDataProvider>(
-            create: (context) => ProfileDataProvider()),
-        ChangeNotifierProvider<NodeDetailsProvider>(
-            create: (context) => NodeDetailsProvider()),
-        ChangeNotifierProvider<NodeProvider>(
-            create: (context) => NodeProvider()),
-        ChangeNotifierProvider<UserProvider>(
-            create: (context) => UserProvider()),
+        ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
+        ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
+        ChangeNotifierProvider<NodeDetailsProvider>(create: (context) => NodeDetailsProvider()),
+        ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
+        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -49,16 +44,19 @@ class MyApp extends StatelessWidget {
           LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
-          ProfileOptions.routeName: (context) => const ProfileOptions(),
+          ///ProfilePage.routeName: (context) => const ProfilePage(),
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
-          AccountSettingsPage.routeName: (context) =>
-              const AccountSettingsPage(),
+          AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
           PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
           NodeDetailsPage.routeName: (context) {
-            final int nodeId =
-                ModalRoute.of(context)!.settings.arguments as int;
+            final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
             return NodeDetailsPage(nodeID: nodeId);
+          },
+          ProfilePage.routeName: (context) {
+            final String email =
+                ModalRoute.of(context)!.settings.arguments as String ?? "";
+            return ProfilePage(email: email);
           },
         },
         navigatorKey: ScreenNavigation.navigatorKey,

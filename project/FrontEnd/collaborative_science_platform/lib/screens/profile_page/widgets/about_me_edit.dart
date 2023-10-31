@@ -8,8 +8,8 @@ class AboutMeEdit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      height: 120,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      height: 180,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
