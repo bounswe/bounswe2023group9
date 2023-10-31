@@ -39,7 +39,8 @@ class ScreenNavigation extends ChangeNotifier {
         navigatorKey.currentState?.pushNamed(NotificationPage.routeName);
         break;
       case ScreenTab.profile:
-        navigatorKey.currentState?.pushNamed(ProfilePage.routeName);
+        navigatorKey.currentState
+            ?.pushNamed(ProfilePage.routeName, arguments: "");
         break;
       case ScreenTab.pleaseLogin:
         navigatorKey.currentState?.pushNamed(PleaseLoginPage2.routeName);
