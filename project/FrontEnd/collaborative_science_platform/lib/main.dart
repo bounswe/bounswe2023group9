@@ -55,7 +55,11 @@ class MyApp extends StatelessWidget {
           AccountSettingsPage.routeName: (context) =>
               const AccountSettingsPage(),
           PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
-          //NodeDetailsPage.routeName: (context) => const NodeDetailsPage(),
+          NodeDetailsPage.routeName: (context) {
+            final int nodeId =
+                ModalRoute.of(context)!.settings.arguments as int;
+            return NodeDetailsPage(nodeID: nodeId);
+          },
         },
         navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(

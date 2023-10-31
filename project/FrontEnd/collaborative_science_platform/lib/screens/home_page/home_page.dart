@@ -6,6 +6,7 @@ import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_user_card.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
@@ -173,7 +174,8 @@ class NodeCards extends StatelessWidget {
                 return HomePageNodeCard(
                   smallNode: nodeList[index],
                   onTap: () {
-                    // Navigate to the Screen of the Node
+                    Navigator.pushNamed(context, NodeDetailsPage.routeName,
+                        arguments: nodeList[index].nodeId);
                   },
                 );
               },
