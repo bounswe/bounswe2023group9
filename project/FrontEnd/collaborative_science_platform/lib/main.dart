@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
-          ProfilePage.routeName: (context) => const ProfilePage(),
+          ///ProfilePage.routeName: (context) => const ProfilePage(),
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
           AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
@@ -52,6 +52,11 @@ class MyApp extends StatelessWidget {
           NodeDetailsPage.routeName: (context) {
             final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
             return NodeDetailsPage(nodeID: nodeId);
+          },
+          ProfilePage.routeName: (context) {
+            final String email =
+                ModalRoute.of(context)!.settings.arguments as String ?? "";
+            return ProfilePage(email: email);
           },
         },
         navigatorKey: ScreenNavigation.navigatorKey,

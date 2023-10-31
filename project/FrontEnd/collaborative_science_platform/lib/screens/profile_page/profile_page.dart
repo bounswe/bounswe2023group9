@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile_button.dart';
@@ -17,8 +18,10 @@ import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
+  final String email;
 
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.email});
+
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -53,7 +56,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void getUserData() async {
     try {
-      final User user = Provider.of<Auth>(context).user!;
+      if (widget.email != "") {
+        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        setState(() {
+          isLoading = true;
+        });
+        await profileDataProvider.getData(widget.email!);
+        setState(() {
+          profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+          noWorks = profileData.nodes.length;
+          isLoading = false;
+        });
+      } else {
+        final User user = Provider.of<Auth>(context).user!;
       final profileDataProvider = Provider.of<ProfileDataProvider>(context);
       setState(() {
         isLoading = true;
@@ -62,7 +77,10 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         profileData = (profileDataProvider.profileData ?? {} as ProfileData);
         noWorks = profileData.nodes.length;
+          isLoading = false;
       });
+      }
+     
     } catch (e) {
       setState(() {
         error = true;
@@ -85,7 +103,14 @@ class _ProfilePageState extends State<ProfilePage> {
           mobile: SingleChildScrollView(
             child: SizedBox(
               width: Responsive.getGenericPageWidth(context),
-              child: Column(
+              child: isLoading
+                  ? Container(
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Column(
                 children: [
                   AboutMe(
                     aboutMe: profileData.aboutMe,
@@ -95,20 +120,26 @@ class _ProfilePageState extends State<ProfilePage> {
                     noWorks: noWorks,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 10),
                     child: Row(
-                      children: [const Expanded(child: MobileEditProfileButton()), Expanded(child: LogOutButton())],
+                            children: [
+                              const Expanded(child: MobileEditProfileButton()),
+                              Expanded(child: LogOutButton())
+                            ],
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
                     child: ProfileActivityTabBar(
                       callback: updateIndex,
                     ),
                   ),
                   if (currentIndex == 0)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -117,7 +148,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           itemBuilder: (context, index) {
                             return ProfileNodeCard(
                               profileNode: profileData.nodes.elementAt(index),
-                              onTap: () {},
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, NodeDetailsPage.routeName,
+                                          arguments: profileData.nodes
+                                              .elementAt(index)
+                                              .id);
+                                    },
                             );
                           },
                         ),
@@ -125,7 +162,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   if (currentIndex == 1)
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -140,7 +178,14 @@ class _ProfilePageState extends State<ProfilePage> {
           desktop: SingleChildScrollView(
             child: SizedBox(
               width: Responsive.getGenericPageWidth(context),
-              child: Column(
+              child: isLoading
+                  ? Container(
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : Column(
                 children: [
                   AboutMe(
                     aboutMe: profileData.aboutMe,
@@ -154,14 +199,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: DesktopEditProfileButton(),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 10),
                     child: ProfileActivityTabBar(
                       callback: updateIndex,
                     ),
                   ),
                   if (currentIndex == 0)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -170,7 +217,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           itemBuilder: (context, index) {
                             return ProfileNodeCard(
                               profileNode: profileData.nodes.elementAt(index),
-                              onTap: () {},
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                          context, NodeDetailsPage.routeName,
+                                          arguments: profileData.nodes
+                                              .elementAt(index)
+                                              .id);
+                                    },
                             );
                           },
                         ),
@@ -178,7 +231,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   if (currentIndex == 1)
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: SizedBox(
                           height: 400,
@@ -201,7 +255,14 @@ class _ProfilePageState extends State<ProfilePage> {
       child: SingleChildScrollView(
         child: SizedBox(
           width: Responsive.getGenericPageWidth(context),
-          child: Column(
+          child: isLoading
+              ? Container(
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
+              : Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               AboutMe(
@@ -212,24 +273,33 @@ class _ProfilePageState extends State<ProfilePage> {
                 noWorks: noWorks,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                 child: ProfileActivityTabBar(
                   callback: updateIndex,
                 ),
               ),
               if (currentIndex == 0)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
                   child: CardContainer(
                     child: ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+                            physics:
+                                const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemCount: profileData.nodes.length,
                       itemBuilder: (context, index) {
                         return ProfileNodeCard(
                           profileNode: profileData.nodes.elementAt(index),
-                          onTap: () {},
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, NodeDetailsPage.routeName,
+                                      arguments: profileData.nodes
+                                          .elementAt(index)
+                                          .id);
+                                },
                         );
                       },
                     ),

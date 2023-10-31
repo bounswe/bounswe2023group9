@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
@@ -37,7 +38,9 @@ class AuthenticatedProfileMenu extends StatelessWidget {
           case 'profile':
             Provider.of<ScreenNavigation>(context, listen: false)
                 .setSelectedTab(ScreenTab.profile);
-            Navigator.pushNamed(context, ProfilePage.routeName);
+            Navigator.pushNamed(context, ProfilePage.routeName,
+                arguments: auth.user!.email);
+                                    
             break;
           case 'logout':
             auth.logout();

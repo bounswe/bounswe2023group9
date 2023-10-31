@@ -41,7 +41,10 @@ class HomePageNodeCard extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Text(
-                smallNode.contributors.join(", "),
+                smallNode.contributors
+                    .map((user) =>
+                        "${user.name} ${user.surname} (${user.email})")
+                    .join(", "),
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14.0,

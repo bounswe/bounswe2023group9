@@ -8,6 +8,7 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/home_pa
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_user_card.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:flutter/material.dart';
@@ -209,7 +210,10 @@ class UserCards extends StatelessWidget {
               itemBuilder: (context, index) {
                 return HomePageUserCard(
                   profileData: userList[index],
-                  onTap: () {/* Navigate to the Profile Page of the User */},
+                  onTap: () {
+                    Navigator.pushNamed(context, ProfilePage.routeName,
+                        arguments: userList[index].email);
+                  },
                   color: AppColors.primaryLightColor,
                   profilePagePath: "assets/images/gumball.jpg",
                 );

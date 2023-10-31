@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -41,6 +42,10 @@ class Contributors extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(5),
                 child: CardContainer(
+                  onTap: () {
+                    Navigator.pushNamed(context, ProfilePage.routeName,
+                        arguments: contributors[index - 1].email);
+                  },
                   child: Column(
                     children: [
                       Text(

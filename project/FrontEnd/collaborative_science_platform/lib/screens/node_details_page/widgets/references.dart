@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -23,6 +24,10 @@ class ReferencesView extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(5),
               child: CardContainer(
+                onTap: () {
+                  Navigator.pushNamed(context, NodeDetailsPage.routeName,
+                      arguments: nodes[index].nodeId);
+                },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
