@@ -1,12 +1,7 @@
-import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_appbar.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_input_widget.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -52,7 +47,6 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Provider.of<Auth>(context).user;
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 36.0),
@@ -88,17 +82,11 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,
-                decoration: BoxDecoration(
-                    color: AppColors.primaryColor,
-                    borderRadius: BorderRadius.circular(5.0)),
+                decoration: BoxDecoration(color: AppColors.primaryColor, borderRadius: BorderRadius.circular(5.0)),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Save',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0)),
+                    Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
                   ],
                 ),
               ),

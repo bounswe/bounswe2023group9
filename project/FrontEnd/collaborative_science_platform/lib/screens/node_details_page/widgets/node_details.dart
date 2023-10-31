@@ -1,6 +1,5 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
@@ -144,7 +143,7 @@ class _NodeDetailsState extends State<NodeDetails> {
             if (currentIndex == 3)
               //citations
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: ReferencesView(nodes: widget.citations),
               ),
             if (currentIndex == 4)
