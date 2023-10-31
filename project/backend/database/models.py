@@ -7,11 +7,15 @@ from datetime import datetime
 # Create your models here.
 class Workspace(models.Model):
     """
-     This class definition is written beforehand (to be implemented afterwards) 
+     This class definition is written beforehand (to be implemented afterwards)
      in order to be referred from other classes. e.g. Contributor
     """
+class Entry(models.Model):
+    """
+     This class definition is written beforehand (to be implemented afterwards)
+     in order to be referred from other classes. e.g. Workspace
+    """
     pass
-
 
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -52,6 +56,8 @@ class Reviewer(Contributor):
     
     def get_review_requests(self):                          
         return ReviewRequest.objects.filter(reviewer=self)
+
+
 
 class Admin(BasicUser):
     def __str__(self):
@@ -144,6 +150,30 @@ class Node(models.Model):
 
     def increment_num_visits(self):
         self.num_visits += 1
+
+class Workspace:
+    workspace_id = models.AutoField(primary_key=True)
+    node = models.ForeignKey(Node, on_delete=models.SET_NULL, related_name="Workspaces") #?
+    workspace_title = models.CharField(max_length=100)
+    contributors = models.ManyToManyField(Contributor, related_name='WorkspaceContributors')
+    collab_requests = models.ManyToManyField(Request, related_name='CollaborationRequests')
+    references = models.ManyToManyField(Node, related_name = 'WorkspaceReferences')
+    reviews = models.ManyToManyField(ReviewRequest,related_name = 'WorkspaceReviews') #?
+    semantic_tags = models.ManyToManyField(SemanticTagrelated_name = 'WorkspaceSemanticTags')
+    wiki_tags = models.ManyToManyField(WikiTag,related_name = 'WorkspaceWikiTags')
+    is_finalized = models.BooleanField()
+    is_published = models.BooleanField()
+    is_in_review = models.BooleanField()
+    is_rejected = models.BooleanField()
+    theorem_posted = models.BooleanField() #???
+    num_approvals = models.IntegerField()
+    theorem_entry = models.ForeignKey(Entry,on_delete=models.SET_NULL)
+    final_entry = models.ForeignKey(Entry,on_delete=models.SET_NULL)
+    entries = models.ManyToManyField(Entry, related_name='WorkspaceEntries')
+    def finalize_workspace(self):
+        self.is_finalized = True
+        self.is_in_review = False
+        return True
 
 
 class Proof(models.Model):
