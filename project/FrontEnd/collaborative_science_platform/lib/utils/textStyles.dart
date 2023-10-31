@@ -33,6 +33,10 @@ class TextStyles {
     fontSize: 24,
     fontWeight: FontWeight.normal,
   );
+  static const TextStyle title4black = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.normal,
+  );
 
   static const TextStyle bodySecondary = TextStyle(
     color: AppColors.secondaryColor,
