@@ -1,8 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:collaborative_science_platform/widgets/card_container.dart';
-import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -11,18 +6,15 @@ import 'package:collaborative_science_platform/screens/home_page/home_page_appba
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/logout_button.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile_button.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_node_card.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/desktop_edit_profile_button.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/mobile_edit_profile_button.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_activity_tabbar.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
@@ -55,6 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void didChangeDependencies() {
     if (_isFirstTime) {
       getUserData();
+      print("hey");
       _isFirstTime = false;
     }
     super.didChangeDependencies();
@@ -66,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final profileDataProvider = Provider.of<ProfileDataProvider>(context);
       setState(() {
         isLoading = true;
+        print("ay");
       });
       await profileDataProvider.getData(user.email);
       setState(() {
@@ -76,6 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
+        print(e);
       });
     }
   }
@@ -83,6 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
+    print(user?.email);
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
@@ -108,7 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         horizontal: 30, vertical: 10),
                     child: Row(
                       children: [
-                        Expanded(child: MobileEditProfile()),
+                        Expanded(child: MobileEditProfileButton()),
                         Expanded(child: LogOutButton())
                       ],
                     ),
@@ -121,9 +117,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   if (currentIndex == 0)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -147,11 +143,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   if (currentIndex == 1)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: SizedBox(
+                        child: Container(
                           height: 400,
                           child: QuestionActivity(),
                         ),
@@ -173,8 +169,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     surname: profileData.surname,
                     noWorks: noWorks,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
                     child: DesktopEditProfileButton(),
                   ),
                   Padding(
@@ -185,9 +182,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   if (currentIndex == 0)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                       child: CardContainer(
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -211,11 +208,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   if (currentIndex == 1)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
                       child: CardContainer(
-                        child: SizedBox(
+                        child: Container(
                           height: 400,
                           child: QuestionActivity(),
                         ),
@@ -254,8 +251,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               if (currentIndex == 0)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: CardContainer(
                     child: ListView.builder(
                       physics:
@@ -281,10 +279,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               if (currentIndex == 1)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: CardContainer(
-                    child: SizedBox(
+                    child: Container(
                       height: 400,
                       child: QuestionActivity(),
                     ),
@@ -300,8 +299,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
 // TODO: currently no API to get questions
 class QuestionActivity extends StatelessWidget {
-  const QuestionActivity({super.key});
-
   @override
   Widget build(BuildContext context) {
     return ListView.builder(

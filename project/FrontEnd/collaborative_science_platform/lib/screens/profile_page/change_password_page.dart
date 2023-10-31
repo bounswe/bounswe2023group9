@@ -5,7 +5,7 @@ import 'package:collaborative_science_platform/screens/profile_page/widgets/sett
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:collaborative_science_platform/utils/textStyles.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_input_widget.dart';
