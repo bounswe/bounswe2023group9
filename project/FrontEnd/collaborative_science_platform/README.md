@@ -1,6 +1,6 @@
 # collaborative_science_platform
 
-A new Flutter project.
+Collaborative Science Platform App
 
 ## Running the Flutter App locally
 
@@ -20,8 +20,7 @@ follow these steps:
 
 `flutter build web --release`
 
-`flutter run -d web`
-
+This will generate the files in the `build/web` directory.
 ## Releasing an Android App
 
 1. Navigate to your project directory:
