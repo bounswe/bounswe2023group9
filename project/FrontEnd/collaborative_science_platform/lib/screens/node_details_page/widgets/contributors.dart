@@ -21,39 +21,39 @@ class Contributors extends StatelessWidget {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           padding: const EdgeInsets.all(8),
-          itemCount: contributors.length + 1,
+          itemCount: contributors.length,
           itemBuilder: (BuildContext context, int index) {
-            if (index == 0) {
-              return Padding(
-                padding: Responsive.isDesktop(context)
-                    ? const EdgeInsets.all(10)
-                    : const EdgeInsets.all(5),
-                child: Text(
-                  "Contributors",
-                  style: Responsive.isDesktop(context)
-                      ? TextStyles.title2secondary
-                      : TextStyles.title3secondary,
-                  textAlign: Responsive.isDesktop(context)
-                      ? TextAlign.center
-                      : TextAlign.start,
-                ),
-              );
-            } else {
+            // if (index == 0) {
+            //   return Padding(
+            //     padding: Responsive.isDesktop(context)
+            //         ? const EdgeInsets.all(10)
+            //         : const EdgeInsets.all(5),
+            //     child: Text(
+            //       "Contributors",
+            //       style: Responsive.isDesktop(context)
+            //           ? TextStyles.title2secondary
+            //           : TextStyles.title3secondary,
+            //       textAlign: Responsive.isDesktop(context)
+            //           ? TextAlign.center
+            //           : TextAlign.start,
+            //     ),
+            //   );
+            // } else {
               return Padding(
                 padding: const EdgeInsets.all(5),
                 child: CardContainer(
                   onTap: () {
                     Navigator.pushNamed(context, ProfilePage.routeName,
-                        arguments: contributors[index - 1].email);
+                      arguments: contributors[index].email);
                   },
                   child: Column(
                     children: [
                       Text(
-                        "${contributors[index - 1].firstName} ${contributors[index - 1].lastName}",
+                      "${contributors[index].firstName} ${contributors[index].lastName}",
                         style: TextStyles.title4,
                       ),
                       Text(
-                        contributors[index - 1].email,
+                      contributors[index].email,
                         style: TextStyles.bodyGrey,
                       )
                     ],
@@ -61,7 +61,7 @@ class Contributors extends StatelessWidget {
                 ),
               );
             }
-          }),
+          ),
     );
   }
 }
