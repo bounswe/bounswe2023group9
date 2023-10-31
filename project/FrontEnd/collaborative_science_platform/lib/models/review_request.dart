@@ -1,3 +1,4 @@
+/*
 import 'package:collaborative_science_platform/models/request.dart';
 import 'package:collaborative_science_platform/models/status.dart';
 import 'package:collaborative_science_platform/models/review.dart';
@@ -24,3 +25,4 @@ class ReviewRequest extends Request {
           status: status,
         );
 }
+*/

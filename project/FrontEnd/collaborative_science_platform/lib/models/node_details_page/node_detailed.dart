@@ -1,10 +1,12 @@
+import 'package:collaborative_science_platform/models/theorem.dart';
+
 class NodeDetailed {
   int nodeId;
   String nodeTitle;
   String publishDate;
   List<int> contributors;
   List<int> proof;
-  int theorem;
+  Theorem? theorem;
   //List<User> reviewers;
   List<int> references;
   List<int> citations;
@@ -21,7 +23,7 @@ class NodeDetailed {
     this.nodeTitle = "",
     this.contributors = const [],
     this.proof = const [],
-    this.theorem = 0,
+    this.theorem,
     this.publishDate = "",
     //required this.reviewers,
     this.references = const [],
@@ -57,7 +59,7 @@ class NodeDetailed {
         nodeTitle: jsonString['node_title'],
         contributors: contributors,
         proof: proof,
-        theorem: jsonString['theorem'],
+        theorem: Theorem(theoremID: jsonString['theorem'] ?? 0),
         publishDate: jsonString['publish_date'],
         //reviewers: reviewers,
         references: references,

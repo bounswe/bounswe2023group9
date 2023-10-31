@@ -1,3 +1,4 @@
+/*
 import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/reviewer.dart';
 import 'package:collaborative_science_platform/models/status.dart';
@@ -15,3 +16,4 @@ class Review {
     required this.comments,
   });
 }
+*/

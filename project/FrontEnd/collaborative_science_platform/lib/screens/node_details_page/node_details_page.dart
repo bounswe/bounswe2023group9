@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
@@ -64,7 +63,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
         proof = nodeDetailsProvider.proof;
-        theorem = nodeDetailsProvider.theorem as Theorem;
+        theorem = nodeDetailsProvider.theorem;
         references = nodeDetailsProvider.references;
         citations = nodeDetailsProvider.citations;
         contributors = nodeDetailsProvider.contributors;
