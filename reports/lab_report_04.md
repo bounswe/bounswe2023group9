@@ -21,7 +21,7 @@
 | Home Page GET API | [#286](https://github.com/bounswe/bounswe2023group9/issues/286) | Ali Mert, Hakan | 22.10.2023 | 5hr | -- | -- |
 | Profile Page | [#288](https://github.com/bounswe/bounswe2023group9/issues/288) | Bengisu, Leyla, Zülal | 24.10.2023 | 9hr | 9hr | [#320](https://github.com/bounswe/bounswe2023group9/pull/320) |
 | Home Page | [#289](https://github.com/bounswe/bounswe2023group9/issues/289) | Abdullah, Mehmet, Ömer Faruk | 24.10.2023 | 12hr | 15hr | [#320](https://github.com/bounswe/bounswe2023group9/pull/320) |
-| Generic Parent Page | [#290](https://github.com/bounswe/bounswe2023group9/issues/290) | Ömer Faruk | 22.10.2023 | 2hr | 3hr | [#320](https://github.com/bounswe/bounswe2023group9/pull/320) |
+| Generic Parent Page | [#290](https://github.com/bounswe/bounswe2023group9/issues/290) | Ömer Faruk | 22.10.2023 | 2hr | 3hr | [#309](https://github.com/bounswe/bounswe2023group9/pull/309) |
 | Admin Class/Model Implementation | [#291](https://github.com/bounswe/bounswe2023group9/issues/291) | Arda | 22.10.2023 | 1hr | 1hr | [#319](https://github.com/bounswe/bounswe2023group9/pull/319) |
 | Reviewer Class/Model Implementation | [#292](https://github.com/bounswe/bounswe2023group9/issues/292) | Arda | 22.10.2023 | 1hr | 1hr | [#310](https://github.com/bounswe/bounswe2023group9/pull/310) |
 | Contributor Class/Model Implementation | [#293](https://github.com/bounswe/bounswe2023group9/issues/293) | Arda | 22.10.2023 | 3hr | 2hr | [#310](https://github.com/bounswe/bounswe2023group9/pull/310) |
