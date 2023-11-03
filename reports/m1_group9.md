@@ -532,3 +532,57 @@ I was heavily involved in DevOps and management while also working on the backen
 
 **Additional information:**
 I conducted some research on the GoRouter library to make page transitions and routings easier, which will be implemented later.
+
+## Member: Ali Mert Geben
+
+**Responsibilities:**
+
+I was a part of the back-end team, so my responsibilities mainly revolved around back-end tasks. I was responsible for implementing some models for the database according to previously created classes accordingly and implementing their functions and fields. One of my responsibilities was implementing API functions to be used for the front-end and I also reviewed my teammates’ work from time to time.
+
+**Main contributions:**
+
+I researched technologies regarding database and back-end and talked with my teammates to choıse which one to use. After sharing my ideas regarding this technologies I started working on the back-end development of the project.
+
+**Code-related significant issues:**
+Database should be initialized. [#271](https://github.com/bounswe/bounswe2023group9/issues/271)
+Management-related significant issues:
+Individual Contribution Part [#393](https://github.com/bounswe/bounswe2023group9/issues/393)
+**Pull requests:**
+
+Created lab report. [#335](https://github.com/bounswe/bounswe2023group9/pull/335) I have checked everything that we have talked about was included in the report.
+Add Node, Theorem, Proof Model/Classes [#302](https://github.com/bounswe/bounswe2023group9/pull/302) I have tested the functionality in my local and confirmed everything was working as intended.
+**Additional information:**
+
+I have implemented workspace model/class in my branch but didn’t commit it to the main branch since it wasn’t relevant to anything we did in the demo and wasn’t needed in this milestone. Also I wasn’t able to fulfill my responsibilities from time to time due to my health at the start of the semester. I plan to be more active during the next milestone.
+
+## Member: Leyla Yayladere
+
+**Responsibilities:**
+I was responsible for revising project requirements and refining UML diagrams to enhance clarity. I’m a member of the front-end team, responsible for the design and implementation of responsive, reliable and user-friendly interfaces. My responsibilities also include reviewing team members’ works, attending project meetings regularly and contributing to project discussions. Additionally, I was in charge of assisting with project documentation.
+
+**Main contributions:**
+I revised project requirements and made Use Case diagrams clearer. I helped design a user-friendly interface for profile page, setting page, and node view page as part of the front-end team. I implemented some parts of profile page and reviewed for setting page, and node view page. I joined project discussions in meetings and supported project documentation.
+
+**Code-related significant issues:**
+
+- Profile Page Design, Implementation, Review - [#288](https://github.com/bounswe/bounswe2023group9/issues/288)
+- Profile Page Enhancement - Design & Implementation - [#332](https://github.com/bounswe/bounswe2023group9/issues/332)
+- Node View Page - Review, Integration with Profile Page (Navigation) - [#321](https://github.com/bounswe/bounswe2023group9/issues/321)
+
+**Management-related significant issues:**
+
+- Github Project Roadmap Review - [#283](https://github.com/bounswe/bounswe2023group9/issues/283)
+- Requirements and UML Diagram Revision - [#251](https://github.com/bounswe/bounswe2023group9/issues/251), [#261](https://github.com/bounswe/bounswe2023group9/issues/261)
+
+**Pull requests:**
+
+- Node View Page[ #351](https://github.com/bounswe/bounswe2023group9/pull/351): I reviewed and tested the code in my local workspace. Everything was fine and there was no conflict.
+- Profile Page Enhancement[ #357](https://github.com/bounswe/bounswe2023group9/pull/357): I created this PR but there were a lot of conflicts with frontend branch. My teammate reviewed it and suggested combining Profile Page and Setting Page together and then merging in order to solve conflicts only once since their conflicts were similar. This PR cancelled.
+  Merge Updates of Account Setting Page and Profile Page[ #363](https://github.com/bounswe/bounswe2023group9/pull/363): Created in order to make merge into frontend easier.
+- Changes for Account Setting Page and Profile Page [#364](https://github.com/bounswe/bounswe2023group9/pull/364)
+- Update FrontEnd/README [#373](https://github.com/bounswe/bounswe2023group9/pull/373)
+- Frontend dockerization [#369](https://github.com/bounswe/bounswe2023group9/pull/369) - Reviewed
+- Internet Permission for Android [#366](https://github.com/bounswe/bounswe2023group9/pull/366) - Reviewed
+
+**Additional information:**
+I helped preparation of draft of all weekly progress reports.
