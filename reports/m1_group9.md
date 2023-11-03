@@ -586,3 +586,11 @@ I revised project requirements and made Use Case diagrams clearer. I helped desi
 
 **Additional information:**
 I helped preparation of draft of all weekly progress reports.
+
+## Member: Oğuz Pançuk
+
+**Responsibilities:**
+My course schedule was approved in mid-October, causing a delayed start to my classes. Additionally, my busy work life and the challenges I faced while setting up my new computer with Django prevented me from making substantial contributions to the project so far. Apart from attending meetings and monitoring the project progress, I haven't been able to actively participate. I plan to take on more responsibilities in the upcoming period.
+
+**Additional information:**
+-Took notes of customers’ and product owner’s remarks during presentation.
