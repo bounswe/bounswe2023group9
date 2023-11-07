@@ -10,6 +10,7 @@ class Workspace(models.Model):
      This class definition is written beforehand (to be implemented afterwards)
      in order to be referred from other classes. e.g. Contributor
     """
+    pass
 class Entry(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards)
@@ -165,7 +166,7 @@ class Workspace:
     is_published = models.BooleanField()
     is_in_review = models.BooleanField()
     is_rejected = models.BooleanField()
-    theorem_posted = models.BooleanField() #???
+    theorem_posted = models.BooleanField() 
     num_approvals = models.IntegerField()
     theorem_entry = models.ForeignKey(Entry,on_delete=models.SET_NULL)
     final_entry = models.ForeignKey(Entry,on_delete=models.SET_NULL)
