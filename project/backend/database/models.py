@@ -9,11 +9,15 @@ class Workspace(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards)
      in order to be referred from other classes. e.g. Contributor
+     This class definition is written beforehand (to be implemented afterwards)
+     in order to be referred from other classes. e.g. Workspace
     """
     pass
 
 class Entry(models.Model):
     """
+     This class definition is written beforehand (to be implemented afterwards)
+     in order to be referred from other classes. e.g. Contributor
      This class definition is written beforehand (to be implemented afterwards)
      in order to be referred from other classes. e.g. Workspace
     """
@@ -157,19 +161,19 @@ class Workspace(models.Model):
     workspace_id = models.AutoField(primary_key=True)
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="Workspaces") #?
     workspace_title = models.CharField(max_length=100)
-    contributors = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name='WorkspaceContributors')
-    collab_requests = models.ForeignKey(Request, on_delete=models.PROTECT,null=True, blank=True,related_name='CollaborationRequests')
-    references = models.ForeignKey(Node, on_delete=models.PROTECT,related_name = 'WorkspaceReferences')
-    reviews = models.ForeignKey(ReviewRequest,on_delete=models.PROTECT,null=True, blank=True,related_name = 'WorkspaceReviews') #?
-    semantic_tags = models.ForeignKey(SemanticTag,on_delete=models.PROTECT,null=True, blank=True,related_name = 'WorkspaceSemanticTags')
-    wiki_tags = models.ForeignKey(WikiTag,on_delete=models.PROTECT,null=True, blank=True,related_name = 'WorkspaceWikiTags')
+    contributors = models.ManyToManyField(Contributor, related_name='WorkspaceContributors')
+    collab_requests = models.ManyToManyField(Request, blank=True,related_name='CollaborationRequests')
+    references = models.ManyToManyField(Node,related_name = 'WorkspaceReferences')
+    reviews = models.ManyToManyField(ReviewRequest,blank=True,related_name = 'WorkspaceReviews') #?
+    semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
+    wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
     is_finalized = models.BooleanField()
     is_published = models.BooleanField()
     is_in_review = models.BooleanField()
     is_rejected = models.BooleanField()
     theorem_posted = models.BooleanField()
     num_approvals = models.IntegerField()
-    theorem_entry = models.ForeignKey(Entry,on_delete=models.CASCADE,related_name='TheoremEntry')
+    theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
     final_entry = models.ForeignKey(Entry,on_delete=models.CASCADE,related_name='FinalEntry')
     def finalize_workspace(self):
         self.is_finalized = True
