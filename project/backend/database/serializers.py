@@ -127,11 +127,45 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     return user
   
+class NodeViewProofSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Proof
+    fields = ['proof_content', 'publish_date']
+
+class NodeViewTheoremSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Theorem
+    fields = ['theorem_content', 'publish_date']
+
+class NodeViewQuestionSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Question
+    fields = ['question_content', 'answer_content', 'created_at', 'answered_at']
+
+class NodeViewContributorSerializer(serializers.ModelSerializer):
+  first_name = serializers.CharField(source='user.first_name', read_only=True)
+  last_name = serializers.CharField(source='user.last_name', read_only=True)
+  username = serializers.CharField(source='user.username', read_only=True)
+  class Meta:
+    model = Contributor
+    fields = ['id', 'first_name', 'last_name', 'username']
+
+# Serializer for Node References
+class NodeViewReferenceSerializer(serializers.ModelSerializer):
+  contributors = NodeViewContributorSerializer(many=True)
+  class Meta:
+    model = Node
+    fields = ['node_id', 'node_title', 'contributors', 'publish_date']
+
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
-    to_referenced_nodes = serializers.PrimaryKeyRelatedField(many=True, queryset=Node.objects.all())
-    proofs = serializers.PrimaryKeyRelatedField(many=True, queryset=Proof.objects.all())
-    class Meta:
-        model = Node
-        fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
-                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'semantic_tags', 'wiki_tags', 'annotations']
+  to_referenced_nodes = NodeViewReferenceSerializer(many=True)
+  from_referenced_nodes = NodeViewReferenceSerializer(many=True)
+  proofs = NodeViewProofSerializer(many=True)
+  theorem = NodeViewTheoremSerializer()
+  question_set = NodeViewQuestionSerializer(many=True)
+  contributors = NodeViewContributorSerializer(many=True)
+  class Meta:
+    model = Node
+    fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
+                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'wiki_tags', 'annotations']
