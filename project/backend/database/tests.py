@@ -137,11 +137,11 @@ class ReviewerModelTestCase(TestCase):
         reviewer2=Reviewer.objects.create(user=User.objects.create(username="Second"))
 
         # Create review requests associated with the reviewer1
-        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1)
-        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1)
+        review_request1 = ReviewRequest.objects.create(sender=reviewer2,reviewer=reviewer1)
+        review_request2 = ReviewRequest.objects.create(sender=reviewer2,reviewer=reviewer1)
 
         # Create a review request not associated with the reviewer1
-        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2)
+        other_review_request = ReviewRequest.objects.create(sender=reviewer1, reviewer=reviewer2)
 
         review_requests = reviewer1.get_review_requests()
 
@@ -171,7 +171,7 @@ class ReviewerModelTestCase(TestCase):
         reviewer = contributor
 
         # Review request is issued to new reviewer
-        review_request = ReviewRequest.objects.create(reviewer=reviewer)
+        review_request = ReviewRequest.objects.create(sender=contributor,reviewer=reviewer)
         self.assertIn(review_request, reviewer.get_review_requests())
 
         # Check if workspace is inherited
