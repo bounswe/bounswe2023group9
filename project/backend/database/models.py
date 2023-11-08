@@ -73,7 +73,8 @@ class Request(models.Model):
      in order to be referred from other classes. e.g. ReviewRequest
      
     """
-    status    = models.IntegerField(choices=EnumRequest.choices(), default=EnumRequest.WAITING.value)
+    status = models.IntegerField(choices=EnumRequest.choices(), default=EnumRequest.WAITING.value)
+    sender = models.ForeignKey(Contributor, on_delete=models.CASCADE)  
     def approve(self):
         self.status = EnumRequest.APPROVED.value
 
@@ -85,12 +86,13 @@ class ReviewRequest(Request):
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
-    reviewer  = models.ForeignKey(Reviewer, on_delete=models.CASCADE)  #Note that reviewer  is accessed directly by Reviewer  instance not via "receiverUserID" as proposed in project class diagram.
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE) #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
-    comment   = models.CharField(max_length=400)
+    reviewer  = models.ForeignKey(Reviewer, on_delete=models.CASCADE)     #Note that reviewer  is accessed directly by Reviewer  instance not via "receiverUserID" as proposed in project class diagram.
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    comment   = models.CharField(max_length=400, null=True, default=None)
     
 class CollaborationRequest(Request):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE) #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    reciever  = models.ForeignKey(Contributor, on_delete=models.CASCADE)  
     
 class Theorem(models.Model):
     theorem_id = models.AutoField(primary_key=True)

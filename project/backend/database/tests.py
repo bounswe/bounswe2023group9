@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
-from .models import BasicUser, Node, Theorem, Proof
+from .models import BasicUser, Node, Theorem, Proof, Request, ReviewRequest, CollaborationRequest, EnumRequest
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
@@ -343,6 +343,54 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class ReviewRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        Reviewer.objects.all().delete()
+        ReviewRequest.objects.all().delete()
+        print("Test for the ReviewRequest Model is completed!")
+
+    def setUp(self):
+        # Setup run before every test method.
+        workspace = Workspace.objects.create()
+        reviewer = Reviewer.objects.create(user=User.objects.create(username="reciever"))
+        sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        ReviewRequest.objects.create(reviewer=reviewer, sender=sender,workspace=workspace, comment='Initial Comment')
+
+    def test_review_request_approve(self):
+        # Test approving a review request.
+        review_request = ReviewRequest.objects.get(comment='Initial Comment')
+        review_request.approve()
+        self.assertEqual(review_request.status, EnumRequest.APPROVED.value)
+
+    def test_review_request_reject(self):
+        # Test rejecting a review request.
+        review_request = ReviewRequest.objects.get(comment='Initial Comment')
+        review_request.reject()
+        self.assertEqual(review_request.status, EnumRequest.DENIED.value)
+
+class CollaborationRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        Contributor.objects.all().delete()
+        CollaborationRequest.objects.all().delete()
+        print("Test for the CollaborationRequest Model is completed!")
+    def setUp(self):
+        # Set up Workspace and Contributor instances to be used in the tests
+        workspace = Workspace.objects.create()
+        contributor = Contributor.objects.create(user=User.objects.create(username="reciever"))
+        sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        CollaborationRequest.objects.create(workspace=workspace,reciever=contributor, sender=sender)
+
+    def test_collaboration_request_status_change(self):
+        # Test changing the status of a CollaborationRequest
+        
+        collab_request = CollaborationRequest.objects.get()
+        self.assertEqual(collab_request.status, EnumRequest.WAITING.value)
+        collab_request.approve()  # Assuming that there is an approve method on the Request model
+        self.assertEqual(collab_request.status, EnumRequest.APPROVED.value)
+        collab_request.reject()   # Assuming that there is a reject method on the Request model
+        self.assertEqual(collab_request.status, EnumRequest.DENIED.value)
 
 
 class RegisterSerializerTestCase(TestCase):
