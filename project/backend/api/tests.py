@@ -8,7 +8,7 @@ from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
 from database import models
 import datetime
-# Create your tests here.
+# Create your tests here for each class or API call.
 
 
 class SignUpAPIViewTestCase(TestCase):
