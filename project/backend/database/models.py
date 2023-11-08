@@ -4,16 +4,49 @@ from django.contrib.auth.models import User
 import copy
 from datetime import datetime
 
-# Create your models here.
-class Workspace(models.Model):
+
+class SemanticTag(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    label = models.CharField(max_length=50, unique=True)
+    desc = models.CharField(max_length=100)
+    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name="sub_tags")
+
+    @property
+    def count(self):
+        return self.node_set.all().count()
+
+    @property
+    def nodes(self):
+        return self.node_set.all()
+
+    @property
+    def recursive_nodes(self):
+        nodes = list(self.nodes)
+
+        for sub in self.sub_tags.all():
+            nodes.extend(sub.recursive_nodes)
+
+        return nodes
+
+    @property
+    def recursive_count(self):
+        return len(self.recursive_nodes)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['label', 'parent_tag'],
+                                    name='semantictag_label_parenttag_unique_constraint')
+        ]
+
+class WikiTag(models.Model):
+    pass
+class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards)
-     in order to be referred from other classes. e.g. Contributor
-     This class definition is written beforehand (to be implemented afterwards)
-     in order to be referred from other classes. e.g. Workspace
+     in order to be referred from other classes. e.g. ReviewRequest
     """
     pass
-
 class Entry(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards)
@@ -22,6 +55,26 @@ class Entry(models.Model):
      in order to be referred from other classes. e.g. Workspace
     """
     pass
+# Create your models here.
+class Workspace(models.Model):  #Node and Review Requests may be added later
+    workspace_id = models.AutoField(primary_key=True)
+    workspace_title = models.CharField(max_length=100)
+    collab_requests = models.ManyToManyField(Request, blank=True,related_name='CollaborationRequests')
+    semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
+    wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
+    is_finalized = models.BooleanField(null = True)
+    is_published = models.BooleanField(null = True)
+    is_in_review = models.BooleanField(null = True)
+    is_rejected = models.BooleanField(null = True)
+    theorem_posted = models.BooleanField(null = True)
+    num_approvals = models.IntegerField(null = True)
+    theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
+    final_entry = models.ForeignKey(Entry,null=True, on_delete=models.CASCADE,related_name='FinalEntry')
+    def finalize_workspace(self):
+        self.is_finalized = True
+        self.is_in_review = False
+        return True
+
 
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -47,7 +100,17 @@ class Contributor(BasicUser):
      after implementation of Workspace class.
     """
     def create_workspace(self):
-        new_workspace = Workspace.objects.create()
+        new_workspace = Workspace.objects.create(
+            workspace_id=1,
+            workspace_title="Test Workspace",
+            is_finalized=False,
+            is_published=False,
+            is_in_review=False,
+            is_rejected=False,
+            theorem_posted=False,
+            num_approvals=0,
+            final_entry=None
+        )
         self. workspaces.add(new_workspace)
         return new_workspace
 
@@ -69,12 +132,7 @@ class Admin(BasicUser):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
     
-class Request(models.Model):
-    """
-     This class definition is written beforehand (to be implemented afterwards) 
-     in order to be referred from other classes. e.g. ReviewRequest
-    """
-    pass
+
 class ReviewRequest(Request):
     """
      This class definition is written beforehand (to be implemented afterwards) 
@@ -94,43 +152,6 @@ class Theorem(models.Model):
     theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
-
-
-class SemanticTag(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    label = models.CharField(max_length=50, unique=True)
-    desc = models.CharField(max_length=100)
-    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True, related_name="sub_tags")
-
-    @property
-    def count(self):
-        return self.node_set.all().count()
-    
-    @property
-    def nodes(self):
-        return self.node_set.all()
-    
-    @property
-    def recursive_nodes(self):
-        nodes = list(self.nodes)
-
-        for sub in self.sub_tags.all():
-            nodes.extend(sub.recursive_nodes)
-
-        return nodes
-
-    @property
-    def recursive_count(self):
-        return len(self.recursive_nodes)
-    
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['label', 'parent_tag'], name='semantictag_label_parenttag_unique_constraint')
-        ]
-
-
-class WikiTag(models.Model):
-    pass
 
 
 class Annotation(models.Model):
@@ -156,30 +177,6 @@ class Node(models.Model):
 
     def increment_num_visits(self):
         self.num_visits += 1
-
-class Workspace(models.Model):
-    workspace_id = models.AutoField(primary_key=True)
-    node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="Workspaces") #?
-    workspace_title = models.CharField(max_length=100)
-    contributors = models.ManyToManyField(Contributor, related_name='WorkspaceContributors')
-    collab_requests = models.ManyToManyField(Request, blank=True,related_name='CollaborationRequests')
-    references = models.ManyToManyField(Node,related_name = 'WorkspaceReferences')
-    reviews = models.ManyToManyField(ReviewRequest,blank=True,related_name = 'WorkspaceReviews') #?
-    semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
-    wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
-    is_finalized = models.BooleanField()
-    is_published = models.BooleanField()
-    is_in_review = models.BooleanField()
-    is_rejected = models.BooleanField()
-    theorem_posted = models.BooleanField()
-    num_approvals = models.IntegerField()
-    theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
-    final_entry = models.ForeignKey(Entry,on_delete=models.CASCADE,related_name='FinalEntry')
-    def finalize_workspace(self):
-        self.is_finalized = True
-        self.is_in_review = False
-        return True
-
 
 class Proof(models.Model):
     proof_id = models.AutoField(primary_key=True)
