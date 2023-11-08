@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 import copy
 from datetime import datetime
+import enum
 
 # Create your models here.
 class Workspace(models.Model):
@@ -57,26 +58,40 @@ class Admin(BasicUser):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
     
+class EnumRequest(enum.Enum):
+    WAITING  = 1
+    APPROVED = 2
+    DENIED   = 3  
+    
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+    
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. ReviewRequest
+     
     """
-    pass
+    status    = models.IntegerField(choices=EnumRequest.choices(), default=EnumRequest.WAITING.value)
+    def approve(self):
+        self.status = EnumRequest.APPROVED.value
+
+    def reject(self):
+        self.status = EnumRequest.DENIED.value
+
 class ReviewRequest(Request):
     """
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
-
-    # Note that reviewer is accessed directly by Reviewer instance,
-    # not via "receiverUserID" as proposed in project class diagram.
-    reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
-    pass
-
-
-
-
+    reviewer  = models.ForeignKey(Reviewer, on_delete=models.CASCADE)  #Note that reviewer  is accessed directly by Reviewer  instance not via "receiverUserID" as proposed in project class diagram.
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE) #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    comment   = models.CharField(max_length=400)
+    
+class CollaborationRequest(Request):
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE) #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    
 class Theorem(models.Model):
     theorem_id = models.AutoField(primary_key=True)
     theorem_title = models.CharField(max_length=100, null=False)
@@ -122,6 +137,7 @@ class WikiTag(models.Model):
 
 
 class Annotation(models.Model):
+    # ReviewRequest has annotations, must be handled.  
     pass
 
 
