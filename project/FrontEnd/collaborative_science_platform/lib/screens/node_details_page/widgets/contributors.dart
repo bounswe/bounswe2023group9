@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 class Contributors extends StatelessWidget {
   final List<User> contributors;
   final ScrollController controller;
-  const Contributors(
-      {super.key, required this.contributors, required this.controller});
+  const Contributors({super.key, required this.contributors, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +38,28 @@ class Contributors extends StatelessWidget {
             //     ),
             //   );
             // } else {
-              return Padding(
-                padding: const EdgeInsets.all(5),
-                child: CardContainer(
-                  onTap: () {
-                    Navigator.pushNamed(context, ProfilePage.routeName,
+            return Padding(
+              padding: const EdgeInsets.all(5),
+              child: CardContainer(
+                onTap: () {
+                  Navigator.pushNamed(context, ProfilePage.routeName,
                       arguments: contributors[index].email);
-                  },
-                  child: Column(
-                    children: [
-                      Text(
+                },
+                child: Column(
+                  children: [
+                    Text(
                       "${contributors[index].firstName} ${contributors[index].lastName}",
-                        style: TextStyles.title4,
-                      ),
-                      Text(
+                      style: TextStyles.title4,
+                    ),
+                    Text(
                       contributors[index].email,
-                        style: TextStyles.bodyGrey,
-                      )
-                    ],
-                  ),
+                      style: TextStyles.bodyGrey,
+                    )
+                  ],
                 ),
-              );
-            }
-          ),
+              ),
+            );
+          }),
     );
   }
 }
