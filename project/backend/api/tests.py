@@ -147,7 +147,7 @@ class SearchAPITestCase(TestCase):
         user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
                                         last_name='Test')
         # basic_user = BasicUser.objects.create(user=user, bio='Hello')
-        cont = models.Contributor.objects.create(user=user, bio='Hello')
+        cont = models.Contributor.objects.create(user=user, bio='Hello',id=1)
         node = models.Node.objects.create(node_title='test',
                                    theorem=None,
                                    publish_date="2023-01-01",
@@ -216,7 +216,7 @@ class ProfileGETAPITestCase(TestCase):
         user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
                                              last_name='Test')
         # basic_user = BasicUser.objects.create(user=user, bio='Hello')
-        cont = Contributor.objects.create(user=user,bio='Hello')
+        cont = Contributor.objects.create(user=user,bio='Hello',id=1)
         node = Node.objects.create(node_title='test',
                                    node_id = 55,
             theorem=None,
