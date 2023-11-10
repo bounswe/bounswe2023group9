@@ -3,10 +3,10 @@ import 'package:collaborative_science_platform/models/node_details_page/proof.da
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/node_details_provider.dart';
-import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
-import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

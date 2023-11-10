@@ -2,15 +2,13 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/home_pa
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:flutter/material.dart';
 
-class GraphPage extends StatelessWidget {
-  static const routeName = '/graph';
-  const GraphPage({super.key});
+class WorkspacesPage extends StatelessWidget {
+  static const routeName = '/workspaces';
+  const WorkspacesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const PageWithAppBar(
-      appBar: HomePageAppBar(),
-      child: Text("Graph"),
-    ); // Profile Page Content
+        appBar: HomePageAppBar(), child: Text("Workspaces")); // Profile Page Content
   }
 }

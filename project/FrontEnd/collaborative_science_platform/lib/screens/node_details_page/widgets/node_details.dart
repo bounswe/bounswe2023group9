@@ -2,11 +2,11 @@ import 'package:collaborative_science_platform/models/node_details_page/node_det
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_view.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/widgets/references.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
