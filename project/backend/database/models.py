@@ -5,7 +5,42 @@ import copy
 from datetime import datetime
 
 
+class SemanticTag(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    label = models.CharField(max_length=50, unique=True)
+    desc = models.CharField(max_length=100)
+    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True,
+                                   related_name="sub_tags")
 
+    @property
+    def count(self):
+        return self.node_set.all().count()
+
+    @property
+    def nodes(self):
+        return self.node_set.all()
+
+    @property
+    def recursive_nodes(self):
+        nodes = list(self.nodes)
+
+        for sub in self.sub_tags.all():
+            nodes.extend(sub.recursive_nodes)
+
+        return nodes
+
+    @property
+    def recursive_count(self):
+        return len(self.recursive_nodes)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['label', 'parent_tag'],
+                                    name='semantictag_label_parenttag_unique_constraint')
+        ]
+
+class WikiTag(models.Model):
+    pass
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards)
@@ -83,43 +118,6 @@ class Contributor(BasicUser):
         if workspace_to_delete in self.workspaces.all():    # Workspace but pops from the list to prevent
             self.workspaces.remove(workspace_to_delete)     # errors if multiple Contributors present
 
-
-class SemanticTag(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    label = models.CharField(max_length=50, unique=True)
-    desc = models.CharField(max_length=100)
-    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True,
-                                   related_name="sub_tags")
-
-    @property
-    def count(self):
-        return self.node_set.all().count()
-
-    @property
-    def nodes(self):
-        return self.node_set.all()
-
-    @property
-    def recursive_nodes(self):
-        nodes = list(self.nodes)
-
-        for sub in self.sub_tags.all():
-            nodes.extend(sub.recursive_nodes)
-
-        return nodes
-
-    @property
-    def recursive_count(self):
-        return len(self.recursive_nodes)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['label', 'parent_tag'],
-                                    name='semantictag_label_parenttag_unique_constraint')
-        ]
-
-class WikiTag(models.Model):
-    pass
 class Reviewer(Contributor):
 
     def __str__(self):
