@@ -137,22 +137,24 @@ class NodeViewTheoremSerializer(serializers.ModelSerializer):
     model = Theorem
     fields = ['theorem_content', 'publish_date']
 
-class NodeViewQuestionSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = Question
-    fields = ['question_content', 'answer_content', 'created_at', 'answered_at']
-
-class NodeViewContributorSerializer(serializers.ModelSerializer):
+class NodeViewBasicUserSerializer(serializers.ModelSerializer):
   first_name = serializers.CharField(source='user.first_name', read_only=True)
   last_name = serializers.CharField(source='user.last_name', read_only=True)
   username = serializers.CharField(source='user.username', read_only=True)
   class Meta:
-    model = Contributor
+    model = BasicUser
     fields = ['id', 'first_name', 'last_name', 'username']
+
+class NodeViewQuestionSerializer(serializers.ModelSerializer):
+  asker = NodeViewBasicUserSerializer()
+  answerer = NodeViewBasicUserSerializer()
+  class Meta:
+    model = Question
+    fields = ['question_content', 'created_at', 'asker', 'answer_content', 'answerer', 'answered_at']
 
 # Serializer for Node References
 class NodeViewReferenceSerializer(serializers.ModelSerializer):
-  contributors = NodeViewContributorSerializer(many=True)
+  contributors = NodeViewBasicUserSerializer(many=True)
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'contributors', 'publish_date']
@@ -164,7 +166,7 @@ class NodeSerializer(serializers.ModelSerializer):
   proofs = NodeViewProofSerializer(many=True)
   theorem = NodeViewTheoremSerializer()
   question_set = NodeViewQuestionSerializer(many=True)
-  contributors = NodeViewContributorSerializer(many=True)
+  contributors = NodeViewBasicUserSerializer(many=True)
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
