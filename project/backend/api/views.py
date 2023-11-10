@@ -136,16 +136,16 @@ def search(request):
     for cont in contributors:
         user = User.objects.get(username=cont)
         cont = Contributor.objects.get(user=user)
-        res_authors.append({'name': User.objects.get(id=cont.user_id).first_name,
-                        'surname': User.objects.get(id=cont.user_id).last_name, 'username': cont.user.username})
+        res_authors.append({'name': user.first_name,
+                        'surname': user.last_name, 'username': cont.user.username , 'id': cont.id})
     node_infos = []
     for node_id in nodes:
         node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
-            authors.append({'name': User.objects.get(id=cont.user_id).first_name,
-                            'surname': User.objects.get(id=cont.user_id).last_name, 'username': user.username})
+            authors.append({'name': user.first_name,
+                            'surname': user.last_name, 'username': user.username, 'id': cont.id})
         node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
 
@@ -168,10 +168,36 @@ def get_profile(request):
             nodes.append(node.node_id)
         user_answered_qs = Question.objects.filter(answerer=cont[0].id)
         for ans in user_answered_qs:
-            answered_questions.append(ans.id)
-    user_asked_qs = Question.objects.filter(asker=user.id)
+            asker_user = User.objects.get(id=ans.asker.user_id)
+            answerer_user = User.objects.get(id=ans.answerer.user_id)
+            answered_questions.append({'id':ans.id, 'ask_date':ans.created_at, 'node_id':ans.node.node_id, 'node_title':ans.node.node_title, 'node_date':ans.node.publish_date,
+                                       'asker_id':ans.asker.id,'asker_name':asker_user.first_name,'asker_surname':asker_user.last_name,
+                                       'asker_mail':asker_user.username,'answerer_name':answerer_user.first_name,'answerer_surname':answerer_user.last_name,
+                                       'answerer_mail':answerer_user.username,
+                                           'answerer_id':ans.answerer.id, 'question_content':ans.question_content,
+                                       'answer_content':ans.answer_content,'answer_date':ans.answered_at,'is_answered':1})
+
+    user_asked_qs = Question.objects.filter(asker=cont[0].id)
     for q in user_asked_qs:
-        asked_questions.append(q.id)
+        asker_user = User.objects.get(id=q.asker.user_id)
+        if q.answerer == None:
+            asked_questions.append(
+                {'id': q.id, 'ask_date': q.created_at, 'node_id': q.node.node_id, 'node_title': q.node.node_title,
+                 'node_date': q.node.publish_date,
+                 'asker_id': q.asker.id, 'asker_name': asker_user.first_name, 'asker_surname': asker_user.last_name,
+                 'asker_mail': asker_user.username,  'question_content': q.question_content, 'is_answered': 0})
+            continue
+        answerer_user = User.objects.get(id=q.answerer.user_id)
+        asked_questions.append(
+            {'id': q.id, 'ask_date': q.created_at, 'node_id': q.node.node_id, 'node_title': q.node.node_title,
+             'node_date': q.node.publish_date,
+             'asker_id': q.asker.id, 'asker_name': asker_user.first_name, 'asker_surname': asker_user.last_name,
+             'asker_mail': asker_user.username, 'answerer_name': answerer_user.first_name,
+             'answerer_surname': answerer_user.last_name,
+             'answerer_mail': answerer_user.username,
+             'answerer_id': q.answerer.id, 'question_content': q.question_content,
+             'answer_content': q.answer_content, 'answer_date': q.answered_at, 'is_answered':1})
+
     node_infos = []
     for node_id in nodes:
         node = Node.objects.get(node_id=node_id)
@@ -180,7 +206,7 @@ def get_profile(request):
             user = User.objects.get(id=cont.user_id)
             authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
         node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
-    # TODO QUESTION RETURNS SHOULD BE CHANGED IN THE FUTURE.
+
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,

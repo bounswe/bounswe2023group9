@@ -175,6 +175,7 @@ class SearchAPITestCase(TestCase):
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['surname'], 'Test')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['username'], 'test@example.com')
+        self.assertEqual(response.json()['nodes'][0]['authors'][0]['id'], 1)
         self.assertEqual(response.json()['authors'], [])
         data = {'query': 'test', 'type': 'author'}
         response = self.client.get(self.search_url, data, format='json')
@@ -183,6 +184,7 @@ class SearchAPITestCase(TestCase):
         self.assertEqual(response.json()['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['authors'][0]['surname'], 'Test')
         self.assertEqual(response.json()['authors'][0]['username'], 'test@example.com')
+        self.assertEqual(response.json()['authors'][0]['id'], 1)
         data = {'query': 'test', 'type': 'by'}
         response = self.client.get(self.search_url, data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -192,6 +194,7 @@ class SearchAPITestCase(TestCase):
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['surname'], 'Test')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['username'], 'test@example.com')
+        self.assertEqual(response.json()['nodes'][0]['authors'][0]['id'], 1)
         data = {'query': 'test', 'type': 'all'}
         response = self.client.get(self.search_url, data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -204,6 +207,7 @@ class SearchAPITestCase(TestCase):
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['surname'], 'Test')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['username'], 'test@example.com')
+        self.assertEqual(response.json()['nodes'][0]['authors'][0]['id'], 1)
 
 
 class ProfileGETAPITestCase(TestCase):
@@ -214,6 +218,7 @@ class ProfileGETAPITestCase(TestCase):
         # basic_user = BasicUser.objects.create(user=user, bio='Hello')
         cont = Contributor.objects.create(user=user,bio='Hello')
         node = Node.objects.create(node_title='test',
+                                   node_id = 55,
             theorem=None,
             publish_date="2023-01-01",
             is_valid=True,
@@ -221,8 +226,10 @@ class ProfileGETAPITestCase(TestCase):
         Q = Question.objects.create(
             node=node,
             asker = cont,
-            question_content = "TEXT",
-            answerer = cont
+            question_content = "QUESTION",
+            answerer = cont,
+            answer_content = 'ANSWER',
+
         )
         node.contributors.add(cont)
         self.get_profile_url = reverse('get_profile')
@@ -239,15 +246,38 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['name'],'User')
         self.assertEqual(response.json()['surname'], 'Test')
         self.assertEqual(response.json()['bio'], 'Hello')
-        self.assertEqual(response.json()['nodes'][0]['id'],1)
+        self.assertEqual(response.json()['nodes'][0]['id'],55)
         self.assertEqual(response.json()['nodes'][0]['title'], 'test')
         self.assertEqual(response.json()['nodes'][0]['date'], '2023-01-01')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['name'], 'User')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['surname'], 'Test')
         self.assertEqual(response.json()['nodes'][0]['authors'][0]['username'], 'test@example.com')
         # TODO TESTS FAIL HERE
-        # self.assertEqual(response.json()['answered_questions'][0],1)
-        # self.assertEqual(response.json()['asked_questions'][0], 1)
+        self.assertEqual(response.json()['answered_questions'][0]['question_content'],'QUESTION')
+        self.assertEqual(response.json()['answered_questions'][0]['answer_content'],'ANSWER')
+        self.assertEqual(response.json()['answered_questions'][0]['asker_name'], 'User')
+        self.assertEqual(response.json()['answered_questions'][0]['asker_surname'], 'Test')
+        self.assertEqual(response.json()['answered_questions'][0]['asker_id'], 1)
+        self.assertEqual(response.json()['answered_questions'][0]['asker_mail'], 'test@example.com')
+        self.assertEqual(response.json()['answered_questions'][0]['node_id'], 55)
+        self.assertEqual(response.json()['answered_questions'][0]['node_title'], 'test')
+        self.assertEqual(response.json()['answered_questions'][0]['answerer_name'], 'User')
+        self.assertEqual(response.json()['answered_questions'][0]['answerer_surname'], 'Test')
+        self.assertEqual(response.json()['answered_questions'][0]['answerer_id'], 1)
+        self.assertEqual(response.json()['answered_questions'][0]['answerer_mail'], 'test@example.com')
+
+        self.assertEqual(response.json()['asked_questions'][0]['question_content'], 'QUESTION')
+        self.assertEqual(response.json()['asked_questions'][0]['answer_content'], 'ANSWER')
+        self.assertEqual(response.json()['asked_questions'][0]['asker_name'], 'User')
+        self.assertEqual(response.json()['asked_questions'][0]['asker_surname'], 'Test')
+        self.assertEqual(response.json()['asked_questions'][0]['asker_id'], 1)
+        self.assertEqual(response.json()['asked_questions'][0]['asker_mail'], 'test@example.com')
+        self.assertEqual(response.json()['asked_questions'][0]['node_id'], 55)
+        self.assertEqual(response.json()['asked_questions'][0]['node_title'], 'test')
+        self.assertEqual(response.json()['asked_questions'][0]['answerer_name'], 'User')
+        self.assertEqual(response.json()['asked_questions'][0]['answerer_surname'], 'Test')
+        self.assertEqual(response.json()['asked_questions'][0]['answerer_id'], 1)
+        self.assertEqual(response.json()['asked_questions'][0]['answerer_mail'], 'test@example.com')
 
 class ProofGETAPITestCase(TestCase):
     def setUp(self):
