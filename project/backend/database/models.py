@@ -13,6 +13,7 @@ class Workspace(models.Model):
     pass
 
 
+
 class BasicUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.CharField(
@@ -56,7 +57,23 @@ class Reviewer(Contributor):
 class Admin(BasicUser):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
-    
+class Entry(models.Model):
+    entry_id = models.AutoField(primary_key=True)
+    #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
+    content = models.TextField(null=False)
+    entry_date = models.DateField()
+    is_theorem_entry = models.BooleanField()
+    is_final_entry = models.BooleanField(default=False)
+    is_editable = models.BooleanField(default=True)
+    creator = models.ForeignKey(Contributor,null = False, blank= False)
+    entry_number = models.IntegerField()
+    contributors = models.ManyToManyField(Contributor,on_delete=models.PROTECT,related_name="EntryContributors")
+    def set_as_final(self):
+        self.is_final_entry = True
+    def set_as_theorem(self):
+        self.is_theorem_entry = True
+    def set_entry_content(self,cont):
+        self.content = cont
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards) 
