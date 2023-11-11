@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
+from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin,Entry
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
@@ -343,6 +343,30 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class EntryModelTestCase(TestCase):
+    def tearDown(self):
+        Entry.objects.all().delete()
+        print("All tests for the Entry Model are completed!")
+
+    def test_entry_model(self):
+        testContributor = Contributor.objects.create(user=User.objects.create())
+        entry = Entry.objects.create(
+            entry_id = 1,
+            content = "This is an entry.",
+            entry_date = "2023-11-11",
+            is_theorem_entry = True,
+            entry_number = 1,
+            creator = testContributor,
+            contributors = testContributor
+        )
+        self.assertIn(testContributor, entry.contributors.all())
+        self.assertEqual(entry.entry_id, 1)
+        self.assertEqual(entry.entry_number, 1)
+        self.assertEqual(entry.content, "This is an entry.")
+        self.assertEqual(entry.entry_date, "2023-11-11")
+        self.assertEqual(entry.is_theorem_entry, True)
+        self.assertEqual(entry.creator, testContributor)
+        self.assertEqual(entry.is_final_entry,False)
 
 
 class RegisterSerializerTestCase(TestCase):

@@ -73,7 +73,7 @@ class Entry(models.Model):
     def set_as_theorem(self):
         self.is_theorem_entry = True
     def set_entry_content(self,cont):
-        self.content = cont
+        self.content += cont
 class Request(models.Model):
     """
      This class definition is written beforehand (to be implemented afterwards) 
