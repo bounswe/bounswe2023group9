@@ -9,10 +9,10 @@ import 'package:collaborative_science_platform/screens/graph_page/graph_page.dar
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/notifications_page.dart';
+import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
           LoginPage.routeName: (context) => const LoginPage(),
           SignUpPage.routeName: (context) => const SignUpPage(),
           WorkspacesPage.routeName: (context) => const WorkspacesPage(),
+
           ///ProfilePage.routeName: (context) => const ProfilePage(),
           GraphPage.routeName: (context) => const GraphPage(),
           NotificationPage.routeName: (context) => const NotificationPage(),
@@ -54,8 +55,7 @@ class MyApp extends StatelessWidget {
             return NodeDetailsPage(nodeID: nodeId);
           },
           ProfilePage.routeName: (context) {
-            final String email =
-                ModalRoute.of(context)!.settings.arguments as String;
+            final String email = ModalRoute.of(context)!.settings.arguments as String;
             return ProfilePage(email: email);
           },
         },

@@ -1,8 +1,8 @@
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_button.dart';
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/profile_menu.dart';
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_logo.dart';
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/top_navigation_bar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/profile_menu.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_logo.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class HomePageAppBar extends StatelessWidget {

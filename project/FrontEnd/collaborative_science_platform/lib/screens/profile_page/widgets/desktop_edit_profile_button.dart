@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
+import 'package:collaborative_science_platform/screens/profile_page/widgets/account_settings_form.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 
