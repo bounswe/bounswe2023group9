@@ -28,36 +28,36 @@ class ProofListView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        proof[index].isDisproof ? "Disproof" : "Proof",
-                        style: TextStyles.bodyGrey,
-                        textAlign: TextAlign.start,
-                      ),
-                      Text(
-                        proof[index].proofTitle,
-                        style: TextStyles.title4,
-                        textAlign: TextAlign.start,
-                      ),
+                      // Text(
+                      //   proof[index].isDisproof ? "Disproof" : "Proof",
+                      //   style: TextStyles.bodyGrey,
+                      //   textAlign: TextAlign.start,
+                      // ),
+                      // Text(
+                      //   proof[index].proofTitle,
+                      //   style: TextStyles.title4,
+                      //   textAlign: TextAlign.start,
+                      // ),
                       Text(
                         proof[index].proofContent,
                         style: TextStyles.bodyBlack,
                         textAlign: TextAlign.start,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Icon(
-                            proof[index].isValid ? Icons.check : Icons.clear,
-                            color: proof[index].isValid ? AppColors.successColor : AppColors.dangerColor,
-                          ),
-                          Text(
-                            proof[index].isValid ? "valid" : "invalid",
-                            style: TextStyles.bodyGrey,
-                            textAlign: TextAlign.end,
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.end,
+                      //   crossAxisAlignment: CrossAxisAlignment.end,
+                      //   children: [
+                      //     Icon(
+                      //       proof[index].isValid ? Icons.check : Icons.clear,
+                      //       color: proof[index].isValid ? AppColors.successColor : AppColors.dangerColor,
+                      //     ),
+                      //     Text(
+                      //       proof[index].isValid ? "valid" : "invalid",
+                      //       style: TextStyles.bodyGrey,
+                      //       textAlign: TextAlign.end,
+                      //     ),
+                      //   ],
+                      // ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -91,36 +91,36 @@ class ProofListView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          proof[index - 1].isDisproof ? "Disproof" : "Proof",
-                          style: TextStyles.bodyGrey,
-                          textAlign: TextAlign.start,
-                        ),
-                        Text(
-                          proof[index - 1].proofTitle,
-                          style: TextStyles.title4,
-                          textAlign: TextAlign.start,
-                        ),
+                        // Text(
+                        //   proof[index - 1].isDisproof ? "Disproof" : "Proof",
+                        //   style: TextStyles.bodyGrey,
+                        //   textAlign: TextAlign.start,
+                        // ),
+                        // Text(
+                        //   proof[index - 1].proofTitle,
+                        //   style: TextStyles.title4,
+                        //   textAlign: TextAlign.start,
+                        // ),
                         Text(
                           proof[index - 1].proofContent,
                           style: TextStyles.bodyBlack,
                           textAlign: TextAlign.start,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Icon(
-                              proof[index - 1].isValid ? Icons.check : Icons.clear,
-                              color: proof[index - 1].isValid ? AppColors.successColor : AppColors.dangerColor,
-                            ),
-                            Text(
-                              proof[index - 1].isValid ? "valid" : "invalid",
-                              style: TextStyles.bodyGrey,
-                              textAlign: TextAlign.end,
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   crossAxisAlignment: CrossAxisAlignment.end,
+                        //   children: [
+                        //     Icon(
+                        //       proof[index - 1].isValid ? Icons.check : Icons.clear,
+                        //       color: proof[index - 1].isValid ? AppColors.successColor : AppColors.dangerColor,
+                        //     ),
+                        //     Text(
+                        //       proof[index - 1].isValid ? "valid" : "invalid",
+                        //       style: TextStyles.bodyGrey,
+                        //       textAlign: TextAlign.end,
+                        //     ),
+                        //   ],
+                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,

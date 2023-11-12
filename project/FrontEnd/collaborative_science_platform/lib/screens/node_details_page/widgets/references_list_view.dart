@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
@@ -6,7 +6,7 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
 class ReferencesView extends StatelessWidget {
-  final List<NodeDetailed> nodes;
+  final List<Node> nodes;
   final bool ref;
   const ReferencesView({super.key, required this.nodes, this.ref = false});
 
@@ -26,7 +26,7 @@ class ReferencesView extends StatelessWidget {
               child: CardContainer(
                 onTap: () {
                   Navigator.pushNamed(context, NodeDetailsPage.routeName,
-                      arguments: nodes[index].nodeId);
+                      arguments: nodes[index].id);
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,

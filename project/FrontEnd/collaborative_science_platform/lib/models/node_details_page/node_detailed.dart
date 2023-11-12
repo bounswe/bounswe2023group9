@@ -1,19 +1,24 @@
+import 'package:collaborative_science_platform/helpers/date_to_string.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 
 class NodeDetailed {
   int nodeId;
   String nodeTitle;
   String publishDate;
-  List<int> contributors;
-  List<int> proof;
+  List<User> contributors;
+  List<Proof> proof;
   Theorem? theorem;
-  //List<User> reviewers;
-  List<int> references;
-  List<int> citations;
+  List<User> reviewers;
+  List<Node> references;
+  List<Node> citations;
   bool isValid;
   int noVisits;
+  List<Question> questions;
 
-  //List<Question> questions;
   //List<SemanticTag> semanticTags;
   //List<WikiTag> wikiTags;
   //List<Annotation> annotations;
@@ -25,46 +30,49 @@ class NodeDetailed {
     this.proof = const [],
     this.theorem,
     this.publishDate = "",
-    //required this.reviewers,
+    this.reviewers = const [],
     this.references = const [],
     this.citations = const [],
     this.isValid = true,
     this.noVisits = 0,
-
+    this.questions = const [],
     //required this.semanticTags,
     //required this.wikiTags,
     //required this.annotations,
-    //required this.questions,
   });
 
   factory NodeDetailed.fromJson(Map<String, dynamic> jsonString) {
     var referencesList = jsonString['from_referenced_nodes'] as List;
     var citationsList = jsonString['to_referenced_nodes'] as List;
-    List<int> references =
-        referencesList.map((e) => int.parse(e.toString())).toList();
-    List<int> citations =
-        citationsList.map((e) => int.parse(e.toString())).toList();
     var contributorsList = jsonString['contributors'] as List;
     //var reviewersList = jsonString['reviewers'] as List;
-    List<int> contributors =
-        contributorsList.map((e) => int.parse(e.toString())).toList();
-    //List<User> reviewers = reviewersList.map((e) => User.fromJson(e)).toList();
-
     var proofsList = jsonString['proofs'] as List;
-    List<int> proof = proofsList.map((e) => int.parse(e.toString())).toList();
-    //var theorem = Theorem.fromJson(jsonString['theorem']);
-
+    var theorem = Theorem.fromJson(jsonString['theorem']);
+    var questionsList = jsonString['question_set'] as List;
+    List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
+    List<Node> citations = citationsList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
+    print("citations");
+    List<User> contributors =
+        contributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
+    print("contributors");
+    //List<User> reviewers = reviewersList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
+    List<Proof> proof = proofsList.map((e) => Proof.fromJson(e)).toList();
+    print("proof");
+    List<Question> questions = questionsList.map((e) => Question.fromJson(e)).toList();
+    print("questions");
     return NodeDetailed(
-        nodeId: jsonString['node_id'],
-        nodeTitle: jsonString['node_title'],
-        contributors: contributors,
-        proof: proof,
-        theorem: Theorem(theoremID: jsonString['theorem'] ?? 0),
-        publishDate: jsonString['publish_date'],
-        //reviewers: reviewers,
-        references: references,
-        citations: citations,
-        isValid: jsonString['is_valid'],
-        noVisits: jsonString['num_visits']);
+      citations: citations,
+      contributors: contributors,
+      isValid: jsonString['is_valid'],
+      nodeId: jsonString['node_id'],
+      nodeTitle: jsonString['node_title'],
+      noVisits: jsonString['num_visits'],
+      proof: proof,
+      publishDate: jsonString['publish_date'],
+      questions: questions,
+      references: references,
+      //reviewers: reviewers,
+      theorem: theorem,
+    );
   }
 }

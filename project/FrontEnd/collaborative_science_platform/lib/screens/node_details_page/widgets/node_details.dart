@@ -14,21 +14,11 @@ import 'package:flutter/material.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
-  final List<User> contributors;
   final ScrollController controller;
-  final Theorem theorem;
-  final List<Proof> proofs;
-  final List<NodeDetailed> references;
-  final List<NodeDetailed> citations;
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
-    required this.contributors,
-    required this.proofs,
-    required this.theorem,
-    required this.citations,
-    required this.references,
   });
 
   @override
@@ -105,13 +95,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.theorem.theoremTitle,
-                          style: TextStyles.title4,
-                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          child: Text(widget.theorem.theoremContent, style: TextStyles.bodyBlack),
+                          child: Text(widget.node.theorem!.theoremContent,
+                              style: TextStyles.bodyBlack),
                         ),
                         RichText(
                           textAlign: TextAlign.start,
@@ -133,18 +120,18 @@ class _NodeDetailsState extends State<NodeDetails> {
               //proofs
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: ProofListView(proof: widget.proofs),
+                child: ProofListView(proof: widget.node.proof),
               ),
             if (currentIndex == 2)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: ReferencesView(nodes: widget.references, ref: true),
+                child: ReferencesView(nodes: widget.node.references, ref: true),
               ),
             if (currentIndex == 3)
               //citations
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: ReferencesView(nodes: widget.citations),
+                child: ReferencesView(nodes: widget.node.citations),
               ),
             if (currentIndex == 4)
               //Q/A
@@ -165,7 +152,8 @@ class _NodeDetailsState extends State<NodeDetails> {
               //Q/A
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Contributors(contributors: widget.contributors, controller: widget.controller)),
+                  child: Contributors(
+                      contributors: widget.node.contributors, controller: widget.controller)),
           ],
         ),
       ),
