@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
 
 // GoRouter configuration
 final _router = GoRouter(
+  navigatorKey: ScreenNavigation.navigatorKey,
   initialLocation: '/',
   routes: [
     GoRoute(
@@ -100,7 +101,7 @@ final _router = GoRouter(
       name: NodeDetailsPage.routeName.substring(1),
       path: "${NodeDetailsPage.routeName}/:nodeId",
       builder: (context, state) {
-        final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
+        final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
         return NodeDetailsPage(nodeID: nodeId);
       },
     ),
