@@ -107,7 +107,7 @@ final _router = GoRouter(
     GoRoute(
       name: GraphPage.routeName.substring(1),
       path: GraphPage.routeName,
-      builder: (context, state) => GraphPage(),
+      builder: (context, state) => const GraphPage(),
     ),
     GoRoute(
       name: NotificationPage.routeName.substring(1),
