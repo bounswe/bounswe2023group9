@@ -3,10 +3,7 @@ import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/center_node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/node_list.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
-import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
 class GraphPage extends StatefulWidget {
@@ -21,8 +18,8 @@ class GraphPage extends StatefulWidget {
 class _GraphPageState extends State<GraphPage> {
   SmallNode node = SmallNode(
       nodeId: 1,
-      nodeTitle: "asaf",
-      contributors: [Contributor(name: "abdullah", surname: "susuz", email: "asjk@gmail.com")],
+      nodeTitle: "Altkümelerin Üretici Fonksiyonları",
+      contributors: [Contributor(name: "Abdullah", surname: "Susuz", email: "demo@boun.edu.tr")],
       publishDate: DateTime(2023));
 
   @override
