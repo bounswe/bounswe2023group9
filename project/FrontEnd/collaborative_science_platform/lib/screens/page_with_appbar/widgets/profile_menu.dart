@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({super.key});
@@ -34,8 +35,8 @@ class AuthenticatedProfileMenu extends StatelessWidget {
         switch (result) {
           case 'profile':
             Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(ScreenTab.profile);
-            Navigator.pushNamed(context, ProfilePage.routeName, arguments: auth.user!.email);
-
+            final String encodedEmail = Uri.encodeComponent(auth.user!.email);
+            context.go('${ProfilePage.routeName}/$encodedEmail');
             break;
           case 'logout':
             auth.logout();

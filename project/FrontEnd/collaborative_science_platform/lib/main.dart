@@ -107,9 +107,10 @@ final _router = GoRouter(
     ),
     GoRoute(
         name: ProfilePage.routeName.substring(1),
-        path: ProfilePage.routeName,
+        path: "${ProfilePage.routeName}/:email",
         builder: (context, state) {
-          final String email = ModalRoute.of(context)!.settings.arguments as String ?? "";
+          final String encodedEmail = state.pathParameters['email'] ?? '';
+          final String email = Uri.decodeComponent(encodedEmail);
           return ProfilePage(email: email);
         }),
   ],

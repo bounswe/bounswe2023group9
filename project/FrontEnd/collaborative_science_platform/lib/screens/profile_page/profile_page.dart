@@ -209,8 +209,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   return ProfileNodeCard(
                                     profileNode: profileData.nodes.elementAt(index),
                                     onTap: () {
-                                      Navigator.pushNamed(context, NodeDetailsPage.routeName,
-                                          arguments: profileData.nodes.elementAt(index).id);
+                                      context.go(
+                                          '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
                                     },
                                   );
                                 },
@@ -279,8 +279,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               return ProfileNodeCard(
                                 profileNode: profileData.nodes.elementAt(index),
                                 onTap: () {
-                                  Navigator.pushNamed(context, NodeDetailsPage.routeName,
-                                      arguments: profileData.nodes.elementAt(index).id);
+                                  context.go(
+                                      '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
                                 },
                               );
                             },
