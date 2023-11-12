@@ -1,8 +1,5 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
-import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/models/theorem.dart';
-import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/providers/node_details_provider.dart';
+import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
@@ -49,7 +46,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
   void getNodeDetails() async {
     try {
-      final nodeDetailsProvider = Provider.of<NodeDetailsProvider>(context);
+      final nodeDetailsProvider = Provider.of<NodeProvider>(context);
       setState(() {
         isLoading = true;
       });

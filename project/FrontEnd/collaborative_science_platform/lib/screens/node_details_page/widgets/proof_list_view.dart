@@ -1,5 +1,4 @@
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
