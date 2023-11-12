@@ -1,14 +1,12 @@
 import 'package:collaborative_science_platform/models/contributor_user.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
-import 'package:collaborative_science_platform/screens/graph_page/widgets/center_node.dart';
-import 'package:collaborative_science_platform/screens/graph_page/widgets/node_list.dart';
-import 'package:collaborative_science_platform/screens/home_page/home_page_appbar.dart';
-import 'package:collaborative_science_platform/screens/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/graph_page/mobile_graph_page.dart';
+import 'package:collaborative_science_platform/screens/graph_page/web_graph_page.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
+import '../../models/small_node.dart';
 
 class GraphPage extends StatefulWidget {
   static const routeName = '/graph';
-
   const GraphPage({super.key});
 
   @override
@@ -16,74 +14,26 @@ class GraphPage extends StatefulWidget {
 }
 
 class _GraphPageState extends State<GraphPage> {
-  SmallNode node = SmallNode(
+  late SmallNode smallNode;
+
+  @override
+  void initState() {
+    super.initState();
+    getNode();
+  }
+
+  void getNode() {
+    smallNode = SmallNode( // Example Node
       nodeId: 1,
-      nodeTitle: "Altkümelerin Üretici Fonksiyonları",
-      contributors: [Contributor(name: "Abdullah", surname: "Susuz", email: "demo@boun.edu.tr")],
-      publishDate: DateTime(2023));
+      nodeTitle: "Cartesian Coordinate System",
+      contributors: [Contributor(name: "Rene", surname: "Descartes", email: "rene.descartes1596@renaissance.com")],
+      publishDate: DateTime(1630, 7, 14),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    // others profile page, will be same both on desktop and mobile
-    List<SmallNode> references = [
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node
-    ];
-    List<SmallNode> citations = [
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node
-    ];
-    return PageWithAppBar(
-      appBar: const HomePageAppBar(),
-      pageColor: Colors.grey.shade200,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 1000,
-              child: NodeList(
-                nodes: references,
-              ),
-            ),
-          ),
-          CenterNode(node: node),
-          Expanded(
-            child: SizedBox(
-              height: 1000,
-              child: NodeList(
-                nodes: citations,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return Responsive.isMobile(context) ?
+      MobileGraphPage(smallNode: smallNode) : WebGraphPage(smallNode: smallNode);
   }
 }

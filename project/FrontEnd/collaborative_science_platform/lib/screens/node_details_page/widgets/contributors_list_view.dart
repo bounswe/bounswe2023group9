@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Contributors extends StatelessWidget {
   final List<User> contributors;
@@ -42,8 +43,11 @@ class Contributors extends StatelessWidget {
               padding: const EdgeInsets.all(5),
               child: CardContainer(
                 onTap: () {
-                  Navigator.pushNamed(context, ProfilePage.routeName,
-                      arguments: contributors[index].email);
+             //     Navigator.pushNamed(context, ProfilePage.routeName,
+             //         arguments: contributors[index].email);
+                  final String email = contributors[index].email;
+                  final String encodedEmail = Uri.encodeComponent(email);
+                  context.go('${ProfilePage.routeName}/$encodedEmail');
                 },
                 child: Column(
                   children: [

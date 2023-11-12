@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/widgets/app_bar_widgets/app_bar_logo.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_logo.dart';
 import 'package:flutter/material.dart';
 
 class LoginPageAppBar extends StatelessWidget {
