@@ -4,8 +4,8 @@ import 'package:collaborative_science_platform/screens/graph_page/widgets/center
 import 'package:collaborative_science_platform/screens/graph_page/widgets/node_list.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
-
 
 class WebGraphPage extends StatefulWidget {
   final SmallNode smallNode;
@@ -28,62 +28,40 @@ class _WebGraphPageState extends State<WebGraphPage> {
 
   @override
   Widget build(BuildContext context) {
-    // others profile page, will be same both on desktop and mobile
-    List<SmallNode> references = [
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node
-    ];
-    List<SmallNode> citations = [
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node,
-      node
-    ];
+    // others profile page, will be the same both on desktop and mobile
+    List<SmallNode> references = List.generate(15, (index) => node);
+    List<SmallNode> citations = List.generate(15, (index) => node);
+
+    const listRatio = 0.2;
+
     return PageWithAppBar(
       appBar: const HomePageAppBar(),
       pageColor: Colors.grey.shade200,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: SizedBox(
-              height: 1000,
-              child: NodeList(
-                nodes: references,
-              ),
+          Flexible(
+            flex: 2,
+            child: NodeList(
+              nodes: references,
+              title: "References",
+              width: Responsive.getGenericPageWidth(context) * listRatio,
             ),
           ),
-          CenterNode(node: node),
-          Expanded(
-            child: SizedBox(
-              height: 1000,
-              child: NodeList(
-                nodes: citations,
-              ),
+          Flexible(
+            flex: 6,
+            child: CenterNode(
+              node: node,
+              width: Responsive.getGenericPageWidth(context) * (1 - listRatio * 2),
+            ),
+          ),
+          Flexible(
+            flex: 2,
+            child: NodeList(
+              nodes: citations,
+              title: "Citations",
+              width: Responsive.getGenericPageWidth(context) * listRatio,
             ),
           ),
         ],
