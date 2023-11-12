@@ -9,6 +9,7 @@ import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
@@ -106,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, HomePage.routeName);
+                        context.go(HomePage.routeName);
                       },
                       child: Container(
                         color: Colors.transparent,
@@ -124,7 +125,9 @@ class _LoginPageState extends State<LoginPage> {
                     focusNode: emailFocusNode,
                     hintText: 'Email',
                     obscureText: false,
-                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    color: error && emailController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.person),
                     height: 64.0,
                     onChanged: (_) {
@@ -145,7 +148,9 @@ class _LoginPageState extends State<LoginPage> {
                     focusNode: passwordFocusNode,
                     hintText: 'Password',
                     obscureText: obscuredPassword,
-                    color: error && passwordController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    color: error && passwordController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -153,7 +158,9 @@ class _LoginPageState extends State<LoginPage> {
                           obscuredPassword = !obscuredPassword; //eye icon to work
                         });
                       },
-                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
                     onChanged: (_) {
@@ -204,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
                     onTap: () async {
                       if (await authenticate() && mounted) {
                         // Navigate to home page if authentication is successful
-                        Navigator.pushNamed(context, HomePage.routeName);
+                        context.go(HomePage.routeName);
                       }
                     },
                     text: "Log in",
@@ -230,11 +237,12 @@ class _LoginPageState extends State<LoginPage> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, SignUpPage.routeName);
+                            context.go(SignUpPage.routeName);
                           },
                           child: const Text(
                             "Sign up now",
-                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
                           ),
                         ),
                       ),
