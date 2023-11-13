@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           isLoading = true;
         });
-        await profileDataProvider.getData(widget.email!);
+        await profileDataProvider.getData(widget.email);
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
