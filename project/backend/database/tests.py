@@ -7,7 +7,7 @@ from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
 
-"""
+
 class BasicUserModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
@@ -344,7 +344,7 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_id, 1)
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
-"""
+
 class ReviewRequestTestCase(TestCase):
     def tearDown(self):
         Workspace.objects.all().delete()
@@ -432,7 +432,7 @@ class RequestModelTestCase(TestCase):
         self.request.reject()
         req = Request.objects.get(sender=self.sender)
         self.assertEqual(req.status, "R", "Reject method didn't work as expected")
-"""
+
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
         self.data = {
@@ -549,4 +549,3 @@ class ReviewerSerializerTestCase(TestCase):
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
-"""
