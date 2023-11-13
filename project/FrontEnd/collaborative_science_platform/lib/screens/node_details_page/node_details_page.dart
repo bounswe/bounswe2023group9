@@ -71,6 +71,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       pageColor: Colors.grey.shade200,
       child: isLoading
           ? Container(
+              padding: const EdgeInsets.only(top: 32),
               decoration: const BoxDecoration(color: Colors.white),
               child: const Center(
                 child: CircularProgressIndicator(),

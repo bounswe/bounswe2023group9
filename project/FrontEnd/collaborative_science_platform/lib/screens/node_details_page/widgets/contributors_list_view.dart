@@ -4,12 +4,12 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Contributors extends StatelessWidget {
   final List<User> contributors;
   final ScrollController controller;
-  const Contributors(
-      {super.key, required this.contributors, required this.controller});
+  const Contributors({super.key, required this.contributors, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +39,29 @@ class Contributors extends StatelessWidget {
             //     ),
             //   );
             // } else {
-              return Padding(
-                padding: const EdgeInsets.all(5),
-                child: CardContainer(
-                  onTap: () {
-                    Navigator.pushNamed(context, ProfilePage.routeName,
-                      arguments: contributors[index].email);
-                  },
-                  child: Column(
-                    children: [
-                      Text(
+            return Padding(
+              padding: const EdgeInsets.all(5),
+              child: CardContainer(
+                onTap: () {
+                  final String email = contributors[index].email;
+                  final String encodedEmail = Uri.encodeComponent(email);
+                  context.go('${ProfilePage.routeName}/$encodedEmail');
+                },
+                child: Column(
+                  children: [
+                    Text(
                       "${contributors[index].firstName} ${contributors[index].lastName}",
-                        style: TextStyles.title4,
-                      ),
-                      Text(
+                      style: TextStyles.title4,
+                    ),
+                    Text(
                       contributors[index].email,
-                        style: TextStyles.bodyGrey,
-                      )
-                    ],
-                  ),
+                      style: TextStyles.bodyGrey,
+                    )
+                  ],
                 ),
-              );
-            }
-          ),
+              ),
+            );
+          }),
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpPage extends StatefulWidget {
   static const routeName = '/signup';
@@ -67,7 +68,8 @@ class _SignUpPageState extends State<SignUpPage> {
       setState(() {
         isLoading = true;
       });
-      await auth.signup(nameController.text, surnameController.text, emailController.text, passwordController.text);
+      await auth.signup(nameController.text, surnameController.text, emailController.text,
+          passwordController.text);
     } on UserExistException {
       setState(() {
         error = true;
@@ -87,7 +89,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void validateStrongPassword() {
-    if (StrongPasswordChecks.passedAllPasswordCriteria(passwordController.text, confirmPasswordController.text) &&
+    if (StrongPasswordChecks.passedAllPasswordCriteria(
+            passwordController.text, confirmPasswordController.text) &&
         nameController.text.isNotEmpty &&
         surnameController.text.isNotEmpty &&
         emailController.text.isNotEmpty) {
@@ -159,7 +162,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     cursor: SystemMouseCursors.click,
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, HomePage.routeName);
+                        context.go(HomePage.routeName);
                       },
                       child: Container(
                         color: Colors.transparent,
@@ -180,7 +183,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: nameController,
                           focusNode: nameFocusNode,
                           hintText: 'Name',
-                          color: error && nameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                          color: error && nameController.text.isEmpty
+                              ? AppColors.dangerColor
+                              : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
                           height: 64.0,
@@ -195,8 +200,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           controller: surnameController,
                           focusNode: surnameFocusNode,
                           hintText: 'Surname',
-                          color:
-                              error && surnameController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                          color: error && surnameController.text.isEmpty
+                              ? AppColors.dangerColor
+                              : AppColors.primaryColor,
                           obscureText: false,
                           prefixIcon: const Icon(Icons.person),
                           height: 64.0,
@@ -212,7 +218,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: emailController,
                     focusNode: emailFocusNode,
                     hintText: 'Email',
-                    color: error && emailController.text.isEmpty ? AppColors.dangerColor : AppColors.primaryColor,
+                    color: error && emailController.text.isEmpty
+                        ? AppColors.dangerColor
+                        : AppColors.primaryColor,
                     obscureText: false,
                     prefixIcon: const Icon(Icons.mail),
                     height: 64.0,
@@ -225,7 +233,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: passwordController,
                     focusNode: passwordFocusNode,
                     hintText: 'Password',
-                    color: error && (passwordMatchError || passwordController.text.isEmpty || weakPasswordError)
+                    color: error &&
+                            (passwordMatchError ||
+                                passwordController.text.isEmpty ||
+                                weakPasswordError)
                         ? AppColors.dangerColor
                         : AppColors.primaryColor,
                     obscureText: obscuredPassword,
@@ -236,7 +247,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           obscuredPassword = !obscuredPassword;
                         });
                       },
-                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
                     onChanged: (_) {
@@ -265,7 +278,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           obscuredPassword = !obscuredPassword;
                         });
                       },
-                      icon: obscuredPassword ? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                      icon: obscuredPassword
+                          ? const Icon(Icons.visibility)
+                          : const Icon(Icons.visibility_off),
                     ),
                     height: 64.0,
                     onChanged: (_) {
@@ -286,7 +301,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     onTap: () async {
                       if (await authenticate() && mounted) {
                         // Navigate to home page if authentication is successful
-                        Navigator.pushNamed(context, HomePage.routeName);
+                        context.go(HomePage.routeName);
                       }
                     },
                     text: "Sign Up",
@@ -311,7 +326,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, LoginPage.routeName);
+                            context.go(LoginPage.routeName);
                           },
                           child: const Text(
                             "Log in",

@@ -7,6 +7,7 @@ import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({super.key});
@@ -32,9 +33,10 @@ class AuthenticatedProfileMenu extends StatelessWidget {
       onSelected: (String result) async {
         switch (result) {
           case 'profile':
-            Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(ScreenTab.profile);
-            Navigator.pushNamed(context, ProfilePage.routeName, arguments: auth.user!.email);
-
+            Provider.of<ScreenNavigation>(context, listen: false)
+                .setSelectedTab(ScreenTab.profile, context);
+            final String encodedEmail = Uri.encodeComponent(auth.user!.email);
+            context.go('${ProfilePage.routeName}/$encodedEmail');
             break;
           case 'logout':
             auth.logout();
@@ -74,10 +76,10 @@ class UnAuthenticatedProfileMenu extends StatelessWidget {
       onSelected: (String result) async {
         switch (result) {
           case 'signin':
-            Navigator.pushNamed(context, LoginPage.routeName);
+            context.go(LoginPage.routeName);
             break;
           case 'signup':
-            Navigator.pushNamed(context, SignUpPage.routeName);
+            context.go(SignUpPage.routeName);
             break;
           default:
         }

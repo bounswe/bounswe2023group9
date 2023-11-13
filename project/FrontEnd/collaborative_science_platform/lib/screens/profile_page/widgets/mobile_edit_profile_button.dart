@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class MobileEditProfileButton extends StatelessWidget {
   const MobileEditProfileButton({super.key});
@@ -12,7 +13,7 @@ class MobileEditProfileButton extends StatelessWidget {
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, AccountSettingsPage.routeName);
+            context.go(AccountSettingsPage.routeName);
           },
           child: Container(
             height: 40.0,
@@ -24,7 +25,8 @@ class MobileEditProfileButton extends StatelessWidget {
                 Icon(Icons.edit, color: Colors.white),
                 SizedBox(width: 10.0),
                 Text('Edit Profile',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
               ],
             ),
           ),
