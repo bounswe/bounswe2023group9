@@ -1,5 +1,4 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/providers/node_details_provider.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
@@ -32,7 +31,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<Auth>(create: (context) => Auth()),
         ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
         ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
-        ChangeNotifierProvider<NodeDetailsProvider>(create: (context) => NodeDetailsProvider()),
         ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
       ],
