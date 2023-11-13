@@ -30,7 +30,7 @@ class GraphPageNodeCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 node.nodeTitle,
@@ -56,15 +56,20 @@ class GraphPageNodeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              Text(
-                node.contributors
-                    .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
-                    .join(", "),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.0,
-                  color: Colors.grey,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    node.contributors
+                        .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
+                        .join(", "),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

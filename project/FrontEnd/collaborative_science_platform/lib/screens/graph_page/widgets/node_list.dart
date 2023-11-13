@@ -1,6 +1,6 @@
 import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,8 +21,10 @@ class NodeList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: Card(
+        color: Colors.white,
         elevation: 2.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4.0),
@@ -45,10 +47,12 @@ class NodeList extends StatelessWidget {
             // Display the list of nodes
             Column(
               children: nodes.map((node) {
-                return GraphNodeCard(
-                  node: node,
-                  width: width,
-                  onTap: () => context.go('${NodeDetailsPage.routeName}/${node.id}'),
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                  child: GraphNodeCard(
+                    node: node,
+                    onTap: () => context.push('${GraphPage.routeName}/${node.id}'),
+                  ),
                 );
               }).toList(),
             ),
