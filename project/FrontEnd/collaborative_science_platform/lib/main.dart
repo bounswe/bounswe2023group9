@@ -3,25 +3,21 @@ import 'package:collaborative_science_platform/providers/node_details_provider.d
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
-import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
-import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
+import 'package:collaborative_science_platform/utils/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 
 void main() {
+  configureApp();
   runApp(const MyApp());
+}
+
+void configureApp() {
+  setUrlStrategy(PathUrlStrategy());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,80 +34,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
       ],
       child: MaterialApp.router(
-        routerConfig: _router,
-        // debugShowCheckedModeBanner: false,
-        // title: Constants.appName,
-        // navigatorKey: ScreenNavigation.navigatorKey,
-        // theme: ThemeData(
-        //   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-        //   useMaterial3: true,
-        // ),
+        routerConfig: router,
+        debugShowCheckedModeBanner: false,
+        title: Constants.appName,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+          useMaterial3: true,
+        ),
       ),
     );
   }
 }
-
-// GoRouter configuration
-final _router = GoRouter(
-  navigatorKey: ScreenNavigation.navigatorKey,
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      name:
-          'home', // Optional, add name to your routes. Allows you navigate by name instead of path
-      path: '/',
-      builder: (context, state) => const HomePage(),
-    ),
-    GoRoute(
-      name: LoginPage.routeName.substring(1),
-      path: LoginPage.routeName,
-      builder: (context, state) => const LoginPage(),
-    ),
-    GoRoute(
-      name: SignUpPage.routeName.substring(1),
-      path: SignUpPage.routeName,
-      builder: (context, state) => const SignUpPage(),
-    ),
-    GoRoute(
-      name: WorkspacesPage.routeName.substring(1),
-      path: WorkspacesPage.routeName,
-      builder: (context, state) => const WorkspacesPage(),
-    ),
-    GoRoute(
-      name: GraphPage.routeName.substring(1),
-      path: GraphPage.routeName,
-      builder: (context, state) => const GraphPage(),
-    ),
-    GoRoute(
-      name: NotificationPage.routeName.substring(1),
-      path: NotificationPage.routeName,
-      builder: (context, state) => const NotificationPage(),
-    ),
-    GoRoute(
-      name: AccountSettingsPage.routeName.substring(1),
-      path: AccountSettingsPage.routeName,
-      builder: (context, state) => const AccountSettingsPage(),
-    ),
-    GoRoute(
-      name: PleaseLoginPage2.routeName.substring(1),
-      path: PleaseLoginPage2.routeName,
-      builder: (context, state) => const PleaseLoginPage2(),
-    ),
-    GoRoute(
-      name: NodeDetailsPage.routeName.substring(1),
-      path: "${NodeDetailsPage.routeName}/:nodeId",
-      builder: (context, state) {
-        final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
-        return NodeDetailsPage(nodeID: nodeId);
-      },
-    ),
-    GoRoute(
-        name: ProfilePage.routeName.substring(1),
-        path: "${ProfilePage.routeName}/:email",
-        builder: (context, state) {
-          final String encodedEmail = state.pathParameters['email'] ?? '';
-          final String email = Uri.decodeComponent(encodedEmail);
-          return ProfilePage(email: email);
-        }),
-  ],
-);
