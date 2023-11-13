@@ -40,8 +40,21 @@ class GraphPageNodeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              Text(node.theorem!.theoremContent,
-                  maxLines: 10, style: TextStyle(fontSize: 14.0, color: Colors.grey[700])),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey, // Set the border color
+                  ),
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set the border radius if you want rounded corners
+                ),
+                padding: const EdgeInsets.all(8.0), // Add padding inside the box
+                child: Text(
+                  node.theorem!.theoremContent,
+                  maxLines: 10,
+                  style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
+                ),
+              ),
               const SizedBox(height: 8.0),
               Text(
                 node.contributors
@@ -53,7 +66,6 @@ class GraphPageNodeCard extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              const SizedBox(height: 8.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

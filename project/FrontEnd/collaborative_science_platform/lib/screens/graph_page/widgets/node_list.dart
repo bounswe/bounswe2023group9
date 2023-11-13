@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 
 class NodeList extends StatelessWidget {
   final String title;
-  final List<SmallNode> nodes;
+  final List<Node> nodes;
   final Color? color;
   final double width;
 
@@ -46,9 +46,9 @@ class NodeList extends StatelessWidget {
             Column(
               children: nodes.map((node) {
                 return GraphNodeCard(
-                  smallNode: node,
+                  node: node,
                   width: width,
-                  onTap: () => context.go('${NodeDetailsPage.routeName}/${node.nodeId}'),
+                  onTap: () => context.go('${NodeDetailsPage.routeName}/${node.id}'),
                 );
               }).toList(),
             ),
