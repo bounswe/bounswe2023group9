@@ -74,7 +74,6 @@ class Request(models.Model):
      
     """
     status = models.IntegerField(choices=EnumRequest.choices(), default=EnumRequest.WAITING.value)
-    sender = models.ForeignKey(Contributor, on_delete=models.CASCADE)  
     def approve(self):
         self.status = EnumRequest.APPROVED.value
 

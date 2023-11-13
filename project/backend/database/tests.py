@@ -135,13 +135,14 @@ class ReviewerModelTestCase(TestCase):
         # Create reviewer instances, note that username is a key.
         reviewer1=Reviewer.objects.create(user=User.objects.create(username="First"))
         reviewer2=Reviewer.objects.create(user=User.objects.create(username="Second"))
+        workspace = Workspace.objects.create()
 
         # Create review requests associated with the reviewer1
-        review_request1 = ReviewRequest.objects.create(sender=reviewer2,reviewer=reviewer1)
-        review_request2 = ReviewRequest.objects.create(sender=reviewer2,reviewer=reviewer1)
+        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1, workspace=workspace)
+        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1, workspace=workspace)
 
         # Create a review request not associated with the reviewer1
-        other_review_request = ReviewRequest.objects.create(sender=reviewer1, reviewer=reviewer2)
+        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2,workspace=workspace)
 
         review_requests = reviewer1.get_review_requests()
 
@@ -171,7 +172,8 @@ class ReviewerModelTestCase(TestCase):
         reviewer = contributor
 
         # Review request is issued to new reviewer
-        review_request = ReviewRequest.objects.create(sender=contributor,reviewer=reviewer)
+        
+        review_request = ReviewRequest.objects.create(reviewer=reviewer, workspace=workspace)
         self.assertIn(review_request, reviewer.get_review_requests())
 
         # Check if workspace is inherited
@@ -354,8 +356,7 @@ class ReviewRequestTestCase(TestCase):
         # Setup run before every test method.
         workspace = Workspace.objects.create()
         reviewer = Reviewer.objects.create(user=User.objects.create(username="reciever"))
-        sender = Contributor.objects.create(user=User.objects.create(username="sender"))
-        ReviewRequest.objects.create(reviewer=reviewer, sender=sender,workspace=workspace, comment='Initial Comment')
+        ReviewRequest.objects.create(reviewer=reviewer,workspace=workspace, comment='Initial Comment')
 
     def test_review_request_approve(self):
         # Test approving a review request.
@@ -379,8 +380,7 @@ class CollaborationRequestTestCase(TestCase):
         # Set up Workspace and Contributor instances to be used in the tests
         workspace = Workspace.objects.create()
         contributor = Contributor.objects.create(user=User.objects.create(username="reciever"))
-        sender = Contributor.objects.create(user=User.objects.create(username="sender"))
-        CollaborationRequest.objects.create(workspace=workspace,reciever=contributor, sender=sender)
+        CollaborationRequest.objects.create(workspace=workspace,reciever=contributor)
 
     def test_collaboration_request_status_change(self):
         # Test changing the status of a CollaborationRequest
