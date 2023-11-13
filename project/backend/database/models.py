@@ -58,11 +58,26 @@ class Admin(BasicUser):
         return self.user.first_name + " " + self.user.last_name
     
 class Request(models.Model):
-    """
-     This class definition is written beforehand (to be implemented afterwards) 
-     in order to be referred from other classes. e.g. ReviewRequest
-    """
-    pass
+    request_status_choices = [
+        ("P", "Pending"),
+        ("A", "Accepted"),
+        ("R", "Rejected")
+    ]
+
+    sender = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="outgoing_requests")
+    receiver = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="incoming_requests")
+    title = models.CharField(max_length=80)
+    body = models.TextField(max_length=400)
+    status = models.CharField(max_length=1, choices=request_status_choices, default="P")
+    
+    def accept(self):
+        self.status = "A"
+        self.save()
+    
+    def reject(self):
+        self.status = "R"
+        self.save()
+
 class ReviewRequest(Request):
     """
      This class definition is written beforehand (to be implemented afterwards) 

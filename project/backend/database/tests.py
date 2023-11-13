@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
+from .models import *
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
 from .models import BasicUser, Node, Theorem, Proof
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
@@ -343,7 +343,46 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class RequestModelTestCase(TestCase):
+    def tearDown(self):
+        Request.objects.all().delete()
+        Contributor.objects.all().delete()
 
+    def setUp(self):
+        sender_user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        self.sender = Contributor.objects.create(user=sender_user, bio="Test bio 1")
+
+        receiver_user = User.objects.create(
+            username="testuser2",
+            email="test2@example.com",
+            first_name="User2",
+            last_name="Test2",
+        )
+        self.receiver = Contributor.objects.create(user=receiver_user, bio="Test bio 2")
+        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver, title="Request title", body="Request body")
+
+    def test_db(self):
+        self.assertGreater(Request.objects.filter(sender=self.sender).count(), 0, "Could not find created request in the db with this sender!")
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.receiver.id, self.receiver.id, "Receiver didn't match")
+        self.assertEqual(req.title, self.request.title, "Title didn't match")
+        self.assertEqual(req.body, self.request.body, "Body didn't match")
+        self.assertEqual(self.request.status, "P", "Status is not Pending")
+
+    def test_accept(self):
+        self.request.accept()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
 
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
