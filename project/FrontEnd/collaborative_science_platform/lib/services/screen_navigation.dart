@@ -32,7 +32,7 @@ class ScreenNavigation extends ChangeNotifier {
         context.go(NotificationPage.routeName);
         break;
       case ScreenTab.profile:
-        context.go(ProfilePage.routeName);
+        context.go('${ProfilePage.routeName}/$email');
         break;
       case ScreenTab.pleaseLogin:
         context.go(PleaseLoginPage2.routeName);
