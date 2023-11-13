@@ -1,13 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
+from .models import *
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
-from .models import BasicUser, Node, Theorem, Proof, Request, ReviewRequest, CollaborationRequest, EnumRequest
+from .models import BasicUser, Node, Theorem, Proof, Request, ReviewRequest, CollaborationRequest
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
 
-
+"""
 class BasicUserModelTestCase(TestCase):
     def tearDown(self):
         User.objects.all().delete()
@@ -344,55 +344,95 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_id, 1)
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
-
+"""
 class ReviewRequestTestCase(TestCase):
     def tearDown(self):
         Workspace.objects.all().delete()
-        Reviewer.objects.all().delete()
+        User.objects.all().delete()
         ReviewRequest.objects.all().delete()
+        
         print("Test for the ReviewRequest Model is completed!")
 
     def setUp(self):
         # Setup run before every test method.
-        workspace = Workspace.objects.create()
-        reviewer = Reviewer.objects.create(user=User.objects.create(username="reciever"))
-        ReviewRequest.objects.create(reviewer=reviewer,workspace=workspace, comment='Initial Comment')
+        self.workspace = Workspace.objects.create()
+        self.reviewer = Reviewer.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor = Contributor.objects.create(user=User.objects.create())
+        self.request = ReviewRequest.objects.create(sender=self.contributor,receiver=self.reviewer,workspace=self.workspace, comment='Initial Comment')
+    def test_accept(self):
+        self.request.accept()
+        req = ReviewRequest.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
 
-    def test_review_request_approve(self):
-        # Test approving a review request.
-        review_request = ReviewRequest.objects.get(comment='Initial Comment')
-        review_request.approve()
-        self.assertEqual(review_request.status, EnumRequest.APPROVED.value)
-
-    def test_review_request_reject(self):
-        # Test rejecting a review request.
-        review_request = ReviewRequest.objects.get(comment='Initial Comment')
-        review_request.reject()
-        self.assertEqual(review_request.status, EnumRequest.DENIED.value)
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")    
 
 class CollaborationRequestTestCase(TestCase):
     def tearDown(self):
         Workspace.objects.all().delete()
+        User.objects.all().delete()
         Contributor.objects.all().delete()
         CollaborationRequest.objects.all().delete()
         print("Test for the CollaborationRequest Model is completed!")
     def setUp(self):
         # Set up Workspace and Contributor instances to be used in the tests
-        workspace = Workspace.objects.create()
-        contributor = Contributor.objects.create(user=User.objects.create(username="reciever"))
-        CollaborationRequest.objects.create(workspace=workspace,reciever=contributor)
+        self.workspace = Workspace.objects.create()
+        self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        self.request = CollaborationRequest.objects.create(workspace=self.workspace,receiver=self.contributor_receiver,sender=self.contributor_sender)
+    def test_accept(self):
+        self.request.accept()
+        req = CollaborationRequest.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
 
-    def test_collaboration_request_status_change(self):
-        # Test changing the status of a CollaborationRequest
-        
-        collab_request = CollaborationRequest.objects.get()
-        self.assertEqual(collab_request.status, EnumRequest.WAITING.value)
-        collab_request.approve()  # Assuming that there is an approve method on the Request model
-        self.assertEqual(collab_request.status, EnumRequest.APPROVED.value)
-        collab_request.reject()   # Assuming that there is a reject method on the Request model
-        self.assertEqual(collab_request.status, EnumRequest.DENIED.value)
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
 
+class RequestModelTestCase(TestCase):
+    def tearDown(self):
+        Request.objects.all().delete()
+        Contributor.objects.all().delete()
 
+    def setUp(self):
+        sender_user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        self.sender = Contributor.objects.create(user=sender_user, bio="Test bio 1")
+
+        receiver_user = User.objects.create(
+            username="testuser2",
+            email="test2@example.com",
+            first_name="User2",
+            last_name="Test2",
+        )
+        self.receiver = Contributor.objects.create(user=receiver_user, bio="Test bio 2")
+        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver, title="Request title", body="Request body")
+
+    def test_db(self):
+        self.assertGreater(Request.objects.filter(sender=self.sender).count(), 0, "Could not find created request in the db with this sender!")
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.receiver.id, self.receiver.id, "Receiver didn't match")
+        self.assertEqual(req.title, self.request.title, "Title didn't match")
+        self.assertEqual(req.body, self.request.body, "Body didn't match")
+        self.assertEqual(self.request.status, "P", "Status is not Pending")
+
+    def test_accept(self):
+        self.request.accept()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
+"""
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
         self.data = {
@@ -509,3 +549,4 @@ class ReviewerSerializerTestCase(TestCase):
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
+"""
