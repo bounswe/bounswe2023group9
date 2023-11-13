@@ -108,10 +108,10 @@ class ContributorModelTestCase(TestCase):
 
 class ReviewerModelTestCase(TestCase):
     def tearDown(self):
-        User.objects.all().delete()
-        BasicUser.objects.all().delete()
+        Reviewer.objects.all().delete()
         Contributor.objects.all().delete()
-        Reviewer.objects.all().delete
+        Workspace.objects.all().delete()
+        ReviewRequest.objects.all().delete()
         print("All tests for the Reviewer Model are completed!")
     
     def test_reviewer_create(self):
@@ -138,11 +138,11 @@ class ReviewerModelTestCase(TestCase):
         workspace = Workspace.objects.create()
 
         # Create review requests associated with the reviewer1
-        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1, workspace=workspace)
-        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1, workspace=workspace)
+        review_request1 = ReviewRequest.objects.create(sender=reviewer2 ,receiver=reviewer1, workspace=workspace)
+        review_request2 = ReviewRequest.objects.create(sender=reviewer2,receiver=reviewer1, workspace=workspace)
 
         # Create a review request not associated with the reviewer1
-        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2,workspace=workspace)
+        other_review_request = ReviewRequest.objects.create(sender=reviewer1,receiver=reviewer2,workspace=workspace)
 
         review_requests = reviewer1.get_review_requests()
 
@@ -163,7 +163,8 @@ class ReviewerModelTestCase(TestCase):
     
     def test_inheritance(self):
         # Create a contributor and it's workspace
-        contributor = Contributor.objects.create(user=User.objects.create())
+        contributor = Contributor.objects.create(user=User.objects.create(username="future_reviewer"))
+        reviewer_judge = Reviewer.objects.create(user=User.objects.create(username="sender"))
         workspace = contributor.create_workspace()
 
         # Suppose this particular contributor becomes a reviewer
@@ -173,7 +174,7 @@ class ReviewerModelTestCase(TestCase):
 
         # Review request is issued to new reviewer
         
-        review_request = ReviewRequest.objects.create(reviewer=reviewer, workspace=workspace)
+        review_request = ReviewRequest.objects.create(receiver=reviewer,sender=reviewer_judge, workspace=workspace)
         self.assertIn(review_request, reviewer.get_review_requests())
 
         # Check if workspace is inherited

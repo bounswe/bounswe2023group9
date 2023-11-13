@@ -52,7 +52,7 @@ class Reviewer(Contributor):
         return self.user.first_name + " " + self.user.last_name
     
     def get_review_requests(self):                          
-        return ReviewRequest.objects.filter(reviewer=self)
+        return ReviewRequest.objects.filter(receiver=self)
 
 class Admin(BasicUser):
     def __str__(self):
