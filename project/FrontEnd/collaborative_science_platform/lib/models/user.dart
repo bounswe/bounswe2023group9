@@ -14,4 +14,12 @@ class User {
       lastName: jsonString['surname'],
     );
   }
+  factory User.fromJsonforNodeDetailPage(Map<String, dynamic> jsonString) {
+    return User(
+      id: jsonString['id'],
+      email: jsonString['username'],
+      firstName: jsonString['first_name'],
+      lastName: jsonString['last_name'],
+    );
+  }
 }

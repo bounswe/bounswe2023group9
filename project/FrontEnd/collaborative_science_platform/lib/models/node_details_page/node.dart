@@ -11,13 +11,22 @@ class Node {
     required this.nodeTitle,
     required this.publishDate,
   });
-  // factory Node.fromJson(Map<String, dynamic> jsonString) {
-  //   var list = jsonString['authors'] as List;
-  //   List<User> contributors = list.map((e) => User.fromJson(e)).toList();
-  //   return Node(
-  //       id: jsonString['id'],
-  //       nodeTitle: jsonString['title'],
-  //       publishDate: jsonString['date'],
-  //       contributors: contributors);
-  // }
+  factory Node.fromJson(Map<String, dynamic> jsonString) {
+    var list = jsonString['authors'] as List;
+    List<User> contributors = list.map((e) => User.fromJson(e)).toList();
+    return Node(
+        id: jsonString['id'],
+        nodeTitle: jsonString['title'],
+        publishDate: jsonString['date'],
+        contributors: contributors);
+  }
+  factory Node.fromJsonforNodeDetailPage(Map<String, dynamic> jsonString) {
+    var list = jsonString['contributors'] as List;
+    List<User> contributors = list.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
+    return Node(
+        id: jsonString['node_id'],
+        nodeTitle: jsonString['node_title'],
+        publishDate: jsonString['publish_date'],
+        contributors: contributors);
+  }
 }
