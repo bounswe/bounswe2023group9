@@ -45,7 +45,7 @@ class Contributors extends StatelessWidget {
                 onTap: () {
                   final String email = contributors[index].email;
                   final String encodedEmail = Uri.encodeComponent(email);
-                  context.go('${ProfilePage.routeName}/$encodedEmail');
+                  context.push('${ProfilePage.routeName}/$encodedEmail');
                 },
                 child: Column(
                   children: [

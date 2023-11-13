@@ -80,6 +80,7 @@ class NodeProvider with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (error) {
+      print(error);
       rethrow;
     }
   }

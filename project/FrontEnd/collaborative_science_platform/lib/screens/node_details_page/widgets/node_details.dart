@@ -51,10 +51,14 @@ class _NodeDetailsState extends State<NodeDetails> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
-                      padding: Responsive.isDesktop(context) ? const EdgeInsets.all(70.0) : const EdgeInsets.all(10.0),
+                      padding: Responsive.isDesktop(context)
+                          ? const EdgeInsets.all(70.0)
+                          : const EdgeInsets.all(10.0),
                       child: Text(widget.node.nodeTitle,
                           textAlign: TextAlign.center,
-                          style: Responsive.isDesktop(context) ? TextStyles.title1 : TextStyles.title2)),
+                          style: Responsive.isDesktop(context)
+                              ? TextStyles.title1
+                              : TextStyles.title2)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -65,7 +69,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                             style: TextStyles.bodyGrey,
                           ),
                           TextSpan(
-                            text: widget.node.publishDate.toString(),
+                            text: widget.node.publishDateFormatted,
                             style: TextStyles.bodyBlack,
                           )
                         ]),
@@ -105,7 +109,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                               style: TextStyles.bodyGrey,
                             ),
                             TextSpan(
-                              text: widget.node.publishDate.toString(),
+                              text: widget.node.publishDateFormatted,
                               style: TextStyles.bodyBlack,
                             )
                           ]),
