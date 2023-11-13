@@ -111,7 +111,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
             child: referencesCardList(),
           ),
           Container(
-               width: MediaQuery.of(context).size.width / 3,
+            width: MediaQuery.of(context).size.width / 3,
             height: MediaQuery.of(context).size.height,
             child: Column(
               children: [

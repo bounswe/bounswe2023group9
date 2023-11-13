@@ -1,15 +1,15 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:flutter/material.dart';
 
-class HomePageNodeCard extends StatelessWidget {
-  final Node smallNode;
+class GraphPageNodeCard extends StatelessWidget {
+  final NodeDetailed node;
   final Color? color;
   final Function() onTap;
 
-  const HomePageNodeCard({
+  const GraphPageNodeCard({
     super.key,
-    required this.smallNode,
+    required this.node,
     this.color,
     required this.onTap,
   });
@@ -33,15 +33,18 @@ class HomePageNodeCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                smallNode.nodeTitle,
+                node.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                 ),
               ),
               const SizedBox(height: 8.0),
+              Text(node.theorem!.theoremContent,
+                  maxLines: 10, style: TextStyle(fontSize: 14.0, color: Colors.grey[700])),
+              const SizedBox(height: 8.0),
               Text(
-                smallNode.contributors
+                node.contributors
                     .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
                 style: const TextStyle(
@@ -55,7 +58,7 @@ class HomePageNodeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    getDurationFromNow(smallNode.publishDate),
+                    getDurationFromNow(node.publishDate!),
                     style: const TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.w600,

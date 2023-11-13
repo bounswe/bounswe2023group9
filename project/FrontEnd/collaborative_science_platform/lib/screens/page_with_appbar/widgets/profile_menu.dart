@@ -36,7 +36,7 @@ class AuthenticatedProfileMenu extends StatelessWidget {
             Provider.of<ScreenNavigation>(context, listen: false)
                 .setSelectedTab(ScreenTab.profile, context);
             final String encodedEmail = Uri.encodeComponent(auth.user!.email);
-            context.go('${ProfilePage.routeName}/$encodedEmail');
+            context.push('${ProfilePage.routeName}/$encodedEmail');
             break;
           case 'logout':
             auth.logout();
