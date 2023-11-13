@@ -1,8 +1,5 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
-import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/models/theorem.dart';
-import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/providers/node_details_provider.dart';
+import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
@@ -26,11 +23,6 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   ScrollController controller2 = ScrollController();
   bool _isFirstTime = true;
   NodeDetailed node = NodeDetailed();
-  List<Proof> proof = [];
-  Theorem theorem = Theorem();
-  List<NodeDetailed> references = [];
-  List<NodeDetailed> citations = [];
-  List<User> contributors = [];
 
   bool error = false;
   String errorMessage = "";
@@ -54,7 +46,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
   void getNodeDetails() async {
     try {
-      final nodeDetailsProvider = Provider.of<NodeDetailsProvider>(context);
+      final nodeDetailsProvider = Provider.of<NodeProvider>(context);
       setState(() {
         isLoading = true;
       });
@@ -62,11 +54,6 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
-        proof = nodeDetailsProvider.proof;
-        theorem = nodeDetailsProvider.theorem;
-        references = nodeDetailsProvider.references;
-        citations = nodeDetailsProvider.citations;
-        contributors = nodeDetailsProvider.contributors;
         isLoading = false;
       });
     } catch (e) {
@@ -84,6 +71,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       pageColor: Colors.grey.shade200,
       child: isLoading
           ? Container(
+              padding: const EdgeInsets.only(top: 32),
               decoration: const BoxDecoration(color: Colors.white),
               child: const Center(
                 child: CircularProgressIndicator(),
@@ -95,26 +83,16 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Contributors(
-                      contributors: contributors, //widget.inputNode.contributors,
+                      contributors: node.contributors, //widget.inputNode.contributors,
                       controller: controller1,
                     ),
                     NodeDetails(
-                      proofs: proof,
-                      contributors: contributors, //widget.inputNode.contributors,
-                      theorem: theorem,
-                      references: references,
-                      citations: citations,
                       node: node,
                       controller: controller2,
                     ),
                   ],
                 )
               : NodeDetails(
-                  proofs: proof,
-                  theorem: theorem,
-                  references: references,
-                  citations: citations,
-                  contributors: contributors, // widget.inputNode.contributors,
                   node: node,
                   controller: controller2,
                 ),

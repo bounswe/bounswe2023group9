@@ -5,6 +5,7 @@ import 'package:collaborative_science_platform/screens/notifications_page/notifi
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 enum ScreenTab { home, graph, workspace, notifications, profile, pleaseLogin, none }
 
@@ -14,26 +15,26 @@ class ScreenNavigation extends ChangeNotifier {
 
   ScreenTab get selectedTab => _selectedTab;
 
-  void setSelectedTab(ScreenTab tab) {
+  void setSelectedTab(ScreenTab tab, BuildContext context, {String? email}) {
     _selectedTab = tab;
     switch (tab) {
       case ScreenTab.home:
-        navigatorKey.currentState?.pushNamed(HomePage.routeName);
+        context.go(HomePage.routeName);
         break;
       case ScreenTab.graph:
-        navigatorKey.currentState?.pushNamed(GraphPage.routeName);
+        context.go(GraphPage.routeName);
         break;
       case ScreenTab.workspace:
-        navigatorKey.currentState?.pushNamed(WorkspacesPage.routeName);
+        context.go(WorkspacesPage.routeName);
         break;
       case ScreenTab.notifications:
-        navigatorKey.currentState?.pushNamed(NotificationPage.routeName);
+        context.go(NotificationPage.routeName);
         break;
       case ScreenTab.profile:
-        navigatorKey.currentState?.pushNamed(ProfilePage.routeName, arguments: "");
+        context.go(ProfilePage.routeName);
         break;
       case ScreenTab.pleaseLogin:
-        navigatorKey.currentState?.pushNamed(PleaseLoginPage2.routeName);
+        context.go(PleaseLoginPage2.routeName);
         break;
       case ScreenTab.none:
         break;

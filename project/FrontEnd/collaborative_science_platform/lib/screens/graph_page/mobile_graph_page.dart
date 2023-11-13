@@ -1,9 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:collaborative_science_platform/models/contributor_user.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/models/small_node.dart';
-import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:flutter/material.dart';
 
 // See the examples and implementations for sliding pages:
