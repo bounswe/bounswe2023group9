@@ -31,7 +31,7 @@ class NodeCards extends StatelessWidget {
                 return HomePageNodeCard(
                   smallNode: nodeList[index],
                   onTap: () {
-                    context.go('${NodeDetailsPage.routeName}/${nodeList[index].id}');
+                    context.push('${NodeDetailsPage.routeName}/${nodeList[index].id}');
                   },
                 );
               },
