@@ -30,7 +30,7 @@ class GraphPageNodeCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 node.nodeTitle,
@@ -40,20 +40,37 @@ class GraphPageNodeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              Text(node.theorem!.theoremContent,
-                  maxLines: 10, style: TextStyle(fontSize: 14.0, color: Colors.grey[700])),
-              const SizedBox(height: 8.0),
-              Text(
-                node.contributors
-                    .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
-                    .join(", "),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.0,
-                  color: Colors.grey,
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey, // Set the border color
+                  ),
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set the border radius if you want rounded corners
+                ),
+                padding: const EdgeInsets.all(8.0), // Add padding inside the box
+                child: Text(
+                  node.theorem!.theoremContent,
+                  maxLines: 10,
+                  style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
                 ),
               ),
               const SizedBox(height: 8.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    node.contributors
+                        .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
+                        .join(", "),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

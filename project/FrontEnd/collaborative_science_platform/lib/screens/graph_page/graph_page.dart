@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/node_details.exception
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/mobile_graph_page.dart';
+import 'package:collaborative_science_platform/screens/graph_page/web_graph_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -85,7 +86,7 @@ class _GraphPageState extends State<GraphPage> {
     } else {
       return Responsive(
         mobile: MobileGraphPage(node: node),
-        desktop: MobileGraphPage(node: node),
+        desktop: WebGraphPage(node: node),
       );
     }
   }
