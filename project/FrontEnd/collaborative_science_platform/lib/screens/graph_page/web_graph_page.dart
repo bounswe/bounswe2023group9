@@ -1,9 +1,8 @@
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/small_node.dart';
-
 class WebGraphPage extends StatelessWidget {
-  final SmallNode smallNode;
+  final Node smallNode;
 
   const WebGraphPage({
     super.key,

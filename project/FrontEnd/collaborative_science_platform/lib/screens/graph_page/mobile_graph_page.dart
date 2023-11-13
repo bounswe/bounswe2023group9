@@ -1,19 +1,22 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collaborative_science_platform/models/contributor_user.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
 import 'package:flutter/material.dart';
-
-// See the examples and implementations for sliding pages:
-// https://pub.dev/packages/carousel_slider
+import 'package:go_router/go_router.dart';
+import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 
 class MobileGraphPage extends StatefulWidget {
-  final SmallNode smallNode;
+  final NodeDetailed node;
+  final bool isLoading;
   const MobileGraphPage({
     super.key,
-    required this.smallNode,
+    required this.node,
+    this.isLoading = false,
   });
 
   @override
@@ -25,96 +28,90 @@ class MobileGraphPage extends StatefulWidget {
 class _MobileGraphPageState extends State<MobileGraphPage> {
   int current = 1;
   final CarouselController controller = CarouselController();
-  List<SmallNode> references = [];
-  List<SmallNode> referents = [];
-  bool areReferencesLoading = false;
-  bool areReferentsLoading = false;
 
-  void getReferences() {
-    setState(() {
-      areReferencesLoading = true;
-    });
-    references = List<SmallNode>.generate(
-      10,
-      (index) => SmallNode(
-        nodeId: index + 1,
-        nodeTitle: "Reference ${index + 1}",
-        contributors: [
-          Contributor(
-              name: "Contributor Name ${index + 1}",
-              surname: "Contributor Surname ${index + 1}",
-              email: "contributor${index + 1}@mail.com"),
-        ],
-        publishDate: DateTime(1590, 12, 12),
-      ),
-    );
-    setState(() {
-      areReferencesLoading = false;
-    });
-  }
+  // void getReferences() {
+  //   setState(() {
+  //     areReferencesLoading = true;
+  //   });
+  //   references = List<SmallNode>.generate(
+  //     10,
+  //     (index) => SmallNode(
+  //       nodeId: index + 1,
+  //       nodeTitle: "Reference ${index + 1}",
+  //       contributors: [
+  //         Contributor(
+  //             name: "Contributor Name ${index + 1}",
+  //             surname: "Contributor Surname ${index + 1}",
+  //             email: "contributor${index + 1}@mail.com"),
+  //       ],
+  //       publishDate: DateTime(1590, 12, 12),
+  //     ),
+  //   );
+  //   setState(() {
+  //     areReferencesLoading = false;
+  //   });
+  // }
 
-  void getReferents() {
-    setState(() {
-      areReferentsLoading = true;
-    });
-    referents = List<SmallNode>.generate(
-      10,
-      (index) => SmallNode(
-        nodeId: index + 1,
-        nodeTitle: "Referent ${index + 1}",
-        contributors: [
-          Contributor(
-              name: "Contributor Name ${index + 1}",
-              surname: "Contributor Surname ${index + 1}",
-              email: "contributor${index + 1}@mail.com"),
-        ],
-        publishDate: DateTime(1990, 12, 12),
-      ),
-    );
-    setState(() {
-      areReferentsLoading = false;
-    });
-  }
+  // void getReferents() {
+  //   setState(() {
+  //     areReferentsLoading = true;
+  //   });
+  //   referents = List<SmallNode>.generate(
+  //     10,
+  //     (index) => SmallNode(
+  //       nodeId: index + 1,
+  //       nodeTitle: "Referent ${index + 1}",
+  //       contributors: [
+  //         Contributor(
+  //             name: "Contributor Name ${index + 1}",
+  //             surname: "Contributor Surname ${index + 1}",
+  //             email: "contributor${index + 1}@mail.com"),
+  //       ],
+  //       publishDate: DateTime(1990, 12, 12),
+  //     ),
+  //   );
+  //   setState(() {
+  //     areReferentsLoading = false;
+  //   });
+  // }
 
   Widget referencesCardList() {
     // pre
-    getReferences();
     return ListView.builder(
-      itemCount: references.length,
+      itemCount: widget.node.references.length,
       itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: references[index],
-        onTap: () {/* Orientate the node in the middle */},
+        smallNode: widget.node.references[index],
+        onTap: () {
+          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+        },
       ),
     );
   }
 
   Widget referentsCardList() {
-    // post
-    getReferents();
     return ListView.builder(
-      itemCount: referents.length,
+      itemCount: widget.node.citations.length,
       itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: referents[index],
-        onTap: () {/* Orientate the node to the middle */},
+        smallNode: widget.node.citations[index],
+        onTap: () {
+          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+        },
       ),
     );
   }
 
   Widget slidingPages(BuildContext context) {
     List<Widget> subpages = <Widget>[
-      !areReferencesLoading
-          ? referencesCardList()
-          : const Center(child: CircularProgressIndicator()),
+      !widget.isLoading ? referencesCardList() : const Center(child: CircularProgressIndicator()),
       Center(
-        child: SizedBox(
-          height: 200,
-          child: HomePageNodeCard(
-            smallNode: widget.smallNode,
-            onTap: () {/* Navigate to the Node Page */},
-          ),
+        child: GraphPageNodeCard(
+          node: widget.node,
+          onTap: () {
+            context.push("${NodeDetailsPage.routeName}/${widget.node.nodeId}");
+          },
         ),
       ),
-      !areReferentsLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
+      !widget.isLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
     ];
     return Column(
       children: [
@@ -162,6 +159,15 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
           }).toList(),
         ),
       ],
+    );
+  }
+
+  Node createSmallNode(NodeDetailed node) {
+    return Node(
+      id: node.nodeId,
+      nodeTitle: node.nodeTitle,
+      contributors: node.contributors,
+      publishDate: node.publishDate!,
     );
   }
 

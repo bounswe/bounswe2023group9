@@ -34,7 +34,7 @@ class UserCards extends StatelessWidget {
                 return HomePageUserCard(
                   profileData: userList[index],
                   onTap: () {
-                    context.go('${ProfilePage.routeName}/$encodedEmail');
+                    context.push('${ProfilePage.routeName}/$encodedEmail');
                   },
                   color: AppColors.primaryLightColor,
                   profilePagePath: "assets/images/gumball.jpg",
