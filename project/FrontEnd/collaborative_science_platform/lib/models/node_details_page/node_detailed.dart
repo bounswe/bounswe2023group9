@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/models/node_details_page/proof.da
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:intl/intl.dart';
 
 class NodeDetailed {
   int nodeId;
@@ -39,6 +40,11 @@ class NodeDetailed {
     //required this.wikiTags,
     //required this.annotations,
   });
+
+  String get publishDateFormatted {
+    DateFormat formatter = DateFormat('dd-MM-yyyy');
+    return formatter.format(publishDate!);
+  }
 
   factory NodeDetailed.fromJson(Map<String, dynamic> jsonString) {
     var referencesList = jsonString['from_referenced_nodes'] as List;
