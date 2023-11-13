@@ -1,11 +1,11 @@
-import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class NodeCards extends StatelessWidget {
-  final List<SmallNode> nodeList;
+  final List<Node> nodeList;
   final bool firstSearch;
 
   const NodeCards({
@@ -31,7 +31,7 @@ class NodeCards extends StatelessWidget {
                 return HomePageNodeCard(
                   smallNode: nodeList[index],
                   onTap: () {
-                    context.go('${NodeDetailsPage.routeName}/${nodeList[index].nodeId}');
+                    context.go('${NodeDetailsPage.routeName}/${nodeList[index].id}');
                   },
                 );
               },

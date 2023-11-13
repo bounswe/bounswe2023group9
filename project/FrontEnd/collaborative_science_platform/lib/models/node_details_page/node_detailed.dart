@@ -7,7 +7,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 class NodeDetailed {
   int nodeId;
   String nodeTitle;
-  String publishDate;
+  DateTime? publishDate;
   List<User> contributors;
   List<Proof> proof;
   Theorem? theorem;
@@ -28,7 +28,7 @@ class NodeDetailed {
     this.contributors = const [],
     this.proof = const [],
     this.theorem,
-    this.publishDate = "",
+    this.publishDate,
     this.reviewers = const [],
     this.references = const [],
     this.citations = const [],
@@ -50,15 +50,11 @@ class NodeDetailed {
     var questionsList = jsonString['question_set'] as List;
     List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
     List<Node> citations = citationsList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
-    print("citations");
     List<User> contributors =
         contributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
-    print("contributors");
     //List<User> reviewers = reviewersList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<Proof> proof = proofsList.map((e) => Proof.fromJson(e)).toList();
-    print("proof");
     List<Question> questions = questionsList.map((e) => Question.fromJson(e)).toList();
-    print("questions");
     return NodeDetailed(
       citations: citations,
       contributors: contributors,
@@ -67,7 +63,7 @@ class NodeDetailed {
       nodeTitle: jsonString['node_title'],
       noVisits: jsonString['num_visits'],
       proof: proof,
-      publishDate: jsonString['publish_date'],
+      publishDate: DateTime.parse(jsonString['publish_date']),
       questions: questions,
       references: references,
       //reviewers: reviewers,

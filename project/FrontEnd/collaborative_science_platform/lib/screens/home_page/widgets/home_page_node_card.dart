@@ -1,9 +1,9 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:flutter/material.dart';
 
 class HomePageNodeCard extends StatelessWidget {
-  final SmallNode smallNode;
+  final Node smallNode;
   final Color? color;
   final Function() onTap;
 
@@ -42,8 +42,7 @@ class HomePageNodeCard extends StatelessWidget {
               const SizedBox(height: 8.0),
               Text(
                 smallNode.contributors
-                    .map((user) =>
-                        "${user.name} ${user.surname} (${user.email})")
+                    .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,

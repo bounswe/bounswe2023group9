@@ -3,7 +3,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 class Node {
   int id;
   String nodeTitle;
-  String publishDate;
+  DateTime publishDate;
   List<User> contributors;
   Node({
     required this.contributors,
@@ -17,7 +17,7 @@ class Node {
     return Node(
         id: jsonString['id'],
         nodeTitle: jsonString['title'],
-        publishDate: jsonString['date'],
+        publishDate: DateTime.parse(jsonString['date']),
         contributors: contributors);
   }
   factory Node.fromJsonforNodeDetailPage(Map<String, dynamic> jsonString) {
@@ -26,7 +26,7 @@ class Node {
     return Node(
         id: jsonString['node_id'],
         nodeTitle: jsonString['node_title'],
-        publishDate: jsonString['publish_date'],
+        publishDate: DateTime.parse(jsonString['date']),
         contributors: contributors);
   }
 }

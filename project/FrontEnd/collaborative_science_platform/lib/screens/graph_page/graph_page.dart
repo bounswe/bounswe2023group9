@@ -1,10 +1,7 @@
-import 'package:collaborative_science_platform/models/contributor_user.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/screens/graph_page/mobile_graph_page.dart';
-import 'package:collaborative_science_platform/screens/graph_page/web_graph_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
-
-import '../../models/small_node.dart';
 
 class GraphPage extends StatefulWidget {
   static const routeName = '/graph';
@@ -15,26 +12,26 @@ class GraphPage extends StatefulWidget {
 }
 
 class _GraphPageState extends State<GraphPage> {
-  late SmallNode smallNode;
+  late NodeDetailed node;
+  bool _isFirstTime = true;
+  bool isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
-    getNode();
+  void didChangeDependencies() {
+    if (_isFirstTime) {
+      getNode();
+      _isFirstTime = false;
+    }
+    super.didChangeDependencies();
   }
 
-  void getNode() {
-    smallNode = SmallNode( // Example Node
-      nodeId: 1,
-      nodeTitle: "Cartesian Coordinate System",
-      contributors: [Contributor(name: "Rene", surname: "Descartes", email: "rene.descartes1596@renaissance.com")],
-      publishDate: DateTime(1630, 7, 14),
-    );
-  }
+  void getNode() async {}
 
   @override
   Widget build(BuildContext context) {
-    return Responsive.isMobile(context) ?
-      MobileGraphPage(smallNode: smallNode) : WebGraphPage(smallNode: smallNode);
+    return Responsive(
+      mobile: MobileGraphPage(node: node, isLoading: isLoading),
+      desktop: MobileGraphPage(node: node, isLoading: isLoading),
+    );
   }
 }
