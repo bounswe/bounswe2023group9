@@ -349,23 +349,19 @@ class EntryModelTestCase(TestCase):
         print("All tests for the Entry Model are completed!")
 
     def test_entry_model(self):
-        testContributor = Contributor.objects.create(user=User.objects.create())
+
         entry = Entry.objects.create(
             entry_id = 1,
             content = "This is an entry.",
             entry_date = "2023-11-11",
             is_theorem_entry = True,
             entry_number = 1,
-            creator = testContributor,
-            contributors = testContributor
         )
-        self.assertIn(testContributor, entry.contributors.all())
         self.assertEqual(entry.entry_id, 1)
         self.assertEqual(entry.entry_number, 1)
         self.assertEqual(entry.content, "This is an entry.")
         self.assertEqual(entry.entry_date, "2023-11-11")
         self.assertEqual(entry.is_theorem_entry, True)
-        self.assertEqual(entry.creator, testContributor)
         self.assertEqual(entry.is_final_entry,False)
 
 

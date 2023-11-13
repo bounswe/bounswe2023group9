@@ -65,9 +65,9 @@ class Entry(models.Model):
     is_theorem_entry = models.BooleanField()
     is_final_entry = models.BooleanField(default=False)
     is_editable = models.BooleanField(default=True)
-    creator = models.ForeignKey(Contributor,null = False, blank= False)
+    creator = models.ForeignKey(Contributor, on_delete = models.CASCADE)
     entry_number = models.IntegerField()
-    contributors = models.ManyToManyField(Contributor,on_delete=models.PROTECT,related_name="EntryContributors")
+    contributors = models.ManyToManyField(Contributor,related_name="EntryContributors")
     def set_as_final(self):
         self.is_final_entry = True
     def set_as_theorem(self):
