@@ -37,7 +37,9 @@ class _NodeDetailsState extends State<NodeDetails> {
       decoration: BoxDecoration(
         color: Colors.grey[200],
       ),
-      width: Responsive.getGenericPageWidth(context),
+      width: Responsive.isDesktop(context)
+          ? Responsive.desktopPageWidth * 0.8
+          : Responsive.getGenericPageWidth(context),
       child: SingleChildScrollView(
         primary: false,
         scrollDirection: Axis.vertical,
@@ -54,7 +56,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                       padding: Responsive.isDesktop(context) ? const EdgeInsets.all(70.0) : const EdgeInsets.all(10.0),
                       child: Text(widget.node.nodeTitle,
                           textAlign: TextAlign.center,
-                          style: Responsive.isDesktop(context) ? TextStyles.title1 : TextStyles.title2)),
+                          style: TextStyles.title2)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -134,19 +136,10 @@ class _NodeDetailsState extends State<NodeDetails> {
               //Q/A
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: QuestionsView(questions: [
-                  Question(
-                      question: "What is a Finite Automaton?",
-                      answer:
-                          "A Finite Automaton, also known as a Finite State Machine (FSM), is a theoretical model used in computer science and mathematics to describe computation processes. It consists of a finite set of states, an input alphabet, transition rules, an initial state, and a set of accepting (or final) states."),
-                  Question(
-                      question: "Can a Finite Automaton recognize context-free languages?",
-                      answer:
-                          "No, Finite Automata can only recognize regular languages, which are a subset of context-free languages. Context-free languages require more powerful models like Pushdown Automata or Turing Machines for recognition.")
-                ]),
+                child: QuestionsView(questions: widget.node.questions),
               ),
             if (currentIndex == 5)
-              //Q/A
+              //contributors
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Contributors(

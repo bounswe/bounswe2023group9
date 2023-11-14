@@ -50,15 +50,11 @@ class NodeDetailed {
     var questionsList = jsonString['question_set'] as List;
     List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
     List<Node> citations = citationsList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
-    print("citations");
     List<User> contributors =
         contributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
-    print("contributors");
     //List<User> reviewers = reviewersList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<Proof> proof = proofsList.map((e) => Proof.fromJson(e)).toList();
-    print("proof");
     List<Question> questions = questionsList.map((e) => Question.fromJson(e)).toList();
-    print("questions");
     return NodeDetailed(
       citations: citations,
       contributors: contributors,

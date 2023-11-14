@@ -38,10 +38,19 @@ class ReferencesView extends StatelessWidget {
                       textAlign: TextAlign.start,
                     ),
                     Text(
+                      nodes[index]
+                          .contributors
+                          .map((e) => "by ${e.firstName} ${e.lastName}")
+                          .join(", "),
+                      style: TextStyles.bodyGrey,
+                      textAlign: TextAlign.start,
+                    ),
+                    Text(
                       nodes[index].publishDate.toString(),
                       style: TextStyles.bodyGrey,
                       textAlign: TextAlign.start,
-                    )
+                    ),
+                    
                   ],
                 ),
               ),
@@ -50,40 +59,3 @@ class ReferencesView extends StatelessWidget {
     );
   }
 }
-
-    //         } else {
-    //           if (index == 0) {
-    //             return Padding(
-    //               padding: const EdgeInsets.all(5),
-    //               child: Text(
-    //                 ref! ? "References" : "Citations",
-    //                 style: TextStyles.title3secondary,
-    //                 textAlign: TextAlign.start,
-    //               ),
-    //             );
-    //           } else {
-    //             return Padding(
-    //               padding: const EdgeInsets.all(5),
-    //               child: CardContainer(
-    //                 child: Column(
-    //                   mainAxisAlignment: MainAxisAlignment.start,
-    //                   crossAxisAlignment: CrossAxisAlignment.start,
-    //                   children: [
-    //                     Text(
-    //                       "${nodes[index - 1].nodeTitle}",
-    //                       style: TextStyles.title4,
-    //                       textAlign: TextAlign.start,
-    //                     ),
-    //                     Text(
-    //                       "${nodes[index - 1].publishDate.toString()}",
-    //                       style: TextStyles.bodyGrey,
-    //                       textAlign: TextAlign.start,
-    //                     )
-    //                   ],
-    //                 ),
-    //               ),
-    //             );
-    //           }
-    //         }
-    //       }),
-    // );

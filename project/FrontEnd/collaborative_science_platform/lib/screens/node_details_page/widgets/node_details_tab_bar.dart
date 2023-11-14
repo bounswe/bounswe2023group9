@@ -65,7 +65,7 @@ class _NodeDetailsTabBarState extends State<NodeDetailsTabBar> {
           isSelected: currentIndex == 4,
           text: "Q/A",
         ),
-        if (Responsive.isMobile(context))
+        if (!Responsive.isDesktop(context))
           NavigationBarItem(
             callback: updateIndex,
             icon: Icons.people,
