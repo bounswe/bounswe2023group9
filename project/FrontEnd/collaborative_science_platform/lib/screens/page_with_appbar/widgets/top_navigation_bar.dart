@@ -86,7 +86,13 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
               selected = ScreenTab.pleaseLogin;
             }
           }
-          Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected);
+          if (selected == ScreenTab.profile) {
+            Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected, context,
+                email: Uri.decodeComponent(Provider.of<Auth>(context, listen: false).user!.email));
+            return;
+          } else {
+            Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected, context);
+          }
         },
         child: Container(
           color: isHovering ? Colors.grey[300] : Colors.transparent,

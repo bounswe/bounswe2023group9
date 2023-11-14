@@ -71,7 +71,6 @@ class ProofListView extends StatelessWidget {
                   ),
                 ),
               );
-            
           }),
     );
   }

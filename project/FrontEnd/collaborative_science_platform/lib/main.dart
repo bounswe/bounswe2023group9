@@ -2,24 +2,21 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
-import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
-import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
-import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
-import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
-import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
+import 'package:collaborative_science_platform/utils/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  configureApp();
   runApp(const MyApp());
+}
+
+void configureApp() {
+  setUrlStrategy(PathUrlStrategy());
 }
 
 class MyApp extends StatelessWidget {
@@ -34,30 +31,38 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
       ],
-      child: MaterialApp(
+      //    child: MaterialApp(
+      //      debugShowCheckedModeBanner: false,
+      //      title: Constants.appName,
+      //      routes: {
+      //        '/': (context) => const HomePage(),
+      //        LoginPage.routeName: (context) => const LoginPage(),
+      //        SignUpPage.routeName: (context) => const SignUpPage(),
+      //        WorkspacesPage.routeName: (context) => const WorkspacesPage(),
+//
+      //        ///ProfilePage.routeName: (context) => const ProfilePage(),
+      //        GraphPage.routeName: (context) => const GraphPage(),
+      //        NotificationPage.routeName: (context) => const NotificationPage(),
+      //        AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
+      //        PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
+      //        NodeDetailsPage.routeName: (context) {
+      //          final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
+      //          return NodeDetailsPage(nodeID: nodeId);
+      //        },
+      //        ProfilePage.routeName: (context) {
+      //          final String email = ModalRoute.of(context)!.settings.arguments as String ?? "";
+      //          return ProfilePage(email: email);
+      //        },
+      //      },
+      //      navigatorKey: ScreenNavigation.navigatorKey,
+      //      theme: ThemeData(
+      //        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+      //        useMaterial3: true,
+      //      ),
+      child: MaterialApp.router(
+        routerConfig: router,
         debugShowCheckedModeBanner: false,
         title: Constants.appName,
-        routes: {
-          '/': (context) => const HomePage(),
-          LoginPage.routeName: (context) => const LoginPage(),
-          SignUpPage.routeName: (context) => const SignUpPage(),
-          WorkspacesPage.routeName: (context) => const WorkspacesPage(),
-
-          ///ProfilePage.routeName: (context) => const ProfilePage(),
-          GraphPage.routeName: (context) => const GraphPage(),
-          NotificationPage.routeName: (context) => const NotificationPage(),
-          AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
-          PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
-          NodeDetailsPage.routeName: (context) {
-            final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
-            return NodeDetailsPage(nodeID: nodeId);
-          },
-          ProfilePage.routeName: (context) {
-            final String email = ModalRoute.of(context)!.settings.arguments as String;
-            return ProfilePage(email: email);
-          },
-        },
-        navigatorKey: ScreenNavigation.navigatorKey,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
           useMaterial3: true,

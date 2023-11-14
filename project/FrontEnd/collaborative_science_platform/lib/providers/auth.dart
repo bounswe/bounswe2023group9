@@ -18,7 +18,10 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String password) async {
     Uri url = Uri.parse("${Constants.apiUrl}/login/");
 
-    final Map<String, String> headers = {"Accept": "application/json", "content-type": "application/json"};
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type": "application/json"
+    };
 
     final String body = json.encode({
       'username': email, //kararlaştırılacak

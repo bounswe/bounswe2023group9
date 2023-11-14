@@ -16,13 +16,13 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
   final String email;
 
   const ProfilePage({super.key, required this.email});
-
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           isLoading = true;
         });
-        await profileDataProvider.getData(widget.email!);
+        await profileDataProvider.getData(widget.email);
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
@@ -70,18 +70,17 @@ class _ProfilePageState extends State<ProfilePage> {
         });
       } else {
         final User user = Provider.of<Auth>(context).user!;
-      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
-      setState(() {
-        isLoading = true;
-      });
-      await profileDataProvider.getData(user.email);
-      setState(() {
-        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
-        noWorks = profileData.nodes.length;
+        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        setState(() {
+          isLoading = true;
+        });
+        await profileDataProvider.getData(user.email);
+        setState(() {
+          profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+          noWorks = profileData.nodes.length;
           isLoading = false;
-      });
+        });
       }
-     
     } catch (e) {
       setState(() {
         error = true;
@@ -112,68 +111,61 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     )
                   : Column(
-                children: [
-                  AboutMe(
-                    aboutMe: profileData.aboutMe,
-                    email: profileData.email,
-                    name: profileData.name,
-                    surname: profileData.surname,
-                    noWorks: noWorks,
-                  ),
-                  Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
-                    child: Row(
+                      children: [
+                        AboutMe(
+                          aboutMe: profileData.aboutMe,
+                          email: profileData.email,
+                          name: profileData.name,
+                          surname: profileData.surname,
+                          noWorks: noWorks,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                          child: Row(
                             children: [
                               const Expanded(child: MobileEditProfileButton()),
                               Expanded(child: LogOutButton())
                             ],
-                    ),
-                  ),
-                  Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                    child: ProfileActivityTabBar(
-                      callback: updateIndex,
-                    ),
-                  ),
-                  if (currentIndex == 0)
-                    Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                      child: CardContainer(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: profileData.nodes.length,
-                          itemBuilder: (context, index) {
-                            return ProfileNodeCard(
-                              profileNode: profileData.nodes.elementAt(index),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: ProfileActivityTabBar(
+                            callback: updateIndex,
+                          ),
+                        ),
+                        if (currentIndex == 0)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            child: CardContainer(
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: profileData.nodes.length,
+                                itemBuilder: (context, index) {
+                                  return ProfileNodeCard(
+                                    profileNode: profileData.nodes.elementAt(index),
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                          context, NodeDetailsPage.routeName,
-                                          arguments: profileData.nodes
-                                              .elementAt(index)
-                                              .id);
+                                      context.push(
+                                          '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
                                     },
-                            );
-                          },
-                        ),
-                      ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        if (currentIndex == 1)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            child: CardContainer(
+                              child: SizedBox(
+                                height: 400,
+                                child: QuestionActivity(),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                  if (currentIndex == 1)
-                    const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                      child: CardContainer(
-                        child: SizedBox(
-                          height: 400,
-                          child: QuestionActivity(),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
             ),
           ),
           desktop: SingleChildScrollView(
@@ -187,62 +179,56 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     )
                   : Column(
-                children: [
-                  AboutMe(
-                    aboutMe: profileData.aboutMe,
-                    email: profileData.email,
-                    name: profileData.name,
-                    surname: profileData.surname,
-                    noWorks: noWorks,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: DesktopEditProfileButton(),
-                  ),
-                  Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 10),
-                    child: ProfileActivityTabBar(
-                      callback: updateIndex,
-                    ),
-                  ),
-                  if (currentIndex == 0)
-                    Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                      child: CardContainer(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: profileData.nodes.length,
-                          itemBuilder: (context, index) {
-                            return ProfileNodeCard(
-                              profileNode: profileData.nodes.elementAt(index),
+                      children: [
+                        AboutMe(
+                          aboutMe: profileData.aboutMe,
+                          email: profileData.email,
+                          name: profileData.name,
+                          surname: profileData.surname,
+                          noWorks: noWorks,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: DesktopEditProfileButton(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          child: ProfileActivityTabBar(
+                            callback: updateIndex,
+                          ),
+                        ),
+                        if (currentIndex == 0)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            child: CardContainer(
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: profileData.nodes.length,
+                                itemBuilder: (context, index) {
+                                  return ProfileNodeCard(
+                                    profileNode: profileData.nodes.elementAt(index),
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                          context, NodeDetailsPage.routeName,
-                                          arguments: profileData.nodes
-                                              .elementAt(index)
-                                              .id);
+                                      context.push(
+                                          '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
                                     },
-                            );
-                          },
-                        ),
-                      ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        if (currentIndex == 1)
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            child: CardContainer(
+                              child: SizedBox(
+                                height: 400,
+                                child: QuestionActivity(),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                  if (currentIndex == 1)
-                    const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 10),
-                      child: CardContainer(
-                        child: SizedBox(
-                          height: 400,
-                          child: QuestionActivity(),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
             ),
           ),
         ),
@@ -264,60 +250,55 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 )
               : Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              AboutMe(
-                aboutMe: profileData.aboutMe,
-                email: profileData.email,
-                name: profileData.name,
-                surname: profileData.surname,
-                noWorks: noWorks,
-              ),
-              Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 10),
-                child: ProfileActivityTabBar(
-                  callback: updateIndex,
-                ),
-              ),
-              if (currentIndex == 0)
-                Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 10),
-                  child: CardContainer(
-                    child: ListView.builder(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    AboutMe(
+                      aboutMe: profileData.aboutMe,
+                      email: profileData.email,
+                      name: profileData.name,
+                      surname: profileData.surname,
+                      noWorks: noWorks,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      child: ProfileActivityTabBar(
+                        callback: updateIndex,
+                      ),
+                    ),
+                    if (currentIndex == 0)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: CardContainer(
+                          child: ListView.builder(
                             physics:
                                 const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: profileData.nodes.length,
-                      itemBuilder: (context, index) {
-                        return ProfileNodeCard(
-                          profileNode: profileData.nodes.elementAt(index),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: profileData.nodes.length,
+                            itemBuilder: (context, index) {
+                              return ProfileNodeCard(
+                                profileNode: profileData.nodes.elementAt(index),
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, NodeDetailsPage.routeName,
-                                      arguments: profileData.nodes
-                                          .elementAt(index)
-                                          .id);
+                                  context.push(
+                                      '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
                                 },
-                        );
-                      },
-                    ),
-                  ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    if (currentIndex == 1)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: CardContainer(
+                          child: SizedBox(
+                            height: 400,
+                            child: QuestionActivity(),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              if (currentIndex == 1)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: CardContainer(
-                    child: SizedBox(
-                      height: 400,
-                      child: QuestionActivity(),
-                    ),
-                  ),
-                ),
-            ],
-          ),
         ),
       ),
     );

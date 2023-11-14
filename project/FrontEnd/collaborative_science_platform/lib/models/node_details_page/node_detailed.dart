@@ -4,10 +4,12 @@ import 'package:collaborative_science_platform/models/node_details_page/question
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 
+import 'package:intl/intl.dart';
+
 class NodeDetailed {
   int nodeId;
   String nodeTitle;
-  String publishDate;
+  DateTime? publishDate;
   List<User> contributors;
   List<Proof> proof;
   Theorem? theorem;
@@ -28,7 +30,7 @@ class NodeDetailed {
     this.contributors = const [],
     this.proof = const [],
     this.theorem,
-    this.publishDate = "",
+    this.publishDate,
     this.reviewers = const [],
     this.references = const [],
     this.citations = const [],
@@ -39,6 +41,11 @@ class NodeDetailed {
     //required this.wikiTags,
     //required this.annotations,
   });
+
+  String get publishDateFormatted {
+    DateFormat formatter = DateFormat('dd-MM-yyyy');
+    return formatter.format(publishDate!);
+  }
 
   factory NodeDetailed.fromJson(Map<String, dynamic> jsonString) {
     var referencesList = jsonString['from_referenced_nodes'] as List;
@@ -63,7 +70,7 @@ class NodeDetailed {
       nodeTitle: jsonString['node_title'],
       noVisits: jsonString['num_visits'],
       proof: proof,
-      publishDate: jsonString['publish_date'],
+      publishDate: DateTime.parse(jsonString['publish_date']),
       questions: questions,
       references: references,
       //reviewers: reviewers,
