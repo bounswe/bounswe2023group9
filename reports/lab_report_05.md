@@ -20,8 +20,8 @@
 | Enhance Profile Settings | [#334](https://github.com/bounswe/bounswe2023group9/issues/334) | Bengisu | 28.10.2023 | 3hr | 3.5hr | [#363](https://github.com/bounswe/bounswe2023group9/pull/363), [#364](https://github.com/bounswe/bounswe2023group9/pull/364) |
 | Profile Settings Page POST API  | [#323](https://github.com/bounswe/bounswe2023group9/issues/323) | Ömer Şükrü | 28.10.2023 | 4hr| 3hr | [#350](https://github.com/bounswe/bounswe2023group9/pull/350) |
 | Password Change POST | [#330](https://github.com/bounswe/bounswe2023group9/issues/330) | Ömer Şükrü | 28.10.2023 | 3hr| 3hr | [#345](https://github.com/bounswe/bounswe2023group9/pull/345) |
-| Implement Generic Design | [#315](https://github.com/bounswe/bounswe2023group9/issues/315) | Ömer Faruk| 31.10.2023 | 3hr| 2hr | [#349](https://github.com/bounswe/bounswe2023group9/issues/349) |
-| Revise Login-Signup Flow | [#314](https://github.com/bounswe/bounswe2023group9/issues/314) | Ömer Faruk| 31.10.2023 | 3hr| 4hr | [#346](https://github.com/bounswe/bounswe2023group9/issues/346) |
+| Implement Generic Design | [#315](https://github.com/bounswe/bounswe2023group9/issues/315) | Ömer Faruk| 31.10.2023 | 3hr| 2hr | [#346](https://github.com/bounswe/bounswe2023group9/issues/346) |
+| Revise Login-Signup Flow | [#314](https://github.com/bounswe/bounswe2023group9/issues/314) | Ömer Faruk| 31.10.2023 | 3hr| 4hr | [#349](https://github.com/bounswe/bounswe2023group9/issues/349) |
 | Enhance Home Page | [#328](https://github.com/bounswe/bounswe2023group9/issues/) | Mehmet | 31.10.2023 | 7hr | 7hr | [#353](https://github.com/bounswe/bounswe2023group9/pull/353), [#354](https://github.com/bounswe/bounswe2023group9/pull/354) |
 | Add Search Functionality to Home Page -FE | [#331](https://github.com/bounswe/bounswe2023group9/issues/331) | Abdullah, Ömer Faruk | 31.10.2023 | 10hr | 12hr | [#352](https://github.com/bounswe/bounswe2023group9/pull/352) |
 | Node View Page | [#321](https://github.com/bounswe/bounswe2023group9/issues/321) | Zülal | 31.10.2023 | 5hr | 7hr | [#359](https://github.com/bounswe/bounswe2023group9/pull/359), [#351](https://github.com/bounswe/bounswe2023group9/pull/351) |
