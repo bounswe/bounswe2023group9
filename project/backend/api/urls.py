@@ -15,4 +15,5 @@ urlpatterns = [
     path('get_proof/', get_proof_from_id, name='get_proof'),
     path('get_theorem/', get_theorem_from_id, name='get_theorem'),
     path('get_cont/', get_contributor_from_id, name='get_cont'),
+    path('me/', RoleView.as_view(), name='me'),
 ]

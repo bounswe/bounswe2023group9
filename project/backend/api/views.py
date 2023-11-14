@@ -19,6 +19,25 @@ from database.models import *
 
 # Create your views here.
 
+class RoleView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    def get(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        reviewer = Reviewer.objects.filter(user=user)
+        cont = Contributor.objects.filter(user=user)
+        basic = BasicUser.objects.filter(user=user)
+
+        if reviewer.count() != 0:
+            return JsonResponse({'role': 'reviewer'},status=200)
+        elif cont.count() != 0:
+            return JsonResponse({'role': 'contributor'},status=200)
+        elif basic.count() != 0:
+            return JsonResponse({'role': 'basic_user'},status=200)
+        
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
 # Class based view to register user
 class SignUpAPIView(generics.CreateAPIView):
     permission_classes = (AllowAny,) 
