@@ -19,7 +19,7 @@ class QuestionsView extends StatelessWidget {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           padding: const EdgeInsets.all(8),
-          itemCount: Responsive.isDesktop(context) ? questions.length : questions.length + 1,
+          itemCount: questions.length,
           itemBuilder: (BuildContext context, int index) {
             if (Responsive.isDesktop(context)) {
               return Padding(

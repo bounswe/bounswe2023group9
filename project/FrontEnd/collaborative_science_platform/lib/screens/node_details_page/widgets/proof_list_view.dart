@@ -17,7 +17,7 @@ class ProofListView extends StatelessWidget {
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           padding: const EdgeInsets.all(8),
-          itemCount: Responsive.isDesktop(context) ? proof.length : proof.length + 1,
+          itemCount: proof.length,
           itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.all(5),
