@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 import copy
 from datetime import datetime
+import enum
 
 
 class SemanticTag(models.Model):
@@ -123,30 +124,50 @@ class Reviewer(Contributor):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
-    def get_review_requests(self):
-        return ReviewRequest.objects.filter(reviewer=self)
+    def get_review_requests(self):                          
+        return ReviewRequest.objects.filter(receiver=self)
+
 
 
 
 class Admin(BasicUser):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
+
+
+class Request(models.Model):
+    request_status_choices = [
+        ("P", "Pending"),
+        ("A", "Accepted"),
+        ("R", "Rejected")
+    ]
+
+    sender = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="outgoing_requests")
+    receiver = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="incoming_requests")
+    title = models.CharField(max_length=80)
+    body = models.TextField(max_length=400)
+    status = models.CharField(max_length=1, choices=request_status_choices, default="P")
     
+    def accept(self):
+        self.status = "A"
+        self.save()
+    
+    def reject(self):
+        self.status = "R"
+        self.save()
+
 
 class ReviewRequest(Request):
     """
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    comment   = models.CharField(max_length=400, null=True, default=None)
 
-    # Note that reviewer is accessed directly by Reviewer instance,
-    # not via "receiverUserID" as proposed in project class diagram.
-    reviewer = models.ForeignKey(Reviewer, on_delete=models.CASCADE)
-    pass
-
-
-
-
+class CollaborationRequest(Request):
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    
 class Theorem(models.Model):
     theorem_id = models.AutoField(primary_key=True)
     theorem_title = models.CharField(max_length=100, null=False)
@@ -155,6 +176,7 @@ class Theorem(models.Model):
 
 
 class Annotation(models.Model):
+    # ReviewRequest has annotations, must be handled.  
     pass
 
 
@@ -168,6 +190,8 @@ class Node(models.Model):
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
+    # Nodes also have to_referenced_nodes list to access the nodes this node references
+    # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
     wiki_tags = models.ManyToManyField(WikiTag)
     annotations = models.ManyToManyField(Annotation)

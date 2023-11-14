@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
+from .models import *
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
-from .models import BasicUser, Node, Theorem, Proof
+from .models import BasicUser, Node, Theorem, Proof, Request, ReviewRequest, CollaborationRequest
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
@@ -128,10 +128,10 @@ class ContributorModelTestCase(TestCase):
 
 class ReviewerModelTestCase(TestCase):
     def tearDown(self):
-        User.objects.all().delete()
-        BasicUser.objects.all().delete()
+        Reviewer.objects.all().delete()
         Contributor.objects.all().delete()
-        Reviewer.objects.all().delete
+        Workspace.objects.all().delete()
+        ReviewRequest.objects.all().delete()
         print("All tests for the Reviewer Model are completed!")
     
     def test_reviewer_create(self):
@@ -155,13 +155,14 @@ class ReviewerModelTestCase(TestCase):
         # Create reviewer instances, note that username is a key.
         reviewer1=Reviewer.objects.create(user=User.objects.create(username="First"))
         reviewer2=Reviewer.objects.create(user=User.objects.create(username="Second"))
+        workspace = Workspace.objects.create()
 
         # Create review requests associated with the reviewer1
-        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1)
-        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1)
+        review_request1 = ReviewRequest.objects.create(sender=reviewer2 ,receiver=reviewer1, workspace=workspace)
+        review_request2 = ReviewRequest.objects.create(sender=reviewer2,receiver=reviewer1, workspace=workspace)
 
         # Create a review request not associated with the reviewer1
-        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2)
+        other_review_request = ReviewRequest.objects.create(sender=reviewer1,receiver=reviewer2,workspace=workspace)
 
         review_requests = reviewer1.get_review_requests()
 
@@ -182,7 +183,8 @@ class ReviewerModelTestCase(TestCase):
     
     def test_inheritance(self):
         # Create a contributor and it's workspace
-        contributor = Contributor.objects.create(user=User.objects.create())
+        contributor = Contributor.objects.create(user=User.objects.create(username="future_reviewer"))
+        reviewer_judge = Reviewer.objects.create(user=User.objects.create(username="sender"))
         workspace = contributor.create_workspace()
 
         # Suppose this particular contributor becomes a reviewer
@@ -191,7 +193,8 @@ class ReviewerModelTestCase(TestCase):
         reviewer = contributor
 
         # Review request is issued to new reviewer
-        review_request = ReviewRequest.objects.create(reviewer=reviewer)
+        
+        review_request = ReviewRequest.objects.create(receiver=reviewer,sender=reviewer_judge, workspace=workspace)
         self.assertIn(review_request, reviewer.get_review_requests())
 
         # Check if workspace is inherited
@@ -408,7 +411,93 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class ReviewRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        ReviewRequest.objects.all().delete()
+        
+        print("Test for the ReviewRequest Model is completed!")
 
+    def setUp(self):
+        # Setup run before every test method.
+        self.workspace = Workspace.objects.create()
+        self.reviewer = Reviewer.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor = Contributor.objects.create(user=User.objects.create())
+        self.request = ReviewRequest.objects.create(sender=self.contributor,receiver=self.reviewer,workspace=self.workspace, comment='Initial Comment')
+    def test_accept(self):
+        self.request.accept()
+        req = ReviewRequest.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")    
+
+class CollaborationRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        Contributor.objects.all().delete()
+        CollaborationRequest.objects.all().delete()
+        print("Test for the CollaborationRequest Model is completed!")
+    def setUp(self):
+        # Set up Workspace and Contributor instances to be used in the tests
+        self.workspace = Workspace.objects.create()
+        self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        self.request = CollaborationRequest.objects.create(workspace=self.workspace,receiver=self.contributor_receiver,sender=self.contributor_sender)
+    def test_accept(self):
+        self.request.accept()
+        req = CollaborationRequest.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
+
+class RequestModelTestCase(TestCase):
+    def tearDown(self):
+        Request.objects.all().delete()
+        Contributor.objects.all().delete()
+
+    def setUp(self):
+        sender_user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        self.sender = Contributor.objects.create(user=sender_user, bio="Test bio 1")
+
+        receiver_user = User.objects.create(
+            username="testuser2",
+            email="test2@example.com",
+            first_name="User2",
+            last_name="Test2",
+        )
+        self.receiver = Contributor.objects.create(user=receiver_user, bio="Test bio 2")
+        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver, title="Request title", body="Request body")
+
+    def test_db(self):
+        self.assertGreater(Request.objects.filter(sender=self.sender).count(), 0, "Could not find created request in the db with this sender!")
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.receiver.id, self.receiver.id, "Receiver didn't match")
+        self.assertEqual(req.title, self.request.title, "Title didn't match")
+        self.assertEqual(req.body, self.request.body, "Body didn't match")
+        self.assertEqual(self.request.status, "P", "Status is not Pending")
+
+    def test_accept(self):
+        self.request.accept()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
 
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
