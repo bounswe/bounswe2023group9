@@ -1,23 +1,23 @@
 import 'dart:convert';
 import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
-import 'package:collaborative_science_platform/models/contributor_user.dart';
+import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
-import 'package:collaborative_science_platform/models/small_node.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class NodeProvider with ChangeNotifier {
-  final List<SmallNode> _searchNodeResult = [];
+  final List<Node> _searchNodeResult = [];
   NodeDetailed? nodeDetailed;
 
   void clearAll() {
     nodeDetailed = null;
   }
 
-  List<SmallNode> get searchNodeResult {
+  List<Node> get searchNodeResult {
     return [..._searchNodeResult];
   }
 
@@ -37,13 +37,15 @@ class NodeProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
-        _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => SmallNode(
+        _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
               contributors: (node['authors'] as List<dynamic>)
-                  .map((author) => Contributor(
-                      name: author['name'], surname: author['surname'], email: author['username']))
+                  .map((author) => User(
+                      id: author['id'],
+                      firstName: author['name'],
+                      lastName: author['surname'],
+                      email: author['username']))
                   .toList(),
-              nodeId: node['id'],
+              id: node['id'],
               nodeTitle: node['title'],
               publishDate: DateTime.parse(node['date']),
             )));

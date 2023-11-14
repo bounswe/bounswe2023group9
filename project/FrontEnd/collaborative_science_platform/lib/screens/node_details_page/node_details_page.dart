@@ -48,6 +48,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     try {
       final nodeDetailsProvider = Provider.of<NodeProvider>(context);
       setState(() {
+        error = false;
         isLoading = true;
       });
       await nodeDetailsProvider.getNode(widget.nodeID);
@@ -58,6 +59,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       });
     } catch (e) {
       setState(() {
+        isLoading = false;
         error = true;
         errorMessage = "Something went wrong!";
       });
@@ -71,30 +73,33 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       pageColor: Colors.grey.shade200,
       child: isLoading
           ? Container(
+              padding: const EdgeInsets.only(top: 32),
               decoration: const BoxDecoration(color: Colors.white),
               child: const Center(
                 child: CircularProgressIndicator(),
               ),
             )
-          : Responsive.isDesktop(context)
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Contributors(
-                      contributors: node.contributors, //widget.inputNode.contributors,
-                      controller: controller1,
-                    ),
-                    NodeDetails(
+          : error
+              ? Text(errorMessage, style: const TextStyle(color: Colors.red))
+              : Responsive.isDesktop(context)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Contributors(
+                          contributors: node.contributors, //widget.inputNode.contributors,
+                          controller: controller1,
+                        ),
+                        NodeDetails(
+                          node: node,
+                          controller: controller2,
+                        ),
+                      ],
+                    )
+                  : NodeDetails(
                       node: node,
                       controller: controller2,
                     ),
-                  ],
-                )
-              : NodeDetails(
-                  node: node,
-                  controller: controller2,
-                ),
     );
   }
 }

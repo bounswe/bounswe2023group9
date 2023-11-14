@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ReferencesView extends StatelessWidget {
   final List<Node> nodes;
@@ -25,8 +26,7 @@ class ReferencesView extends StatelessWidget {
               padding: const EdgeInsets.all(5),
               child: CardContainer(
                 onTap: () {
-                  Navigator.pushNamed(context, NodeDetailsPage.routeName,
-                      arguments: nodes[index].id);
+                  context.push("${NodeDetailsPage.routeName}/${nodes[index].id}");
                 },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -38,6 +38,7 @@ class ReferencesView extends StatelessWidget {
                       textAlign: TextAlign.start,
                     ),
                     Text(
+
                       nodes[index]
                           .contributors
                           .map((e) => "by ${e.firstName} ${e.lastName}")
@@ -46,7 +47,7 @@ class ReferencesView extends StatelessWidget {
                       textAlign: TextAlign.start,
                     ),
                     Text(
-                      nodes[index].publishDate.toString(),
+                      nodes[index].publishDateFormatted,
                       style: TextStyles.bodyGrey,
                       textAlign: TextAlign.start,
                     ),

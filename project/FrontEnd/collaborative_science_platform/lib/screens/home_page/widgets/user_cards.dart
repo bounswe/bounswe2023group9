@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/home_pa
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserCards extends StatelessWidget {
   final List<ProfileData> userList;
@@ -28,11 +29,12 @@ class UserCards extends StatelessWidget {
               shrinkWrap: true,
               itemCount: userList.length,
               itemBuilder: (context, index) {
+                final String email = userList[index].email;
+                final String encodedEmail = Uri.encodeComponent(email);
                 return HomePageUserCard(
                   profileData: userList[index],
                   onTap: () {
-                    Navigator.pushNamed(context, ProfilePage.routeName,
-                        arguments: userList[index].email);
+                    context.push('${ProfilePage.routeName}/$encodedEmail');
                   },
                   color: AppColors.primaryLightColor,
                   profilePagePath: "assets/images/gumball.jpg",
