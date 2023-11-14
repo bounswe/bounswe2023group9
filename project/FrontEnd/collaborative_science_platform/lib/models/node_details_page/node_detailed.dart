@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/models/node_details_page/proof.da
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+
 import 'package:intl/intl.dart';
 
 class NodeDetailed {

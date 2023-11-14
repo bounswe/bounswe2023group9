@@ -13,9 +13,9 @@ class Contributors extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: Responsive.isDesktop(context) ? 300 : double.infinity,
-      decoration: BoxDecoration(color: Colors.grey[200]),
+    return SizedBox(
+      width: Responsive.isDesktop(context) ? Responsive.desktopPageWidth / 4 : double.infinity,
+      //decoration: BoxDecoration(color: Colors.grey[200]),
       child: ListView.builder(
           controller: controller,
           scrollDirection: Axis.vertical,
