@@ -21,7 +21,7 @@
 | Web Graph Page | [#404](https://github.com/bounswe/bounswe2023group9/issues/404) | Abdullah, Bengisu | 14.11.2023 | 6hr | 6hr | [#433](https://github.com/bounswe/bounswe2023group9/pull/433) |
 | Enhance Node View Page | [#406](https://github.com/bounswe/bounswe2023group9/issues/406) | Zülal | 14.11.2023 | 6hr | 3hr | [#419](https://github.com/bounswe/bounswe2023group9/pull/419), [#437](https://github.com/bounswe/bounswe2023group9/pull/437) |
 | Organize Frontend File Structure | [#405](https://github.com/bounswe/bounswe2023group9/issues/405)  | Zülal | 14.11.2023 | 1hr | 1hr | [#415](https://github.com/bounswe/bounswe2023group9/pull/415), [#418](https://github.com/bounswe/bounswe2023group9/pull/418) |
-| Node View Page API Enhancement | [#407](https://github.com/bounswe/bounswe2023group9/issues/407) | Ahmed Bera | 12.11.2023 | 2.5hr | 3hr | [#410](https://github.com/bounswe/bounswe2023group9/pull/418) |
+| Node View Page API Enhancement | [#407](https://github.com/bounswe/bounswe2023group9/issues/407) | Ahmed Bera | 12.11.2023 | 2.5hr | 3hr | [#410](https://github.com/bounswe/bounswe2023group9/pull/410) |
 | Search Update | [#344](https://github.com/bounswe/bounswe2023group9/issues/344) | Hakan | 13.11.2023 | 2h |
 | Request Class Implementation | [#399](https://github.com/bounswe/bounswe2023group9/issues/399) | Ömer Şükrü | 13.11.2023 | 3hr | 3hr | [#426](https://github.com/bounswe/bounswe2023group9/pull/426) |
 | ReviewRequest Class Implementation | [#400](https://github.com/bounswe/bounswe2023group9/issues/400) | Ahmed Bera, Arda | 13.11.2023 | 3hr | 3hr | [#427](https://github.com/bounswe/bounswe2023group9/pull/427) |
