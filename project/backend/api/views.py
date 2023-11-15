@@ -356,3 +356,21 @@ def send_collaboration_request(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def update_request_status(request):
+    try:
+        req = Request.objects.get(pk=request.data.get('id'))
+    except Request.DoesNotExist:
+        return Response({"message": "Request not found."}, status=404)
+
+    status = request.data.get('status')
+
+    if status not in ["P", "A", "R"]:
+        return Response({"message": "Invalid status value."}, status=400)
+
+    req.status = status
+    req.save()
+
+    serializer = RequestSerializer(req)
+    return Response(serializer.data, status=200)
