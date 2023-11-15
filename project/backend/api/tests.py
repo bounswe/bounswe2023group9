@@ -462,6 +462,8 @@ class CollaborationRequestAPITestCase(TestCase):
         self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
         self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
 
+        self.request = CollaborationRequest.objects.create(workspace=self.workspace,receiver=self.contributor_receiver,sender=self.contributor_sender)
+
         self.request_data = {
             'sender': self.contributor_sender.id,
             'receiver': self.contributor_receiver.id,
@@ -474,3 +476,9 @@ class CollaborationRequestAPITestCase(TestCase):
         url = reverse('send_col_req')
         response = self.client.post(url, self.request_data, format='json')
         self.assertEqual(response.status_code, 201)
+    
+    def update_collab_request(self):
+        url = reverse('update_req')
+        response = self.client.put(url, {'id': self.request_data[id], 'status': 'A'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.status, 'A')
