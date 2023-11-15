@@ -1,13 +1,17 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
@@ -60,7 +64,8 @@ class _NodeDetailsState extends State<NodeDetails> {
                           textAlign: TextAlign.center,
                           style: TextStyles.title2)),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Column(
                     children: [
                       RichText(
                         text: TextSpan(children: <TextSpan>[
@@ -76,6 +81,23 @@ class _NodeDetailsState extends State<NodeDetails> {
                       ),
                     ],
                   ),
+                    Column(
+                      children: [
+                        SizedBox(
+                          width: Responsive.getGenericPageWidth(context) * 0.3,
+                          child: AppButton(
+                              text: "See the Graph",
+                              height: 40,
+                              type: "secondary",
+                              onTap: () {
+                                context.push('${GraphPage.routeName}/${widget.node.nodeId}');
+                              }),
+                        )
+                      ],
+                    ),
+                  ]),
+                  
+                  
                 ],
               )),
             ),
