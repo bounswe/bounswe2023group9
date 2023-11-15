@@ -254,3 +254,12 @@ def get_contributor_from_id(request):
             'surname': user.last_name,
             }
     return JsonResponse(data, status=200)
+
+@api_view(['POST'])
+def send_collaboration_request(request):
+
+    serializer = CollaborationRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)

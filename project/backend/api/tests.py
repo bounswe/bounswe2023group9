@@ -3,10 +3,9 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
-from database.models import BasicUser,Contributor,Node,Question, Proof, Theorem
+from database.models import *
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
-from database import models
 import datetime
 # Create your tests here for each class or API call.
 
@@ -147,8 +146,8 @@ class SearchAPITestCase(TestCase):
         user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
                                         last_name='Test')
         # basic_user = BasicUser.objects.create(user=user, bio='Hello')
-        cont = models.Contributor.objects.create(user=user, bio='Hello',id=1)
-        node = models.Node.objects.create(node_title='test',
+        cont = Contributor.objects.create(user=user, bio='Hello',id=1)
+        node = Node.objects.create(node_title='test',
                                    theorem=None,
                                    publish_date="2023-01-01",
                                    is_valid=True,
@@ -447,3 +446,31 @@ class ContributorGETAPITestCase(TestCase):
             }
         )
 
+class CollaborationRequestAPITestCase(TestCase):
+
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        Contributor.objects.all().delete()
+        CollaborationRequest.objects.all().delete()
+        print("Test for the CollaborationRequest API is completed!")
+        
+    def setUp(self):
+        self.client = APIClient()
+
+        self.workspace = Workspace.objects.create()
+        self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+
+        self.request_data = {
+            'sender': self.contributor_sender.id,
+            'receiver': self.contributor_receiver.id,
+            'title' : 'Request Test Title',
+            'body': 'Request Test Body',
+            'workspace': self.workspace.id
+        }
+
+    def test_send_collab_request(self):
+        url = reverse('send_col_req')
+        response = self.client.post(url, self.request_data, format='json')
+        self.assertEqual(response.status_code, 201)
