@@ -7,6 +7,7 @@ import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:provider/provider.dart';
 
@@ -59,13 +60,15 @@ class MyApp extends StatelessWidget {
       //        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
       //        useMaterial3: true,
       //      ),
-      child: MaterialApp.router(
-        routerConfig: router,
-        debugShowCheckedModeBanner: false,
-        title: Constants.appName,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-          useMaterial3: true,
+      child: Portal(
+        child: MaterialApp.router(
+          routerConfig: router,
+          debugShowCheckedModeBanner: false,
+          title: Constants.appName,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+            useMaterial3: true,
+          ),
         ),
       ),
     );
