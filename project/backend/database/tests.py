@@ -420,6 +420,7 @@ class EntryModelTestCase(TestCase):
 
         entry = Entry.objects.create(
             entry_id = 1,
+            entry_index = 1,
             content = "This is an entry.",
             entry_date = "2023-11-11",
             is_theorem_entry = True,
