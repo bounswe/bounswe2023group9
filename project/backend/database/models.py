@@ -60,7 +60,6 @@ class Entry(models.Model):
 class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
     workspace_title = models.CharField(max_length=100)
-    collab_requests = models.ManyToManyField(Request, blank=True,related_name='CollaborationRequests')
     semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
     wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
     is_finalized = models.BooleanField(null = True)
