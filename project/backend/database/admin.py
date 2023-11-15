@@ -4,6 +4,7 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Workspace)
+admin.site.register(Entry)
 admin.site.register(BasicUser)
 admin.site.register(Contributor)
 admin.site.register(Reviewer)
