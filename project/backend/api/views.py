@@ -346,3 +346,13 @@ def get_workspace_from_id(request):
                         'references':references,
                          'created_at':workspace.created_at,
                          }, status=200)
+
+
+@api_view(['POST'])
+def send_collaboration_request(request):
+
+    serializer = CollaborationRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)

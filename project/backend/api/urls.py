@@ -17,4 +17,5 @@ urlpatterns = [
     path('get_cont/', get_contributor_from_id, name='get_cont'),
     path('get_user_workspaces/',get_workspaces,name='get_user_workspaces'),
     path('get_workspace/',get_workspace_from_id,name='get_workspace'),
+    path('send_collab_req', send_collaboration_request, name='send_col_req'),
 ]
