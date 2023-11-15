@@ -482,3 +482,40 @@ class CollaborationRequestAPITestCase(TestCase):
         response = self.client.put(url, {'id': self.request_data[id], 'status': 'A'}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.status, 'A')
+
+class ReviewRequestAPITestCase(TestCase):
+
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        Contributor.objects.all().delete()
+        ReviewRequest.objects.all().delete()
+        print("Test for the ReviewRequest API is completed!")
+        
+    def setUp(self):
+        self.client = APIClient()
+
+        self.workspace = Workspace.objects.create()
+        self.reviewer_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+
+        self.request = ReviewRequest.objects.create(workspace=self.workspace,receiver=self.reviewer_receiver,sender=self.contributor_sender)
+
+        self.request_data = {
+            'sender': self.contributor_sender.id,
+            'receiver': self.reviewer_receiver.id,
+            'title' : 'Review Request Test Title',
+            'body': 'Review Request Test Body',
+            'workspace': self.workspace.id
+        }
+
+    def test_send_review_request(self):
+        url = reverse('send_rev_req')
+        response = self.client.post(url, self.request_data, format='json')
+        self.assertEqual(response.status_code, 201)
+    
+    def update_review_request(self):
+        url = reverse('update_req')
+        response = self.client.put(url, {'id': self.request_data[id], 'status': 'R'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.status, 'R')
