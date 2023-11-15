@@ -411,6 +411,28 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class EntryModelTestCase(TestCase):
+    def tearDown(self):
+        Entry.objects.all().delete()
+        print("All tests for the Entry Model are completed!")
+
+    def test_entry_model(self):
+
+        entry = Entry.objects.create(
+            entry_id = 1,
+            entry_index = 1,
+            content = "This is an entry.",
+            entry_date = "2023-11-11",
+            is_theorem_entry = True,
+            entry_number = 1,
+        )
+        self.assertEqual(entry.entry_id, 1)
+        self.assertEqual(entry.entry_number, 1)
+        self.assertEqual(entry.content, "This is an entry.")
+        self.assertEqual(entry.entry_date, "2023-11-11")
+        self.assertEqual(entry.is_theorem_entry, True)
+        self.assertEqual(entry.is_final_entry,False)
+
 class ReviewRequestTestCase(TestCase):
     def tearDown(self):
         Workspace.objects.all().delete()
@@ -458,6 +480,7 @@ class CollaborationRequestTestCase(TestCase):
         req = Request.objects.get(sender=self.contributor_sender)
         self.assertEqual(req.status, "R", "Reject method didn't work as expected")
 
+
 class RequestModelTestCase(TestCase):
     def tearDown(self):
         Request.objects.all().delete()
@@ -471,6 +494,7 @@ class RequestModelTestCase(TestCase):
             last_name="Test",
         )
         self.sender = Contributor.objects.create(user=sender_user, bio="Test bio 1")
+
 
         receiver_user = User.objects.create(
             username="testuser2",
