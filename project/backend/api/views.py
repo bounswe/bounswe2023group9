@@ -374,3 +374,12 @@ def update_request_status(request):
 
     serializer = RequestSerializer(req)
     return Response(serializer.data, status=200)
+
+@api_view(['POST'])
+def send_review_request(request):
+
+    serializer = ReviewRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)

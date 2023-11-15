@@ -181,3 +181,8 @@ class CollaborationRequestSerializer(serializers.ModelSerializer):
   class Meta:
     model = CollaborationRequest
     fields = '__all__'
+
+class ReviewRequestSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = ReviewRequest
+    fields = '__all__'

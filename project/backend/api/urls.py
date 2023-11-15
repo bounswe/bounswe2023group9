@@ -19,4 +19,5 @@ urlpatterns = [
     path('get_workspace/',get_workspace_from_id,name='get_workspace'),
     path('send_collab_req/', send_collaboration_request, name='send_col_req'),
     path('update_req/', update_request_status, name='update_req'),
+    path('send_rev_req/', send_review_request, name='send_rev_req'),
 ]
