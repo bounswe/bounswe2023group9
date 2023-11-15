@@ -61,6 +61,7 @@ class Admin(BasicUser):
 
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
+    entry_index = models.IntegerField()
     #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
     content = models.TextField(null=False)
     entry_date = models.DateField()
