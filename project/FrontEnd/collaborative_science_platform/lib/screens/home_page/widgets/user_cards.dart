@@ -21,7 +21,7 @@ class UserCards extends StatelessWidget {
       padding: const EdgeInsets.only(top: 8.0),
       child: firstSearch && userList.isEmpty
           ? const Center(
-              child: Text("No results found."),
+              child: SelectableText("No results found."),
             )
           : ListView.builder(
               physics: const NeverScrollableScrollPhysics(),

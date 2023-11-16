@@ -6,9 +6,10 @@ import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/router.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -17,7 +18,9 @@ void main() {
 }
 
 void configureApp() {
-  setUrlStrategy(PathUrlStrategy());
+  if (kIsWeb) {
+    setUrlStrategy(PathUrlStrategy());
+  }
 }
 
 class MyApp extends StatelessWidget {

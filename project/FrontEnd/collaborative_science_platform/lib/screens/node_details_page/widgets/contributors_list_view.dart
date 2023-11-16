@@ -43,19 +43,19 @@ class Contributors extends StatelessWidget {
               padding: const EdgeInsets.all(5),
               child: CardContainer(
                 onTap: () {
-             //     Navigator.pushNamed(context, ProfilePage.routeName,
-             //         arguments: contributors[index].email);
+                  //     Navigator.pushNamed(context, ProfilePage.routeName,
+                  //         arguments: contributors[index].email);
                   final String email = contributors[index].email;
                   final String encodedEmail = Uri.encodeComponent(email);
                   context.push('${ProfilePage.routeName}/$encodedEmail');
                 },
                 child: Column(
                   children: [
-                    Text(
+                    SelectableText(
                       "${contributors[index].firstName} ${contributors[index].lastName}",
                       style: TextStyles.title4,
                     ),
-                    Text(
+                    SelectableText(
                       contributors[index].email,
                       style: TextStyles.bodyGrey,
                     )

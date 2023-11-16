@@ -291,7 +291,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   if (error)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
+                      child: SelectableText(
                         errorMessage,
                         style: const TextStyle(color: AppColors.dangerColor),
                       ),
@@ -314,7 +314,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
-                        child: Text(
+                        child: SelectableText(
                           "Already have an account?",
                           style: TextStyle(
                             color: Colors.grey.shade700,
