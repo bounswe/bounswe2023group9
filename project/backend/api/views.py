@@ -360,7 +360,7 @@ def send_collaboration_request(request):
 @api_view(['PUT'])
 def update_request_status(request):
     try:
-        req = Request.objects.get(pk=request.data.get('id'))
+        req = Request.objects.get(pk=request.data.get('workspace_id'))
     except Request.DoesNotExist:
         return Response({"message": "Request not found."}, status=404)
 

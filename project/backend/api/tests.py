@@ -514,7 +514,7 @@ class CollaborationRequestAPITestCase(TestCase):
             'receiver': self.contributor_receiver.id,
             'title' : 'Request Test Title',
             'body': 'Request Test Body',
-            'workspace': self.workspace.id
+            'workspace': self.workspace.workspace_id
         }
 
     def test_send_collab_request(self):
@@ -551,7 +551,7 @@ class ReviewRequestAPITestCase(TestCase):
             'receiver': self.reviewer_receiver.id,
             'title' : 'Review Request Test Title',
             'body': 'Review Request Test Body',
-            'workspace': self.workspace.id
+            'workspace': self.workspace.workspace_id
         }
 
     def test_send_review_request(self):
