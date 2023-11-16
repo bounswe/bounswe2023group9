@@ -457,8 +457,9 @@ class UserWorkspacesGETAPITestCase(TestCase):
         self.workspace = self.cont.create_workspace('test')
         self.url = reverse('get_user_workspaces')
 
-    def test_get_contributor_from_id(self):
+    def test_get_workspaces_of_user(self):
         response = self.client.get(self.url, {'user_id': self.cont.id})
+        print(response)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
@@ -476,9 +477,9 @@ class WorkspaceGETAPITestCase(TestCase):
         self.workspace = self.cont.create_workspace('test')
         self.url = reverse('get_workspace')
 
-    def test_get_contributor_from_id(self):
+    def test_get_workspace_from_id(self):
         response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
-
+        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['workspace_id'],self.workspace.workspace_id)
         self.assertEqual(response['workspace_id'], self.workspace.workspace_id)
