@@ -32,26 +32,27 @@ class ReferencesView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    SelectableText(
                       nodes[index].nodeTitle,
+                      onTap: () => context.push("${NodeDetailsPage.routeName}/${nodes[index].id}"),
                       style: TextStyles.title4,
                       textAlign: TextAlign.start,
                     ),
-                    Text(
-
+                    SelectableText(
                       nodes[index]
                           .contributors
                           .map((e) => "by ${e.firstName} ${e.lastName}")
                           .join(", "),
+                      onTap: () => context.push("${NodeDetailsPage.routeName}/${nodes[index].id}"),
                       style: TextStyles.bodyGrey,
                       textAlign: TextAlign.start,
                     ),
-                    Text(
+                    SelectableText(
                       nodes[index].publishDateFormatted,
+                      onTap: () => context.push("${NodeDetailsPage.routeName}/${nodes[index].id}"),
                       style: TextStyles.bodyGrey,
                       textAlign: TextAlign.start,
                     ),
-                    
                   ],
                 ),
               ),

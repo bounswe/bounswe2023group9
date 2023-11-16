@@ -5,7 +5,9 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class NodeDetailsPage extends StatefulWidget {
@@ -32,7 +34,18 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   void dispose() {
     controller1.dispose();
     controller2.dispose();
+    if (kIsWeb) {
+      BrowserContextMenu.enableContextMenu();
+    }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    if (kIsWeb) {
+      BrowserContextMenu.disableContextMenu();
+    }
+    super.initState();
   }
 
   @override
@@ -80,7 +93,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
               ),
             )
           : error
-              ? Text(errorMessage, style: const TextStyle(color: Colors.red))
+              ? SelectableText(errorMessage, style: const TextStyle(color: Colors.red))
               : Responsive.isDesktop(context)
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -27,7 +27,7 @@ class QuestionActivity extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  SelectableText(
                     "question/answer $index",
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -39,7 +39,7 @@ class QuestionActivity extends StatelessWidget {
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text(
+                      SelectableText(
                         'some date',
                         style: TextStyle(
                           color: Colors.grey,

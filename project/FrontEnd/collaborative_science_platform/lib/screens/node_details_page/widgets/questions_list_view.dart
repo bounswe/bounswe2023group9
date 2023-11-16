@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../../../models/node_details_page/question.dart';
 
-
 class QuestionsView extends StatelessWidget {
   final List<Question> questions;
   const QuestionsView({super.key, required this.questions});
@@ -29,22 +28,22 @@ class QuestionsView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      SelectableText(
                         "Q: ${questions[index].content}",
                         style: TextStyles.title4black,
                         textAlign: TextAlign.start,
                       ),
-                      Text(
+                      SelectableText(
                         "asked by ${questions[index].asker} at ${questions[index].createdAt}",
                         style: TextStyles.bodyGrey,
                         textAlign: TextAlign.end,
                       ),
-                      Text(
+                      SelectableText(
                         "A: ${questions[index].answer}",
                         style: TextStyles.bodyBlack,
                         textAlign: TextAlign.start,
                       ),
-                      Text(
+                      SelectableText(
                         "answered by ${questions[index].answerer} at ${questions[index].answeredAt}",
                         style: TextStyles.bodyGrey,
                         textAlign: TextAlign.end,
@@ -53,6 +52,8 @@ class QuestionsView extends StatelessWidget {
                   ),
                 ),
               );
+            } else {
+              return const SizedBox();
             }
           }),
     );

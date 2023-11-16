@@ -31,7 +31,7 @@ class ProfileNodeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              SelectableText(
                 profileNode.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -39,10 +39,9 @@ class ProfileNodeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0),
-              Text(
+              SelectableText(
                 profileNode.contributors
-                    .map((user) =>
-                        "${user.firstName} ${user.lastName} (${user.email})")
+                    .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,

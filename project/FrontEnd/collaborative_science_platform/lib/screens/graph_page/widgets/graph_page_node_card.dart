@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
 
 class GraphPageNodeCard extends StatelessWidget {
@@ -32,7 +33,7 @@ class GraphPageNodeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              SelectableText(
                 node.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -49,7 +50,7 @@ class GraphPageNodeCard extends StatelessWidget {
                       8.0), // Set the border radius if you want rounded corners
                 ),
                 padding: const EdgeInsets.all(8.0), // Add padding inside the box
-                child: Text(
+                child: AnnotationText(
                   node.theorem!.theoremContent,
                   maxLines: 10,
                   style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
@@ -74,7 +75,7 @@ class GraphPageNodeCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
+                  SelectableText(
                     getDurationFromNow(node.publishDate!),
                     style: const TextStyle(
                       color: Colors.grey,
