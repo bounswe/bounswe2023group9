@@ -491,7 +491,7 @@ class WorkspaceGETAPITestCase(TestCase):
                 'workspace_title':self.workspace.workspace_title,
                 'workspace_entries': [],
                 'status' : 'workable',
-                'contributors': [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}]
+                'contributors': [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}],
                 'num_approvals': None,
                 'pending_contributors':[],
                 'references':[],

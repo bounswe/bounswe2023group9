@@ -85,13 +85,7 @@ class ContributorModelTestCase(TestCase):
         workspace = Workspace.objects.create(
             workspace_id=1,
             workspace_title="Test Workspace",
-            is_finalized=False,
-            is_published=False,
-            is_in_review=False,
-            is_rejected=False,
-            theorem_posted=False,
-            num_approvals=0,
-            final_entry=None
+
         )
         contributor.workspaces.add(workspace)
 
@@ -110,13 +104,7 @@ class ContributorModelTestCase(TestCase):
         workspace = Workspace.objects.create(
             workspace_id=1,
             workspace_title="Test Workspace",
-            is_finalized=False,
-            is_published=False,
-            is_in_review=False,
-            is_rejected=False,
-            theorem_posted=False,
             num_approvals=0,
-            final_entry=None
         )
 
         # Test the delete_workspace method with a non-existent workspace
@@ -239,13 +227,7 @@ class WorkspaceModelTestCase(TestCase):
         workspace = Workspace.objects.create(
                 workspace_id = 1,
                 workspace_title = "Test Workspace",
-                is_finalized = False,
-                is_published= False,
-                is_in_review = False,
-                is_rejected = False,
-                theorem_posted = False,
-                num_approvals = 0,
-                final_entry = None
+
         )
 
         self.assertEqual(workspace.workspace_id, 1)
@@ -262,13 +244,7 @@ class WorkspaceModelTestCase(TestCase):
             workspace = Workspace.objects.create(
                 workspace_id=1,
                 workspace_title="Test Workspace",
-                is_finalized=False,
-                is_published=False,
-                is_in_review=False,
-                is_rejected=False,
-                theorem_posted=False,
-                num_approvals=0,
-                final_entry=None
+
             )
             Workspace.finalize_workspace(workspace)
             self.assertEqual(workspace.is_finalized, True)
