@@ -254,3 +254,94 @@ def get_contributor_from_id(request):
             'surname': user.last_name,
             }
     return JsonResponse(data, status=200)
+
+def get_workspaces(request):
+    id = int(request.GET.get("user_id"))
+    cont = Contributor.objects.filter(id=id)
+    if cont.count() == 0:
+        return JsonResponse({'message':'There is no contributor with this id.'},status=404)
+    cont = cont[0]
+    workspace_list = []
+    for workspace in cont.workspaces.all():
+
+        workspace_list.append({'workspace_id':workspace.workspace_id,
+                               'workspace_title':workspace.workspace_title,
+                               'pending':False})
+    pending = []
+    for req in CollaborationRequest.objects.filter(receiver=cont):
+        workspace = req.workspace
+        pending.append({'workspace_id': workspace.workspace_id,
+                               'workspace_title': workspace.workspace_title,
+                               'pending': True})
+
+    return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending}, status=200)
+
+def get_workspace_from_id(request):
+    id = int(request.GET.get("workspace_id"))
+    workspace = Workspace.objects.filter(workspace_id=id)
+    if workspace.count() == 0:
+        return JsonResponse({'message':'There is no workspace with this id.'},status=404)
+    workspace = workspace[0]
+    entries = []
+    for entry in workspace.entries.all():
+        entries.append({'entry_id':entry.entry_id,
+                        'entry_date':entry.entry_date,
+                        'content':entry.content,
+                        'entry_index':entry.entry_index,
+                        'is_theorem_entry':entry.is_theorem_entry,
+                        'is_final_entry':entry.is_final_entry,
+                        'is_proof_entry':entry.is_proof_entry,
+                        'is_editable':entry.is_editable,
+                        'entry_number':entry.entry_number,})
+    semantic_tags = []
+    for tag in workspace.semantic_tags.all():
+        semantic_tags.append({'label':tag.label,
+                              'desc':tag.desc,
+                              'parent_tag':tag.parent_tag,
+                              'created_at':tag.created_at})
+    contributors = []
+    for cont in Contributor.objects.filter(workspaces=workspace):
+        user = User.objects.get(id=cont.user_id)
+        contributors.append({"id": cont.id,
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                            "username": user.username})
+    pending = []
+    for pend in CollaborationRequest.objects.filter(workspace=workspace):
+        cont = pend.receiver
+        user = User.objects.get(id=cont.user_id)
+        pending.append({"id": cont.id,
+                         "first_name": user.first_name,
+                         "last_name": user.last_name,
+                         "username": user.username})
+    references = []
+    for ref in workspace.references.all():
+        authors = []
+        for cont in ref.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({"id": cont.id,
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                            "username": user.username})
+        references.append({'node_id':ref.node_id,
+                           'node_title':ref.node_title,
+                           'contributors':authors,
+                           'publish_date':ref.publish_date})
+    status = 'workable'
+    if workspace.is_published:
+        status = 'published'
+    elif workspace.is_rejected:
+        status = 'rejected'
+    elif workspace.is_in_review:
+        status = 'in_review'
+    elif workspace.is_finalized:
+        status = 'finalized'
+    return JsonResponse({'workspace_id': workspace.workspace_id,
+                         'workspace_title':workspace.workspace_title,
+                         'workspace_entries': entries,
+                         'status':status,
+                         'num_approvals':workspace.num_approvals,
+                         'contributors':contributors,
+                         'pending_contributors':pending,
+                        'references':references,
+                         }, status=200)

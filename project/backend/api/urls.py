@@ -15,4 +15,6 @@ urlpatterns = [
     path('get_proof/', get_proof_from_id, name='get_proof'),
     path('get_theorem/', get_theorem_from_id, name='get_theorem'),
     path('get_cont/', get_contributor_from_id, name='get_cont'),
+    path('get_user_workspaces/',get_workspaces,name='get_user_workspaces'),
+    path('get_workspace/',get_workspace_from_id,name='get_workspace'),
 ]
