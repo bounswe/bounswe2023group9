@@ -344,4 +344,5 @@ def get_workspace_from_id(request):
                          'contributors':contributors,
                          'pending_contributors':pending,
                         'references':references,
+                         'created_at':workspace.created_at,
                          }, status=200)

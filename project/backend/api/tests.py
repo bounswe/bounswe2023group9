@@ -447,3 +447,55 @@ class ContributorGETAPITestCase(TestCase):
             }
         )
 
+
+class UserWorkspacesGETAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
+        self.workspace = self.cont.create_workspace('test')
+        self.url = reverse('get_user_workspaces')
+
+    def test_get_contributor_from_id(self):
+        response = self.client.get(self.url, {'user_id': self.cont.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content.decode('utf-8'),
+            {
+                'workspaces': [{'workspace_id':self.workspace.workspace_id,
+                                'workspace_title':self.workspace.workspace_title,
+                                'pending':False}],
+            }
+        )
+
+
+class WorkspaceGETAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
+        self.workspace = self.cont.create_workspace('test')
+        self.url = reverse('get_workspace')
+
+    def test_get_contributor_from_id(self):
+        response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(
+            response.content.decode('utf-8'),
+            {
+                'workspaces_id': self.workspace.workspace_id,
+                'workspace_title':self.workspace.workspace_title,
+                'workspace_entries': [],
+                'status' : 'workable',
+                'contributors': [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}]
+                'num_approvals': None,
+                'pending_contributors':[],
+                'references':[],
+                'created_at':self.workspace.created_at,
+            }
+        )
+
