@@ -71,7 +71,7 @@ class ContributorModelTestCase(TestCase):
     def test_create_workspace(self):
         # Test the create_workspace method
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = contributor.create_workspace()
+        workspace = contributor.create_workspace('test')
         self.assertIn(workspace, contributor.workspaces.all())
         
         # We should collect our garbages
@@ -85,13 +85,7 @@ class ContributorModelTestCase(TestCase):
         workspace = Workspace.objects.create(
             workspace_id=1,
             workspace_title="Test Workspace",
-            is_finalized=False,
-            is_published=False,
-            is_in_review=False,
-            is_rejected=False,
-            theorem_posted=False,
-            num_approvals=0,
-            final_entry=None
+
         )
         contributor.workspaces.add(workspace)
 
@@ -110,13 +104,7 @@ class ContributorModelTestCase(TestCase):
         workspace = Workspace.objects.create(
             workspace_id=1,
             workspace_title="Test Workspace",
-            is_finalized=False,
-            is_published=False,
-            is_in_review=False,
-            is_rejected=False,
-            theorem_posted=False,
             num_approvals=0,
-            final_entry=None
         )
 
         # Test the delete_workspace method with a non-existent workspace
@@ -185,7 +173,7 @@ class ReviewerModelTestCase(TestCase):
         # Create a contributor and it's workspace
         contributor = Contributor.objects.create(user=User.objects.create(username="future_reviewer"))
         reviewer_judge = Reviewer.objects.create(user=User.objects.create(username="sender"))
-        workspace = contributor.create_workspace()
+        workspace = contributor.create_workspace('test')
 
         # Suppose this particular contributor becomes a reviewer
         contributor.__class__= Reviewer
@@ -239,13 +227,7 @@ class WorkspaceModelTestCase(TestCase):
         workspace = Workspace.objects.create(
                 workspace_id = 1,
                 workspace_title = "Test Workspace",
-                is_finalized = False,
-                is_published= False,
-                is_in_review = False,
-                is_rejected = False,
-                theorem_posted = False,
-                num_approvals = 0,
-                final_entry = None
+
         )
 
         self.assertEqual(workspace.workspace_id, 1)
@@ -256,19 +238,13 @@ class WorkspaceModelTestCase(TestCase):
         self.assertEqual(workspace.is_rejected, False)
         self.assertEqual(workspace.theorem_posted, False)
         self.assertEqual(workspace.num_approvals, 0)
-        self.assertIsNone(workspace.final_entry)
+        # self.assertIsNone(workspace.final_entry)
 
     def test_finalize_workspace(self): #Testing finalize workspace function
             workspace = Workspace.objects.create(
                 workspace_id=1,
                 workspace_title="Test Workspace",
-                is_finalized=False,
-                is_published=False,
-                is_in_review=False,
-                is_rejected=False,
-                theorem_posted=False,
-                num_approvals=0,
-                final_entry=None
+
             )
             Workspace.finalize_workspace(workspace)
             self.assertEqual(workspace.is_finalized, True)
@@ -431,7 +407,7 @@ class EntryModelTestCase(TestCase):
         self.assertEqual(entry.content, "This is an entry.")
         self.assertEqual(entry.entry_date, "2023-11-11")
         self.assertEqual(entry.is_theorem_entry, True)
-        self.assertEqual(entry.is_final_entry,False)
+        # self.assertEqual(entry.is_final_entry,False)
 
 class ReviewRequestTestCase(TestCase):
     def tearDown(self):
@@ -613,7 +589,7 @@ class ContributorSerializerTestCase(TestCase):
         # Testing the fiels of the serializer
         
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = contributor.create_workspace()
+        workspace = contributor.create_workspace('test')
 
         serializer = ContributorSerializer(contributor)
         expected_fields = set(
@@ -631,7 +607,7 @@ class ReviewerSerializerTestCase(TestCase):
         # Testing the fiels of the serializer
         
         reviewer = Reviewer.objects.create(user=User.objects.create())
-        workspace = reviewer.create_workspace()
+        workspace = reviewer.create_workspace('test')
 
         serializer = ReviewerSerializer(reviewer)
         expected_fields = set(

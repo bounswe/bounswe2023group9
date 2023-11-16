@@ -54,8 +54,9 @@ class Entry(models.Model):
     #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
     content = models.TextField(null=False)
     entry_date = models.DateField()
-    is_theorem_entry = models.BooleanField()
+    is_theorem_entry = models.BooleanField(default=False)
     is_final_entry = models.BooleanField(default=False)
+    is_proof_entry = models.BooleanField(default=False)
     is_editable = models.BooleanField(default=True)
     #creator = models.ForeignKey(Contributor,null=True,blank=True, on_delete = models.CASCADE)
     entry_number = models.IntegerField()
@@ -71,19 +72,24 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
     workspace_title = models.CharField(max_length=100)
     semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
-    wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
-    is_finalized = models.BooleanField(null = True)
-    is_published = models.BooleanField(null = True)
-    is_in_review = models.BooleanField(null = True)
-    is_rejected = models.BooleanField(null = True)
-    theorem_posted = models.BooleanField(null = True)
-    num_approvals = models.IntegerField(null = True)
-    theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
-    final_entry = models.ForeignKey(Entry,null=True, on_delete=models.CASCADE,related_name='FinalEntry')
+    # wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
+    is_finalized = models.BooleanField(null = True,default=False)
+    is_published = models.BooleanField(null = True,default=False)
+    is_in_review = models.BooleanField(null = True,default=False)
+    is_rejected = models.BooleanField(null = True,default=False)
+    theorem_posted = models.BooleanField(null = True,default=False)
+    num_approvals = models.IntegerField(null = True,default=0)
+    entries = models.ManyToManyField(Entry,blank=True,related_name = 'WorkspaceEntries')
+    references = models.ManyToManyField('Node',blank=True,related_name='WorkspaceReferences')
+    created_at = models.DateTimeField(auto_now_add=True)
+    # theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
+    # final_entry = models.ForeignKey(Entry,null=True, on_
+    # delete=models.CASCADE,related_name='FinalEntry')
     def finalize_workspace(self):
         self.is_finalized = True
         self.is_in_review = False
         return True
+
 
 
 
@@ -110,19 +116,11 @@ class Contributor(BasicUser):
      Methods below (create/delete Workspace instances) should be reinvestigated 
      after implementation of Workspace class.
     """
-    def create_workspace(self):
+    def create_workspace(self,title):
         new_workspace = Workspace.objects.create(
-            workspace_id=1,
-            workspace_title="Test Workspace",
-            is_finalized=False,
-            is_published=False,
-            is_in_review=False,
-            is_rejected=False,
-            theorem_posted=False,
-            num_approvals=0,
-            final_entry=None
+            workspace_title=title,
         )
-        self. workspaces.add(new_workspace)
+        self.workspaces.add(new_workspace)
         return new_workspace
 
     def delete_workspace(self, workspace_to_delete):        # Note that this function doesn't delete the
@@ -173,11 +171,11 @@ class ReviewRequest(Request):
      This class definition is written beforehand (to be implemented afterwards) 
      in order to be referred from other classes. e.g. Reviewer, Contributor
     """
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.
     comment   = models.CharField(max_length=400, null=True, default=None)
 
 class CollaborationRequest(Request):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.  
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.
     
 class Theorem(models.Model):
     theorem_id = models.AutoField(primary_key=True)

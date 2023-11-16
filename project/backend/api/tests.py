@@ -447,3 +447,48 @@ class ContributorGETAPITestCase(TestCase):
             }
         )
 
+
+class UserWorkspacesGETAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
+        self.workspace = self.cont.create_workspace('test')
+        self.url = reverse('get_user_workspaces')
+
+    def test_get_workspaces_of_user(self):
+        response = self.client.get(self.url, {'user_id': self.cont.id})
+        print(response)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
+        self.assertEqual(response.json()['workspaces'][0]['workspace_title'], self.workspace.workspace_title)
+        self.assertEqual(response.json()['workspaces'][0]['pending'], False)
+
+
+
+class WorkspaceGETAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
+        self.workspace = self.cont.create_workspace('test')
+        self.url = reverse('get_workspace')
+
+    def test_get_workspace_from_id(self):
+        response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
+        print(response)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['workspace_id'],self.workspace.workspace_id)
+        self.assertEqual(response.json()['workspace_id'], self.workspace.workspace_id)
+        self.assertEqual(response.json()['contributors'], [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}])
+        self.assertEqual(response.json()['workspace_title'], self.workspace.workspace_title)
+        self.assertEqual(response.json()['status'], 'workable')
+        self.assertEqual(response.json()['references'], [])
+        self.assertEqual(response.json()['pending_contributors'], [])
+        self.assertEqual(response.json()['num_approvals'], 0)
+        # self.assertEqual(response.json()['created_at'], self.workspace.created_at)
+
+
