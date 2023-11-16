@@ -7,6 +7,7 @@ class AppButton extends StatelessWidget {
   final void Function() onTap;
   final bool isActive;
   final bool isLoading;
+  final String type; 
 
   const AppButton({
     super.key,
@@ -15,6 +16,7 @@ class AppButton extends StatelessWidget {
     required this.onTap,
     this.isActive = true,
     this.isLoading = false,
+    this.type = "primary",
   });
 
   @override
@@ -22,7 +24,11 @@ class AppButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: isActive ? onTap : () {},
       style: ElevatedButton.styleFrom(
-        backgroundColor: isActive ? AppColors.primaryColor : Colors.grey[600],
+        backgroundColor: isActive
+            ? (type == "primary"
+                ? AppColors.primaryColor
+                : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
+            : Colors.grey[600],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(height / 2.0),
         ),
