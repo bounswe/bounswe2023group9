@@ -462,9 +462,9 @@ class UserWorkspacesGETAPITestCase(TestCase):
         print(response)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
-        self.assertEqual(response['workspaces'][0]['workspace_title'], self.workspace.workspace_title)
-        self.assertEqual(response['workspaces'][0]['pending'], False)
+        self.assertEqual(response.data['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
+        self.assertEqual(response.data['workspaces'][0]['workspace_title'], self.workspace.workspace_title)
+        self.assertEqual(response.data['workspaces'][0]['pending'], False)
 
 
 
@@ -481,14 +481,14 @@ class WorkspaceGETAPITestCase(TestCase):
         response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
         print(response)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['workspace_id'],self.workspace.workspace_id)
-        self.assertEqual(response['workspace_id'], self.workspace.workspace_id)
-        self.assertEqual(response['contributors'], [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}])
-        self.assertEqual(response['workspace_title'], self.workspace.workspace_title)
-        self.assertEqual(response['status'], 'workable')
-        self.assertEqual(response['references'], [])
-        self.assertEqual(response['pending_contributors'], [])
-        self.assertEqual(response['num_approvals'], 0)
-        self.assertEqual(response['created_at'], self.workspace.created_at)
+        self.assertEqual(response.data['workspace_id'],self.workspace.workspace_id)
+        self.assertEqual(response.data['workspace_id'], self.workspace.workspace_id)
+        self.assertEqual(response.data['contributors'], [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}])
+        self.assertEqual(response.data['workspace_title'], self.workspace.workspace_title)
+        self.assertEqual(response.data['status'], 'workable')
+        self.assertEqual(response.data['references'], [])
+        self.assertEqual(response.data['pending_contributors'], [])
+        self.assertEqual(response.data['num_approvals'], 0)
+        self.assertEqual(response.data['created_at'], self.workspace.created_at)
 
 
