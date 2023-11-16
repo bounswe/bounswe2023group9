@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 from database.models import *
+from database.models import *
 from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
 import datetime
