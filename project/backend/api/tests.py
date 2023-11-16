@@ -461,9 +461,9 @@ class UserWorkspacesGETAPITestCase(TestCase):
         response = self.client.get(self.url, {'user_id': self.cont.id})
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response[0]['workspace_id'],self.workspace.workspace_id)
-        self.assertEqual(response[0]['workspace_title'], self.workspace.workspace_title)
-        self.assertEqual(response[0]['pending'], False)
+        self.assertEqual(response['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
+        self.assertEqual(response['workspaces'][0]['workspace_title'], self.workspace.workspace_title)
+        self.assertEqual(response['workspaces'][0]['pending'], False)
 
 
 
