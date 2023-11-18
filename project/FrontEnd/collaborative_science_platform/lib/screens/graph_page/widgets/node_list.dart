@@ -1,8 +1,7 @@
 import 'package:collaborative_science_platform/models/node_details_page/node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node.dart';
-import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
+import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node_popup.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class NodeList extends StatelessWidget {
   final String title;
@@ -49,16 +48,23 @@ class NodeList extends StatelessWidget {
               children: nodes.map((node) {
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                  child: GraphNodeCard(
-                    node: node,
-                    onTap: () => context.push('${GraphPage.routeName}/${node.id}'),
-                  ),
+                  child:
+                      GraphNodeCard(node: node, onTap: () => _showNodeDetailsPopup(context, node)),
                 );
               }).toList(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showNodeDetailsPopup(BuildContext context, Node node) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return NodeDetailsPopup(node: node);
+      },
     );
   }
 }
