@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
