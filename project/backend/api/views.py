@@ -346,3 +346,14 @@ def get_workspace_from_id(request):
                         'references':references,
                          'created_at':workspace.created_at,
                          }, status=200)
+def delete_entry(request):
+    id = int(request.GET.get("entry_id"))
+    entry = Entry.objects.filter(entry_id=id)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    entry.delete()
+def edit_entry(request):
+    id = int(request.GET.get("entry_id"))
+    entry = Entry.objects.filter(entry_id=id)
+    content = int(request.GET.get("content"))
+    entry.content = content
