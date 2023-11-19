@@ -3,20 +3,25 @@ import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node_popup.dart';
 import 'package:flutter/material.dart';
 
-class NodeList extends StatelessWidget {
+class NodeList extends StatefulWidget {
   final String title;
   final List<Node> nodes;
   final Color? color;
   final double width;
 
   const NodeList({
-    super.key,
+    Key? key,
     required this.nodes,
     required this.title,
     required this.width,
     this.color,
-  });
+  }) : super(key: key);
 
+  @override
+  State<NodeList> createState() => _NodeListState();
+}
+
+class _NodeListState extends State<NodeList> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +39,7 @@ class NodeList extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                title,
+                widget.title,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24.0,
@@ -45,7 +50,7 @@ class NodeList extends StatelessWidget {
           children: [
             // Display the list of nodes
             Column(
-              children: nodes.map((node) {
+              children: widget.nodes.map((node) {
                 return Container(
                   margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                   child:
@@ -63,7 +68,7 @@ class NodeList extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return NodeDetailsPopup(node: node);
+        return NodeDetailsPopup(nodeId: node.id);
       },
     );
   }
