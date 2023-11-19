@@ -99,7 +99,8 @@ final router = GoRouter(
     GoRoute(
       name: PleaseLoginPage2.routeName.substring(1),
       path: PleaseLoginPage2.routeName,
-      builder: (context, state) => const PleaseLoginPage2(),
+      // Different login messages might be given for difference pages
+      builder: (context, state) => const PleaseLoginPage2(message: "To be able to see this page, please login!"),
     ),
     GoRoute(
       name: NodeDetailsPage.routeName.substring(1),

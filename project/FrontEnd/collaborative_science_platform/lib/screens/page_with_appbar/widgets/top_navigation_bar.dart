@@ -81,7 +81,9 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
       child: GestureDetector(
         onTap: () {
           ScreenTab selected = widget.value;
-          if (selected == ScreenTab.profile) {
+          if (selected == ScreenTab.profile || selected == ScreenTab.workspaces ||
+              selected == ScreenTab.workspace || selected == ScreenTab.createWorkspace ||
+              selected == ScreenTab.notifications) {
             if (!Provider.of<Auth>(context, listen: false).isSignedIn) {
               selected = ScreenTab.pleaseLogin;
             }

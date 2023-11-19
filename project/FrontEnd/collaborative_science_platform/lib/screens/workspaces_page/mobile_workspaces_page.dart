@@ -1,5 +1,8 @@
+import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/create_workspace_page/create_workspace_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspace_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -19,10 +22,47 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
   bool isLoading = false;
   bool error = false;
   String errorMessage = "";
-  int workspaceId = 1;
 
-  Widget mobileWorkspaceCard(String workspaceName) {
-    double height = 80.0;
+  Workspaces workspacesData = Workspaces(
+      workspaces: <WorkspacesObject>[],
+      pendingWorkspaces: <WorkspacesObject>[],
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    getWorkspacesData();
+  }
+
+  void getWorkspacesData() {
+    setState(() {
+      isLoading = true;
+    });
+    for (int i = 1; i < 5; i++) {
+      workspacesData.workspaces.add(
+        WorkspacesObject(
+          workspaceId: i,
+          workspaceTitle: "Workspace Title $i",
+          pending: false,
+        ),
+      );
+    }
+    for (int i = 1; i < 3; i++) {
+      workspacesData.pendingWorkspaces.add(
+        WorkspacesObject(
+          workspaceId: i,
+          workspaceTitle: "Pending Workspace Title $i",
+          pending: true,
+        ),
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Widget mobileWorkspaceCard(WorkspacesObject workspacesObject) {
+    double height = 70.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: SizedBox(
@@ -34,14 +74,17 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
             borderRadius: BorderRadius.circular(height/2.0),
           ),
           child: InkWell(
+            customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(height/2.0),
+            ),
             onTap: () { // Navigate to the page where the details of the workspace are listed
-              context.push('${WorkspacePage.routeName}/$workspaceId');
+              context.push('${WorkspacePage.routeName}/${workspacesObject.workspaceId}');
             },
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  workspaceName,
+                  workspacesObject.workspaceTitle,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -57,14 +100,16 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
     );
   }
 
-  Widget workspaceListBuilder(int workspaceCount) {
+  Widget workspaceListBuilder(bool forPending) {
+    int length = forPending ? workspacesData.pendingWorkspaces.length : workspacesData.workspaces.length;
+    List<WorkspacesObject> list = forPending ? workspacesData.pendingWorkspaces : workspacesData.workspaces;
     return SizedBox(
       width: Responsive.getGenericPageWidth(context),
       child: ListView.builder(
-        itemCount: workspaceCount+1,
-        itemBuilder: (context, index) =>
-            (index < workspaceCount) ? mobileWorkspaceCard("Workspace ${index+1}")
-            : const SizedBox(height: 60.0), // Floating action button does not overlap with the last workspace card
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: length,
+        itemBuilder: (context, index) => mobileWorkspaceCard(list[index]),
       ),
     );
   }
@@ -92,7 +137,21 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
           },
           child: const Icon(Icons.add),
         ),
-        child: workspaceListBuilder(10),
+        child: SizedBox(
+          width: Responsive.getGenericPageWidth(context),
+          child: ListView(
+            children: [
+              const SubSectionTitle(title: "On Going Workspaces"),
+              workspaceListBuilder(false),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 0.0),
+                child: Divider(),
+              ),
+              const SubSectionTitle(title: "Pending Workspaces"),
+              workspaceListBuilder(true),
+            ],
+          ),
+        ),
       );
     }
   }

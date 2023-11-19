@@ -1,10 +1,15 @@
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/contributor_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/entry_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/reference_card.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/node.dart';
+import '../../models/workspaces_page/entry.dart';
 import '../../utils/responsive/responsive.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
@@ -22,6 +27,87 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
   bool isLoading = false;
   bool error = false;
   String errorMessage = "";
+
+  Workspace workspaceData = Workspace(
+      workspaceId: 0,
+      workspaceTitle: "workspaceTitle",
+      entries: <Entry>[],
+      status: "pending",
+      numApprovals: 0,
+      contributors: <User>[],
+      pendingContributors: <User>[],
+      references: <Node>[],
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    getWorkspaceData();
+  }
+
+  void getWorkspaceData() {
+    setState(() {
+      isLoading = true;
+    });
+    workspaceData = Workspace(
+      workspaceId: 0,
+      workspaceTitle: "workspaceTitle",
+      entries: <Entry>[
+        Entry(content: "Content 1",
+          entryDate: DateTime.now(),
+          entryId: 1,
+          entryNumber: 1,
+          index: 1,
+          isEditable: false,
+          isFinalEntry: false,
+          isProofEntry: false,
+          isTheoremEntry: false,
+        ),
+        Entry(content: "Content 2",
+          entryDate: DateTime.now(),
+          entryId: 2,
+          entryNumber: 2,
+          index: 2,
+          isEditable: false,
+          isFinalEntry: false,
+          isProofEntry: false,
+          isTheoremEntry: false,
+        ),
+      ],
+      status: "on going",
+      numApprovals: 0,
+      contributors: <User>[
+        User(
+          email: "dummy1@mail.com",
+          firstName: "dummy 1",
+          lastName: "jackson",
+        ),
+        User(
+          email: "dummy2@mail.com",
+          firstName: "dummy 2",
+          lastName: "jackson",
+        ),
+      ],
+      pendingContributors: <User>[
+        User(
+          email: "dummy3@mail.com",
+          firstName: "dummy 3",
+          lastName: "jackson",
+        ),
+      ],
+      references: <Node>[
+        Node(
+          contributors: <User>[],
+          id: 1,
+          nodeTitle: "Awesome Node Title",
+          publishDate: DateTime.now(),
+        ),
+      ],
+    );
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   Widget addIcon(Function() onPressed) {
     return Center(
@@ -52,15 +138,16 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
     );
   }
 
-  Widget entryList(int entryCount) {
-    return (entryCount != 0) ? Padding(
+  Widget entryList() {
+    int length = workspaceData.entries.length;
+    return workspaceData.entries.isNotEmpty ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: entryCount+1,
+        itemCount: length+1,
         itemBuilder: (context, index) =>
-          (index < entryCount) ? const EntryCard()
+          (index < length) ? EntryCard(entry: workspaceData.entries[index])
           : addIcon(() { /* Navigate to a page where new entries are created */ }),
       ),
     ) : firstAddition(
@@ -69,15 +156,16 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
     );
   }
 
-  Widget contributorList(int contributorCount) {
-    return (contributorCount != 0) ? Padding(
+  Widget contributorList() {
+    int length = workspaceData.contributors.length;
+    return workspaceData.contributors.isNotEmpty ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: contributorCount+1,
+        itemCount: length+1,
         itemBuilder: (context, index) =>
-          (index < contributorCount) ? const ContributorCard()
+          (index < length) ? ContributorCard(contributor: workspaceData.contributors[index])
           : addIcon(() => { /* Navigate to a page where new contributors are added */ }),
       ),
     ) : firstAddition(
@@ -86,35 +174,21 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
     );
   }
 
-  Widget referenceList(int referenceCount) {
-    return (referenceCount != 0) ? Padding(
+  Widget referenceList() {
+    int length = workspaceData.references.length;
+    return (workspaceData.references.isNotEmpty) ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: referenceCount+1,
+        itemCount: length+1,
         itemBuilder: (context, index) =>
-          (index < referenceCount) ? const ReferenceCard()
+          (index < length) ? ReferenceCard(reference: workspaceData.references[index])
           : addIcon(() => { /* Navigate to a page where new references are added */ }),
       ),
     ) : firstAddition(
         "Add Your First Reference!",
         () { /* Navigate to a page where new references are added */ },
-    );
-  }
-
-  Widget subsectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22.0,
-          ),
-        ),
-      ),
     );
   }
 
@@ -139,20 +213,20 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
           width: Responsive.getGenericPageWidth(context),
           child: ListView(
             children: [
-              subsectionTitle("Entries"),
-              entryList(5),
+              const SubSectionTitle(title: "Entries"),
+              entryList(),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.0),
                 child: Divider(),
               ),
-              subsectionTitle("Contributors"),
-              contributorList(0),
+              const SubSectionTitle(title: "Contributors"),
+              contributorList(),
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12.0),
                 child: Divider(),
               ),
-              subsectionTitle("References"),
-              referenceList(0),
+              const SubSectionTitle(title: "References"),
+              referenceList(),
             ],
           ),
         )

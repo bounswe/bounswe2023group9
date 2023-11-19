@@ -9,7 +9,11 @@ import 'package:go_router/go_router.dart';
 
 class PleaseLoginPage2 extends StatelessWidget {
   static const routeName = '/please-login';
-  const PleaseLoginPage2({super.key});
+  final String message;
+  const PleaseLoginPage2({
+    super.key,
+    required this.message,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class PleaseLoginPage2 extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                const SelectableText("To be able to see your profile, please login!"),
+                SelectableText(message),
                 const SizedBox(height: 5),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -40,11 +44,14 @@ class PleaseLoginPage2 extends StatelessWidget {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Login',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0)),
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -66,10 +73,12 @@ class PleaseLoginPage2 extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('Signup',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16.0)),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
                         ],
                       ),
                     ),
