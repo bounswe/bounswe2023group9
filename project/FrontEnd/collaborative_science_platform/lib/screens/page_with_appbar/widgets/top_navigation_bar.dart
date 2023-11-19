@@ -30,9 +30,9 @@ class TopNavigationBar extends StatelessWidget {
         ),
         NavigationBarItem(
           icon: Icons.workspaces,
-          value: ScreenTab.workspace,
-          isSelected: screenNavigation.selectedTab == ScreenTab.workspace,
-          text: "Workspace",
+          value: ScreenTab.workspaces,
+          isSelected: screenNavigation.selectedTab == ScreenTab.workspaces,
+          text: "Workspaces",
         ),
         if (Responsive.isMobile(context))
           NavigationBarItem(
