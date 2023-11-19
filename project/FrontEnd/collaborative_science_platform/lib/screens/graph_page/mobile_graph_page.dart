@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';

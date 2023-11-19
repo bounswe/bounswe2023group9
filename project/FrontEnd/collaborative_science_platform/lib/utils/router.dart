@@ -50,10 +50,12 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-      name: WorkspacesPage.routeName.substring(1),
-      path: WorkspacesPage.routeName,
-      builder: (context, state) => const WorkspacesPage(),
-    ),
+        name: WorkspacesPage.routeName.substring(1),
+        path: "${WorkspacesPage.routeName}/:id",
+        builder: (context, state) {
+          final int workspaceId = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+          return WorkspacesPage(workspaceId: workspaceId);
+        }),
     GoRoute(
       name: GraphPage.routeName.substring(1),
       path: "${GraphPage.routeName}/:nodeId",
@@ -101,5 +103,6 @@ final router = GoRouter(
           final String email = Uri.decodeComponent(encodedEmail);
           return ProfilePage(email: email);
         }),
+    
   ],
 );
