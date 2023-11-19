@@ -5,7 +5,7 @@ import '../../utils/responsive/responsive.dart';
 import 'mobile_create_workspace_page.dart';
 
 class CreateWorkspacePage extends StatelessWidget {
-  static const routeName = '/create_workspace';
+  static const routeName = '/create-workspace';
   const CreateWorkspacePage({super.key});
 
   @override

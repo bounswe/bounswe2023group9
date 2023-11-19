@@ -1,8 +1,10 @@
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/widgets/contributor_card.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/widgets/entry_card.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/widgets/reference_card.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/colors.dart';
 import '../../utils/responsive/responsive.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
@@ -21,179 +23,83 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
   bool error = false;
   String errorMessage = "";
 
-  Widget entryCard() {
-    double height = 80.0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: SizedBox(
-        height: height,
-        child: Card(
-          elevation: 4.0,
-          color: AppColors.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: InkWell(
-            onTap: () { /* Show the details about the entry */ },
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Entry Title",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Icon(Icons.keyboard_arrow_down),
-                ],
-              ),
-            ),
-          ),
-        ),
+  Widget addIcon(Function() onPressed) {
+    return Center(
+      child: IconButton(
+        iconSize: 40.0,
+        onPressed: onPressed,
+        icon: const Icon(Icons.add),
       ),
     );
   }
 
+  Widget firstAddition(String message, Function() onPressed) {
+    return ListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: [
+        Center(
+          child: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        addIcon(() { /* Navigate to a page where new entries are created */ }),
+      ],
+    );
+  }
+
   Widget entryList(int entryCount) {
-    return Padding(
+    return (entryCount != 0) ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: entryCount+1,
         itemBuilder: (context, index) =>
-          (index < entryCount) ? entryCard()
-          : Center(
-            child: IconButton(
-              iconSize: 40.0,
-              onPressed: () { /* Navigate to a page where new entries are created */ },
-              icon: const Icon(Icons.add),
-            ),
-          ),
+          (index < entryCount) ? const EntryCard()
+          : addIcon(() { /* Navigate to a page where new entries are created */ }),
       ),
-    );
-  }
-
-  Widget contributorCard() {
-    double height = 60.0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: SizedBox(
-        height: height,
-        child: Card(
-          elevation: 4.0,
-          color: AppColors.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height/2.0),
-          ),
-          child: InkWell(
-            onTap: () { /* Navigate to the contributors profile page */ },
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(height/2.0),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(
-                  "Contributor Name",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
+    ) : firstAddition(
+        "Add Your First Entry!",
+        () { /* Navigate to a page where new entries are created */ },
     );
   }
 
   Widget contributorList(int contributorCount) {
-    return Padding(
+    return (contributorCount != 0) ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: contributorCount+1,
         itemBuilder: (context, index) =>
-          (index < contributorCount) ? contributorCard()
-          : Center(
-            child: IconButton(
-              iconSize: 40.0,
-              onPressed: () { /* Navigate to a page where new contributors are added */ },
-              icon: const Icon(Icons.add),
-            ),
-          ),
+          (index < contributorCount) ? const ContributorCard()
+          : addIcon(() => { /* Navigate to a page where new contributors are added */ }),
       ),
-    );
-  }
-
-  Widget referenceCard() {
-    double height = 60.0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: SizedBox(
-        height: height,
-        child: Card(
-          elevation: 4.0,
-          color: AppColors.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height/2.0),
-          ),
-          child: InkWell(
-            onTap: () { /* Navigate to the node page of the theorem */ },
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(height/2.0),
-            ),
-            child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Center(
-                  child: Text(
-                    "Reference Theorem Title",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-            ),
-          ),
-        ),
-      ),
+    ) : firstAddition(
+        "Add The First Contributor!",
+        () { /* Navigate to a page where new contributors are added */ },
     );
   }
 
   Widget referenceList(int referenceCount) {
-    return Padding(
+    return (referenceCount != 0) ? Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: referenceCount+1,
         itemBuilder: (context, index) =>
-          (index < referenceCount) ? referenceCard()
-          : Center(
-            child: IconButton(
-              iconSize: 40.0,
-              onPressed: () { /* Navigate to a page where new references are added */ },
-              icon: const Icon(Icons.add),
-            ),
-          ),
+          (index < referenceCount) ? const ReferenceCard()
+          : addIcon(() => { /* Navigate to a page where new references are added */ }),
       ),
+    ) : firstAddition(
+        "Add Your First Reference!",
+        () { /* Navigate to a page where new references are added */ },
     );
   }
 
@@ -234,19 +140,19 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
           child: ListView(
             children: [
               subsectionTitle("Entries"),
-              entryList(10),
+              entryList(5),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
                 child: Divider(),
               ),
               subsectionTitle("Contributors"),
-              contributorList(10),
+              contributorList(0),
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
                 child: Divider(),
               ),
               subsectionTitle("References"),
-              referenceList(10),
+              referenceList(0),
             ],
           ),
         )

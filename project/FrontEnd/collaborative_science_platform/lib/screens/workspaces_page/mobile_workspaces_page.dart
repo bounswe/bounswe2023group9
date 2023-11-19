@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/screens/create_workspace_page/create_workspace_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspace_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -35,7 +36,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
           child: InkWell(
             onTap: () { // Navigate to the page where the details of the workspace are listed
               context.push('${WorkspacePage.routeName}/$workspaceId');
-
             },
             child: Center(
               child: Padding(
@@ -88,7 +88,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.primaryLightColor,
           onPressed: () { // Navigate to the page where workspaces are created
-
+            context.push(CreateWorkspacePage.routeName);
           },
           child: const Icon(Icons.add),
         ),

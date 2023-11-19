@@ -3,7 +3,6 @@ import 'package:collaborative_science_platform/screens/workspaces_page/web_works
 import 'package:flutter/material.dart';
 
 import '../../utils/responsive/responsive.dart';
-import '../workspace_page/mobile_workspace_page.dart';
 
 class WorkspacesPage extends StatelessWidget {
   static const routeName = '/workspaces';

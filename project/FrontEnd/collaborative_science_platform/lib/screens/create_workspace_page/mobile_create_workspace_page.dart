@@ -1,3 +1,5 @@
+import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/widgets/simple_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class MobileCreateWorkspacePage extends StatefulWidget {
@@ -10,6 +12,13 @@ class MobileCreateWorkspacePage extends StatefulWidget {
 class _MobileCreateWorkspacePageState extends State<MobileCreateWorkspacePage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const PageWithAppBar(
+      appBar: SimpleAppBar(title: "Create Workspace"),
+      child: Center(
+        child: Text(
+          "This is the mobile page where you can create workspace",
+        ),
+      ),
+    );
   }
 }
