@@ -23,16 +23,25 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: isActive ? onTap : () {},
-      style: ElevatedButton.styleFrom(
+      style: type != "outlined"
+          ? ElevatedButton.styleFrom(
         backgroundColor: isActive
             ? (type == "primary"
                 ? AppColors.primaryColor
-                : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
-            : Colors.grey[600],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(height / 2.0),
-        ),
-        minimumSize: Size(double.infinity, height),
+                      : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
+                  : Colors.grey[600],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(height / 2.0),
+              ),
+              minimumSize: Size(double.infinity, height),
+            )
+          : ElevatedButton.styleFrom(
+              backgroundColor: isActive ? Colors.white : Colors.grey[600],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(height / 2.0),
+              ),
+              minimumSize: Size(double.infinity, height),
+              side: const BorderSide(color: AppColors.primaryColor)  
       ),
       child: isLoading
           ? const Center(
@@ -42,7 +51,7 @@ class AppButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: height / 3.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: (type != "outlined" ? Colors.white : AppColors.primaryColor),
               )),
     );
   }
