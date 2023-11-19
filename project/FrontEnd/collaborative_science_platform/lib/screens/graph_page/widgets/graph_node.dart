@@ -1,5 +1,5 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:flutter/material.dart';
 

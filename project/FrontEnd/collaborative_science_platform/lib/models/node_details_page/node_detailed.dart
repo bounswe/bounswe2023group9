@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';

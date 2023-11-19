@@ -1,44 +1,39 @@
-/*
-import 'package:collaborative_science_platform/models/annotation.dart';
-import 'package:collaborative_science_platform/models/contributor_user.dart';
-import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/models/question.dart';
-import 'package:collaborative_science_platform/models/reviewer.dart';
-import 'package:collaborative_science_platform/models/semantic_tag.dart';
-import 'package:collaborative_science_platform/models/theorem.dart';
-import 'package:collaborative_science_platform/models/wiki_tag.dart';
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:intl/intl.dart';
 
 class Node {
-  int nodeId;
+  int id;
   String nodeTitle;
-  List<Contributor> contributors;
-  List<Proof> proofs;
-  Theorem theorem;
-  List<Question> questions;
   DateTime publishDate;
-  List<Reviewer> reviewers;
-  List<Node> references;
-  List<SemanticTag> semanticTags;
-  List<WikiTag> wikiTags;
-  List<Annotation> annotations;
-  bool isValid;
-  int noVisits;
-
+  List<User> contributors;
   Node({
-    required this.nodeId,
-    required this.nodeTitle,
     required this.contributors,
-    required this.proofs,
-    required this.theorem,
-    required this.questions,
+    required this.id,
+    required this.nodeTitle,
     required this.publishDate,
-    required this.reviewers,
-    required this.references,
-    required this.semanticTags,
-    required this.wikiTags,
-    required this.annotations,
-    required this.isValid,
-    required this.noVisits,
   });
+
+  String get publishDateFormatted {
+    DateFormat formatter = DateFormat('dd-MM-yyyy');
+    return formatter.format(publishDate);
+  }
+
+  factory Node.fromJson(Map<String, dynamic> jsonString) {
+    var list = jsonString['authors'] as List;
+    List<User> contributors = list.map((e) => User.fromJson(e)).toList();
+    return Node(
+        id: jsonString['id'],
+        nodeTitle: jsonString['title'],
+        publishDate: DateTime.parse(jsonString['date']),
+        contributors: contributors);
+  }
+  factory Node.fromJsonforNodeDetailPage(Map<String, dynamic> jsonString) {
+    var list = jsonString['contributors'] as List;
+    List<User> contributors = list.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
+    return Node(
+        id: jsonString['node_id'],
+        nodeTitle: jsonString['node_title'],
+        publishDate: DateTime.parse(jsonString['publish_date']),
+        contributors: contributors);
+  }
 }
-*/

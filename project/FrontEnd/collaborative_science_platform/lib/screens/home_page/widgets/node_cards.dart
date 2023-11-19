@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/node_details_page/node.dart';
+import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:flutter/material.dart';
