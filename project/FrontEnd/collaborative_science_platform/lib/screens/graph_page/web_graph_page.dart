@@ -31,7 +31,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
         children: [
           widget.node.references.isEmpty
               ? const Center(
-                  child: Text(
+                  child: SelectableText(
                     "No references",
                     style: TextStyle(
                       fontSize: 24.0,
@@ -54,7 +54,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
           ),
           widget.node.citations.isEmpty
               ? const Center(
-                  child: Text(
+                  child: SelectableText(
                     "No citations",
                     style: TextStyle(
                       fontSize: 24.0,

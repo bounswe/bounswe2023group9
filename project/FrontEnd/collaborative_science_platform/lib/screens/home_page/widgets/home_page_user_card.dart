@@ -24,10 +24,10 @@ class HomePageUserCard extends StatelessWidget {
       backgroundImage: profilePagePath != null ? AssetImage(profilePagePath!) : null,
       child: profilePagePath == null
           ? const Icon(
-        Icons.person,
-        size: 36.0,
-        color: Colors.white,
-      )
+              Icons.person,
+              size: 36.0,
+              color: Colors.white,
+            )
           : null,
     );
   }
@@ -55,7 +55,7 @@ class HomePageUserCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    SelectableText(
                       "${profileData.name} ${profileData.surname}",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -63,7 +63,7 @@ class HomePageUserCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8.0),
-                    Text(
+                    SelectableText(
                       profileData.email,
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,

@@ -7,6 +7,7 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -60,15 +61,14 @@ class _NodeDetailsState extends State<NodeDetails> {
                       padding: Responsive.isDesktop(context)
                           ? const EdgeInsets.all(70.0)
                           : const EdgeInsets.all(10.0),
-                      child: Text(widget.node.nodeTitle,
-                          textAlign: TextAlign.center,
-                          style: TextStyles.title2)),
+                      child: AnnotationText(widget.node.nodeTitle,
+                          textAlign: TextAlign.center, style: TextStyles.title2)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(
                     children: [
-                      RichText(
-                        text: TextSpan(children: <TextSpan>[
+                      SelectableText.rich(
+                        TextSpan(children: <TextSpan>[
                           const TextSpan(
                             text: "published on ",
                             style: TextStyles.bodyGrey,
@@ -120,12 +120,12 @@ class _NodeDetailsState extends State<NodeDetails> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          child: Text(widget.node.theorem!.theoremContent,
+                          child: AnnotationText(widget.node.theorem!.theoremContent,
                               style: TextStyles.bodyBlack),
                         ),
-                        RichText(
+                        SelectableText.rich(
                           textAlign: TextAlign.start,
-                          text: TextSpan(children: <TextSpan>[
+                          TextSpan(children: <TextSpan>[
                             const TextSpan(
                               text: "published on ",
                               style: TextStyles.bodyGrey,

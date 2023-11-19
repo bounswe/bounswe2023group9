@@ -88,7 +88,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('About', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              SelectableText('About', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
             ],
           ),
           const SizedBox(height: 10),
@@ -97,7 +97,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              const SelectableText(
                 "Send Email Notifications",
                 style: TextStyles.bodyBold,
               ),
@@ -115,7 +115,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              const SelectableText(
                 "Show Activity in Profile Page",
                 style: TextStyles.bodyBold,
               ),
