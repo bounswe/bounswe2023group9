@@ -14,7 +14,7 @@ class SemanticTag(models.Model):
     
     @property
     def nodes(self):
-        return Node.objects.filter(semantictag__wid=self.wikidata_id)
+        return Node.objects.filter(semantic_tags__wid=self.wid)
 
     @property
     def count(self):
@@ -22,20 +22,20 @@ class SemanticTag(models.Model):
     
     @property
     def related_nodes(self):
-        parent_wids = get_parent_ids(self.wikidata_id)
+        parent_wids = get_parent_ids(self.wid)
         sibling_wids = get_children_ids(parent_wids)
 
         if self.wid in sibling_wids:
             sibling_wids.remove(self.wid)
 
-        children_wids = get_children_ids([self.wikidata_id])
+        children_wids = get_children_ids([self.wid])
         combined = sibling_wids + parent_wids + children_wids
 
-        return Node.objects.filter(semantictag__wid__in=combined)
+        return Node.objects.filter(semantic_tags__wid__in=combined)
 
     @property
     def related_count(self):
-        return len(self.recursive_nodes)
+        return self.related_nodes.count()
     
     @classmethod
     def existing_search_results(cls, keyword):
@@ -44,20 +44,18 @@ class SemanticTag(models.Model):
         existings = []
 
         for item in wiki_results:
-            node_count = Node.objects.filter(semantictag__wid=item["id"]).count()
+            node_count = Node.objects.filter(semantic_tags__wid=item["id"]).count()
             if node_count > 0:
                 existings.append(item)
 
         return existings
+    
+    def __str__(self):
+        return self.label + " - " + self.wid
 
 class WikiTag(models.Model):
     pass
-class Request(models.Model):
-    """
-     This class definition is written beforehand (to be implemented afterwards)
-     in order to be referred from other classes. e.g. ReviewRequest
-    """
-    pass
+
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
     entry_index = models.IntegerField()
