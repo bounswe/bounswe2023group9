@@ -1,5 +1,5 @@
-import 'package:collaborative_science_platform/models/annotation_text.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
+import '../widgets/annotation_text.dart';
 
 class Annotation {
   int annotationID;

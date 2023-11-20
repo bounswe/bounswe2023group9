@@ -22,7 +22,8 @@ class ContributorCard extends StatelessWidget {
         height: height,
         child: Card(
           elevation: 4.0,
-          color: AppColors.primaryColor,
+          shadowColor: AppColors.primaryColor,
+          color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(height/2.0),
           ),
@@ -42,7 +43,7 @@ class ContributorCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     fontSize: 16.0,
                   ),
                 ),

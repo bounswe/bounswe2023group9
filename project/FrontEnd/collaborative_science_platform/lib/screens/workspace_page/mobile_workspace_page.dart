@@ -1,12 +1,15 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/contributor_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/entry_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
+import 'package:collaborative_science_platform/utils/lorem_ipsum.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/node.dart';
 import '../../models/workspaces_page/entry.dart';
@@ -40,21 +43,27 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
       references: <Node>[],
   );
 
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     getWorkspaceData();
+    super.didChangeDependencies();
   }
 
   void getWorkspaceData() {
     setState(() {
       isLoading = true;
     });
+
+    // Automatically add the user to the list of contributors
+    final User selfUser = Provider.of<Auth>(context).user as User;
+
     workspaceData = Workspace(
       workspaceId: 0,
       workspaceTitle: "workspaceTitle",
       entries: <Entry>[
-        Entry(content: "Content 1",
+        Entry(
+          content: getLongLoremIpsum(),
           entryDate: DateTime.now(),
           entryId: 1,
           entryNumber: 1,
@@ -62,15 +71,27 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
           isEditable: false,
           isFinalEntry: false,
           isProofEntry: false,
-          isTheoremEntry: false,
+          isTheoremEntry: true,
         ),
-        Entry(content: "Content 2",
+        Entry(
+          content: getLongLoremIpsum(2),
           entryDate: DateTime.now(),
           entryId: 2,
           entryNumber: 2,
           index: 2,
           isEditable: false,
           isFinalEntry: false,
+          isProofEntry: true,
+          isTheoremEntry: false,
+        ),
+        Entry(
+          content: getLongLoremIpsum(3),
+          entryDate: DateTime.now(),
+          entryId: 2,
+          entryNumber: 2,
+          index: 2,
+          isEditable: false,
+          isFinalEntry: true,
           isProofEntry: false,
           isTheoremEntry: false,
         ),
@@ -78,6 +99,7 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
       status: "on going",
       numApprovals: 0,
       contributors: <User>[
+        selfUser,
         User(
           email: "dummy1@mail.com",
           firstName: "dummy 1",
@@ -212,8 +234,8 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
         isScrollable: true,
         child: SizedBox(
           width: Responsive.getGenericPageWidth(context),
-          child: ListView(
-            children: [
+          child: ListView( // It needs to be nested scrollable in the future
+            children: <Widget>[
               const SubSectionTitle(title: "Entries"),
               entryList(),
               const Padding(

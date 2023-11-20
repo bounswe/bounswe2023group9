@@ -69,7 +69,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
         height: height,
         child: Card(
           elevation: 4.0,
-          color: AppColors.primaryColor,
+          shadowColor: AppColors.primaryColor,
+          color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(height/2.0),
           ),

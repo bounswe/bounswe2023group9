@@ -21,7 +21,8 @@ class ReferenceCard extends StatelessWidget {
         height: height,
         child: Card(
           elevation: 4.0,
-          color: AppColors.primaryColor,
+          shadowColor: AppColors.primaryColor,
+          color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(height/2.0),
           ),
@@ -41,7 +42,7 @@ class ReferenceCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

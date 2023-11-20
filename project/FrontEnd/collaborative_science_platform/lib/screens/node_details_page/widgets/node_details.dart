@@ -5,7 +5,6 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -84,7 +83,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                     Column(
                       children: [
                         SizedBox(
-                          width: Responsive.getGenericPageWidth(context) * 0.3,
+                          width: Responsive.getGenericPageWidth(context) * 0.35,
                           child: AppButton(
                               text: "See the Graph",
                               height: 40,
