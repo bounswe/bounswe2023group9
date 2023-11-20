@@ -53,9 +53,6 @@ class SemanticTag(models.Model):
     def __str__(self):
         return self.label + " - " + self.wid
 
-class WikiTag(models.Model):
-    pass
-
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
     entry_index = models.IntegerField()
