@@ -1,15 +1,15 @@
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
-import 'package:collaborative_science_platform/screens/create_workspace_page/create_workspace_page.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/workspace_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../create_workspace_page/mobile_create_workspace_page.dart';
 import '../home_page/widgets/home_page_appbar.dart';
+import '../workspace_page/mobile_workspace_page.dart';
 
 class MobileWorkspacesPage extends StatefulWidget {
   const MobileWorkspacesPage({super.key});
@@ -78,7 +78,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
                 borderRadius: BorderRadius.circular(height/2.0),
             ),
             onTap: () { // Navigate to the page where the details of the workspace are listed
-              context.push('${WorkspacePage.routeName}/${workspacesObject.workspaceId}');
+              context.push('${MobileWorkspacePage.routeName}/${workspacesObject.workspaceId}');
             },
             child: Center(
               child: Padding(
@@ -133,7 +133,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.primaryLightColor,
           onPressed: () { // Navigate to the page where workspaces are created
-            context.push(CreateWorkspacePage.routeName);
+            context.push(MobileCreateWorkspacePage.routeName);
           },
           child: const Icon(Icons.add),
         ),

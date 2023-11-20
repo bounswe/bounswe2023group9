@@ -19,7 +19,7 @@ void main() {
 
 void configureApp() {
   if (kIsWeb) {
-    setUrlStrategy(const PathUrlStrategy());
+    setUrlStrategy(PathUrlStrategy());
   }
 }
 

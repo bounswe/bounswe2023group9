@@ -5,7 +5,6 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
-import 'package:collaborative_science_platform/screens/create_workspace_page/create_workspace_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
@@ -17,7 +16,8 @@ import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/workspace_page/workspace_page.dart';
+import '../screens/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspace_page/mobile_workspace_page.dart';
 
 final router = GoRouter(
   navigatorKey: ScreenNavigation.navigatorKey,
@@ -58,17 +58,17 @@ final router = GoRouter(
       builder: (context, state) => const WorkspacesPage(),
     ),
     GoRoute(
-      name: WorkspacePage.routeName.substring(1),
-      path: "${WorkspacePage.routeName}/:workspaceId",
+      name: MobileWorkspacePage.routeName.substring(1),
+      path: "${MobileWorkspacePage.routeName}/:workspaceId",
       builder: (context, state) {
         final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
-        return WorkspacePage(workspaceId: workspaceId);
+        return MobileWorkspacePage(workspaceId: workspaceId);
       },
     ),
     GoRoute(
-      name: CreateWorkspacePage.routeName.substring(1),
-      path: CreateWorkspacePage.routeName,
-      builder: (context, state) => const CreateWorkspacePage(),
+      name: MobileCreateWorkspacePage.routeName.substring(1),
+      path: MobileCreateWorkspacePage.routeName,
+      builder: (context, state) => const MobileCreateWorkspacePage(),
     ),
     GoRoute(
       name: GraphPage.routeName.substring(1),
