@@ -9,37 +9,46 @@ from api.wikidata import *
 
 class SemanticTag(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    label = models.CharField(max_length=50, unique=True)
-    desc = models.CharField(max_length=100)
-    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True,
-                                   related_name="sub_tags")
+    wid = models.CharField(max_length=20)
+    label = models.CharField(max_length=30, unique=True)
+    
+    @property
+    def nodes(self):
+        return Node.objects.filter(semantictag__wid=self.wikidata_id)
 
     @property
     def count(self):
-        return self.node_set.all().count()
+        return self.nodes.count()
+    
+    @property
+    def related_nodes(self):
+        parent_wids = get_parent_ids(self.wikidata_id)
+        sibling_wids = get_children_ids(parent_wids)
+
+        if self.wid in sibling_wids:
+            sibling_wids.remove(self.wid)
+
+        children_wids = get_children_ids([self.wikidata_id])
+        combined = sibling_wids + parent_wids + children_wids
+
+        return Node.objects.filter(semantictag__wid__in=combined)
 
     @property
-    def nodes(self):
-        return self.node_set.all()
-
-    @property
-    def recursive_nodes(self):
-        nodes = list(self.nodes)
-
-        for sub in self.sub_tags.all():
-            nodes.extend(sub.recursive_nodes)
-
-        return nodes
-
-    @property
-    def recursive_count(self):
+    def related_count(self):
         return len(self.recursive_nodes)
+    
+    @classmethod
+    def existing_search_results(cls, keyword):
+        wiki_results = search_entity(keyword)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['label', 'parent_tag'],
-                                    name='semantictag_label_parenttag_unique_constraint')
-        ]
+        existings = []
+
+        for item in wiki_results:
+            node_count = Node.objects.filter(semantictag__wid=item["id"]).count()
+            if node_count > 0:
+                existings.append(item)
+
+        return existings
 
 class WikiTag(models.Model):
     pass
@@ -181,50 +190,6 @@ class Theorem(models.Model):
     theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
-
-
-class SemanticTag(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    wid = models.CharField(max_length=20)
-    label = models.CharField(max_length=30, unique=True)
-    
-    @property
-    def nodes(self):
-        return Node.objects.filter(semantictag__wid=self.wikidata_id)
-
-    @property
-    def count(self):
-        return self.nodes.count()
-    
-    @property
-    def related_nodes(self):
-        parent_wids = get_parent_ids(self.wikidata_id)
-        sibling_wids = get_children_ids(parent_wids)
-
-        if self.wid in sibling_wids:
-            sibling_wids.remove(self.wid)
-
-        children_wids = get_children_ids([self.wikidata_id])
-        combined = sibling_wids + parent_wids + children_wids
-
-        return Node.objects.filter(semantictag__wid__in=combined)
-
-    @property
-    def related_count(self):
-        return len(self.recursive_nodes)
-    
-    @classmethod
-    def existing_search_results(cls, keyword):
-        wiki_results = search_entity(keyword)
-
-        existings = []
-
-        for item in wiki_results:
-            node_count = Node.objects.filter(semantictag__wid=item["id"]).count()
-            if node_count > 0:
-                existings.append(item)
-
-        return existings
 
 
 class Annotation(models.Model):
