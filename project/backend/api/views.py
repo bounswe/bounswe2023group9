@@ -270,9 +270,12 @@ def get_workspaces(request):
     pending = []
     for req in CollaborationRequest.objects.filter(receiver=cont):
         workspace = req.workspace
-        pending.append({'workspace_id': workspace.workspace_id,
-                               'workspace_title': workspace.workspace_title,
-                               'pending': True})
+        request_id = req.id
+        if req.status == 'P':
+            pending.append({'workspace_id': workspace.workspace_id,
+                                   'workspace_title': workspace.workspace_title,
+                                   'pending': True,
+                            'request_id':request_id})
 
     return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending}, status=200)
 
@@ -310,10 +313,11 @@ def get_workspace_from_id(request):
     for pend in CollaborationRequest.objects.filter(workspace=workspace):
         cont = pend.receiver
         user = User.objects.get(id=cont.user_id)
-        pending.append({"id": cont.id,
-                         "first_name": user.first_name,
-                         "last_name": user.last_name,
-                         "username": user.username})
+        if pend.status == 'P':
+            pending.append({"id": cont.id,
+                             "first_name": user.first_name,
+                             "last_name": user.last_name,
+                             "username": user.username})
     references = []
     for ref in workspace.references.all():
         authors = []
