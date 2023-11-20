@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/annotation_text.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
 
 class Annotation {
