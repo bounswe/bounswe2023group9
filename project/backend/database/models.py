@@ -153,8 +153,6 @@ class Request(models.Model):
 
     sender = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="outgoing_requests")
     receiver = models.ForeignKey(Contributor, on_delete=models.PROTECT, related_name="incoming_requests")
-    title = models.CharField(max_length=80)
-    body = models.TextField(max_length=400)
     status = models.CharField(max_length=1, choices=request_status_choices, default="P")
     
     def accept(self):

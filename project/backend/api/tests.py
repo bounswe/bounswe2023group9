@@ -512,8 +512,6 @@ class CollaborationRequestAPITestCase(TestCase):
         self.request_data = {
             'sender': self.contributor_sender.id,
             'receiver': self.contributor_receiver.id,
-            'title' : 'Request Test Title',
-            'body': 'Request Test Body',
             'workspace': self.workspace.workspace_id
         }
 
@@ -522,11 +520,15 @@ class CollaborationRequestAPITestCase(TestCase):
         response = self.client.post(url, self.request_data, format='json')
         self.assertEqual(response.status_code, 201)
     
-    def update_collab_request(self):
+    def test_update_collab_request(self):
         url = reverse('update_req')
-        response = self.client.put(url, {'id': self.request_data[id], 'status': 'A'}, format='json')
+        response = self.client.put(url, {'id': self.request.id, 'status': 'A'}, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data.status, 'A')
+        self.assertEqual(response.data['status'], 'A')
+
+        receiver = Contributor.objects.get(pk=self.request_data['receiver'])
+        self.assertGreater(receiver.workspaces.filter(pk=self.request_data['workspace']).count(), 0)
+        # self.assert()
 
 class ReviewRequestAPITestCase(TestCase):
 
@@ -549,8 +551,6 @@ class ReviewRequestAPITestCase(TestCase):
         self.request_data = {
             'sender': self.contributor_sender.id,
             'receiver': self.reviewer_receiver.id,
-            'title' : 'Review Request Test Title',
-            'body': 'Review Request Test Body',
             'workspace': self.workspace.workspace_id
         }
 
@@ -559,8 +559,8 @@ class ReviewRequestAPITestCase(TestCase):
         response = self.client.post(url, self.request_data, format='json')
         self.assertEqual(response.status_code, 201)
     
-    def update_review_request(self):
+    def test_update_review_request(self):
         url = reverse('update_req')
-        response = self.client.put(url, {'id': self.request_data[id], 'status': 'R'}, format='json')
+        response = self.client.put(url, {'id': self.request.id, 'status': 'R'}, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data.status, 'R')
+        self.assertEqual(response.data['status'], 'R')

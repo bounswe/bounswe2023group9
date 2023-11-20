@@ -358,15 +358,26 @@ def send_collaboration_request(request):
 
 @api_view(['PUT'])
 def update_request_status(request):
-    try:
-        req = Request.objects.get(pk=request.data.get('workspace_id'))
-    except Request.DoesNotExist:
+    is_collab_req = True
+    req = CollaborationRequest.objects.filter(pk=request.data.get('id'))
+    if not req:
+        is_collab_req = False
+        req = ReviewRequest.objects.filter(pk=request.data.get('id'))
+    if not req:
         return Response({"message": "Request not found."}, status=404)
-
+    req = req.first()
     status = request.data.get('status')
 
     if status not in ["P", "A", "R"]:
         return Response({"message": "Invalid status value."}, status=400)
+
+    if status == "A":
+        if is_collab_req:
+            try:
+                req.receiver.workspaces.add(req.workspace)
+            except Exception as e:
+                return Response({"message": str(e)}, status=500)
+
 
     req.status = status
     req.save()
