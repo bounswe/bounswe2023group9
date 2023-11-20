@@ -479,14 +479,12 @@ class RequestModelTestCase(TestCase):
             last_name="Test2",
         )
         self.receiver = Contributor.objects.create(user=receiver_user, bio="Test bio 2")
-        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver, title="Request title", body="Request body")
+        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver)
 
     def test_db(self):
         self.assertGreater(Request.objects.filter(sender=self.sender).count(), 0, "Could not find created request in the db with this sender!")
         req = Request.objects.get(sender=self.sender)
         self.assertEqual(req.receiver.id, self.receiver.id, "Receiver didn't match")
-        self.assertEqual(req.title, self.request.title, "Title didn't match")
-        self.assertEqual(req.body, self.request.body, "Body didn't match")
         self.assertEqual(self.request.status, "P", "Status is not Pending")
 
     def test_accept(self):

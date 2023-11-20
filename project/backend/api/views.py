@@ -270,9 +270,12 @@ def get_workspaces(request):
     pending = []
     for req in CollaborationRequest.objects.filter(receiver=cont):
         workspace = req.workspace
-        pending.append({'workspace_id': workspace.workspace_id,
-                               'workspace_title': workspace.workspace_title,
-                               'pending': True})
+        request_id = req.id
+        if req.status == 'P':
+            pending.append({'workspace_id': workspace.workspace_id,
+                                   'workspace_title': workspace.workspace_title,
+                                   'pending': True,
+                            'request_id':request_id})
 
     return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending}, status=200)
 
@@ -310,10 +313,11 @@ def get_workspace_from_id(request):
     for pend in CollaborationRequest.objects.filter(workspace=workspace):
         cont = pend.receiver
         user = User.objects.get(id=cont.user_id)
-        pending.append({"id": cont.id,
-                         "first_name": user.first_name,
-                         "last_name": user.last_name,
-                         "username": user.username})
+        if pend.status == 'P':
+            pending.append({"id": cont.id,
+                             "first_name": user.first_name,
+                             "last_name": user.last_name,
+                             "username": user.username})
     references = []
     for ref in workspace.references.all():
         authors = []
@@ -346,3 +350,50 @@ def get_workspace_from_id(request):
                         'references':references,
                          'created_at':workspace.created_at,
                          }, status=200)
+
+@api_view(['POST'])
+def send_collaboration_request(request):
+
+    serializer = CollaborationRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+@api_view(['PUT'])
+def update_request_status(request):
+    is_collab_req = True
+    req = CollaborationRequest.objects.filter(pk=request.data.get('id'))
+    if not req:
+        is_collab_req = False
+        req = ReviewRequest.objects.filter(pk=request.data.get('id'))
+    if not req:
+        return Response({"message": "Request not found."}, status=404)
+    req = req.first()
+    status = request.data.get('status')
+
+    if status not in ["P", "A", "R"]:
+        return Response({"message": "Invalid status value."}, status=400)
+
+    if status == "A":
+        if is_collab_req:
+            try:
+                req.receiver.workspaces.add(req.workspace)
+            except Exception as e:
+                return Response({"message": str(e)}, status=500)
+
+
+    req.status = status
+    req.save()
+
+    serializer = RequestSerializer(req)
+    return Response(serializer.data, status=200)
+
+@api_view(['POST'])
+def send_review_request(request):
+
+    serializer = ReviewRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
