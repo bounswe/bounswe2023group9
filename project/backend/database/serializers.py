@@ -171,3 +171,18 @@ class NodeSerializer(serializers.ModelSerializer):
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
                    'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'wiki_tags', 'annotations']
+
+class RequestSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Request
+    fields = '__all__'
+
+class CollaborationRequestSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = CollaborationRequest
+    fields = '__all__'
+
+class ReviewRequestSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = ReviewRequest
+    fields = '__all__'
