@@ -3,7 +3,6 @@
 import 'dart:ui';
 
 import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
-import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
