@@ -16,7 +16,6 @@ import '../../../models/workspaces_page/entry.dart';
 import '../../../utils/responsive/responsive.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
-  static const routeName = '/workspace';
   final int workspaceId;
   const MobileWorkspacePage({
     super.key,

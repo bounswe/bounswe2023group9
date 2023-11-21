@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspaces
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/subsection_title.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:go_router/go_router.dart';
 
 import 'create_workspace_page/mobile_create_workspace_page.dart';
 import '../home_page/widgets/home_page_appbar.dart';
-import 'workspace_page/mobile_workspace_page.dart';
 
 class MobileWorkspacesPage extends StatefulWidget {
   const MobileWorkspacesPage({super.key});
@@ -80,7 +80,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
             ),
             onTap: () {
               // Navigate to the page where the details of the workspace are listed
-              context.push('${MobileWorkspacePage.routeName}/${workspacesObject.workspaceId}');
+              context.push('${WorkspacesPage.routeName}/id=${workspacesObject.workspaceId}');
             },
             child: Center(
               child: Padding(

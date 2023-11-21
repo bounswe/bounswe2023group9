@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 class WebWorkspacePage extends StatefulWidget {
   //final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
   final int workspaceId;
-  const WebWorkspacePage({super.key, required this.workspaceId});
+  const WebWorkspacePage({super.key, this.workspaceId = 0});
 
   @override
   State<WebWorkspacePage> createState() => _WebWorkspacePageState();

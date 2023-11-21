@@ -11,8 +11,10 @@ import 'package:collaborative_science_platform/screens/node_details_page/node_de
 import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/web_workspace_page.dart';
 import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -54,19 +56,27 @@ final router = GoRouter(
     ),
     GoRoute(
         name: WorkspacesPage.routeName.substring(1),
-        path: "${WorkspacesPage.routeName}/:id",
+        path: WorkspacesPage.routeName,
         builder: (context, state) {
-          final int workspaceId = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
-          return WorkspacesPage(workspaceId: workspaceId);
-        }),
-    GoRoute(
-      name: MobileWorkspacePage.routeName.substring(1),
-      path: "${MobileWorkspacePage.routeName}/:workspaceId",
-      builder: (context, state) {
-        final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
-        return MobileWorkspacePage(workspaceId: workspaceId);
+          return const WorkspacesPage();
+        },
+        routes: [
+          GoRoute(
+            name: "workspace",
+            path: "id=:workspaceId",
+            builder: (context, state) {
+              final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
+              if (Responsive.isMobile(context)) {
+                return MobileWorkspacePage(workspaceId: workspaceId);
+              } else {
+                return WebWorkspacePage(
+                  workspaceId: workspaceId,
+                );
+              }
       },
     ),
+        ]),
+    
     GoRoute(
       name: MobileCreateWorkspacePage.routeName.substring(1),
       path: MobileCreateWorkspacePage.routeName,
@@ -121,6 +131,5 @@ final router = GoRouter(
           final String email = Uri.decodeComponent(encodedEmail);
           return ProfilePage(email: email);
         }),
-    
   ],
 );
