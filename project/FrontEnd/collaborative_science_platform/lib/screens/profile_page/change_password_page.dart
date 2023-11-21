@@ -1,6 +1,6 @@
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/change_password_form.dart';
-import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_appbar.dart';
+import 'package:collaborative_science_platform/widgets/simple_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordPage extends StatelessWidget {
@@ -10,7 +10,7 @@ class ChangePasswordPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const PageWithAppBar(
-      appBar: AccountSettingsAppBar(),
+      appBar: SimpleAppBar(title: "Account Settings"),
       child: ChangePasswordForm(),
     );
   }

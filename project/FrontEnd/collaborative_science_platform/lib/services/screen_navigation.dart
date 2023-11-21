@@ -7,7 +7,20 @@ import 'package:collaborative_science_platform/screens/workspaces_page/workspace
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-enum ScreenTab { home, graph, workspace, notifications, profile, pleaseLogin, none }
+import '../screens/workspaces_page/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspaces_page/workspace_page/mobile_workspace_page.dart';
+
+enum ScreenTab {
+  home,
+  graph,
+  workspaces,
+  workspace,
+  createWorkspace,
+  notifications,
+  profile,
+  pleaseLogin,
+  none
+}
 
 class ScreenNavigation extends ChangeNotifier {
   ScreenTab _selectedTab = ScreenTab.home;
@@ -24,8 +37,14 @@ class ScreenNavigation extends ChangeNotifier {
       case ScreenTab.graph:
         context.push(GraphPage.routeName);
         break;
-      case ScreenTab.workspace:
+      case ScreenTab.workspaces: // Goes to the page where workspace names are listed
         context.go(WorkspacesPage.routeName);
+        break;
+      case ScreenTab.workspace: // Goes to the page where details of a workspace are listed
+        context.push(MobileWorkspacePage.routeName);
+        break;
+      case ScreenTab.createWorkspace: // Goes to the page where workspaces are created
+        context.push(MobileCreateWorkspacePage.routeName);
         break;
       case ScreenTab.notifications:
         context.go(NotificationPage.routeName);

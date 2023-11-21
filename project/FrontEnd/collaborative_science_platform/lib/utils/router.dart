@@ -16,6 +16,9 @@ import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/workspaces_page/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspaces_page/workspace_page/mobile_workspace_page.dart';
+
 final router = GoRouter(
   navigatorKey: ScreenNavigation.navigatorKey,
   initialLocation: '/',
@@ -57,6 +60,19 @@ final router = GoRouter(
           return WorkspacesPage(workspaceId: workspaceId);
         }),
     GoRoute(
+      name: MobileWorkspacePage.routeName.substring(1),
+      path: "${MobileWorkspacePage.routeName}/:workspaceId",
+      builder: (context, state) {
+        final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
+        return MobileWorkspacePage(workspaceId: workspaceId);
+      },
+    ),
+    GoRoute(
+      name: MobileCreateWorkspacePage.routeName.substring(1),
+      path: MobileCreateWorkspacePage.routeName,
+      builder: (context, state) => const MobileCreateWorkspacePage(),
+    ),
+    GoRoute(
       name: GraphPage.routeName.substring(1),
       path: "${GraphPage.routeName}/:nodeId",
       builder: (context, state) {
@@ -85,7 +101,9 @@ final router = GoRouter(
     GoRoute(
       name: PleaseLoginPage2.routeName.substring(1),
       path: PleaseLoginPage2.routeName,
-      builder: (context, state) => const PleaseLoginPage2(),
+      // Different login messages might be given for difference pages
+      builder: (context, state) =>
+          const PleaseLoginPage2(message: "To be able to see this page, please login!"),
     ),
     GoRoute(
       name: NodeDetailsPage.routeName.substring(1),

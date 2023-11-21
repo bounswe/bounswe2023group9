@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
+import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/mobile_graph_page.dart';
@@ -6,7 +6,9 @@ import 'package:collaborative_science_platform/screens/graph_page/web_graph_page
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class GraphPage extends StatefulWidget {
@@ -34,6 +36,22 @@ class _GraphPageState extends State<GraphPage> {
     super.didChangeDependencies();
   }
 
+  @override
+  void initState() {
+    if (kIsWeb) {
+      BrowserContextMenu.disableContextMenu();
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (kIsWeb) {
+      BrowserContextMenu.enableContextMenu();
+    }
+    super.dispose();
+  }
+
   void getNode() async {
     try {
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
@@ -45,7 +63,6 @@ class _GraphPageState extends State<GraphPage> {
         if (nodeProvider.nodeDetailed!.nodeId == widget.nodeId) {
           setState(() {
             node = nodeProvider.nodeDetailed!;
-            isLoading = false;
           });
           return;
         }
@@ -53,19 +70,20 @@ class _GraphPageState extends State<GraphPage> {
       await nodeProvider.getNode(widget.nodeId);
       setState(() {
         node = nodeProvider.nodeDetailed!;
-        isLoading = false;
       });
     } on NodeDoesNotExist {
       setState(() {
-        isLoading = false;
         error = true;
-        errorMessage = "Node does not exist!";
+        errorMessage = NodeDoesNotExist().message;
       });
     } catch (e) {
       setState(() {
-        isLoading = false;
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -76,12 +94,13 @@ class _GraphPageState extends State<GraphPage> {
       return PageWithAppBar(
         appBar: const HomePageAppBar(),
         child: Center(
-          child: isLoading
-              ? const CircularProgressIndicator()
-              : error
-                  ? SelectableText(errorMessage)
-                  : const SelectableText("Something went wrong!"),
-        ),
+            child: isLoading
+                ? const CircularProgressIndicator()
+                : SelectableText(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  )),
       );
     } else {
       return Responsive(

@@ -7,9 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Auth with ChangeNotifier {
-  User? user;
-  //User? user =
-  //  User(email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
+  //User? user;
+  User? user = User(email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
 
   bool get isSignedIn {
     return user != null;
