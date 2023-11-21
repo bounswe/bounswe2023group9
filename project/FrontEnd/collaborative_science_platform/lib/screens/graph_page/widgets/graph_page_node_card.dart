@@ -63,7 +63,7 @@ class GraphPageNodeCard extends StatelessWidget {
                   Text(
                     node.contributors
                         .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
-                        .join(", "),
+                        .join("\n"),
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14.0,
@@ -72,6 +72,7 @@ class GraphPageNodeCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 20.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

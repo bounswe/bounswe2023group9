@@ -1,6 +1,8 @@
-import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
-import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/mobile_workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspaces_page.dart';
 import 'package:flutter/material.dart';
+
+import '../../utils/responsive/responsive.dart';
 
 class WorkspacesPage extends StatelessWidget {
   static const routeName = '/workspaces';
@@ -8,7 +10,9 @@ class WorkspacesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageWithAppBar(
-        appBar: HomePageAppBar(), child: Text("Workspaces")); // Profile Page Content
+    return const Responsive(
+      mobile: MobileWorkspacesPage(),
+      desktop: WebWorkspacesPage(),
+    );
   }
 }
