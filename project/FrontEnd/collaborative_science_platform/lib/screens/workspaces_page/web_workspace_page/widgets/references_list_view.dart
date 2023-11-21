@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/add_reference_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -46,7 +47,8 @@ class ReferencesListView extends StatelessWidget {
                             ),
                             backgroundColor: Colors.white,
                             shadowColor: Colors.white,
-                            content: Placeholder(),
+                            surfaceTintColor: Colors.white,
+                            content: AddReferenceForm(),
                           ));
                 },
                 type: "outlined",

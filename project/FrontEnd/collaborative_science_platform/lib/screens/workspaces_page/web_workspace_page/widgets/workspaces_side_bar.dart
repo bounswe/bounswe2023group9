@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -10,11 +11,11 @@ import 'package:flutter/material.dart';
 
 class WorkspacesSideBar extends StatefulWidget {
   final ScrollController controller;
-  final hideSidebar;
+  final Function? hideSidebar;
   final double height;
 
   const WorkspacesSideBar(
-      {super.key, required this.controller, required this.hideSidebar, required this.height});
+      {super.key, required this.controller, this.hideSidebar, required this.height});
 
   @override
   State<WorkspacesSideBar> createState() => _WorkspacesSideBarState();
@@ -63,7 +64,9 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                   children: [
                     const Text("My Workspaces", style: TextStyles.title2secondary),
                     AppBarButton(
-                      onPressed: widget.hideSidebar,
+                      onPressed: () {
+                        widget.hideSidebar!();
+                      },
                       icon: CupertinoIcons.back,
                       text: "hide workspaces",
                     )
@@ -79,8 +82,8 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                         onTap: () {
                           showDialog(
                               context: context,
-                              builder: (context) => const AlertDialog(
-                                    title: SizedBox(
+                              builder: (context) => AlertDialog(
+                                    title: const SizedBox(
                                       width: 500,
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -90,8 +93,12 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                       ),
                                     ),
                                     backgroundColor: Colors.white,
-                                    shadowColor: Colors.white,
-                                    content: Placeholder(),
+                                    surfaceTintColor: Colors.white,
+                                    content: const CreateWorkspaceForm(),
+                                    actions: [
+                                      AppButton(
+                                          text: "Create New Workspace", height: 50, onTap: () {})
+                                    ],
                                   ));
                         },
                         type: "outlined",

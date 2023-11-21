@@ -1,9 +1,9 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,7 +78,8 @@ class ContributorsListView extends StatelessWidget {
                             ),
                             backgroundColor: Colors.white,
                             shadowColor: Colors.white,
-                            content: Placeholder(),
+                            surfaceTintColor: Colors.white,
+                            content: SendCollaborationRequestForm(),
                           ));
                 },
                 type: "outlined",

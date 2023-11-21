@@ -1,8 +1,8 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/entry_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class EntriesListView extends StatelessWidget {
@@ -42,8 +42,8 @@ class EntriesListView extends StatelessWidget {
                   onTap: () {
                     showDialog(
                         context: context,
-                        builder: (context) => const AlertDialog(
-                              title: SizedBox(
+                        builder: (context) => AlertDialog(
+                              title: const SizedBox(
                                 width: 500,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -54,7 +54,11 @@ class EntriesListView extends StatelessWidget {
                               ),
                               backgroundColor: Colors.white,
                               shadowColor: Colors.white,
-                              content: Placeholder(),
+                              surfaceTintColor: Colors.white,
+                              content: const EntryForm(newEntry: true),
+                              actions: [
+                                AppButton(text: "Create New Entry", height: 40, onTap: () {}),
+                              ],
                             ));
                   },
                   type: "outlined",
@@ -93,8 +97,8 @@ class EntriesListView extends StatelessWidget {
                                         onPressed: () {
                                           showDialog(
                                               context: context,
-                                              builder: (context) => const AlertDialog(
-                                                    title: SizedBox(
+                                              builder: (context) => AlertDialog(
+                                                    title: const SizedBox(
                                                       width: 500,
                                                       child: Row(
                                                         mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +110,14 @@ class EntriesListView extends StatelessWidget {
                                                     ),
                                                     backgroundColor: Colors.white,
                                                     shadowColor: Colors.white,
-                                                    content: Placeholder(),
+                                                    surfaceTintColor: Colors.white,
+                                                    content: EntryForm(id: entries[index].entryId),
+                                                    actions: [
+                                                      AppButton(
+                                                          text: "Save Entry",
+                                                          height: 40,
+                                                          onTap: () {}),
+                                                    ],
                                                   ));
                                         },
                                         icon: Icon(
