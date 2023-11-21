@@ -11,6 +11,7 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final void Function(String)? onChanged;
+  final int maxLines;
 
   const AppTextField({
     super.key,
@@ -23,6 +24,7 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onChanged,
+    this.maxLines = 1,
   });
 
   @override
@@ -30,6 +32,7 @@ class AppTextField extends StatelessWidget {
     return SizedBox(
       height: height,
       child: TextField(
+        maxLines: maxLines,
         controller: controller,
         focusNode: focusNode,
         obscureText: obscureText,
