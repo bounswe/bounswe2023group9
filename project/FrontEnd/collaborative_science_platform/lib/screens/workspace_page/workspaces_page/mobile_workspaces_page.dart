@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../create_workspace_page/mobile_create_workspace_page.dart';
-import '../home_page/widgets/home_page_appbar.dart';
-import '../workspace_page/mobile_workspace_page.dart';
+import '../../home_page/widgets/home_page_appbar.dart';
+import '../mobile_workspace_page.dart';
 
 class MobileWorkspacesPage extends StatefulWidget {
   const MobileWorkspacesPage({super.key});
@@ -24,8 +24,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
   String errorMessage = "";
 
   Workspaces workspacesData = Workspaces(
-      workspaces: <WorkspacesObject>[],
-      pendingWorkspaces: <WorkspacesObject>[],
+    workspaces: <WorkspacesObject>[],
+    pendingWorkspaces: <WorkspacesObject>[],
   );
 
   @override
@@ -72,13 +72,14 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
           shadowColor: AppColors.primaryColor,
           color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height/2.0),
+            borderRadius: BorderRadius.circular(height / 2.0),
           ),
           child: InkWell(
             customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(height/2.0),
+              borderRadius: BorderRadius.circular(height / 2.0),
             ),
-            onTap: () { // Navigate to the page where the details of the workspace are listed
+            onTap: () {
+              // Navigate to the page where the details of the workspace are listed
               context.push('${MobileWorkspacePage.routeName}/${workspacesObject.workspaceId}');
             },
             child: Center(
@@ -102,8 +103,10 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
   }
 
   Widget workspaceListBuilder(bool forPending) {
-    int length = forPending ? workspacesData.pendingWorkspaces.length : workspacesData.workspaces.length;
-    List<WorkspacesObject> list = forPending ? workspacesData.pendingWorkspaces : workspacesData.workspaces;
+    int length =
+        forPending ? workspacesData.pendingWorkspaces.length : workspacesData.workspaces.length;
+    List<WorkspacesObject> list =
+        forPending ? workspacesData.pendingWorkspaces : workspacesData.workspaces;
     return SizedBox(
       width: Responsive.getGenericPageWidth(context),
       child: ListView.builder(
@@ -124,8 +127,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
           child: isLoading
               ? const CircularProgressIndicator()
               : error
-              ? SelectableText(errorMessage)
-              : const SelectableText("Something went wrong!"),
+                  ? SelectableText(errorMessage)
+                  : const SelectableText("Something went wrong!"),
         ),
       );
     } else {
@@ -133,7 +136,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacesPage> {
         appBar: const HomePageAppBar(),
         floatingActionButton: FloatingActionButton(
           backgroundColor: AppColors.primaryLightColor,
-          onPressed: () { // Navigate to the page where workspaces are created
+          onPressed: () {
+            // Navigate to the page where workspaces are created
             context.push(MobileCreateWorkspacePage.routeName);
           },
           child: const Icon(Icons.add),

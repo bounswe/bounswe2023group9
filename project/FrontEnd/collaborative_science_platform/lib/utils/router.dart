@@ -11,12 +11,12 @@ import 'package:collaborative_science_platform/screens/node_details_page/node_de
 import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspace_page/create_workspace_page/mobile_create_workspace_page.dart';
 import '../screens/workspace_page/mobile_workspace_page.dart';
 
 final router = GoRouter(
@@ -100,7 +100,8 @@ final router = GoRouter(
       name: PleaseLoginPage2.routeName.substring(1),
       path: PleaseLoginPage2.routeName,
       // Different login messages might be given for difference pages
-      builder: (context, state) => const PleaseLoginPage2(message: "To be able to see this page, please login!"),
+      builder: (context, state) =>
+          const PleaseLoginPage2(message: "To be able to see this page, please login!"),
     ),
     GoRoute(
       name: NodeDetailsPage.routeName.substring(1),
