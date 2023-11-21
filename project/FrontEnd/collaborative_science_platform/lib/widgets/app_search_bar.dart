@@ -7,9 +7,15 @@ enum SearchType { theorem, author, by, both }
 class AppSearchBar extends StatefulWidget {
   final Function onSearch;
   final FocusNode focusNode;
+  final bool hideSearchType;
+  final String hintText;
 
   const AppSearchBar(
-      {required this.onSearch, required this.focusNode, super.key});
+      {required this.onSearch,
+      required this.focusNode,
+      this.hideSearchType = false,
+      this.hintText = "Search",
+      super.key});
 
   @override
   State<AppSearchBar> createState() => _AppSearchBarState();
@@ -105,7 +111,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
               textInputAction: TextInputAction.search,
               onSubmitted: (String value) => widget.onSearch(value),
               decoration: InputDecoration(
-                hintText: "Search",
+                hintText: widget.hintText,
                 border: InputBorder.none,
                 hintStyle: TextStyle(color: Colors.grey[600]!),
                 isCollapsed: true,
@@ -113,60 +119,61 @@ class _AppSearchBarState extends State<AppSearchBar> {
             ),
           ),
           const SizedBox(width: 4.0),
-          PopupMenuButton<SearchType>(
-            position: PopupMenuPosition.under,
-            color: Colors.grey.shade200,
-            onSelected: (SearchType newSearchType) {
-              setState(() {
-                searchType = newSearchType;
-                SearchHelper.searchType = newSearchType;
-              });
-            },
-            initialValue: searchType,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<SearchType>>[
-              const PopupMenuItem<SearchType>(
-                value: SearchType.theorem,
-                child: Row(
-                  children: [
-                    Icon(Icons.description_rounded),
-                    SizedBox(width: 4.0),
-                    Text("Theorem"),
-                  ],
+          if (!widget.hideSearchType)
+            PopupMenuButton<SearchType>(
+              position: PopupMenuPosition.under,
+              color: Colors.grey.shade200,
+              onSelected: (SearchType newSearchType) {
+                setState(() {
+                  searchType = newSearchType;
+                  SearchHelper.searchType = newSearchType;
+                });
+              },
+              initialValue: searchType,
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<SearchType>>[
+                const PopupMenuItem<SearchType>(
+                  value: SearchType.theorem,
+                  child: Row(
+                    children: [
+                      Icon(Icons.description_rounded),
+                      SizedBox(width: 4.0),
+                      Text("Theorem"),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem<SearchType>(
-                value: SearchType.author,
-                child: Row(
-                  children: [
-                    Icon(Icons.person),
-                    SizedBox(width: 4.0),
-                    Text("Author"),
-                  ],
+                const PopupMenuItem<SearchType>(
+                  value: SearchType.author,
+                  child: Row(
+                    children: [
+                      Icon(Icons.person),
+                      SizedBox(width: 4.0),
+                      Text("Author"),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem<SearchType>(
-                value: SearchType.by,
-                child: Row(
-                  children: [
-                    Icon(Icons.person_2_outlined),
-                    SizedBox(width: 4.0),
-                    Text("By"),
-                  ],
+                const PopupMenuItem<SearchType>(
+                  value: SearchType.by,
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_2_outlined),
+                      SizedBox(width: 4.0),
+                      Text("By"),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem<SearchType>(
-                value: SearchType.both,
-                child: Row(
-                  children: [
-                    Icon(Icons.list_rounded),
-                    SizedBox(width: 4.0),
-                    Text("Both"),
-                  ],
-                ),
-              )
-            ],
-            child: searchTypeSelector(),
-          ),
+                const PopupMenuItem<SearchType>(
+                  value: SearchType.both,
+                  child: Row(
+                    children: [
+                      Icon(Icons.list_rounded),
+                      SizedBox(width: 4.0),
+                      Text("Both"),
+                    ],
+                  ),
+                )
+              ],
+              child: searchTypeSelector(),
+            ),
           SizedBox(width: (Responsive.isMobile(context)) ? 10.0 : 20.0),
         ],
       ),

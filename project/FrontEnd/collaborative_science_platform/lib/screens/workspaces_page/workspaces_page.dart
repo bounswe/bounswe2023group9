@@ -1,5 +1,5 @@
 import 'package:collaborative_science_platform/screens/workspaces_page/mobile_workspaces_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/web_workspace_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/responsive/responsive.dart';
@@ -12,7 +12,7 @@ class WorkspacesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Responsive(
       mobile: MobileWorkspacesPage(),
-      desktop: WebWorkspacesPage(),
+      desktop: WebWorkspacePage(),
     );
   }
 }
