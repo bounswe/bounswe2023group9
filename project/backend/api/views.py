@@ -74,13 +74,13 @@ class NodeAPIView(APIView):
 def search(request):
     search = request.GET.get("query")
     search_type = request.GET.get("type")
-    if search == None or search == "":
+    if (search == None or search == "") and search_type != 'random':
         return JsonResponse({'status': 'Title to search must be given.'}, status=400)
     if search_type == None or search_type == "":
         return JsonResponse({'status': 'Type to search must be given.'}, status=400)
-    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by':
+    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by'and search_type != 'random' and search_type != 'semantic':
         return JsonResponse({'status': 'invalid search type.'}, status=400)
-    search_elements = search.split()
+
     # similars = [] # TODO ADVANCED SEARCH
     # also_sees = []
     #
@@ -99,6 +99,7 @@ def search(request):
 
     if search_type == 'by' or search_type == 'all':
         # print(search_elements)
+        search_elements = search.split()
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
             res_surname = User.objects.filter(last_name__icontains=el)
@@ -117,11 +118,13 @@ def search(request):
 
     contributors = []
     if search_type == 'node' or search_type == 'all':
+        search_elements = search.split()
         for el in search_elements:
             res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
+        search_elements = search.split()
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
             res_surname = User.objects.filter(last_name__icontains=el)
@@ -131,6 +134,34 @@ def search(request):
             for e in res_surname:
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
+    if search_type == 'semantic':
+        wid = search
+        tag = SemanticTag.objects.filter(wid=wid)
+        if tag.count() == 0:
+            return JsonResponse({'message': 'No tag with this wid is found'}, status=404)
+        tag = tag[0]
+        nodes_q = tag.nodes()
+        related_nodes_q = tag.related_nodes()
+        for node in nodes_q:
+            nodes.append(node.node_id)
+        for rel_node in related_nodes_q:
+            nodes.append(rel_node.node_id)
+
+    if search_type == 'random':
+        count = Node.objects.count()
+        prev = []
+        if count < 20:
+            c = count
+        else:
+            c = 20
+        i = 0
+        while i < c:
+            ran = random.randint(0,count-1)
+            if ran not in prev:
+                prev.append(ran)
+                random_node = Node.objects.all()[ran]
+                nodes.append(random_node.node_id)
+                i += 1
     contributors = list(set(contributors))
     nodes = list(set(nodes))
     res_authors = []
