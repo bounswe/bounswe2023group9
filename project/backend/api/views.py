@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
+import random
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -350,10 +351,87 @@ def delete_entry(request):
     id = int(request.GET.get("entry_id"))
     entry = Entry.objects.filter(entry_id=id)
     if entry.count() == 0:
-        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
     entry.delete()
 def edit_entry(request):
     id = int(request.GET.get("entry_id"))
     entry = Entry.objects.filter(entry_id=id)
-    content = int(request.GET.get("content"))
+    content = (request.GET.get("content"))
     entry.content = content
+def delete_workspace(request):
+    id = int(request.GET.get("workspace_id"))
+    workspace = Workspace.objects.filter(workspace_id=id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    workspace.delete()
+
+def delete_contributor(request):
+    id = int(request.GET.get("contributor_id"))
+    contributor = Contributor.objects.filter(contributor_id=id)
+    if contributor.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    contributor.delete()
+
+def delete_reference(request):
+    id = int(request.GET.get("workspace_id"))
+    node = int(request.GET.get("node_id"))
+    workspace = Workspace.objects.filter(workspace_id=id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    workspace = workspace[0]
+    reference = workspace.references.all(node = node)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no reference with this id.'}, status=404)
+    reference.delete()
+
+def finalize_workspace(request):
+    id = int(request.GET.get("workspace_id"))
+    workspace = Workspace.objects.filter(workspace_id=id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    workspace.is_finalized = True
+    workspace.is_in_review = False
+
+def add_entry(request):
+    id = int(request.GET.get("workspace_id"))
+    entry_id = int(request.GET.get("entry_id"))  ##
+    workspace = Workspace.objects.filter(workspace_id=id)
+    entry = Entry.objects.filter(entry_id=entry_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
+    workspace = workspace[0]
+    workspace.entries.add(entry[0]) ##
+    workspace.save()
+
+def add_reference(request):
+    id = int(request.GET.get("workspace_id"))
+    node_id = int(request.GET.get("node_id"))
+    workspace = Workspace.objects.filter(workspace_id=id)
+    node = Node.objects.filter(node_id=node_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    if node.count() == 0:
+        return JsonResponse({'message': 'There is no node with this id.'}, status=404)
+    workspace.references.add(node[0])
+    workspace.save()
+
+def create_workspace(request):
+    id = int(request.GET.get("workspace_id"))
+    title = request.GET.get("workspace_title")
+    workspaces = Workspace.objects.filter(workspace_id=id)
+    if workspaces.count() != 0:
+        return JsonResponse({'message': 'There is already a workspace with this id.'}, status=404)
+    workspace = Workspace.objects.create(workspace_id=id,workspace_title=title)
+    workspace.save()
+
+def get_random_node_id(request):
+    count = int(request.GET.get("count"))
+    node_ids = Node.node_id.all()
+    node_list = []
+    for i in range(count):
+        while node_ids[index] not in node_list:
+            index = random.randint(0,len(node_ids))
+        node_list.append(node_ids[index])
+    return JsonResponse({'node_ids': node_list}, status=200)
