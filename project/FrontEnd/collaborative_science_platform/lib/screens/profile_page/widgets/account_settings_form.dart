@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
+import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me_edit.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/change_password_form.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -77,6 +78,13 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
     super.dispose();
   }
 
+  void changePreff() async {
+    
+      final settingsProvider = Provider.of<SettingsProvider>(context,listen: false);
+      await settingsProvider.changePreferences(aboutMeController.text, isSwitched, isSwitched2); 
+      
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -134,7 +142,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () => changePreff(),
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,

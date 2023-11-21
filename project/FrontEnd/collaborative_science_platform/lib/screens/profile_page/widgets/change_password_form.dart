@@ -1,8 +1,10 @@
+import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/settings_input_widget.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordForm extends StatefulWidget {
   const ChangePasswordForm({
@@ -15,23 +17,37 @@ class ChangePasswordForm extends StatefulWidget {
 
 class _ChangePasswordFormState extends State<ChangePasswordForm> {
   ProfileData profileData = ProfileData();
-  final passwordController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
+  final oldPassController = TextEditingController();
+  final newPassController = TextEditingController();
 
   final passwordFocusNode = FocusNode();
-  final confirmPasswordFocusNode = FocusNode();
+  final newPassFocusNode = FocusNode();
   final double x = 300;
+
+  String errorMessage ="Current password do not match with given password.";
+  bool error = false;
+
+  final currentPass = "pforo111";  //TEST PASSWORD
   @override
   void dispose() {
-    passwordController.dispose();
+    oldPassController.dispose();
     passwordFocusNode.dispose();
-    confirmPasswordController.dispose();
-    confirmPasswordFocusNode.dispose();
+    newPassController.dispose();
+    newPassFocusNode.dispose();
     super.dispose();
+  }
+
+  void changePass() async {
+    
+      if (currentPass != "" && oldPassController.text != "") {
+        final settingsProvider = Provider.of<SettingsProvider>(context,listen: false);
+        await settingsProvider.changePassword(oldPassController.text, newPassController.text); 
+      } 
   }
 
   @override
   Widget build(BuildContext context) {
+    
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 36.0),
@@ -43,17 +59,17 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
             children: [
               const SizedBox(height: 20.0),
               SettingsWidget(
-                controller: passwordController,
+                controller:oldPassController,
                 focusNode: passwordFocusNode,
-                textType: "New password",
+                textType: "Current password",
                 prefixIcon: Icons.lock,
                 widgetWidth: screenWidth,
               ),
               const SizedBox(height: 20.0),
               SettingsWidget(
-                controller: confirmPasswordController,
-                focusNode: confirmPasswordFocusNode,
-                textType: "Confirm New password",
+                controller: newPassController,
+                focusNode: newPassFocusNode,
+                textType: "New password",
                 prefixIcon: Icons.lock,
                 widgetWidth: screenWidth,
               ),
@@ -63,7 +79,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () => changePass(),
               child: Container(
                 height: 40.0,
                 width: MediaQuery.of(context).size.width - 40,
