@@ -371,10 +371,15 @@ def delete_workspace(request):
 
 def delete_contributor(request):
     id = int(request.GET.get("contributor_id"))
+    workspace_id = int(request.GET.get("workspace_id"))
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
     contributor = Contributor.objects.filter(contributor_id=id)
     if contributor.count() == 0:
+        return JsonResponse({'message': 'There is no contributor with this id.'}, status=404)
+    if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
-    contributor.delete()
+    contributor[0].workspaces.delete(workspace_id = workspace_id)
+    contributor.save()
 
 def delete_reference(request):
     id = int(request.GET.get("workspace_id"))
@@ -398,14 +403,11 @@ def finalize_workspace(request):
 
 def add_entry(request):
     id = int(request.GET.get("workspace_id"))
-    entry_id = int(request.GET.get("entry_id"))  ##
+    content = request.GET.get("entry_content")
     workspace = Workspace.objects.filter(workspace_id=id)
-    entry = Entry.objects.filter(entry_id=entry_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
-    if entry.count() == 0:
-        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
-    workspace = workspace[0]
+    entry = Entry.objects.create(content=content)
     workspace.entries.add(entry[0]) ##
     workspace.save()
 
@@ -422,12 +424,8 @@ def add_reference(request):
     workspace.save()
 
 def create_workspace(request):
-    id = int(request.GET.get("workspace_id"))
     title = request.GET.get("workspace_title")
-    workspaces = Workspace.objects.filter(workspace_id=id)
-    if workspaces.count() != 0:
-        return JsonResponse({'message': 'There is already a workspace with this id.'}, status=404)
-    workspace = Workspace.objects.create(workspace_id=id,workspace_title=title)
+    workspace = Workspace.objects.create(workspace_title=title)
     workspace.save()
 
 def get_random_node_id(request):
