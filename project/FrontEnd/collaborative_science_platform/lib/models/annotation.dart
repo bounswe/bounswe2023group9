@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/models/annotation_text.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
 
 class Annotation {
@@ -7,7 +6,6 @@ class Annotation {
   String annotationVisibilityType;
   BasicUser owner;
   Object annotationLocation;
-  AnnotationText annotationBody;
   int startOffset;
   int endOffset;
   DateTime createdAt;
@@ -19,7 +17,6 @@ class Annotation {
     required this.annotationVisibilityType,
     required this.owner,
     required this.annotationLocation,
-    required this.annotationBody,
     required this.startOffset,
     required this.endOffset,
     required this.createdAt,
