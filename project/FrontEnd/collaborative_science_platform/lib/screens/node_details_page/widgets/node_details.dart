@@ -8,6 +8,7 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -62,24 +63,23 @@ class _NodeDetailsState extends State<NodeDetails> {
                           : const EdgeInsets.all(10.0),
                       child: AnnotationText(widget.node.nodeTitle,
                           textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(
-                    children: [
-                      SelectableText.rich(
-                        TextSpan(children: <TextSpan>[
-                          const TextSpan(
-                            text: "published on ",
-                            style: TextStyles.bodyGrey,
-                          ),
-                          TextSpan(
-                            text: widget.node.publishDateFormatted,
-                            style: TextStyles.bodyBlack,
-                          )
-                        ]),
-                      ),
-                    ],
-                  ),
+                      children: [
+                        SelectableText.rich(
+                          TextSpan(children: <TextSpan>[
+                            const TextSpan(
+                              text: "published on ",
+                              style: TextStyles.bodyGrey,
+                            ),
+                            TextSpan(
+                              text: widget.node.publishDateFormatted,
+                              style: TextStyles.bodyBlack,
+                            )
+                          ]),
+                        ),
+                      ],
+                    ),
                     Column(
                       children: [
                         SizedBox(
@@ -95,8 +95,6 @@ class _NodeDetailsState extends State<NodeDetails> {
                       ],
                     ),
                   ]),
-                  
-                  
                 ],
               )),
             ),
