@@ -1,5 +1,7 @@
 // node_details_popup.dart
 
+import 'dart:ui';
+
 import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
@@ -77,33 +79,36 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
         child: CircularProgressIndicator(),
       );
     } else {
-      return AlertDialog(
-        title: const Text('Node Details'),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Title: ${node.nodeTitle}'),
-            Text(
-                'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
-            Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
-            Text('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          title: const Text('Node Details'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Title: ${node.nodeTitle}'),
+              Text(
+                  'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
+              Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
+              Text('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.pushReplacement('${GraphPage.routeName}/${node.nodeId}');
+              },
+              child: const Text('Go to Graph Page'),
+            ),
           ],
         ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Close'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.pushReplacement('${GraphPage.routeName}/${node.nodeId}');
-            },
-            child: const Text('Go to Graph Page'),
-          ),
-        ],
       );
     }
   }
