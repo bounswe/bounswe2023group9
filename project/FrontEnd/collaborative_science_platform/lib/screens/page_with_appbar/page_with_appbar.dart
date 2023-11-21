@@ -14,6 +14,7 @@ class PageWithAppBar extends StatelessWidget {
   final Color pageColor;
   final bool isScrollable;
   final Navigator? navigator;
+  final FloatingActionButton? floatingActionButton;
 
   /// Creates a [PageWithAppBar] widget.
   ///
@@ -21,19 +22,22 @@ class PageWithAppBar extends StatelessWidget {
   /// The [appBar] parameter is a widget that serves as the app bar.
   /// The [pageColor] parameter specifies the background color of the content area (default: Colors.white).
   /// The [isScrollable] parameter indicates whether the content is scrollable (default: true).
-  const PageWithAppBar(
-      {required this.child,
-      required this.appBar,
-      this.pageColor = Colors.white,
-      this.isScrollable = true,
-      this.navigator,
-      super.key});
+  const PageWithAppBar({
+    required this.child,
+    required this.appBar,
+    this.pageColor = Colors.white,
+    this.isScrollable = true,
+    this.navigator,
+    this.floatingActionButton,
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
+      floatingActionButton: floatingActionButton,
       body: (Responsive.isMobile(context))
           ? NestedScrollView(
               physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
