@@ -16,7 +16,8 @@ class StrongPasswordChecks extends StatelessWidget {
     bool atLeastOneLowerCaseIsPresent = RegExp(r'[a-z]').hasMatch(password);
     bool atLeastOneUpperCaseIsPresent = RegExp(r'[A-Z]').hasMatch(password);
     bool atLeastOneNumberIsPresent = RegExp(r'\d').hasMatch(password);
-    bool atLeastOneSpecialCharacterIsPresent = RegExp(r'[!@#$%^&*/()_\-+{}\[\]:;<>,.?~\\|]').hasMatch(password);
+    bool atLeastOneSpecialCharacterIsPresent =
+        RegExp(r'[!@#$%^&*/()_\-+{}\[\]:;<>,.?~\\|]').hasMatch(password);
     return minLengthIsMet &&
         atLeastOneLowerCaseIsPresent &&
         atLeastOneUpperCaseIsPresent &&
@@ -31,9 +32,11 @@ class StrongPasswordChecks extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          (conditionIsMet) ? const Icon(Icons.check, color: Colors.green) : const Icon(Icons.close, color: Colors.red),
+          (conditionIsMet)
+              ? const Icon(Icons.check, color: Colors.green)
+              : const Icon(Icons.close, color: Colors.red),
           const SizedBox(width: 6.0),
-          Text(
+          SelectableText(
             message,
             style: TextStyle(
               color: (conditionIsMet) ? Colors.green : Colors.red,
@@ -50,7 +53,8 @@ class StrongPasswordChecks extends StatelessWidget {
     bool atLeastOneLowerCaseIsPresent = RegExp(r'[a-z]').hasMatch(password);
     bool atLeastOneUpperCaseIsPresent = RegExp(r'[A-Z]').hasMatch(password);
     bool atLeastOneNumberIsPresent = RegExp(r'\d').hasMatch(password);
-    bool atLeastOneSpecialCharacterIsPresent = RegExp(r'[!@#$%^&*/()_\-+{}\[\]:;<>,.?~\\|]').hasMatch(password);
+    bool atLeastOneSpecialCharacterIsPresent =
+        RegExp(r'[!@#$%^&*/()_\-+{}\[\]:;<>,.?~\\|]').hasMatch(password);
 
     return Column(
       children: [

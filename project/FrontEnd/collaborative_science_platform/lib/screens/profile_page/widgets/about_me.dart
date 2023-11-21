@@ -28,7 +28,7 @@ class AboutMe extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
+                SelectableText(
                   "$name $surname",
                   style: const TextStyle(
                     color: AppColors.primaryDarkColor,
@@ -47,7 +47,7 @@ class AboutMe extends StatelessWidget {
                   width: Responsive.isMobile(context)
                       ? MediaQuery.of(context).size.width * 0.9
                       : MediaQuery.of(context).size.width * 0.5,
-                  child: Text(
+                  child: SelectableText(
                     aboutMe,
                     style: const TextStyle(
                       fontWeight: FontWeight.normal,
@@ -70,7 +70,7 @@ class AboutMe extends StatelessWidget {
                 const SizedBox(
                   width: 10,
                 ),
-                Text(
+                SelectableText(
                   email,
                   style: const TextStyle(
                     fontSize: 20,
@@ -83,7 +83,7 @@ class AboutMe extends StatelessWidget {
             ),
             Row(
               children: [
-                Text(
+                SelectableText(
                   "Published works: $noWorks",
                   style: const TextStyle(
                     fontWeight: FontWeight.normal,

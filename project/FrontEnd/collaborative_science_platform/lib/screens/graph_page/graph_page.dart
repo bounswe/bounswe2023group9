@@ -79,8 +79,8 @@ class _GraphPageState extends State<GraphPage> {
           child: isLoading
               ? const CircularProgressIndicator()
               : error
-                  ? Text(errorMessage)
-                  : const Text("Something went wrong!"),
+                  ? SelectableText(errorMessage)
+                  : const SelectableText("Something went wrong!"),
         ),
       );
     } else {

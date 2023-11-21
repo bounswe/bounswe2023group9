@@ -178,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (error) //all error messages
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
+                      child: SelectableText(
                         errorMessage,
                         style: const TextStyle(color: AppColors.dangerColor),
                       ),
@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
-                        child: Text(
+                        child: SelectableText(
                           "Don't have an account?",
                           maxLines: 2,
                           style: TextStyle(

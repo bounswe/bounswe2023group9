@@ -35,7 +35,7 @@ class GraphNodeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              SelectableText(
                 node.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -43,7 +43,7 @@ class GraphNodeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8.0), // Increased spacing
-              Text(
+              SelectableText(
                 getContributorsText(node.contributors),
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
@@ -55,7 +55,7 @@ class GraphNodeCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjusted alignment
                 children: [
-                  Text(
+                  SelectableText(
                     getDurationFromNow(node.publishDate),
                     style: const TextStyle(
                       color: Colors.grey,

@@ -32,18 +32,20 @@ class HomePageNodeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              SelectableText(
                 smallNode.nodeTitle,
+                onTap: onTap,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
                 ),
               ),
               const SizedBox(height: 8.0),
-              Text(
+              SelectableText(
                 smallNode.contributors
                     .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
+                onTap: onTap,
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14.0,

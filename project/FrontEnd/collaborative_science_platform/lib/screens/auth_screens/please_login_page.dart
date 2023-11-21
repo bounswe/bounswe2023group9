@@ -26,7 +26,7 @@ class PleaseLoginPage2 extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                const Text("To be able to see your profile, please login!"),
+                const SelectableText("To be able to see your profile, please login!"),
                 const SizedBox(height: 5),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -51,7 +51,7 @@ class PleaseLoginPage2 extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Text("If you don't have an account please signup!"),
+                const SelectableText("If you don't have an account please signup!"),
                 const SizedBox(height: 5),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
