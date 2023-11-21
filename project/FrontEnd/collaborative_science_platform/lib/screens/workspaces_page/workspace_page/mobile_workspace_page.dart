@@ -3,17 +3,17 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspace.
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/widgets/contributor_card.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/widgets/entry_card.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/widgets/reference_card.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/contributor_card.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/entry_card.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/reference_card.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/lorem_ipsum.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/node.dart';
-import '../../models/workspaces_page/entry.dart';
-import '../../utils/responsive/responsive.dart';
+import '../../../models/node.dart';
+import '../../../models/workspaces_page/entry.dart';
+import '../../../utils/responsive/responsive.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   static const routeName = '/workspace';
@@ -33,16 +33,15 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
   String errorMessage = "";
 
   Workspace workspaceData = Workspace(
-      workspaceId: 0,
-      workspaceTitle: "workspaceTitle",
-      entries: <Entry>[],
-      status: "pending",
-      numApprovals: 0,
-      contributors: <User>[],
-      pendingContributors: <User>[],
-      references: <Node>[],
+    workspaceId: 0,
+    workspaceTitle: "workspaceTitle",
+    entries: <Entry>[],
+    status: "pending",
+    numApprovals: 0,
+    contributors: <User>[],
+    pendingContributors: <User>[],
+    references: <Node>[],
   );
-
 
   @override
   void didChangeDependencies() {
@@ -156,63 +155,69 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
             ),
           ),
         ),
-        addIcon(() { /* Navigate to a page where new entries are created */ }),
+        addIcon(() {/* Navigate to a page where new entries are created */}),
       ],
     );
   }
 
   Widget entryList() {
     int length = workspaceData.entries.length;
-    return workspaceData.entries.isNotEmpty ? Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: length+1,
-        itemBuilder: (context, index) =>
-          (index < length) ? EntryCard(entry: workspaceData.entries[index])
-          : addIcon(() { /* Navigate to a page where new entries are created */ }),
-      ),
-    ) : firstAddition(
-        "Add Your First Entry!",
-        () { /* Navigate to a page where new entries are created */ },
-    );
+    return workspaceData.entries.isNotEmpty
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: length + 1,
+              itemBuilder: (context, index) => (index < length)
+                  ? EntryCard(entry: workspaceData.entries[index])
+                  : addIcon(() {/* Navigate to a page where new entries are created */}),
+            ),
+          )
+        : firstAddition(
+            "Add Your First Entry!",
+            () {/* Navigate to a page where new entries are created */},
+          );
   }
 
   Widget contributorList() {
     int length = workspaceData.contributors.length;
-    return workspaceData.contributors.isNotEmpty ? Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: length+1,
-        itemBuilder: (context, index) =>
-          (index < length) ? ContributorCard(contributor: workspaceData.contributors[index])
-          : addIcon(() => { /* Navigate to a page where new contributors are added */ }),
-      ),
-    ) : firstAddition(
-        "Add The First Contributor!",
-        () { /* Navigate to a page where new contributors are added */ },
-    );
+    return workspaceData.contributors.isNotEmpty
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: length + 1,
+              itemBuilder: (context, index) => (index < length)
+                  ? ContributorCard(contributor: workspaceData.contributors[index])
+                  : addIcon(() => {/* Navigate to a page where new contributors are added */}),
+            ),
+          )
+        : firstAddition(
+            "Add The First Contributor!",
+            () {/* Navigate to a page where new contributors are added */},
+          );
   }
 
   Widget referenceList() {
     int length = workspaceData.references.length;
-    return (workspaceData.references.isNotEmpty) ? Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: length+1,
-        itemBuilder: (context, index) =>
-          (index < length) ? ReferenceCard(reference: workspaceData.references[index])
-          : addIcon(() => { /* Navigate to a page where new references are added */ }),
-      ),
-    ) : firstAddition(
-        "Add Your First Reference!",
-        () { /* Navigate to a page where new references are added */ },
-    );
+    return (workspaceData.references.isNotEmpty)
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: length + 1,
+              itemBuilder: (context, index) => (index < length)
+                  ? ReferenceCard(reference: workspaceData.references[index])
+                  : addIcon(() => {/* Navigate to a page where new references are added */}),
+            ),
+          )
+        : firstAddition(
+            "Add Your First Reference!",
+            () {/* Navigate to a page where new references are added */},
+          );
   }
 
   @override
@@ -224,36 +229,36 @@ class _MobileWorkspacePageState extends State<MobileWorkspacePage> {
           child: isLoading
               ? const CircularProgressIndicator()
               : error
-              ? SelectableText(errorMessage)
-              : const SelectableText("Something went wrong!"),
+                  ? SelectableText(errorMessage)
+                  : const SelectableText("Something went wrong!"),
         ),
       );
     } else {
       return PageWithAppBar(
-        appBar: const HomePageAppBar(),
-        isScrollable: true,
-        child: SizedBox(
-          width: Responsive.getGenericPageWidth(context),
-          child: ListView( // It needs to be nested scrollable in the future
-            children: <Widget>[
-              const SubSectionTitle(title: "Entries"),
-              entryList(),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Divider(),
-              ),
-              const SubSectionTitle(title: "Contributors"),
-              contributorList(),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Divider(),
-              ),
-              const SubSectionTitle(title: "References"),
-              referenceList(),
-            ],
-          ),
-        )
-      );
+          appBar: const HomePageAppBar(),
+          isScrollable: true,
+          child: SizedBox(
+            width: Responsive.getGenericPageWidth(context),
+            child: ListView(
+              // It needs to be nested scrollable in the future
+              children: <Widget>[
+                const SubSectionTitle(title: "Entries"),
+                entryList(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Divider(),
+                ),
+                const SubSectionTitle(title: "Contributors"),
+                contributorList(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Divider(),
+                ),
+                const SubSectionTitle(title: "References"),
+                referenceList(),
+              ],
+            ),
+          ));
     }
   }
 }

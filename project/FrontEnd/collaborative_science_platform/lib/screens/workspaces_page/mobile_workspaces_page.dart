@@ -1,15 +1,15 @@
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/widgets/subsection_title.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspace_page/widgets/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../create_workspace_page/mobile_create_workspace_page.dart';
-import '../../home_page/widgets/home_page_appbar.dart';
-import '../mobile_workspace_page.dart';
+import 'create_workspace_page/mobile_create_workspace_page.dart';
+import '../home_page/widgets/home_page_appbar.dart';
+import 'workspace_page/mobile_workspace_page.dart';
 
 class MobileWorkspacesPage extends StatefulWidget {
   const MobileWorkspacesPage({super.key});

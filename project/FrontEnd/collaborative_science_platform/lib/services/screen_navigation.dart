@@ -3,12 +3,12 @@ import 'package:collaborative_science_platform/screens/graph_page/graph_page.dar
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../screens/workspace_page/create_workspace_page/mobile_create_workspace_page.dart';
-import '../screens/workspace_page/mobile_workspace_page.dart';
+import '../screens/workspaces_page/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspaces_page/workspace_page/mobile_workspace_page.dart';
 
 enum ScreenTab {
   home,

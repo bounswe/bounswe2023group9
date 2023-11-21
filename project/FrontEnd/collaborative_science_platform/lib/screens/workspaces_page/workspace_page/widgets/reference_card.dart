@@ -2,8 +2,8 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../utils/colors.dart';
-import '../../node_details_page/node_details_page.dart';
+import '../../../../utils/colors.dart';
+import '../../../node_details_page/node_details_page.dart';
 
 class ReferenceCard extends StatelessWidget {
   final double height = 60.0;
@@ -24,14 +24,15 @@ class ReferenceCard extends StatelessWidget {
           shadowColor: AppColors.primaryColor,
           color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height/2.0),
+            borderRadius: BorderRadius.circular(height / 2.0),
           ),
           child: InkWell(
-            onTap: () { // Navigate to the node page of the theorem
+            onTap: () {
+              // Navigate to the node page of the theorem
               context.push('${NodeDetailsPage.routeName}/${reference.id}');
             },
             customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(height/2.0),
+              borderRadius: BorderRadius.circular(height / 2.0),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),

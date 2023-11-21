@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../models/user.dart';
-import '../../../utils/colors.dart';
-import '../../profile_page/profile_page.dart';
+import '../../../../models/user.dart';
+import '../../../../utils/colors.dart';
+import '../../../profile_page/profile_page.dart';
 
 class ContributorCard extends StatelessWidget {
   final double height = 60.0;
@@ -25,15 +25,16 @@ class ContributorCard extends StatelessWidget {
           shadowColor: AppColors.primaryColor,
           color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(height/2.0),
+            borderRadius: BorderRadius.circular(height / 2.0),
           ),
           child: InkWell(
-            onTap: () { // Navigate to the contributor's profile page
+            onTap: () {
+              // Navigate to the contributor's profile page
               final String encodedEmail = Uri.encodeComponent(contributor.email);
               context.push('${ProfilePage.routeName}/$encodedEmail');
             },
             customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(height/2.0),
+              borderRadius: BorderRadius.circular(height / 2.0),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
