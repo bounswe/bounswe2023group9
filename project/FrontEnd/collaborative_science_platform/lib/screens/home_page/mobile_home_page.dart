@@ -15,6 +15,8 @@ class MobileHomePage extends StatelessWidget {
   final Function onSearch;
   final bool isLoading;
   final bool firstSearch;
+  final bool error;
+  final String errorMessage;
 
   const MobileHomePage({
     super.key,
@@ -22,6 +24,8 @@ class MobileHomePage extends StatelessWidget {
     required this.onSearch,
     required this.isLoading,
     required this.firstSearch,
+    required this.error,
+    required this.errorMessage,
   });
 
   @override
@@ -52,15 +56,21 @@ class MobileHomePage extends StatelessWidget {
                       ? const Center(
                           child: CircularProgressIndicator(),
                         )
-                      : (SearchHelper.searchType == SearchType.author)
-                          ? UserCards(
-                              userList: userProvider.searchUserResult,
-                              firstSearch: firstSearch,
+                      : error
+                          ? SelectableText(
+                              errorMessage,
+                              style: const TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
                             )
-                          : NodeCards(
-                              nodeList: nodeProvider.searchNodeResult,
-                              firstSearch: firstSearch,
-                            )),
+                          : (SearchHelper.searchType == SearchType.author)
+                              ? UserCards(
+                                  userList: userProvider.searchUserResult,
+                                  firstSearch: firstSearch,
+                                )
+                              : NodeCards(
+                                  nodeList: nodeProvider.searchNodeResult,
+                                  firstSearch: firstSearch,
+                                )),
             ],
           ),
         ),

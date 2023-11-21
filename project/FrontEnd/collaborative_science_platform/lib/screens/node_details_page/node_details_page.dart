@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
@@ -68,13 +69,20 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
-        isLoading = false;
+      });
+    } on NodeDoesNotExist {
+      setState(() {
+        error = true;
+        errorMessage = NodeDoesNotExist().message;
       });
     } catch (e) {
       setState(() {
-        isLoading = false;
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -93,7 +101,11 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
               ),
             )
           : error
-              ? SelectableText(errorMessage, style: const TextStyle(color: Colors.red))
+              ? SelectableText(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                )
               : Responsive.isDesktop(context)
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,

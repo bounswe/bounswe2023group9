@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
@@ -27,6 +28,7 @@ class _HomePageState extends State<HomePage> {
     searchBarFocusNode.dispose();
     super.dispose();
   }
+
   void search(String text) async {
     SearchType searchType = SearchHelper.searchType;
     if (text.isEmpty) return;
@@ -45,6 +47,16 @@ class _HomePageState extends State<HomePage> {
       } else {
         await nodeProvider.search(searchType, text);
       }
+    } on WrongSearchTypeError {
+      setState(() {
+        error = true;
+        errorMessage = WrongSearchTypeError().message;
+      });
+    } on SearchError {
+      setState(() {
+        error = true;
+        errorMessage = SearchError().message;
+      });
     } catch (e) {
       setState(() {
         error = true;
@@ -56,6 +68,7 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return MobileHomePage(
@@ -63,6 +76,8 @@ class _HomePageState extends State<HomePage> {
       onSearch: search,
       isLoading: isLoading,
       firstSearch: firstSearch,
+      error: error,
+      errorMessage: errorMessage,
     );
   }
 }
