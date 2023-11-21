@@ -6,7 +6,9 @@ import 'package:collaborative_science_platform/screens/graph_page/web_graph_page
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class GraphPage extends StatefulWidget {
@@ -32,6 +34,22 @@ class _GraphPageState extends State<GraphPage> {
       _isFirstTime = false;
     }
     super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    if (kIsWeb) {
+      BrowserContextMenu.disableContextMenu();
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (kIsWeb) {
+      BrowserContextMenu.enableContextMenu();
+    }
+    super.dispose();
   }
 
   void getNode() async {
