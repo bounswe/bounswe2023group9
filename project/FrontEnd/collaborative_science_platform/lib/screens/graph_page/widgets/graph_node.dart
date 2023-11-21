@@ -35,7 +35,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SelectableText(
-                node.nodeTitle,
+                widget.node.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
@@ -43,7 +43,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
               ),
               const SizedBox(height: 8.0), // Increased spacing
               SelectableText(
-                getContributorsText(node.contributors),
+                getContributorsText(widget.node.contributors),
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 14.0,
@@ -55,7 +55,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SelectableText(
-                    getDurationFromNow(node.publishDate),
+                    getDurationFromNow(widget.node.publishDate),
                     style: const TextStyle(
                       color: Colors.grey,
                       fontWeight: FontWeight.w500,

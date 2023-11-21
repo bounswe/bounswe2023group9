@@ -3,9 +3,12 @@
 import 'dart:ui';
 
 import 'package:collaborative_science_platform/exceptions/node_details.exceptions.dart';
+import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:go_router/go_router.dart';
@@ -87,11 +90,11 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Title: ${node.nodeTitle}'),
+              AnnotationText('Title: ${node.nodeTitle}'),
               Text(
                   'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
               Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
-              Text('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
+              AnnotationText('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
             ],
           ),
           actions: [
@@ -100,6 +103,12 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
                 Navigator.of(context).pop();
               },
               child: const Text('Close'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                context.pushReplacement('${NodeDetailsPage.routeName}/${node.nodeId}');
+              },
+              child: const Text('Go to Node View Page'),
             ),
             ElevatedButton(
               onPressed: () {
