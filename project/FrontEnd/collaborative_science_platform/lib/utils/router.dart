@@ -60,10 +60,18 @@ final router = GoRouter(
         builder: (context, state) {
           return const WorkspacesPage();
         },
+        redirect: (context, state) {
+          if (!context.read<Auth>().isSignedIn) {
+            // please login
+            return LoginPage.routeName;
+          } else {
+            return null;
+          }
+        },
         routes: [
           GoRoute(
             name: "workspace",
-            path: "id=:workspaceId",
+            path: ":workspaceId",
             builder: (context, state) {
               final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
               if (Responsive.isMobile(context)) {
@@ -73,10 +81,9 @@ final router = GoRouter(
                   workspaceId: workspaceId,
                 );
               }
-      },
-    ),
+            },
+          ),
         ]),
-    
     GoRoute(
       name: MobileCreateWorkspacePage.routeName.substring(1),
       path: MobileCreateWorkspacePage.routeName,
