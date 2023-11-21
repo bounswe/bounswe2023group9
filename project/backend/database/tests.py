@@ -613,3 +613,80 @@ class ReviewerSerializerTestCase(TestCase):
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
+
+class SemanticTagModelTestCase(TestCase):
+    def setUp(self):
+        self.algo_tag = SemanticTag.objects.create(
+            wid="Q8366",
+            label="Algorithm"
+        )
+        self.search_tag = SemanticTag.objects.create(
+            wid="Q755673",
+            label="Search algorithm"
+        )
+        self.sort_tag = SemanticTag.objects.create(
+            wid="Q181593",
+            label="Sorting Agorithm"
+        )
+        self.combinational_tag = SemanticTag.objects.create(
+            wid="Q41883552",
+            label="Combinational Algorithm"
+        )
+
+        self.algo_node = Node.objects.create( #parent
+            node_title="Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.algo_node.semantic_tags.add(self.algo_tag)
+
+        self.search_node = Node.objects.create(
+            node_title="Search Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.search_node.semantic_tags.add(self.search_tag)
+
+        self.sort_node = Node.objects.create(
+            node_title="Sorting algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.sort_node.semantic_tags.add(self.sort_tag)
+
+        self.combinational_node = Node.objects.create(
+            node_title="Combinational Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.combinational_node.semantic_tags.add(self.combinational_tag)
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        SemanticTag.objects.all().delete()
+        print("All tests for the Semantic Tag Model are completed!")
+
+    def test_search(self):
+        search_res = SemanticTag.existing_search_results("sorting algorithm")
+        l = len(search_res)
+        self.assertEqual(1, l, "Search result length is wrong!")
+
+        if l:
+            self.assertEqual(self.sort_tag.wid, search_res[0]["id"], "Search result id mismatch!")
+
+    def test_nodes(self):
+        self.assertEqual(self.sort_tag.count, 1, "Sort tag node count mismatch!")
+        if self.sort_tag.count:
+            self.assertEqual(self.sort_tag.nodes[0].pk, self.sort_node.pk, "Sort nodes mismatch!")
+
+        self.assertEqual(self.combinational_tag.related_count, 3, "Combinational tag related count mismatch!")
+        if self.combinational_tag.related_count:
+            r_nodes = self.combinational_tag.related_nodes
+            self.assertIn(self.algo_node, r_nodes, "Algorithm node not in related nodes of combintaional semantic tag!")
+            self.assertIn(self.search_node, r_nodes, "Search node not in related nodes of combintaional semantic tag!")
+            self.assertIn(self.sort_node, r_nodes, "Sort node not in related nodes of combintaional semantic tag!")
+

@@ -170,7 +170,7 @@ class NodeSerializer(serializers.ModelSerializer):
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
-                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'wiki_tags', 'annotations']
+                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'annotations']
 
 class RequestSerializer(serializers.ModelSerializer):
   class Meta:

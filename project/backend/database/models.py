@@ -4,50 +4,55 @@ from django.contrib.auth.models import User
 import copy
 from datetime import datetime
 import enum
+from api.wikidata import *
 
 
 class SemanticTag(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    label = models.CharField(max_length=50, unique=True)
-    desc = models.CharField(max_length=100)
-    parent_tag = models.ForeignKey("SemanticTag", on_delete=models.CASCADE, null=True, blank=True,
-                                   related_name="sub_tags")
+    wid = models.CharField(max_length=20)
+    label = models.CharField(max_length=30, unique=True)
+    
+    @property
+    def nodes(self):
+        return Node.objects.filter(semantic_tags__wid=self.wid)
 
     @property
     def count(self):
-        return self.node_set.all().count()
+        return self.nodes.count()
+    
+    @property
+    def related_nodes(self):
+        parent_wids = get_parent_ids(self.wid)
+        sibling_wids = get_children_ids(parent_wids)
+
+        if self.wid in sibling_wids:
+            sibling_wids.remove(self.wid)
+
+        children_wids = get_children_ids([self.wid])
+        combined = sibling_wids + parent_wids + children_wids
+
+        return Node.objects.filter(semantic_tags__wid__in=combined)
 
     @property
-    def nodes(self):
-        return self.node_set.all()
+    def related_count(self):
+        return self.related_nodes.count()
+    
+    @classmethod
+    def existing_search_results(cls, keyword):
+        wiki_results = search_entity(keyword)
 
-    @property
-    def recursive_nodes(self):
-        nodes = list(self.nodes)
+        existings = []
 
-        for sub in self.sub_tags.all():
-            nodes.extend(sub.recursive_nodes)
+        for item in wiki_results:
+            node_count = Node.objects.filter(semantic_tags__wid=item["id"]).count()
+            if node_count > 0:
+                existings.append(item)
 
-        return nodes
+        return existings
+    
+    def __str__(self):
+        return self.label + " - " + self.wid
 
-    @property
-    def recursive_count(self):
-        return len(self.recursive_nodes)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['label', 'parent_tag'],
-                                    name='semantictag_label_parenttag_unique_constraint')
-        ]
-
-class WikiTag(models.Model):
-    pass
-class Request(models.Model):
-    """
-     This class definition is written beforehand (to be implemented afterwards)
-     in order to be referred from other classes. e.g. ReviewRequest
-    """
-    pass
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
     entry_index = models.IntegerField()
@@ -200,7 +205,6 @@ class Node(models.Model):
     # Nodes also have to_referenced_nodes list to access the nodes this node references
     # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
-    wiki_tags = models.ManyToManyField(WikiTag)
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
     num_visits = models.IntegerField()

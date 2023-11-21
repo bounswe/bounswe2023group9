@@ -564,3 +564,4 @@ class ReviewRequestAPITestCase(TestCase):
         response = self.client.put(url, {'id': self.request.id, 'status': 'R'}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'R')
+
