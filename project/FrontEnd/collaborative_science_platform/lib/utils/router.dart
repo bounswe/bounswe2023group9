@@ -11,15 +11,15 @@ import 'package:collaborative_science_platform/screens/node_details_page/node_de
 import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/web_workspace_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/web_workspace_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/workspaces_page/create_workspace_page/mobile_create_workspace_page.dart';
-import '../screens/workspaces_page/workspace_page/mobile_workspace_page.dart';
+import '../screens/workspace_page/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspace_page/mobile_workspace_page/mobile_workspace_page.dart';
 
 final router = GoRouter(
   navigatorKey: ScreenNavigation.navigatorKey,
@@ -74,16 +74,12 @@ final router = GoRouter(
             path: ":workspaceId",
             builder: (context, state) {
               final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
-              if (Responsive.isMobile(context)) {
-                return MobileWorkspacePage(workspaceId: workspaceId);
-              } else {
-                return WebWorkspacePage(
-                  workspaceId: workspaceId,
-                );
-              }
+              return (Responsive.isMobile(context)) ? const MobileWorkspacePage()
+                  : WebWorkspacePage(workspaceId: workspaceId);
             },
           ),
-        ]),
+        ]
+    ),
     GoRoute(
       name: MobileCreateWorkspacePage.routeName.substring(1),
       path: MobileCreateWorkspacePage.routeName,
