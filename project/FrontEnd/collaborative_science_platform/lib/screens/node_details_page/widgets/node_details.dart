@@ -1,18 +1,20 @@
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
+import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
-import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
@@ -34,6 +36,11 @@ class _NodeDetailsState extends State<NodeDetails> {
     setState(() {
       currentIndex = index;
     });
+  }
+
+  void shareNode() {
+    Share.share(
+        'Check out this on Collaborative Science Platform: ${widget.node.nodeTitle} at ${Constants.appUrl}/${NodeDetailsPage.routeName}/${widget.node.nodeId}');
   }
 
   @override
@@ -82,15 +89,28 @@ class _NodeDetailsState extends State<NodeDetails> {
                     ),
                     Column(
                       children: [
-                        SizedBox(
-                          width: Responsive.getGenericPageWidth(context) * 0.35,
-                          child: AppButton(
-                              text: "See the Graph",
-                              height: 40,
-                              type: "secondary",
-                              onTap: () {
-                                context.push('${GraphPage.routeName}/${widget.node.nodeId}');
-                              }),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: Responsive.getGenericPageWidth(context) * 0.35,
+                              child: AppButton(
+                                  text: "See the Graph",
+                                  height: 40,
+                                  type: "secondary",
+                                  onTap: () {
+                                    context.push('${GraphPage.routeName}/${widget.node.nodeId}');
+                                  }),
+                            ),
+                            SizedBox(
+                              width: Responsive.getGenericPageWidth(context) * 0.2,
+                              child: AppButton(
+                                text: "Share",
+                                height: 40,
+                                type: "primary",
+                                onTap: shareNode,
+                              ),
+                            ),
+                          ],
                         )
                       ],
                     ),
