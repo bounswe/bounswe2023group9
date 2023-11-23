@@ -5,10 +5,10 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspace.
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/contributors_list_view.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/entries_list_view.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/references_list_view.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/workspaces_side_bar.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/contributors_list_view.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entries_list_view.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/references_list_view.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,7 +52,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: true,
             isFinalEntry: false,
             isProofEntry: false,
-            isTheoremEntry: false),
+            isTheoremEntry: false
+        ),
         Entry(
             content: "ENTRY !111",
             entryDate: DateTime.now(),
@@ -62,7 +63,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: false,
             isFinalEntry: true,
             isProofEntry: false,
-            isTheoremEntry: true),
+            isTheoremEntry: true
+        ),
         Entry(
             content: "ENTRY !111",
             entryDate: DateTime.now(),
@@ -72,9 +74,10 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: true,
             isFinalEntry: false,
             isProofEntry: true,
-            isTheoremEntry: false)
+            isTheoremEntry: false
+        ),
       ],
-      status: "workable",
+      status: WorkspaceStatus.workable,
       numApprovals: 0,
       contributors: [
         User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
