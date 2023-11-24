@@ -387,6 +387,14 @@ class NodeAPITestCase(TestCase):
         response = self.client.get(self.node_url, data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_random_node_id(self):
+        url = reverse('get_random_node_id')
+        response = self.client.get(url , {'count':2})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('node_ids', data)
+        self.assertEqual(len(data['node_ids']), 2)
+
 class TheoremGETAPITestCase(TestCase):
     def setUp(self):
         # Create a sample Theorem instance for testing
@@ -486,6 +494,7 @@ class WorkspaceGETAPITestCase(TestCase):
         self.assertEqual(response.json()['workspace_title'], self.workspace.workspace_title)
         self.assertEqual(response.json()['status'], 'workable')
         self.assertEqual(response.json()['references'], [])
+        self.assertEqual(response.json()['semantic_tags'], [])
         self.assertEqual(response.json()['pending_contributors'], [])
         self.assertEqual(response.json()['num_approvals'], 0)
         # self.assertEqual(response.json()['created_at'], self.workspace.created_at)
