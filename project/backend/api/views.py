@@ -57,7 +57,11 @@ class ChangeProfileSettingsView(generics.UpdateAPIView):
 class NodeAPIView(APIView):
   
     def get(self, request):
-        id = int(request.GET.get("node_id"))
+        id = request.GET.get("node_id")
+        if not id:
+            node_list = Node.objects.all()
+            return Response(NodeSerializer(node_list[random.randint(0, len(node_list)-1)]).data)
+        id = int(id)
         node = Node.objects.filter(node_id=id)
         if node.count() == 0:
             return JsonResponse(
