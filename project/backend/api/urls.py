@@ -17,6 +17,7 @@ urlpatterns = [
     path('get_cont/', get_contributor_from_id, name='get_cont'),
     path('get_user_workspaces/',get_workspaces,name='get_user_workspaces'),
     path('get_workspace/',get_workspace_from_id,name='get_workspace'),
+    path('edit_entry/', edit_entry, name='edit_entry'),
     path('delete_entry/',delete_entry,name='delete_entry'),
     path('add_entry/',add_entry,name='add_entry'),
     path('get_random_node_id/',get_random_node_id,name='get_random_node_id'),
