@@ -78,26 +78,48 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
   Widget referencesCardList() {
     // pre
     return ListView.builder(
-      itemCount: widget.node.references.length,
-      itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: widget.node.references[index],
-        onTap: () {
-          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-        },
-      ),
-    );
+        padding: const EdgeInsets.all(0),
+        itemCount: widget.node.references.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text("References",
+                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+              ),
+            );
+          }
+          return HomePageNodeCard(
+            smallNode: widget.node.references[index - 1],
+            onTap: () {
+              context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+            },
+          );
+        });
   }
 
   Widget referentsCardList() {
     return ListView.builder(
-      itemCount: widget.node.citations.length,
-      itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: widget.node.citations[index],
-        onTap: () {
-          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-        },
-      ),
-    );
+        padding: const EdgeInsets.all(0),
+        itemCount: widget.node.citations.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text("Citations",
+                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+              ),
+            );
+          }
+          return HomePageNodeCard(
+            smallNode: widget.node.citations[index - 1],
+            onTap: () {
+              context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+            },
+          );
+        });
   }
 
   Widget slidingPages(BuildContext context) {

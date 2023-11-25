@@ -51,10 +51,13 @@ class MobileHomePage extends StatelessWidget {
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.only(top: 18.0),
+                  padding: const EdgeInsets.only(top: 10.0),
                   child: isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(),
+                      ? const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         )
                       : error
                           ? SelectableText(

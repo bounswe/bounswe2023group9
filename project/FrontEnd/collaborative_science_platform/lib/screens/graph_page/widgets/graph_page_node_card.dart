@@ -18,7 +18,7 @@ class GraphPageNodeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 1.0,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
@@ -42,6 +42,8 @@ class GraphPageNodeCard extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Container(
+                height: 500,
+                width: MediaQuery.of(context).size.width * 0.9,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.grey, // Set the border color

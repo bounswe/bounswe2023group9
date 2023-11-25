@@ -24,6 +24,7 @@ class UserCards extends StatelessWidget {
               child: SelectableText("No results found."),
             )
           : ListView.builder(
+              padding: const EdgeInsets.all(0),
               physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,

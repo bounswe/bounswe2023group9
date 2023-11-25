@@ -7,6 +7,7 @@ class QuestionActivity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: const EdgeInsets.all(0),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       itemCount: 10,
