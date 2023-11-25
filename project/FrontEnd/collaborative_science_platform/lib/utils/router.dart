@@ -11,15 +11,15 @@ import 'package:collaborative_science_platform/screens/node_details_page/node_de
 import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/web_workspace_page.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/workspaces_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/web_workspace_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/workspaces_page/create_workspace_page/mobile_create_workspace_page.dart';
-import '../screens/workspaces_page/workspace_page/mobile_workspace_page.dart';
+import '../screens/workspace_page/create_workspace_page/mobile_create_workspace_page.dart';
+import '../screens/workspace_page/mobile_workspace_page/mobile_workspace_page.dart';
 
 final router = GoRouter(
   navigatorKey: ScreenNavigation.navigatorKey,
@@ -62,8 +62,7 @@ final router = GoRouter(
         },
         redirect: (context, state) {
           if (!context.read<Auth>().isSignedIn) {
-            // please login
-            return LoginPage.routeName;
+            return '${PleaseLoginPage.routeName}${WorkspacesPage.routeName}';
           } else {
             return null;
           }
@@ -74,16 +73,12 @@ final router = GoRouter(
             path: ":workspaceId",
             builder: (context, state) {
               final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
-              if (Responsive.isMobile(context)) {
-                return MobileWorkspacePage(workspaceId: workspaceId);
-              } else {
-                return WebWorkspacePage(
-                  workspaceId: workspaceId,
-                );
-              }
+              return (Responsive.isMobile(context)) ? const MobileWorkspacePage()
+                  : WebWorkspacePage(workspaceId: workspaceId);
             },
           ),
-        ]),
+        ]
+    ),
     GoRoute(
       name: MobileCreateWorkspacePage.routeName.substring(1),
       path: MobileCreateWorkspacePage.routeName,
@@ -109,6 +104,13 @@ final router = GoRouter(
       name: NotificationPage.routeName.substring(1),
       path: NotificationPage.routeName,
       builder: (context, state) => const NotificationPage(),
+      redirect: (context, state) {
+        if (!context.read<Auth>().isSignedIn) {
+          return '${PleaseLoginPage.routeName}${NotificationPage.routeName}';
+        } else {
+          return null;
+        }
+      },
     ),
     GoRoute(
       name: AccountSettingsPage.routeName.substring(1),
@@ -116,11 +118,17 @@ final router = GoRouter(
       builder: (context, state) => const AccountSettingsPage(),
     ),
     GoRoute(
-      name: PleaseLoginPage2.routeName.substring(1),
-      path: PleaseLoginPage2.routeName,
-      // Different login messages might be given for difference pages
-      builder: (context, state) =>
-          const PleaseLoginPage2(message: "To be able to see this page, please login!"),
+      name: "/please-login",
+      path: PleaseLoginPage.routeName,
+      builder: (context, state) => const PleaseLoginPage(),
+    ),
+    GoRoute(
+      name: PleaseLoginPage.routeName.substring(1),
+      path: "${PleaseLoginPage.routeName}/:pageType",
+      builder: (context, state) {
+        final String pageType = state.pathParameters['pageType'] ?? '';
+        return PleaseLoginPage(pageType: pageType);
+      },
     ),
     GoRoute(
       name: NodeDetailsPage.routeName.substring(1),
@@ -131,12 +139,21 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-        name: ProfilePage.routeName.substring(1),
-        path: "${ProfilePage.routeName}/:email",
-        builder: (context, state) {
-          final String encodedEmail = state.pathParameters['email'] ?? '';
-          final String email = Uri.decodeComponent(encodedEmail);
-          return ProfilePage(email: email);
-        }),
+      name: ProfilePage.routeName.substring(1),
+      path: "${ProfilePage.routeName}/:email",
+      builder: (context, state) {
+        final String encodedEmail = state.pathParameters['email'] ?? '';
+        final String email = Uri.decodeComponent(encodedEmail);
+        return ProfilePage(email: email);
+      },
+      redirect: (context, state) {
+        if (!context.read<Auth>().isSignedIn &&
+            (state.pathParameters['email'] == null || state.pathParameters['email'] == '')) {
+          return '${PleaseLoginPage.routeName}${ProfilePage.routeName}';
+        } else {
+          return null;
+        }
+      },
+    ),
   ],
 );

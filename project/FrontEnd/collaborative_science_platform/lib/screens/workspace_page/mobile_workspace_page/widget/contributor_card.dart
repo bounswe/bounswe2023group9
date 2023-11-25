@@ -5,6 +5,7 @@ import '../../../../models/user.dart';
 import '../../../../utils/colors.dart';
 import '../../../profile_page/profile_page.dart';
 
+
 class ContributorCard extends StatelessWidget {
   final double height = 60.0;
   final User contributor;

@@ -226,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                       Flexible(
                         child: SelectableText(
                           "Don't have an account?",
-                          maxLines: 2,
+                          maxLines: 1,
                           style: TextStyle(
                             color: Colors.grey.shade700,
                           ),

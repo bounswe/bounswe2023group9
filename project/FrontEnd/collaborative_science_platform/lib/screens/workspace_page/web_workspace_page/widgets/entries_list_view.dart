@@ -1,5 +1,5 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
-import 'package:collaborative_science_platform/screens/workspaces_page/web_workspace_page/widgets/entry_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
