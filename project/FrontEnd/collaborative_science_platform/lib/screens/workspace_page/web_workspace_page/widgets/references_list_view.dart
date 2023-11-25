@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/add_reference_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -32,26 +33,16 @@ class ReferencesListView extends StatelessWidget {
               child: AppButton(
                 text: "Add References",
                 height: 40,
+                type: "outlined",
                 onTap: () {
                   showDialog(
-                      context: context,
-                      builder: (context) => const AlertDialog(
-                            title: SizedBox(
-                              width: 500,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Add References', style: TextStyle(fontSize: 20.0)),
-                                ],
-                              ),
-                            ),
-                            backgroundColor: Colors.white,
-                            shadowColor: Colors.white,
-                            surfaceTintColor: Colors.white,
-                            content: AddReferenceForm(),
-                          ));
+                    context: context,
+                      builder: (context) => const AppAlertDialog(
+                        text: "Add References",
+                        content: AddReferenceForm(),
+                      ),
+                  );
                 },
-                type: "outlined",
               ),
             ),
             SizedBox(

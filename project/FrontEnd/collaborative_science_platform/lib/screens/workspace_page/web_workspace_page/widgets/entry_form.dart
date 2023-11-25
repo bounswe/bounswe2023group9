@@ -63,17 +63,21 @@ class _EntryFormState extends State<EntryForm> {
                 hint: const Text("Select Content Type"),
               ),
             ),
-            SizedBox(
-              child: AppTextField(
-                controller: contentController,
-                focusNode: contentFocusNode,
-                hintText: "Content",
-                obscureText: false,
-                height: 200,
-                maxLines: 10,
+            const SizedBox(height: 10.0),
+            Expanded(
+              child: SizedBox(
+                child: AppTextField(
+                  controller: contentController,
+                  focusNode: contentFocusNode,
+                  hintText: "Content",
+                  obscureText: false,
+                  height: 200,
+                  maxLines: 10,
+                ),
               ),
             )
-          ]),
+          ],
+      ),
     );
   }
 }

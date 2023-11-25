@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class SubSectionTitle extends StatelessWidget {
@@ -15,9 +16,10 @@ class SubSectionTitle extends StatelessWidget {
         child: Text(
           title,
           style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22.0,
-          ),
+            color: AppColors.secondaryDarkColor,
+          fontWeight: FontWeight.w600,
+          fontSize: 22.0,
+        ),
         ),
       ),
     );

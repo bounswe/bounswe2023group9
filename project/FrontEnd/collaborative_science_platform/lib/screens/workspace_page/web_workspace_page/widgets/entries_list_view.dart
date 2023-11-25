@@ -5,6 +5,8 @@ import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
+import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
+
 class EntriesListView extends StatelessWidget {
   final List<Entry> entries;
   final ScrollController controller;
@@ -41,25 +43,19 @@ class EntriesListView extends StatelessWidget {
                   height: 40,
                   onTap: () {
                     showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                              title: const SizedBox(
-                                width: 500,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('New Entry', style: TextStyle(fontSize: 20.0)),
-                                  ],
-                                ),
-                              ),
-                              backgroundColor: Colors.white,
-                              shadowColor: Colors.white,
-                              surfaceTintColor: Colors.white,
-                              content: const EntryForm(newEntry: true),
-                              actions: [
-                                AppButton(text: "Create New Entry", height: 40, onTap: () {}),
-                              ],
-                            ));
+                      context: context,
+                      builder: (context) => AppAlertDialog(
+                        text: "New Entry",
+                        content: const EntryForm(newEntry: true),
+                        actions: [
+                          AppButton(
+                            text: "Create New Entry",
+                            height: 40,
+                            onTap: () { /* Create new Entry */ },
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   type: "outlined",
                 ),
@@ -96,29 +92,19 @@ class EntriesListView extends StatelessWidget {
                                     IconButton(
                                         onPressed: () {
                                           showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog(
-                                                    title: const SizedBox(
-                                                      width: 500,
-                                                      child: Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          Text('Edit Entry',
-                                                              style: TextStyle(fontSize: 20.0)),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    backgroundColor: Colors.white,
-                                                    shadowColor: Colors.white,
-                                                    surfaceTintColor: Colors.white,
-                                                    content: EntryForm(id: entries[index].entryId),
-                                                    actions: [
-                                                      AppButton(
-                                                          text: "Save Entry",
-                                                          height: 40,
-                                                          onTap: () {}),
-                                                    ],
-                                                  ));
+                                            context: context,
+                                            builder: (context) => AppAlertDialog(
+                                              text: "Edit Entry",
+                                              content: EntryForm(id: entries[index].entryId),
+                                              actions: [
+                                                AppButton(
+                                                    text: "Save Entry",
+                                                    height: 40,
+                                                    onTap: () { /* Edit the Entry */ },
+                                                ),
+                                              ],
+                                            ),
+                                          );
                                         },
                                         icon: Icon(
                                           Icons.edit,

@@ -34,7 +34,8 @@ class _CreateWorkspaceFormState extends State<CreateWorkspaceForm> {
                 focusNode: titleFocusNode,
                 hintText: 'Workspace Title',
                 obscureText: false,
-                height: 64),
+                height: 64,
+            ),
           ],
         ));
   }

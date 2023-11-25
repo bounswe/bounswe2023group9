@@ -81,36 +81,45 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
                       child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          padding: const EdgeInsets.all(3),
+                          padding: const EdgeInsets.fromLTRB(3.0, 3.0, 3.0, 50.0),
                           itemCount: userProvider.searchUserResult.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Padding(
                               padding: const EdgeInsets.all(3),
                               child: CardContainer(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "${userProvider.searchUserResult[index].name} ${userProvider.searchUserResult[index].surname}",
-                                          style: TextStyles.bodyBold,
-                                        ),
-                                        IconButton(
-                                            onPressed: () {
-                                              //remove reference
-                                            },
-                                            icon: Icon(
-                                              Icons.send,
-                                              color: Colors.grey[600],
-                                            ))
-                                      ],
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${userProvider.searchUserResult[index].name} ${userProvider.searchUserResult[index].surname}",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyles.bodyBold,
+                                          ),
+                                          Text(
+                                            userProvider.searchUserResult[index].email,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyles.bodyGrey,
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                    Text(
-                                      userProvider.searchUserResult[index].email,
-                                      style: TextStyles.bodyGrey,
-                                    )
+                                    IconButton(
+                                      onPressed: () {
+                                        // send collaboration request
+                                      },
+                                      icon: Icon(
+                                        Icons.send,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
