@@ -43,9 +43,11 @@ class BasicUserDetailAPI(APIView):
 
   def get(self, request, *args, **kwargs):
     user = BasicUser.objects.get(user_id=request.user.id)
-    serializer = BasicUserSerializer(user)
 
-    return Response(serializer.data)
+    return JsonResponse({'basic_user_id':user.id,
+                         'bio':user.bio,
+                         'email_notification_preference': user.email_notification_preference,
+                         'show_activity_preference':user.show_activity_preference},status=200)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
