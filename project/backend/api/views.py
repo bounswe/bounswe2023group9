@@ -42,7 +42,7 @@ class BasicUserDetailAPI(APIView):
   permission_classes = (IsAuthenticated,)
 
   def get(self, request, *args, **kwargs):
-    user = BasicUser.objects.get(id=request.user.id)
+    user = BasicUser.objects.get(user_id=request.user.id)
     serializer = BasicUserSerializer(user)
 
     return Response(serializer.data)
