@@ -113,10 +113,10 @@ class WorkspaceProvider with ChangeNotifier {
   }
 
   Future<void> createWorkspace(String title, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/workspace_post/");
+    Uri url = Uri.parse("${Constants.apiUrl}/workspace_post/?format=json");
 
     final Map<String, String> headers = {
-      "Authorization": token,
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
