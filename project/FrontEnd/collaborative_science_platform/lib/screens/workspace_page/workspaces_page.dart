@@ -56,7 +56,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void getUserWorkspaces(int id) async {
+  void getUserWorkspaces() async {
     try {
       final auth = Provider.of<Auth>(context);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context);
@@ -85,13 +85,14 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+  
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
       if (widget.workspaceId > -1) {
         getWorkspaceById(widget.workspaceId);
       }
-      getUserWorkspaces(41);
+      getUserWorkspaces();
 
       _isFirstTime = false;
     }
