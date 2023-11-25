@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
@@ -16,9 +17,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class WebWorkspacePage extends StatefulWidget {
-  //final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
-  final int workspaceId;
-  const WebWorkspacePage({super.key, this.workspaceId = 0});
+  final Workspace? workspace;
+  final Workspaces? workspaces;
+
+  const WebWorkspacePage({super.key, required this.workspace, required this.workspaces});
 
   @override
   State<WebWorkspacePage> createState() => _WebWorkspacePageState();
@@ -38,80 +40,6 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   bool isLoading = false;
   bool showSidebar = true;
   double minHeight = 750;
-//Mock data for testing purposes
-  Workspace workspace = Workspace(
-      workspaceId: 10,
-      workspaceTitle: "My First Workspace",
-      entries: [
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: true,
-            isFinalEntry: false,
-            isProofEntry: false,
-            isTheoremEntry: false
-        ),
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: false,
-            isFinalEntry: true,
-            isProofEntry: false,
-            isTheoremEntry: true
-        ),
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: true,
-            isFinalEntry: false,
-            isProofEntry: true,
-            isTheoremEntry: false
-        ),
-      ],
-      status: WorkspaceStatus.workable,
-      numApprovals: 0,
-      contributors: [
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-      ],
-      pendingContributors: [
-        User(email: "someone@gmail.com", firstName: "collaborator", lastName: "user")
-      ],
-      references: [
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001))
-      ]);
 
   @override
   void dispose() {
@@ -125,7 +53,6 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
-      /// get workspace details
       _isFirstTime = false;
     }
     if (MediaQuery.of(context).size.height > 750) {
@@ -133,6 +60,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
         minHeight = MediaQuery.of(context).size.height;
       });
     }
+    
     super.didChangeDependencies();
   }
 
@@ -166,6 +94,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           controller: controller1,
                           hideSidebar: hideSideBar,
                           height: minHeight,
+                          workspaces: widget.workspaces ??
+                              Workspaces(workspaces: [], pendingWorkspaces: []),
                         ),
                       if (!showSidebar)
                         Container(
@@ -209,6 +139,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                 )
                               ],
                             )),
+                      if (widget.workspace != null)
                       Column(
                         children: [
                           SizedBox(
@@ -217,7 +148,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Text(workspace.workspaceTitle, style: TextStyles.title2),
+                                  Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width / 5,
                                   child: AppButton(
@@ -233,7 +164,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           Row(
                             children: [
                               EntriesListView(
-                                entries: workspace.entries,
+                                  entries: widget.workspace!.entries,
                                 controller: controller2,
                                 showSidebar: showSidebar,
                                 height: minHeight,
@@ -241,12 +172,12 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               Column(
                                 children: [
                                   ContributorsListView(
-                                    contributors: workspace.contributors,
+                                      contributors: widget.workspace!.contributors,
                                     controller: controller3,
                                     height: minHeight / 2,
                                   ),
                                   ReferencesListView(
-                                    references: workspace.references,
+                                      references: widget.workspace!.references,
                                     controller: controller4,
                                     height: minHeight / 2,
                                   ),
@@ -256,6 +187,22 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           )
                         ],
                       )
+                      else
+                        SizedBox(
+                          width: showSidebar
+                              ? MediaQuery.of(context).size.width * 0.75
+                              : MediaQuery.of(context).size.width * 0.95,
+                          height: minHeight,
+                          child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Select a workspace to see details.",
+                                  style: TextStyles.title2,
+                                )
+                              ]),
+                        )
                     ],
                   ));
   }

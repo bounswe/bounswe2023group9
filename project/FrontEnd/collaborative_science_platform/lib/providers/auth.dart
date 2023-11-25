@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 class Auth with ChangeNotifier {
   User? user;
   //User? user = User(email: "oma11r@omar.com", firstName: "omar", lastName: "uyduran");
+  String token = "";
 
   bool get isSignedIn {
     return user != null;
@@ -31,6 +32,7 @@ class Auth with ChangeNotifier {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        token = data['token'];
 
         Uri url = Uri.parse("${Constants.apiUrl}/get_authenticated_user/");
         final tokenHeaders = {
@@ -102,6 +104,7 @@ class Auth with ChangeNotifier {
 
   void logout() {
     user = null;
+    token = "";
     notifyListeners();
   }
 }

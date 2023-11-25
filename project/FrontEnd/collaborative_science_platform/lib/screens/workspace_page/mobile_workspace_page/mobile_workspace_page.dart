@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
@@ -9,7 +10,9 @@ import 'package:flutter/material.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
-  const MobileWorkspacePage({super.key});
+  final Workspace? workspace;
+  final Workspaces? workspaces;
+  const MobileWorkspacePage({super.key, required this.workspace, required this.workspaces});
 
   @override
   State<MobileWorkspacePage> createState() => _MobileWorkspacesPageState();
