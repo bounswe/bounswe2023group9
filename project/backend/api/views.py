@@ -37,6 +37,17 @@ class UserDetailAPI(APIView):
 
     return Response(serializer.data)
 
+class BasicUserDetailAPI(APIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, *args, **kwargs):
+    user = BasicUser.objects.get(id=request.user.id)
+    serializer = BasicUserSerializer(user)
+
+    return Response(serializer.data)
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
