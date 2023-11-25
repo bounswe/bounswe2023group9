@@ -22,6 +22,7 @@ urlpatterns = [
     path('add_entry/',add_entry,name='add_entry'),
     path('get_random_node_id/',get_random_node_id,name='get_random_node_id'),
     path('create_workspace/',create_workspace,name='create_workspace'),
+    path('workspace_post/', WorkspacePostAPIView.as_view(), name='workspace_post'),
     path('add_reference/',add_reference,name='add_reference'),
     path('finalize_workspace/',finalize_workspace,name='finalize_workspace'),
     path('delete_contributor/',delete_contributor,name='delete_contributor'),
