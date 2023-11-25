@@ -11,6 +11,7 @@ import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -85,19 +86,30 @@ class _NodeDetailsState extends State<NodeDetails> {
                         Row(
                           children: [
                             SizedBox(
-                              width: Responsive.getGenericPageWidth(context) * 0.35,
+                              width: 110,
                               child: AppButton(
-                                  text: "See the Graph",
+                                  text: "Graph",
                                   height: 40,
+                                  icon: const Icon(
+                                    CupertinoIcons.square_grid_3x2,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                   type: "secondary",
                                   onTap: () {
                                     context.push('${GraphPage.routeName}/${widget.node.nodeId}');
                                   }),
                             ),
+                            const SizedBox(width: 10),
                             SizedBox(
-                              width: Responsive.getGenericPageWidth(context) * 0.2,
+                              width: 110,
                               child: AppButton(
                                 text: "Share",
+                                icon: const Icon(
+                                  Icons.share,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
                                 height: 40,
                                 type: "primary",
                                 onTap: () => SharePage.shareNodeView(widget.node),
