@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 enum SearchType { theorem, author, by, both }
 
+enum SearchOption { semantic, exact }
+
 class AppSearchBar extends StatefulWidget {
   final Function onSearch;
   final FocusNode focusNode;

@@ -7,6 +7,7 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/user_ca
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
+import 'package:collaborative_science_platform/widgets/search_bar_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,10 +46,7 @@ class MobileHomePage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 16.0, 8.0, 0.0),
-                child: AppSearchBar(
-                  focusNode: searchBarFocusNode,
-                  onSearch: onSearch,
-                ),
+                child: SearchBarExtended(exactSearch: onSearch, semanticSearch: (str) {}),
               ),
               Padding(
                   padding: const EdgeInsets.only(top: 10.0),

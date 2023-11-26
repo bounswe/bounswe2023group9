@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  easy_search_bar:
+    dependency: "direct main"
+    description:
+      name: easy_search_bar
+      sha256: b20343be8ab94ed9e1550cf8cbd5323c344bd9b58b9319fb6e62d75395c0bcaa
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
   equatable:
     dependency: transitive
     description:
