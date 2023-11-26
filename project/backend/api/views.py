@@ -140,8 +140,8 @@ def search(request):
         if tag.count() == 0:
             return JsonResponse({'message': 'No tag with this wid is found'}, status=404)
         tag = tag[0]
-        nodes_q = tag.nodes()
-        related_nodes_q = tag.related_nodes()
+        nodes_q = tag.nodes
+        related_nodes_q = tag.related_nodes
         for node in nodes_q:
             nodes.append(node.node_id)
         for rel_node in related_nodes_q:
@@ -382,6 +382,15 @@ def get_workspace_from_id(request):
                         'references':references,
                          'created_at':workspace.created_at,
                          }, status=200)
+
+def get_semantic_suggestion(request):
+    search = request.GET.get("query")
+    result = SemanticTag.existing_search_results(search)
+    if len(result) == 0:
+        return JsonResponse({'message': 'There are no nodes with this semantic tag.'}, status=404)
+    return JsonResponse({'suggestions': result}, status=200)
+
+
 def delete_entry(request):
     id = int(request.GET.get("entry_id"))
     entry = Entry.objects.filter(entry_id=id)

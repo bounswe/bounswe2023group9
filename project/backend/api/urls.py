@@ -30,4 +30,7 @@ urlpatterns = [
     path('send_collab_req/', send_collaboration_request, name='send_col_req'),
     path('update_req/', update_request_status, name='update_req'),
     path('send_rev_req/', send_review_request, name='send_rev_req'),
+    path('get_semantic_suggestion/', get_semantic_suggestion, name='get_semantic_suggestion'),
+
+
 ]
