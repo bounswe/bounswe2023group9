@@ -157,6 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                 child: CardContainer(
                                   child: ListView.builder(
+                                    padding: const EdgeInsets.all(0),
                                     scrollDirection: Axis.vertical,
                                     shrinkWrap: true,
                                     itemCount: profileData.nodes.length,
@@ -192,6 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: isLoading
                   ? Container(
                       decoration: const BoxDecoration(color: Colors.white),
+                      padding: const EdgeInsets.only(top: 20),
                       child: const Center(
                         child: CircularProgressIndicator(),
                       ),
@@ -222,23 +224,21 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             if (currentIndex == 0)
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                child: CardContainer(
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemCount: profileData.nodes.length,
-                                    itemBuilder: (context, index) {
-                                      return ProfileNodeCard(
-                                        profileNode: profileData.nodes.elementAt(index),
-                                        onTap: () {
-                                          context.push(
-                                              '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
-                                        },
-                                      );
-                                    },
-                                  ),
+                              CardContainer(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(0),
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: profileData.nodes.length,
+                                  itemBuilder: (context, index) {
+                                    return ProfileNodeCard(
+                                      profileNode: profileData.nodes.elementAt(index),
+                                      onTap: () {
+                                        context.push(
+                                            '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
+                                      },
+                                    );
+                                  },
                                 ),
                               ),
                             if (currentIndex == 1)
@@ -269,6 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: isLoading
               ? Container(
                   decoration: const BoxDecoration(color: Colors.white),
+                  padding: const EdgeInsets.only(top: 20),
                   child: const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -300,6 +301,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                             child: CardContainer(
                               child: ListView.builder(
+                                padding: const EdgeInsets.all(0),
                                 physics:
                                     const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
                                 scrollDirection: Axis.vertical,

@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/mobile_home_page.dart';
@@ -21,7 +22,18 @@ class _HomePageState extends State<HomePage> {
   bool error = false;
   bool isLoading = false;
   bool firstSearch = false;
+
+  bool _firstTime = true;
   String errorMessage = "";
+
+  @override
+  void didChangeDependencies() {
+    if (_firstTime) {
+      randomNodes();
+      _firstTime = false;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -29,9 +41,39 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  void randomNodes() async {
+    try {
+      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await nodeProvider.search(SearchType.both, "", random: true);
+    } on WrongSearchTypeError {
+      setState(() {
+        error = true;
+        errorMessage = WrongSearchTypeError().message;
+      });
+    } on SearchError {
+      setState(() {
+        error = true;
+        errorMessage = SearchError().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void search(String text) async {
-    SearchType searchType = SearchHelper.searchType;
     if (text.isEmpty) return;
+    if (text.length < 4) return;
+    SearchType searchType = SearchHelper.searchType;
     try {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
@@ -69,13 +111,43 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void semanticSearch(SemanticTag tag) async {
+    SearchType searchType = SearchHelper.searchType;
+    try {
+      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await nodeProvider.search(searchType, tag.id, semantic: true);
+    } on WrongSearchTypeError {
+      setState(() {
+        error = true;
+        errorMessage = WrongSearchTypeError().message;
+      });
+    } on SearchError {
+      setState(() {
+        error = true;
+        errorMessage = SearchError().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MobileHomePage(
       searchBarFocusNode: searchBarFocusNode,
       onSearch: search,
+      onSemanticSearch: semanticSearch,
       isLoading: isLoading,
-      firstSearch: firstSearch,
       error: error,
       errorMessage: errorMessage,
     );

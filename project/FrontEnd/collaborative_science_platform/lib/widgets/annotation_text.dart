@@ -134,7 +134,7 @@ class _MobileShowAnnotationButtonState extends State<MobileShowAnnotationButton>
                   child: Column(
                     children: [
                       SelectableText(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.",
+                        "Automaton is a relatively self-operating machine.",
                         style: TextStyle(color: Colors.white),
                         maxLines: 5,
                       )
@@ -225,8 +225,7 @@ class _DesktopShowAnnotationButtonState extends State<DesktopShowAnnotationButto
                       ],
                     ),
                     const SizedBox(height: 3),
-                    const SelectableText(
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget ultricies ultricies, nunc nisl ultricies nunc, quis ultricies nisl nisl quis nisl.",
+                    const SelectableText("Automaton is a relatively self-operating machine.",
                         style: TextStyle(fontSize: 12, color: Colors.white)),
                   ],
                 ),
