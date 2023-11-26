@@ -9,9 +9,11 @@ import 'package:collaborative_science_platform/screens/graph_page/graph_page.dar
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'dart:convert';
 
 class NodeDetailsPopup extends StatefulWidget {
   final int nodeId;
@@ -89,11 +91,14 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              AnnotationText('Title: ${node.nodeTitle}'),
+              AnnotationText('Title: ${utf8.decode(node.nodeTitle.codeUnits)}'),
               Text(
                   'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
               Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
-              AnnotationText('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
+              TeXView(
+                  renderingEngine: TeXViewRenderingEngine.katex(),
+                  child: TeXViewDocument(
+                      '<b>Theorem Content:</b> ${utf8.decode(node.theorem!.theoremContent.codeUnits) ?? "No theorem"}')),
             ],
           ),
           actions: [

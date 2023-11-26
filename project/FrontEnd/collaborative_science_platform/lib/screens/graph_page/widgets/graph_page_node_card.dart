@@ -2,6 +2,8 @@ import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
+import 'dart:convert';
 
 class GraphPageNodeCard extends StatelessWidget {
   final NodeDetailed node;
@@ -34,7 +36,7 @@ class GraphPageNodeCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SelectableText(
-                node.nodeTitle,
+                utf8.decode(node.nodeTitle.codeUnits),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
@@ -50,11 +52,9 @@ class GraphPageNodeCard extends StatelessWidget {
                       8.0), // Set the border radius if you want rounded corners
                 ),
                 padding: const EdgeInsets.all(8.0), // Add padding inside the box
-                child: AnnotationText(
-                  node.theorem!.theoremContent,
-                  maxLines: 10,
-                  style: TextStyle(fontSize: 14.0, color: Colors.grey[700]),
-                ),
+                child: TeXView(
+                    renderingEngine: TeXViewRenderingEngine.katex(),
+                    child: TeXViewDocument(utf8.decode(node.theorem!.theoremContent.codeUnits))),
               ),
               const SizedBox(height: 8.0),
               Row(
