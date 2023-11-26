@@ -51,14 +51,14 @@ class SemanticTag(models.Model):
         return existings
     
     def __str__(self):
-        return self.label + " - " + self.wid
+        return str(self.pk) + " " + self.label + " - " + self.wid
 
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
     entry_index = models.IntegerField()
     #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
     content = models.TextField(null=False)
-    entry_date = models.DateField()
+    entry_date = models.DateField(auto_now_add=True)
     is_theorem_entry = models.BooleanField(default=False)
     is_final_entry = models.BooleanField(default=False)
     is_proof_entry = models.BooleanField(default=False)
@@ -71,7 +71,8 @@ class Entry(models.Model):
     def set_as_theorem(self):
         self.is_theorem_entry = True
     def set_entry_content(self,cont):
-        self.content += cont
+        self.content = cont
+
 # Create your models here.
 class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
@@ -112,7 +113,7 @@ class BasicUser(models.Model):
 
 
 class Contributor(BasicUser):
-    workspaces = models.ManyToManyField(Workspace)
+    workspaces = models.ManyToManyField(Workspace, blank=True)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name

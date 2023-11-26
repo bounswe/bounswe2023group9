@@ -398,14 +398,13 @@ class EntryModelTestCase(TestCase):
             entry_id = 1,
             entry_index = 1,
             content = "This is an entry.",
-            entry_date = "2023-11-11",
             is_theorem_entry = True,
             entry_number = 1,
         )
         self.assertEqual(entry.entry_id, 1)
         self.assertEqual(entry.entry_number, 1)
         self.assertEqual(entry.content, "This is an entry.")
-        self.assertEqual(entry.entry_date, "2023-11-11")
+        # self.assertEqual(entry.entry_date, "2023-11-11")
         self.assertEqual(entry.is_theorem_entry, True)
         # self.assertEqual(entry.is_final_entry,False)
 

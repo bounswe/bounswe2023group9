@@ -7,6 +7,67 @@ from rest_framework.validators import UniqueValidator
 
 from .models import *
 
+class WorkspaceSerializer(serializers.ModelSerializer):
+    semantic_tags = serializers.PrimaryKeyRelatedField(many=True, queryset=SemanticTag.objects.all(), required=False)
+    workspace_id = serializers.IntegerField(required=False)
+    workspace_title = serializers.CharField(required=False)
+
+    class Meta:
+        model = Workspace
+        fields = [
+            'workspace_id',
+            'workspace_title', 
+            'semantic_tags'
+        ]
+
+    def validate(self, data):
+      workspace_id = data.get('workspace_id')
+      workspace_title = data.get('workspace_title')
+      tags = data.get('semantic_tags')
+
+      if workspace_id is None and workspace_title is None:
+        raise serializers.ValidationError("Both workspace_id and workspace_title cannot be empty.")
+
+      if tags is None and workspace_title is None:
+        raise serializers.ValidationError("Both workspace_title and semantic_tags cannot be empty.")
+
+      return data
+
+    def create(self, validated_data):
+      workspace_id = validated_data.get('workspace_id', None)
+      title = validated_data.get('workspace_title', None)
+      
+      if workspace_id is not None:
+        workspace = Workspace.objects.get(workspace_id=workspace_id)
+        created = False
+      else:
+        workspace = Workspace.objects.create(workspace_title=title)
+        created = True
+      
+      if created:
+        self.context['request'].user.basicuser.contributor.workspaces.add(workspace)
+        tags = validated_data.get('semantic_tags', None)
+        if tags is not None:
+          workspace.semantic_tags.add(*tags)
+      
+      else:
+        if title:
+          workspace.workspace_title = title
+          workspace.save()
+
+        tags = validated_data.get('semantic_tags', None)
+        if tags is not None:
+          for tag in workspace.semantic_tags.all():
+            if tag not in tags:
+              workspace.semantic_tags.remove(tag)
+
+          for tag in tags:
+            if tag not in workspace.semantic_tags.all():
+              workspace.semantic_tags.add(tag)
+
+      return workspace
+
+
 # Serializer to change password
 class ChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(write_only=True, required=True)
