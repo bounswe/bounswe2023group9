@@ -208,27 +208,27 @@ class _SearchBarExtendedState extends State<SearchBarExtended> {
       ),
     ];
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: 60,
+      height: 55,
       child: EasySearchBar(
-          title: const Text('Select a type to start searching'),
-          onSearch: (value) {
-            if (searchOption == SearchOption.semantic) {
-              widget.semanticSearch(value);
-            } else {
-              widget.exactSearch(value);
-            }
-          },
-          asyncSuggestions:
-              (searchOption == SearchOption.exact) ? null : (value) => _getSuggestions(value),
-          suggestionLoaderBuilder: () => _suggestionLoaderBuilder(),
-          onSuggestionTap: (data) => widget.semanticSearch(data),
-          searchTextStyle: const TextStyle(color: Colors.grey),
-          elevation: 2,
-          searchBackIconTheme: const IconThemeData(color: Colors.grey),
-          backgroundColor: Colors.white,
-          titleTextStyle: TextStyle(color: Colors.grey[600]!),
-          actions: actions2),
+        title: const Text('Select a type to start searching'),
+        onSearch: (value) {
+          if (searchOption == SearchOption.semantic) {
+            widget.semanticSearch(value);
+          } else {
+            widget.exactSearch(value);
+          }
+        },
+        asyncSuggestions:
+            (searchOption == SearchOption.exact) ? null : (value) => _getSuggestions(value),
+        suggestionLoaderBuilder: () => _suggestionLoaderBuilder(),
+        onSuggestionTap: (data) => widget.semanticSearch(data),
+        searchTextStyle: const TextStyle(color: Colors.grey),
+        elevation: 2,
+        searchBackIconTheme: const IconThemeData(color: Colors.grey),
+        backgroundColor: Colors.white,
+        titleTextStyle: TextStyle(color: Colors.grey[600]!),
+        actions: actions2,
+      ),
     );
   }
 }
