@@ -81,51 +81,55 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                       child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          padding: const EdgeInsets.all(3),
+                          padding: const EdgeInsets.fromLTRB(3.0, 3.0, 3.0, 50.0),
                           itemCount: nodeProvider.searchNodeResult.length,
                           itemBuilder: (BuildContext context, int index) {
                             return Padding(
                               padding: const EdgeInsets.all(3),
                               child: CardContainer(
-                                child: Column(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    SizedBox(
-                                      width: 450,
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(
-                                            width: 400,
-                                            child: Text(
-                                              nodeProvider.searchNodeResult[index].nodeTitle,
-                                              style: TextStyles.bodyBold,
-                                              textAlign: TextAlign.start,
-                                            ),
+                                          Text(
+                                            nodeProvider.searchNodeResult[index].nodeTitle,
+                                            style: TextStyles.bodyBold,
+                                            textAlign: TextAlign.start,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          IconButton(
-                                              onPressed: () {
-                                                //add reference
-                                              },
-                                              icon: Icon(
-                                                Icons.add,
-                                                color: Colors.grey[600],
-                                              ))
+                                          Text(
+                                            nodeProvider.searchNodeResult[index].contributors
+                                                .map((e) => "${e.firstName} ${e.lastName}")
+                                                .join(", "),
+                                            style: TextStyles.bodyGrey,
+                                            textAlign: TextAlign.start,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            nodeProvider.searchNodeResult[index].publishDateFormatted,
+                                            style: TextStyles.bodyGrey,
+                                            textAlign: TextAlign.start,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ],
                                       ),
                                     ),
-                                    Text(
-                                      nodeProvider.searchNodeResult[index].contributors
-                                          .map((e) => "by ${e.firstName} ${e.lastName}")
-                                          .join(", "),
-                                      style: TextStyles.bodyGrey,
-                                      textAlign: TextAlign.start,
-                                    ),
-                                    Text(
-                                      nodeProvider.searchNodeResult[index].publishDateFormatted,
-                                      style: TextStyles.bodyGrey,
-                                      textAlign: TextAlign.start,
+                                    IconButton(
+                                      onPressed: () {
+                                        //add reference
+                                      },
+                                      icon: Icon(
+                                        Icons.add,
+                                        color: Colors.grey[600],
+                                      ),
                                     ),
                                   ],
                                 ),

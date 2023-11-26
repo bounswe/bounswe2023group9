@@ -6,19 +6,17 @@ import 'package:go_router/go_router.dart';
 
 class NodeCards extends StatelessWidget {
   final List<Node> nodeList;
-  final bool firstSearch;
 
   const NodeCards({
     super.key,
     required this.nodeList,
-    required this.firstSearch,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
-      child: firstSearch && nodeList.isEmpty
+      child: nodeList.isEmpty
           ? const Center(
               child: SelectableText("No results found."),
             )

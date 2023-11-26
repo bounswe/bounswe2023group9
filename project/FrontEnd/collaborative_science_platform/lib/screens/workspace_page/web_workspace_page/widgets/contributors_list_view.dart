@@ -7,6 +7,8 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
+
 class ContributorsListView extends StatelessWidget {
   final List<User> contributors;
   final ScrollController controller;
@@ -62,27 +64,16 @@ class ContributorsListView extends StatelessWidget {
               child: AppButton(
                 text: "Send Collaboration Request",
                 height: 40,
+                type: "outlined",
                 onTap: () {
                   showDialog(
-                      context: context,
-                      builder: (context) => const AlertDialog(
-                            title: SizedBox(
-                              width: 500,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Send Collaboration Request',
-                                      style: TextStyle(fontSize: 20.0)),
-                                ],
-                              ),
-                            ),
-                            backgroundColor: Colors.white,
-                            shadowColor: Colors.white,
-                            surfaceTintColor: Colors.white,
-                            content: SendCollaborationRequestForm(),
-                          ));
+                    context: context,
+                    builder: (context) => const AppAlertDialog(
+                      text: "Send Collaboration Request",
+                      content: SendCollaborationRequestForm(),
+                    ),
+                  );
                 },
-                type: "outlined",
               ),
             ),
           ])),

@@ -14,8 +14,8 @@ import 'package:provider/provider.dart';
 class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final Function onSearch;
+  final Function onSemanticSearch;
   final bool isLoading;
-  final bool firstSearch;
   final bool error;
   final String errorMessage;
 
@@ -23,8 +23,8 @@ class MobileHomePage extends StatelessWidget {
     super.key,
     required this.searchBarFocusNode,
     required this.onSearch,
+    required this.onSemanticSearch,
     required this.isLoading,
-    required this.firstSearch,
     required this.error,
     required this.errorMessage,
   });
@@ -48,7 +48,8 @@ class MobileHomePage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(10.0, 16.0, 8.0, 0.0),
                 child: Responsive(
                     mobile: AppSearchBar(focusNode: searchBarFocusNode, onSearch: onSearch),
-                    desktop: SearchBarExtended(exactSearch: onSearch, semanticSearch: (str) {})),
+                    desktop:
+                        SearchBarExtended(exactSearch: onSearch, semanticSearch: onSemanticSearch)),
               ),
               Padding(
                   padding: const EdgeInsets.only(top: 10.0),
@@ -68,11 +69,9 @@ class MobileHomePage extends StatelessWidget {
                           : (SearchHelper.searchType == SearchType.author)
                               ? UserCards(
                                   userList: userProvider.searchUserResult,
-                                  firstSearch: firstSearch,
                                 )
                               : NodeCards(
                                   nodeList: nodeProvider.searchNodeResult,
-                                  firstSearch: firstSearch,
                                 )),
             ],
           ),
