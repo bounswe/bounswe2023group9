@@ -7,7 +7,8 @@ class AppButton extends StatelessWidget {
   final void Function() onTap;
   final bool isActive;
   final bool isLoading;
-  final String type; 
+  final Widget? icon;
+  final String type;
 
   const AppButton({
     super.key,
@@ -16,6 +17,7 @@ class AppButton extends StatelessWidget {
     required this.onTap,
     this.isActive = true,
     this.isLoading = false,
+    this.icon,
     this.type = "primary",
   });
 
@@ -23,27 +25,42 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: isActive ? onTap : () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isActive
-            ? (type == "primary"
-                ? AppColors.primaryColor
-                : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
-            : Colors.grey[600],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(height / 2.0),
-        ),
-        minimumSize: Size(double.infinity, height),
-      ),
+      style: type != "outlined"
+          ? ElevatedButton.styleFrom(
+              backgroundColor: isActive
+                  ? (type == "primary"
+                      ? AppColors.primaryColor
+                      : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
+                  : Colors.grey[600],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              minimumSize: Size(double.infinity, height),
+            )
+          : ElevatedButton.styleFrom(
+              backgroundColor: isActive ? Colors.white : Colors.grey[600],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              minimumSize: Size(double.infinity, height),
+              side: const BorderSide(color: AppColors.primaryColor)),
       child: isLoading
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Text(text,
-              style: TextStyle(
-                fontSize: height / 3.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )),
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) icon!,
+                if (icon != null) const SizedBox(width: 6),
+                Text(text,
+                    style: TextStyle(
+                      fontSize: height / 3.0,
+                      fontWeight: FontWeight.bold,
+                      color: (type != "outlined" ? Colors.white : AppColors.primaryColor),
+                    )),
+              ],
+            ),
     );
   }
 }

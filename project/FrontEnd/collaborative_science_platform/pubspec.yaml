@@ -46,6 +46,8 @@ dependencies:
   selectable: ^0.3.0
   flutter_portal: ^1.1.4
   just_the_tooltip: ^0.0.12
+  easy_search_bar: ^2.5.0
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

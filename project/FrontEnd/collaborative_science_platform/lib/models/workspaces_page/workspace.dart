@@ -2,11 +2,13 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 
+enum WorkspaceStatus {finalized, workable, inReview, published, rejected}
+
 class Workspace {
   int workspaceId;
   String workspaceTitle;
   List<Entry> entries;
-  String status;
+  WorkspaceStatus status;
   int numApprovals;
   List<User> contributors;
   List<User> pendingContributors;
@@ -35,11 +37,18 @@ class Workspace {
         pendingContributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
 
+    String statusString = jsonString['status'];
+    WorkspaceStatus status = (statusString == "finalized") ? WorkspaceStatus.finalized
+        : (statusString == "workable") ? WorkspaceStatus.workable
+        : (statusString == "in_review") ? WorkspaceStatus.inReview
+        : (statusString == "published") ? WorkspaceStatus.published
+        : WorkspaceStatus.rejected;
+
     return Workspace(
         workspaceId: jsonString['workspace_id'],
         workspaceTitle: jsonString['workspace_title'],
         entries: entries,
-        status: jsonString['status'],
+        status: status,
         numApprovals: jsonString['num_approvals'],
         contributors: contributors,
         pendingContributors: pendingContributors,
