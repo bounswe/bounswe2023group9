@@ -474,6 +474,25 @@ class NodeAPITestCase(TestCase):
         response = self.client.get(self.node_url, data=data, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_get_random_node(self):
+        response = self.client.get(self.node_url)
+        
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, 'node_id')
+        self.assertContains(response, 'node_title')
+        self.assertContains(response, 'publish_date')
+        self.assertContains(response, 'is_valid')
+        self.assertContains(response, 'num_visits')
+        self.assertContains(response, 'theorem')
+        self.assertContains(response, 'contributors')
+        self.assertContains(response, 'reviewers')
+        self.assertContains(response, 'from_referenced_nodes')
+        self.assertContains(response, 'to_referenced_nodes')
+        self.assertContains(response, 'proofs')
+        self.assertContains(response, 'question_set')
+        self.assertContains(response, 'semantic_tags')
+        self.assertContains(response, 'annotations')
     def test_get_random_node_id(self):
         url = reverse('get_random_node_id')
         response = self.client.get(url , {'count':2})
