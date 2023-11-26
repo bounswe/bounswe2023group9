@@ -77,26 +77,44 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
 
   Widget referencesCardList() {
     // pre
-    return ListView.builder(
-      itemCount: widget.node.references.length,
-      itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: widget.node.references[index],
-        onTap: () {
-          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-        },
-      ),
+    return Flex(
+      direction: Axis.horizontal, // or Axis.vertical depending on your layout
+      children: [
+        Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            itemCount: widget.node.references.length,
+            itemBuilder: (context, index) => HomePageNodeCard(
+              smallNode: widget.node.references[index],
+              onTap: () {
+                context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget referentsCardList() {
-    return ListView.builder(
-      itemCount: widget.node.citations.length,
-      itemBuilder: (context, index) => HomePageNodeCard(
-        smallNode: widget.node.citations[index],
-        onTap: () {
-          context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-        },
-      ),
+    return Flex(
+      direction: Axis.horizontal, // or Axis.vertical depending on your layout
+      children: [
+        Expanded(
+          child: ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+            itemCount: widget.node.citations.length,
+            itemBuilder: (context, index) => HomePageNodeCard(
+              smallNode: widget.node.citations[index],
+              onTap: () {
+                context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -114,6 +132,8 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
       !widget.isLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
     ];
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Center(

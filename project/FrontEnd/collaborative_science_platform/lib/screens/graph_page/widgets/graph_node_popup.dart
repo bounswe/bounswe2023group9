@@ -85,16 +85,31 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
           title: const Text('Node Details'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnnotationText('Title: ${node.nodeTitle}'),
-              Text(
-                  'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
-              Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
-              AnnotationText('Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
-            ],
+          content: Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(width: 1.5, color: Colors.grey),
+                bottom: BorderSide(width: 1.5, color: Colors.grey),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    //SizedBox(height: 10.0),
+                    AnnotationText('Title: ${node.nodeTitle}'),
+                    Text(
+                        'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
+                    Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
+                    AnnotationText(
+                        'Theorem Content: ${node.theorem?.theoremContent ?? "No theorem"}'),
+                  ],
+                ),
+              ),
+            ),
           ),
           actions: [
             ElevatedButton(

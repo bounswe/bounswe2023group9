@@ -25,7 +25,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
     return InkWell(
       onTap: widget.onTap,
       customBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(2.0),
       ),
       child: Card(
         elevation: 4,
@@ -38,7 +38,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
                 widget.node.nodeTitle,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
+                  fontSize: 16.0,
                 ),
               ),
               const SizedBox(height: 8.0), // Increased spacing
@@ -46,7 +46,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
                 getContributorsText(widget.node.contributors),
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: 14.0,
+                  fontSize: 12.0,
                   color: Colors.grey,
                 ),
               ),
@@ -77,6 +77,6 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
   String getContributorsText(List<User> contributors) {
     return contributors
         .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
-        .join(", ");
+        .join(",\n");
   }
 }
