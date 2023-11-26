@@ -384,7 +384,7 @@ def get_workspace_from_id(request):
                          }, status=200)
 
 def get_semantic_suggestion(request):
-    search = request.GET.get("query")
+    search = request.GET.get("keyword")
     result = SemanticTag.existing_search_results(search)
     if len(result) == 0:
         return JsonResponse({'message': 'There are no nodes with this semantic tag.'}, status=404)
