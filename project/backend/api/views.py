@@ -369,6 +369,7 @@ def get_workspace_from_id(request):
                          'workspace_entries': entries,
                          'status':status,
                          'num_approvals':workspace.num_approvals,
+                         'semantic_tags':semantic_tags,
                          'contributors':contributors,
                          'pending_contributors':pending,
                         'references':references,
@@ -592,11 +593,12 @@ def create_workspace(request):
 @csrf_exempt
 def get_random_node_id(request):
     count = int(request.GET.get("count"))
-    node_ids = Node.node_id.all()
+    node_ids = [node['node_id'] for node in Node.objects.values('node_id')]
     node_list = []
+    if count > len(node_ids):
+        return JsonResponse({'message': 'There are less nodes than requested number.'}, status=200)
     for i in range(count):
-        while node_ids[index] not in node_list:
-            index = random.randint(0,len(node_ids))
+        index = random.randint(0,len(node_ids)-1)
         node_list.append(node_ids[index])
     return JsonResponse({'node_ids': node_list}, status=200)
 
