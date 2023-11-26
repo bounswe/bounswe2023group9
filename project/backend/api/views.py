@@ -1,8 +1,9 @@
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
@@ -35,6 +36,19 @@ class UserDetailAPI(APIView):
     serializer = UserSerializer(user)
 
     return Response(serializer.data)
+
+class BasicUserDetailAPI(APIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (IsAuthenticated,)
+
+  def get(self, request, *args, **kwargs):
+    user = BasicUser.objects.get(user_id=request.user.id)
+
+    return JsonResponse({'basic_user_id':user.id,
+                         'bio':user.bio,
+                         'email_notification_preference': user.email_notification_preference,
+                         'show_activity_preference':user.show_activity_preference},status=200)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
     authentication_classes = (TokenAuthentication,)
@@ -75,16 +89,40 @@ class NodeAPIView(APIView):
         serializer = NodeSerializer(node)
         return Response(serializer.data)
 
+class IsContributorAndWorkspace(BasePermission):
+    def has_permission(self, request, view):
+        workspace_id = request.data.get('workspace_id')
+        if not request.user.is_authenticated:
+            return False
+        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        if workspace_id is not None:
+            return request.user.basicuser.contributor.workspaces.filter(workspace_id=workspace_id).exists()
+        return True
+
+class WorkspacePostAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsContributorAndWorkspace)
+
+    def post(self, request):
+        serializer = WorkspaceSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(
+            serializer.errors, status=400
+        )
+
 def search(request):
     search = request.GET.get("query")
     search_type = request.GET.get("type")
-    if search == None or search == "":
+    if (search == None or search == "") and search_type != 'random':
         return JsonResponse({'status': 'Title to search must be given.'}, status=400)
     if search_type == None or search_type == "":
         return JsonResponse({'status': 'Type to search must be given.'}, status=400)
-    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by':
+    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by'and search_type != 'random' and search_type != 'semantic':
         return JsonResponse({'status': 'invalid search type.'}, status=400)
-    search_elements = search.split()
+
     # similars = [] # TODO ADVANCED SEARCH
     # also_sees = []
     #
@@ -103,6 +141,7 @@ def search(request):
 
     if search_type == 'by' or search_type == 'all':
         # print(search_elements)
+        search_elements = search.split()
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
             res_surname = User.objects.filter(last_name__icontains=el)
@@ -121,11 +160,13 @@ def search(request):
 
     contributors = []
     if search_type == 'node' or search_type == 'all':
+        search_elements = search.split()
         for el in search_elements:
             res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
+        search_elements = search.split()
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
             res_surname = User.objects.filter(last_name__icontains=el)
@@ -135,6 +176,34 @@ def search(request):
             for e in res_surname:
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
+    if search_type == 'semantic':
+        wid = search
+        tag = SemanticTag.objects.filter(wid=wid)
+        if tag.count() == 0:
+            return JsonResponse({'message': 'No tag with this wid is found'}, status=404)
+        tag = tag[0]
+        nodes_q = tag.nodes
+        related_nodes_q = tag.related_nodes
+        for node in nodes_q:
+            nodes.append(node.node_id)
+        for rel_node in related_nodes_q:
+            nodes.append(rel_node.node_id)
+
+    if search_type == 'random':
+        count = Node.objects.count()
+        prev = []
+        if count < 20:
+            c = count
+        else:
+            c = 20
+        i = 0
+        while i < c:
+            ran = random.randint(0,count-1)
+            if ran not in prev:
+                prev.append(ran)
+                random_node = Node.objects.all()[ran]
+                nodes.append(random_node.node_id)
+                i += 1
     contributors = list(set(contributors))
     nodes = list(set(nodes))
     res_authors = []
@@ -303,10 +372,8 @@ def get_workspace_from_id(request):
                         'entry_number':entry.entry_number,})
     semantic_tags = []
     for tag in workspace.semantic_tags.all():
-        semantic_tags.append({'label':tag.label,
-                              'desc':tag.desc,
-                              'parent_tag':tag.parent_tag,
-                              'created_at':tag.created_at})
+        semantic_tags.append({'wid':tag.wid,
+                              'label':tag.label,})
     contributors = []
     for cont in Contributor.objects.filter(workspaces=workspace):
         user = User.objects.get(id=cont.user_id)
@@ -350,95 +417,245 @@ def get_workspace_from_id(request):
                          'workspace_entries': entries,
                          'status':status,
                          'num_approvals':workspace.num_approvals,
+                         'semantic_tags':semantic_tags,
                          'contributors':contributors,
                          'pending_contributors':pending,
                         'references':references,
                          'created_at':workspace.created_at,
                          }, status=200)
+
+def get_semantic_suggestion(request):
+    search = request.GET.get("keyword")
+    result = SemanticTag.existing_search_results(search)
+    if len(result) == 0:
+        return JsonResponse({'message': 'There are no nodes with this semantic tag.'}, status=404)
+    return JsonResponse({'suggestions': result}, status=200)
+
+
+@csrf_exempt
 def delete_entry(request):
-    id = int(request.GET.get("entry_id"))
-    entry = Entry.objects.filter(entry_id=id)
+    entry_id = request.POST.get("entry_id")
+    workspace_id = request.POST.get("workspace_id")
+    if entry_id == None or entry_id == '':
+        return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
+    try:
+        entry_id = int(entry_id)
+    except:
+        return JsonResponse({'message': 'entry_id field has to be a integer'}, status=400)
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    entry = Entry.objects.filter(entry_id=entry_id)
     if entry.count() == 0:
         return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
-    entry.delete()
-def edit_entry(request):
-    id = int(request.GET.get("entry_id"))
-    entry = Entry.objects.filter(entry_id=id)
-    content = (request.GET.get("content"))
-    entry.content = content
-def delete_workspace(request):
-    id = int(request.GET.get("workspace_id"))
-    workspace = Workspace.objects.filter(workspace_id=id)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
-    workspace.delete()
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if entry[0] not in workspace.entries.all():
+        return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
+    workspace.entries.remove(entry[0])
+    workspace.save()
+    return JsonResponse({'message': 'Entry with this id has been deleted from this workspace successfully.'}, status=200)
 
-def delete_contributor(request):
-    id = int(request.GET.get("contributor_id"))
-    workspace_id = int(request.GET.get("workspace_id"))
+@csrf_exempt
+def edit_entry(request):
+    entry_id = request.POST.get("entry_id")
+    content = request.POST.get("content")
+    if entry_id == None or entry_id == '':
+        return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
+    try:
+        entry_id = int(entry_id)
+    except:
+        return JsonResponse({'message': 'entry_id field has to be a integer'}, status=400)
+    if content == None:
+        content = ''
+    entry = Entry.objects.filter(entry_id=entry_id)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'there is no entry with this id'}, status=404)
+    entry = Entry.objects.get(entry_id=entry_id)
+    entry.content = content
+    entry.save(update_fields=["content"])
+    return JsonResponse({'message': 'entry content is updated successfully'}, status=200)
+@csrf_exempt
+def delete_workspace(request):
+    workspace_id = request.POST.get("workspace_id")
+    contributor_id = request.POST.get("contributor_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    if contributor_id == None or contributor_id == '':
+        return JsonResponse({'message': 'node_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+        contributor_id = int(contributor_id)
+    except:
+        return JsonResponse({'message': 'workspace_id and contributor_id fields have to be a integer'}, status=400)
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
-    contributor = Contributor.objects.filter(contributor_id=id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    contributor = Contributor.objects.filter(id=contributor_id)
+    if contributor.count() == 0:
+        return JsonResponse({'message': 'There is no contributor with this id.'}, status=404)
+    if workspace[0] not in contributor[0].workspaces.all():
+        return JsonResponse({'message': 'there is no contributor with this id in this workspace.'}, status=404)
+    contributor[0].workspaces.remove(workspace[0])
+    contributor[0].save()
+    # if workspace[0].contributor_set.all().count() == 0:
+    #     workspace[0].delete()
+    return JsonResponse({'message': 'workspace deleted successfully.'}, status=200)
+
+@csrf_exempt
+def delete_contributor(request):
+    contributor_id = request.POST.get("contributor_id")
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    if contributor_id == None or contributor_id == '':
+        return JsonResponse({'message': 'node_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+        contributor_id = int(contributor_id)
+    except:
+        return JsonResponse({'message': 'workspace_id and contributor_id fields have to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    contributor = Contributor.objects.filter(id=contributor_id)
     if contributor.count() == 0:
         return JsonResponse({'message': 'There is no contributor with this id.'}, status=404)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
-    contributor[0].workspaces.delete(workspace_id = workspace_id)
-    contributor.save()
+    if workspace[0] not in contributor[0].workspaces.all():
+        return JsonResponse({'message': 'there is no contributor with this id in this workspace.'}, status=404)
+    contributor[0].workspaces.remove(workspace[0])
+    contributor[0].save()
+    return JsonResponse({'message': 'Contributor from workspace deleted successfully.'}, status=200)
 
+
+@csrf_exempt
 def delete_reference(request):
-    id = int(request.GET.get("workspace_id"))
-    node = int(request.GET.get("node_id"))
-    workspace = Workspace.objects.filter(workspace_id=id)
+    workspace_id = request.POST.get("workspace_id")
+    node_id = request.POST.get("node_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    if node_id == None or node_id == '':
+        return JsonResponse({'message': 'node_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+        node_id = int(node_id)
+    except:
+        return JsonResponse({'message': 'workspace_id and node_id fields have to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    if workspace[0].is_finalized == True:
+        return JsonResponse({'message': ' workspace already finalized'}, status=400)
     workspace = workspace[0]
-    reference = workspace.references.all(node = node)
-    if workspace.count() == 0:
-        return JsonResponse({'message': 'There is no reference with this id.'}, status=404)
-    reference.delete()
+    reference = workspace.references.filter(node_id = node_id)
+    if reference.count() == 0:
+        return JsonResponse({'message': 'There is no reference with this id in this workspace.'}, status=404)
+    workspace.references.remove(reference[0])
+    return JsonResponse({'message': 'reference deleted successfully.'}, status=200)
 
+
+@csrf_exempt
 def finalize_workspace(request):
-    id = int(request.GET.get("workspace_id"))
-    workspace = Workspace.objects.filter(workspace_id=id)
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    if workspace[0].is_finalized == True:
+        return JsonResponse({'message': ' workspace already finalized'}, status=400)
+    workspace = workspace[0]
     workspace.is_finalized = True
     workspace.is_in_review = False
+    workspace.save()
+    return JsonResponse({'message': 'workspace successfully finalized'}, status=200)
 
+@csrf_exempt
 def add_entry(request):
-    id = int(request.GET.get("workspace_id"))
-    content = request.GET.get("entry_content")
-    workspace = Workspace.objects.filter(workspace_id=id)
+    workspace_id = request.POST.get("workspace_id")
+    content = request.POST.get("entry_content")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id field has to be a integer'}, status=400)
+    if content == None:
+        content = ''
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
-    entry = Entry.objects.create(content=content)
-    workspace.entries.add(entry[0]) ##
-    workspace.save()
-
+    if workspace[0].is_finalized == True:
+        return JsonResponse({'message': ' workspace already finalized'}, status=400)
+    entry = Entry.objects.create(content=content,entry_index=0, entry_number=0) # TODO WILL BE PROVIDED IN THE FUTURE
+    workspace[0].entries.add(entry) ##
+    workspace[0].save()
+    return JsonResponse({'message': 'Entry successfully added to workspace',
+                         'entry_id': entry.entry_id}, status=200)
+@csrf_exempt
 def add_reference(request):
-    id = int(request.GET.get("workspace_id"))
-    node_id = int(request.GET.get("node_id"))
-    workspace = Workspace.objects.filter(workspace_id=id)
+    workspace_id = request.POST.get("workspace_id")
+    node_id = request.POST.get("node_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    if node_id == None or node_id == '':
+        return JsonResponse({'message': 'node_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+        node_id = int(node_id)
+    except:
+        return JsonResponse({'message': 'workspace_id and node_id fields have to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace[0].is_finalized == True:
+        return JsonResponse({'message': ' workspace already finalized'}, status=400)
     node = Node.objects.filter(node_id=node_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
     if node.count() == 0:
         return JsonResponse({'message': 'There is no node with this id.'}, status=404)
-    workspace.references.add(node[0])
-    workspace.save()
-
+    if node[0] in workspace[0].references.all():
+        return JsonResponse({'message': 'this reference already exists in this workspace.'}, status=400)
+    workspace[0].references.add(node[0])
+    workspace[0].save()
+    return JsonResponse({'message': 'reference added to the workspace successfully.'}, status=200)
+@csrf_exempt
 def create_workspace(request):
-    title = request.GET.get("workspace_title")
+    title = request.POST.get("workspace_title")
+    user_id = request.POST.get("user_id")
+    if title == '' or title == None:
+        return JsonResponse({'message': 'workspace_title field can not be empty'}, status=400)
+    if user_id == '' or user_id == None:
+        return JsonResponse({'message': 'user_id field can not be empty'}, status=400)
+    try:
+        creator = int(user_id)
+    except:
+        return JsonResponse({'message': 'user_id has to be a integer'}, status=400)
+    cont = Contributor.objects.filter(id=user_id)
+    if cont.count() == 0:
+        return JsonResponse({'message': 'there is no contributor with this user_id'}, status=400)
     workspace = Workspace.objects.create(workspace_title=title)
     workspace.save()
-
+    cont[0].workspaces.add(workspace)
+    return JsonResponse({'message': 'Workspace with title ' + title + ' has been added successfully' ,
+                         'workspace_id' : workspace.workspace_id}, status=200)
+@csrf_exempt
 def get_random_node_id(request):
     count = int(request.GET.get("count"))
-    node_ids = Node.node_id.all()
+    node_ids = [node['node_id'] for node in Node.objects.values('node_id')]
     node_list = []
+    if count > len(node_ids):
+        return JsonResponse({'message': 'There are less nodes than requested number.'}, status=200)
     for i in range(count):
-        while node_ids[index] not in node_list:
-            index = random.randint(0,len(node_ids))
+        index = random.randint(0,len(node_ids)-1)
         node_list.append(node_ids[index])
     return JsonResponse({'node_ids': node_list}, status=200)
 

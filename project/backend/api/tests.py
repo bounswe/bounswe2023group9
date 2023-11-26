@@ -7,7 +7,94 @@ from rest_framework.authtoken.models import Token
 from database.serializers import RegisterSerializer, UserSerializer
 from database.models import *
 import datetime
+
 # Create your tests here for each class or API call.
+
+class WorkspacePOSTAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+        self.user_for_basic = User.objects.create_user(id=1, email= 'basic_user@example.com', username='basic_user@example.com', first_name='Basic User', last_name='Test1')
+        self.user_for_contributor1 = User.objects.create_user(id=2, email= 'cont1@example.com', username='cont1@example.com', first_name='Contributor User 2', last_name='Test2')
+        self.user_for_contributor2 = User.objects.create_user(id=3, email= 'cont2@example.com', username='cont2@example.com', first_name='Contributor User 3', last_name='Test3')
+
+        self.basic_user = BasicUser.objects.create(user=self.user_for_basic, bio="I am a basic user")
+        self.contributor1 = Contributor.objects.create(user=self.user_for_contributor1, bio="I am the first contributor")
+        self.contributor2 = Contributor.objects.create(user=self.user_for_contributor2, bio="I am the second contributor")
+
+        self.basic_user_token = Token.objects.create(user=self.user_for_basic)
+        self.contributor1_token = Token.objects.create(user=self.user_for_contributor1)
+        self.contributor2_token = Token.objects.create(user=self.user_for_contributor2)
+
+        self.semantic_tag1 = SemanticTag.objects.create(wid="Q1", label="Semantic Tag 1")
+        self.semantic_tag2 = SemanticTag.objects.create(wid="Q2", label="Semantic Tag 2")
+    
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
+        Token.objects.all().delete()
+        Workspace.objects.all().delete()
+        SemanticTag.objects.all().delete()
+
+        print("All tests for the Workspace POST API are completed!")
+
+    def test_create_workspace(self):
+        # Testing the POST method for basic user tries to create workspace
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.basic_user_token.key}")
+        data = {
+            "workspace_title": "Basic User Workspace",
+            "semantic_tags": [self.semantic_tag1.pk]
+            }
+
+        response = self.client.post(reverse("workspace_post"), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "Test failed: Basic user shouldnot be able to create a workspace")
+
+        # Testing the POST method for creating without title
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor1_token.key}")
+
+        data = {
+            "semantic_tags": [self.semantic_tag1.pk]
+        }
+        response = self.client.post(reverse("workspace_post"), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST, "Test failed: Workspace cannot be created without a title")
+
+        # Testing the POST method for creating without semantic tags
+        data = {
+            "workspace_title": "Contributor1 Workspace"
+        }
+        response = self.client.post(reverse("workspace_post"), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, "Test failed: Workspace can be created without semantic tags")
+
+        workspaces = self.contributor1.workspaces.all()
+        self.assertEqual(workspaces.count(), 1, "Test failed: Workspace could not be created")
+
+        # Testing the POST method for updating workspace
+        if workspaces.count() > 0:
+            workspace = workspaces[0]
+
+            data = {
+                "workspace_id": workspace.workspace_id,
+                "workspace_title": "Contributor1 Workspace Updated",
+                "semantic_tags": [self.semantic_tag2.pk]
+            }
+            response = self.client.post(reverse("workspace_post"), data, format="json")
+
+            workspace = Workspace.objects.get(workspace_id=workspace.workspace_id)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED, "Update failure")
+            self.assertEqual(workspace.semantic_tags.count(), 1, "Update failure for semantic tags count")
+            self.assertEqual(workspace.semantic_tags.all()[0].wid, self.semantic_tag2.wid, "Update failure for semantic tag")
+            self.assertEqual(workspace.workspace_title, "Contributor1 Workspace Updated", "Update failure for title")
+
+            # Try to update workspace of a different contributor
+            self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor2_token.key}")
+            data = {
+                "workspace_id": workspace.workspace_id,
+                "workspace_title": "Contributor2 Workspace Updated",
+                "semantic_tags": [self.semantic_tag1.pk]
+            }
+            response = self.client.post(reverse("workspace_post"), data, format="json")
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "Test failed: Contributor2 shouldnot be able to update Contributor1's workspace")
 
 
 class SignUpAPIViewTestCase(TestCase):
@@ -406,6 +493,13 @@ class NodeAPITestCase(TestCase):
         self.assertContains(response, 'question_set')
         self.assertContains(response, 'semantic_tags')
         self.assertContains(response, 'annotations')
+    def test_get_random_node_id(self):
+        url = reverse('get_random_node_id')
+        response = self.client.get(url , {'count':2})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn('node_ids', data)
+        self.assertEqual(len(data['node_ids']), 2)
 
 class TheoremGETAPITestCase(TestCase):
     def setUp(self):
@@ -478,7 +572,6 @@ class UserWorkspacesGETAPITestCase(TestCase):
 
     def test_get_workspaces_of_user(self):
         response = self.client.get(self.url, {'user_id': self.cont.id})
-        print(response)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
@@ -498,7 +591,6 @@ class WorkspaceGETAPITestCase(TestCase):
 
     def test_get_workspace_from_id(self):
         response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
-        print(response)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['workspace_id'],self.workspace.workspace_id)
         self.assertEqual(response.json()['workspace_id'], self.workspace.workspace_id)
@@ -506,6 +598,7 @@ class WorkspaceGETAPITestCase(TestCase):
         self.assertEqual(response.json()['workspace_title'], self.workspace.workspace_title)
         self.assertEqual(response.json()['status'], 'workable')
         self.assertEqual(response.json()['references'], [])
+        self.assertEqual(response.json()['semantic_tags'], [])
         self.assertEqual(response.json()['pending_contributors'], [])
         self.assertEqual(response.json()['num_approvals'], 0)
         # self.assertEqual(response.json()['created_at'], self.workspace.created_at)
