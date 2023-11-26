@@ -1,9 +1,13 @@
+import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
+import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SearchBarExtended extends StatefulWidget {
   final Function semanticSearch;
@@ -17,6 +21,8 @@ class SearchBarExtended extends StatefulWidget {
 class _SearchBarExtendedState extends State<SearchBarExtended> {
   SearchType searchType = SearchHelper.searchType;
   SearchOption searchOption = SearchHelper.searchOption;
+
+  final List<String> semantics = [];
 
   Widget searchTypeSelector() {
     if (Responsive.isMobile(context)) {
@@ -90,21 +96,21 @@ class _SearchBarExtendedState extends State<SearchBarExtended> {
 
   Future<List<String>> _getSuggestions(String query) async {
     if (searchOption == SearchOption.exact) return [];
+    semantics.clear();
     if (query.length < 3) return [];
-    return Future.delayed(const Duration(milliseconds: 500), () {
-      return [
-        "Theorem 1",
-        "Theorem 2",
-        "Theorem 3",
-        "Theorem 4",
-        "Theorem 5",
-        "Theorem 6",
-        "Theorem 7",
-        "Theorem 8",
-        "Theorem 9",
-        "Theorem 10",
-      ];
-    });
+    final NodeProvider nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+    try {
+      await nodeProvider.semanticSuggestions(query);
+    } on SearchError {
+      return [];
+    }
+    semantics.addAll(nodeProvider.semanticTags.map((e) => e.label));
+    return semantics;
+  }
+
+  SemanticTag getTag(String label) {
+    final NodeProvider nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+    return nodeProvider.semanticTags.firstWhere((element) => element.label == label);
   }
 
   Widget _suggestionLoaderBuilder() {
@@ -152,76 +158,82 @@ class _SearchBarExtendedState extends State<SearchBarExtended> {
         child: searchTypeSelector2(),
       ),
       const SizedBox(width: 4.0),
-      PopupMenuButton<SearchType>(
-        position: PopupMenuPosition.under,
-        color: Colors.grey.shade200,
-        onSelected: (SearchType newSearchType) {
-          setState(() {
-            searchType = newSearchType;
-            SearchHelper.searchType = newSearchType;
-          });
-        },
-        initialValue: searchType,
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<SearchType>>[
-          const PopupMenuItem<SearchType>(
-            value: SearchType.theorem,
-            child: Row(
-              children: [
-                Icon(Icons.description_rounded),
-                SizedBox(width: 4.0),
-                Text("Theorem"),
-              ],
+      if (searchOption == SearchOption.exact)
+        PopupMenuButton<SearchType>(
+          position: PopupMenuPosition.under,
+          color: Colors.grey.shade200,
+          onSelected: (SearchType newSearchType) {
+            setState(() {
+              searchType = newSearchType;
+              SearchHelper.searchType = newSearchType;
+            });
+          },
+          initialValue: searchType,
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<SearchType>>[
+            const PopupMenuItem<SearchType>(
+              value: SearchType.theorem,
+              child: Row(
+                children: [
+                  Icon(Icons.description_rounded),
+                  SizedBox(width: 4.0),
+                  Text("Theorem"),
+                ],
+              ),
             ),
-          ),
-          const PopupMenuItem<SearchType>(
-            value: SearchType.author,
-            child: Row(
-              children: [
-                Icon(Icons.person),
-                SizedBox(width: 4.0),
-                Text("Author"),
-              ],
+            const PopupMenuItem<SearchType>(
+              value: SearchType.author,
+              child: Row(
+                children: [
+                  Icon(Icons.person),
+                  SizedBox(width: 4.0),
+                  Text("Author"),
+                ],
+              ),
             ),
-          ),
-          const PopupMenuItem<SearchType>(
-            value: SearchType.by,
-            child: Row(
-              children: [
-                Icon(Icons.person_2_outlined),
-                SizedBox(width: 4.0),
-                Text("By"),
-              ],
+            const PopupMenuItem<SearchType>(
+              value: SearchType.by,
+              child: Row(
+                children: [
+                  Icon(Icons.person_2_outlined),
+                  SizedBox(width: 4.0),
+                  Text("By"),
+                ],
+              ),
             ),
-          ),
-          const PopupMenuItem<SearchType>(
-            value: SearchType.both,
-            child: Row(
-              children: [
-                Icon(Icons.list_rounded),
-                SizedBox(width: 4.0),
-                Text("Both"),
-              ],
-            ),
-          )
-        ],
-        child: searchTypeSelector(),
-      ),
+            const PopupMenuItem<SearchType>(
+              value: SearchType.both,
+              child: Row(
+                children: [
+                  Icon(Icons.list_rounded),
+                  SizedBox(width: 4.0),
+                  Text("Both"),
+                ],
+              ),
+            )
+          ],
+          child: searchTypeSelector(),
+        ),
     ];
     return SizedBox(
       height: 55,
       child: EasySearchBar(
         title: const Text('Select a type to start searching'),
         onSearch: (value) {
-          if (searchOption == SearchOption.semantic) {
-            widget.semanticSearch(value);
-          } else {
+          if (searchOption == SearchOption.exact) {
             widget.exactSearch(value);
           }
         },
         asyncSuggestions:
             (searchOption == SearchOption.exact) ? null : (value) => _getSuggestions(value),
         suggestionLoaderBuilder: () => _suggestionLoaderBuilder(),
-        onSuggestionTap: (data) => widget.semanticSearch(data),
+        suggestionBuilder: (data) {
+          final SemanticTag tag = getTag(data);
+          return ListTile(
+            title: Text(tag.label),
+            subtitle: Text(tag.description),
+          );
+        },
+        onSuggestionTap: (data) => widget.semanticSearch(getTag(data)),
         searchTextStyle: const TextStyle(color: Colors.grey),
         elevation: 2,
         searchBackIconTheme: const IconThemeData(color: Colors.grey),
