@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
@@ -71,6 +71,30 @@ class NodeAPIView(APIView):
         node = node.first()
         serializer = NodeSerializer(node)
         return Response(serializer.data)
+
+class IsContributorAndWorkspace(BasePermission):
+    def has_permission(self, request, view):
+        workspace_id = request.data.get('workspace_id')
+        if not request.user.is_authenticated:
+            return False
+        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        if workspace_id is not None:
+            return request.user.basicuser.contributor.workspaces.filter(workspace_id=workspace_id).exists()
+        return True
+
+class WorkspacePostAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsContributorAndWorkspace)
+
+    def post(self, request):
+        serializer = WorkspaceSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(
+            serializer.errors, status=400
+        )
 
 def search(request):
     search = request.GET.get("query")

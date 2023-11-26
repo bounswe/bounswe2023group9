@@ -51,7 +51,7 @@ class SemanticTag(models.Model):
         return existings
     
     def __str__(self):
-        return self.label + " - " + self.wid
+        return str(self.pk) + " " + self.label + " - " + self.wid
 
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
@@ -72,6 +72,7 @@ class Entry(models.Model):
         self.is_theorem_entry = True
     def set_entry_content(self,cont):
         self.content = cont
+
 # Create your models here.
 class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
@@ -112,7 +113,7 @@ class BasicUser(models.Model):
 
 
 class Contributor(BasicUser):
-    workspaces = models.ManyToManyField(Workspace)
+    workspaces = models.ManyToManyField(Workspace, blank=True)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
