@@ -1,7 +1,10 @@
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../models/workspaces_page/entry.dart';
 import '../../../../utils/colors.dart';
+
 
 class EntryCard extends StatefulWidget {
   final Entry entry;
@@ -104,16 +107,67 @@ class _EntryCardState extends State<EntryCard> {
           ],
         ),
         IconButton(
-          onPressed: widget.onDelete, // Delete the entry
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) =>
+                AppAlertDialog(
+                  text: "Do you want to delete the entry?",
+                  actions: [
+                    AppButton(
+                      text: "Yes",
+                      height: 40,
+                      onTap: () {
+                        setState(() { // delete the entry
+                          widget.onDelete();
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    AppButton(
+                      text: "No",
+                      height: 40,
+                      onTap: () { Navigator.of(context).pop(); },
+                    ),
+                  ],
+                ),
+            );
+          },
           icon: const Icon(Icons.delete),
+        ),
+        IconButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => AppAlertDialog(
+                text: "Do you want to finalize the entry?",
+                actions: [
+                  AppButton(
+                    text: "Yes",
+                    height: 40,
+                    onTap: () {
+                      /* Finalize the entry */
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  AppButton(
+                    text: "No",
+                    height: 40,
+                    onTap: () { Navigator.of(context).pop(); },
+                  ),
+                ],
+              ),
+            );
+          },
+          icon: const Icon(Icons.stop),
         ),
         const Expanded(child: SizedBox()),
         Text(
           widget.entry.publishDateFormatted,
-          style: TextStyle(
-            color: Colors.grey.shade800,
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16.0,
+            color: Colors.grey,
           ),
         ),
         const SizedBox(width: 10.0),
@@ -126,10 +180,10 @@ class _EntryCardState extends State<EntryCard> {
         children: [
           Text(
             widget.entry.publishDateFormatted,
-            style: TextStyle(
-              color: Colors.grey.shade800,
+            style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 16.0,
+              color: Colors.grey,
             ),
           ),
           const SizedBox(width: 10.0),
@@ -150,8 +204,8 @@ class _EntryCardState extends State<EntryCard> {
             focusNode: entryFocusNode,
             cursorColor: Colors.grey.shade700,
             style: const TextStyle(
-              fontSize: 16.0,
               fontWeight: FontWeight.w500,
+              fontSize: 16.0,
             ),
             maxLines: 10,
             onChanged: (text) { /* What will happen when the text changes? */ },
@@ -193,8 +247,6 @@ class _EntryCardState extends State<EntryCard> {
         height: extended ? extendHeight : shrunkHeight,
         child: Card(
           elevation: 4.0,
-          shadowColor: AppColors.primaryColor,
-          color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
