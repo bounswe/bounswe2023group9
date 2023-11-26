@@ -21,7 +21,6 @@ class SearchBarExtended extends StatefulWidget {
 class _SearchBarExtendedState extends State<SearchBarExtended> {
   SearchType searchType = SearchHelper.searchType;
   SearchOption searchOption = SearchHelper.searchOption;
-
   final List<String> semantics = [];
 
   Widget searchTypeSelector() {
