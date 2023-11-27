@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
-import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
@@ -11,8 +10,6 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../models/user.dart';
-import '../../../providers/auth.dart';
 import '../../../widgets/app_button.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
 
@@ -32,13 +29,7 @@ class MobileWorkspacePage extends StatefulWidget {
 class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   final CarouselController controller = CarouselController();
 
-  Workspaces workspacesData = Workspaces(
-    workspaces: <WorkspacesObject>[],
-    pendingWorkspaces: <WorkspacesObject>[],
-  );
-
   bool isLoading = false;
-  bool _isFirstTime = true;
   bool error = false;
   String errorMessage = "";
 
@@ -49,36 +40,11 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   int workspaceIndex = 0;
 
   @override
-  void didChangeDependencies() {
-    if (_isFirstTime) {
-      getWorkspacesData();
-      _isFirstTime = false;
-    }
-    super.didChangeDependencies();
-  }
-
-  Future<void> getWorkspacesData() async {
-    try {
-      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
-      final auth = Provider.of<Auth>(context, listen: false);
-      setState(() {
-        isLoading = true;
-      });
-      await workspaceProvider.getUserWorkspaces(auth.basicUser.basicUserId, auth.token);
-      setState(() {
-        workspacesData = workspaceProvider.workspaces ?? {} as Workspaces;
-      });
-    } catch (e) {
-      error = true;
-      errorMessage = e.toString();
-    } finally {
-      setState(() {
-        yourWorkLength = workspacesData.workspaces.length;
-        pendingLength = workspacesData.pendingWorkspaces.length;
-        totalLength = yourWorkLength + pendingLength;
-        isLoading = false;
-      });
-    }
+  void initState() {
+    super.initState();
+    yourWorkLength = widget.workspaces!.workspaces.length;
+    pendingLength = widget.workspaces!.pendingWorkspaces.length;
+    totalLength = yourWorkLength + pendingLength;
   }
 
   Widget mobileAddNewWorkspaceIcon() {
@@ -124,10 +90,10 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
             totalLength+1,
             (index) => (index == 0) ? mobileAddNewWorkspaceIcon()
             : (index <= yourWorkLength) ? MobileWorkspaceCard(
-                workspacesObject: workspacesData.workspaces[index-1],
+                workspacesObject: widget.workspaces!.workspaces[index-1],
                 pending: false
             ) : MobileWorkspaceCard(
-              workspacesObject: workspacesData.pendingWorkspaces[index-yourWorkLength-1],
+              workspacesObject: widget.workspaces!.pendingWorkspaces[index-yourWorkLength-1],
               pending: true,
             ),
           ),
@@ -197,8 +163,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                 child: Divider(),
               ),
               (totalLength != 0) ? MobileWorkspaceContent(
-                workspaceId: (workspaceIndex < yourWorkLength) ? workspacesData.workspaces[workspaceIndex].workspaceId
-                  : workspacesData.pendingWorkspaces[workspaceIndex-yourWorkLength].workspaceId,
+                workspaceId: (workspaceIndex < yourWorkLength) ? widget.workspaces!.workspaces[workspaceIndex].workspaceId
+                  : widget.workspaces!.pendingWorkspaces[workspaceIndex-yourWorkLength].workspaceId,
                 pending: (workspaceIndex < yourWorkLength) ? false : true,
               ) : const Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 120.0, 16.0, 0.0),
