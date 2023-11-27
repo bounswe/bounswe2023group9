@@ -3,6 +3,10 @@ import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class NotificationExplanation extends StatelessWidget {
+  const NotificationExplanation({
+    super.key,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -13,12 +17,12 @@ class NotificationExplanation extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
           child: Text(
             "Stay connected and informed with notifications! Up-to-date on the activities related to your interests and contributions.",
-            style: TextStyles.title4,
+            style: TextStyles.title4.copyWith(fontSize: 24),
           ),
         ),
         Container(
           margin: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0.0),
-          child: Text(
+          child: const Text(
             "including:",
             style: TextStyle(
               fontSize: 20,

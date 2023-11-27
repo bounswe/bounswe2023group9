@@ -40,7 +40,7 @@ class Contributors extends StatelessWidget {
             //   );
             // } else {
             return Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(2),
               child: CardContainer(
                 onTap: () {
                   //     Navigator.pushNamed(context, ProfilePage.routeName,
