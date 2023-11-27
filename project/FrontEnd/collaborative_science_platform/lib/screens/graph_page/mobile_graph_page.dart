@@ -131,54 +131,57 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
       ),
       !widget.isLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
     ];
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: CarouselSlider(
-                carouselController: controller,
-                items: subpages,
-                options: CarouselOptions(
-                  scrollPhysics: const ScrollPhysics(),
-                  autoPlay: false,
-                  viewportFraction: 1.0,
-                  enableInfiniteScroll: false,
-                  initialPage: current,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-                  enlargeFactor: 0.3,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      current = index;
-                    });
-                  },
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: CarouselSlider(
+                  carouselController: controller,
+                  items: subpages,
+                  options: CarouselOptions(
+                    scrollPhysics: const ScrollPhysics(),
+                    autoPlay: false,
+                    viewportFraction: 1.0,
+                    enableInfiniteScroll: false,
+                    initialPage: current,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+                    enlargeFactor: 0.3,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        current = index;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: subpages.asMap().entries.map((entry) {
-            return GestureDetector(
-              onTap: () => controller.animateToPage(entry.key),
-              child: Container(
-                width: 12.0,
-                height: 12.0,
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6.0),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: (current == entry.key) ? Colors.indigo[700] : Colors.indigo[200]),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: subpages.asMap().entries.map((entry) {
+              return GestureDetector(
+                onTap: () => controller.animateToPage(entry.key),
+                child: Container(
+                  width: 12.0,
+                  height: 12.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6.0),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (current == entry.key) ? Colors.indigo[700] : Colors.indigo[200]),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 
