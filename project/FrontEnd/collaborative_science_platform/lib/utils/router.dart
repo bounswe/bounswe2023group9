@@ -93,10 +93,6 @@ final router = GoRouter(
         Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
         return const GraphPage();
       },
-      redirect: (context, state) {
-        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
-        return null;
-      },
       routes: [
         GoRoute(
           name: "graphNode",
