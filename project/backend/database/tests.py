@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import ReviewRequest, Workspace, Contributor, Reviewer, Admin
+from .models import *
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer, ContributorSerializer, ReviewerSerializer
-from .models import BasicUser, Node, Theorem, Proof
+from .models import BasicUser, Node, Theorem, Proof, Request, ReviewRequest, CollaborationRequest
 from .serializers import RegisterSerializer, UserSerializer, BasicUserSerializer
 
 # Create your tests here.
@@ -71,7 +71,7 @@ class ContributorModelTestCase(TestCase):
     def test_create_workspace(self):
         # Test the create_workspace method
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = contributor.create_workspace()
+        workspace = contributor.create_workspace('test')
         self.assertIn(workspace, contributor.workspaces.all())
         
         # We should collect our garbages
@@ -82,7 +82,11 @@ class ContributorModelTestCase(TestCase):
     def test_delete_workspace(self):
         # Create a workspace and add it to the contributor
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = Workspace.objects.create()
+        workspace = Workspace.objects.create(
+            workspace_id=1,
+            workspace_title="Test Workspace",
+
+        )
         contributor.workspaces.add(workspace)
 
         # Test the delete_workspace method
@@ -97,7 +101,11 @@ class ContributorModelTestCase(TestCase):
     def test_delete_nonexistent_workspace(self):
         # Create a workspace, but don't add it to the contributor
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = Workspace.objects.create()
+        workspace = Workspace.objects.create(
+            workspace_id=1,
+            workspace_title="Test Workspace",
+            num_approvals=0,
+        )
 
         # Test the delete_workspace method with a non-existent workspace
         contributor.delete_workspace(workspace)  # This should not raise an error
@@ -108,10 +116,10 @@ class ContributorModelTestCase(TestCase):
 
 class ReviewerModelTestCase(TestCase):
     def tearDown(self):
-        User.objects.all().delete()
-        BasicUser.objects.all().delete()
+        Reviewer.objects.all().delete()
         Contributor.objects.all().delete()
-        Reviewer.objects.all().delete
+        Workspace.objects.all().delete()
+        ReviewRequest.objects.all().delete()
         print("All tests for the Reviewer Model are completed!")
     
     def test_reviewer_create(self):
@@ -135,13 +143,14 @@ class ReviewerModelTestCase(TestCase):
         # Create reviewer instances, note that username is a key.
         reviewer1=Reviewer.objects.create(user=User.objects.create(username="First"))
         reviewer2=Reviewer.objects.create(user=User.objects.create(username="Second"))
+        workspace = Workspace.objects.create()
 
         # Create review requests associated with the reviewer1
-        review_request1 = ReviewRequest.objects.create(reviewer=reviewer1)
-        review_request2 = ReviewRequest.objects.create(reviewer=reviewer1)
+        review_request1 = ReviewRequest.objects.create(sender=reviewer2 ,receiver=reviewer1, workspace=workspace)
+        review_request2 = ReviewRequest.objects.create(sender=reviewer2,receiver=reviewer1, workspace=workspace)
 
         # Create a review request not associated with the reviewer1
-        other_review_request = ReviewRequest.objects.create(reviewer=reviewer2)
+        other_review_request = ReviewRequest.objects.create(sender=reviewer1,receiver=reviewer2,workspace=workspace)
 
         review_requests = reviewer1.get_review_requests()
 
@@ -162,8 +171,9 @@ class ReviewerModelTestCase(TestCase):
     
     def test_inheritance(self):
         # Create a contributor and it's workspace
-        contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = contributor.create_workspace()
+        contributor = Contributor.objects.create(user=User.objects.create(username="future_reviewer"))
+        reviewer_judge = Reviewer.objects.create(user=User.objects.create(username="sender"))
+        workspace = contributor.create_workspace('test')
 
         # Suppose this particular contributor becomes a reviewer
         contributor.__class__= Reviewer
@@ -171,7 +181,8 @@ class ReviewerModelTestCase(TestCase):
         reviewer = contributor
 
         # Review request is issued to new reviewer
-        review_request = ReviewRequest.objects.create(reviewer=reviewer)
+        
+        review_request = ReviewRequest.objects.create(receiver=reviewer,sender=reviewer_judge, workspace=workspace)
         self.assertIn(review_request, reviewer.get_review_requests())
 
         # Check if workspace is inherited
@@ -207,6 +218,39 @@ class AdminModelTestCase(TestCase):
         self.assertFalse(admin.email_notification_preference)
         self.assertTrue(admin.show_activity_preference)
         
+class WorkspaceModelTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        print("All tests for the Workspace Model are completed!")
+
+    def test_workspace_model(self):  #Testing workspace model creation
+        workspace = Workspace.objects.create(
+                workspace_id = 1,
+                workspace_title = "Test Workspace",
+
+        )
+
+        self.assertEqual(workspace.workspace_id, 1)
+        self.assertEqual(workspace.workspace_title, "Test Workspace")
+        self.assertEqual(workspace.is_finalized, False)
+        self.assertEqual(workspace.is_published, False)
+        self.assertEqual(workspace.is_in_review, False)
+        self.assertEqual(workspace.is_rejected, False)
+        self.assertEqual(workspace.theorem_posted, False)
+        self.assertEqual(workspace.num_approvals, 0)
+        # self.assertIsNone(workspace.final_entry)
+
+    def test_finalize_workspace(self): #Testing finalize workspace function
+            workspace = Workspace.objects.create(
+                workspace_id=1,
+                workspace_title="Test Workspace",
+
+            )
+            Workspace.finalize_workspace(workspace)
+            self.assertEqual(workspace.is_finalized, True)
+            self.assertEqual(workspace.is_in_review, False)
+
+
 
 class NodeModelTestCase(TestCase):
     def tearDown(self):
@@ -343,7 +387,114 @@ class TheoremModelTestCase(TestCase):
         self.assertEqual(theorem.theorem_title, "Test Theorem")
         self.assertEqual(theorem.theorem_content, "This is a test theorem content.")
 
+class EntryModelTestCase(TestCase):
+    def tearDown(self):
+        Entry.objects.all().delete()
+        print("All tests for the Entry Model are completed!")
 
+    def test_entry_model(self):
+
+        entry = Entry.objects.create(
+            entry_id = 1,
+            entry_index = 1,
+            content = "This is an entry.",
+            is_theorem_entry = True,
+            entry_number = 1,
+        )
+        self.assertEqual(entry.entry_id, 1)
+        self.assertEqual(entry.entry_number, 1)
+        self.assertEqual(entry.content, "This is an entry.")
+        # self.assertEqual(entry.entry_date, "2023-11-11")
+        self.assertEqual(entry.is_theorem_entry, True)
+        # self.assertEqual(entry.is_final_entry,False)
+
+class ReviewRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        ReviewRequest.objects.all().delete()
+        
+        print("Test for the ReviewRequest Model is completed!")
+
+    def setUp(self):
+        # Setup run before every test method.
+        self.workspace = Workspace.objects.create()
+        self.reviewer = Reviewer.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor = Contributor.objects.create(user=User.objects.create())
+        self.request = ReviewRequest.objects.create(sender=self.contributor,receiver=self.reviewer,workspace=self.workspace, comment='Initial Comment')
+    def test_accept(self):
+        self.request.accept()
+        req = ReviewRequest.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")    
+
+class CollaborationRequestTestCase(TestCase):
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        User.objects.all().delete()
+        Contributor.objects.all().delete()
+        CollaborationRequest.objects.all().delete()
+        print("Test for the CollaborationRequest Model is completed!")
+    def setUp(self):
+        # Set up Workspace and Contributor instances to be used in the tests
+        self.workspace = Workspace.objects.create()
+        self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
+        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        self.request = CollaborationRequest.objects.create(workspace=self.workspace,receiver=self.contributor_receiver,sender=self.contributor_sender)
+    def test_accept(self):
+        self.request.accept()
+        req = CollaborationRequest.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.contributor_sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
+
+
+class RequestModelTestCase(TestCase):
+    def tearDown(self):
+        Request.objects.all().delete()
+        Contributor.objects.all().delete()
+
+    def setUp(self):
+        sender_user = User.objects.create(
+            username="testuser",
+            email="test@example.com",
+            first_name="User",
+            last_name="Test",
+        )
+        self.sender = Contributor.objects.create(user=sender_user, bio="Test bio 1")
+
+
+        receiver_user = User.objects.create(
+            username="testuser2",
+            email="test2@example.com",
+            first_name="User2",
+            last_name="Test2",
+        )
+        self.receiver = Contributor.objects.create(user=receiver_user, bio="Test bio 2")
+        self.request = Request.objects.create(sender=self.sender, receiver=self.receiver)
+
+    def test_db(self):
+        self.assertGreater(Request.objects.filter(sender=self.sender).count(), 0, "Could not find created request in the db with this sender!")
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.receiver.id, self.receiver.id, "Receiver didn't match")
+        self.assertEqual(self.request.status, "P", "Status is not Pending")
+
+    def test_accept(self):
+        self.request.accept()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "A", "Accept method didn't work as expected")
+
+    def test_reject(self):
+        self.request.reject()
+        req = Request.objects.get(sender=self.sender)
+        self.assertEqual(req.status, "R", "Reject method didn't work as expected")
 
 class RegisterSerializerTestCase(TestCase):
     def setUp(self):
@@ -435,7 +586,7 @@ class ContributorSerializerTestCase(TestCase):
         # Testing the fiels of the serializer
         
         contributor = Contributor.objects.create(user=User.objects.create())
-        workspace = contributor.create_workspace()
+        workspace = contributor.create_workspace('test')
 
         serializer = ContributorSerializer(contributor)
         expected_fields = set(
@@ -453,11 +604,88 @@ class ReviewerSerializerTestCase(TestCase):
         # Testing the fiels of the serializer
         
         reviewer = Reviewer.objects.create(user=User.objects.create())
-        workspace = reviewer.create_workspace()
+        workspace = reviewer.create_workspace('test')
 
         serializer = ReviewerSerializer(reviewer)
         expected_fields = set(
             ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
+
+
+class SemanticTagModelTestCase(TestCase):
+    def setUp(self):
+        self.algo_tag = SemanticTag.objects.create(
+            wid="Q8366",
+            label="Algorithm"
+        )
+        self.search_tag = SemanticTag.objects.create(
+            wid="Q755673",
+            label="Search algorithm"
+        )
+        self.sort_tag = SemanticTag.objects.create(
+            wid="Q181593",
+            label="Sorting Agorithm"
+        )
+        self.combinational_tag = SemanticTag.objects.create(
+            wid="Q41883552",
+            label="Combinational Algorithm"
+        )
+
+        self.algo_node = Node.objects.create( #parent
+            node_title="Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.algo_node.semantic_tags.add(self.algo_tag)
+
+        self.search_node = Node.objects.create(
+            node_title="Search Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.search_node.semantic_tags.add(self.search_tag)
+
+        self.sort_node = Node.objects.create(
+            node_title="Sorting algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.sort_node.semantic_tags.add(self.sort_tag)
+
+        self.combinational_node = Node.objects.create(
+            node_title="Combinational Algorithm Node",
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.combinational_node.semantic_tags.add(self.combinational_tag)
+
+    def tearDown(self):
+        Node.objects.all().delete()
+        SemanticTag.objects.all().delete()
+        print("All tests for the Semantic Tag Model are completed!")
+
+    def test_search(self):
+        search_res = SemanticTag.existing_search_results("sorting algorithm")
+        l = len(search_res)
+        self.assertEqual(1, l, "Search result length is wrong!")
+
+        if l:
+            self.assertEqual(self.sort_tag.wid, search_res[0]["id"], "Search result id mismatch!")
+
+    def test_nodes(self):
+        self.assertEqual(self.sort_tag.count, 1, "Sort tag node count mismatch!")
+        if self.sort_tag.count:
+            self.assertEqual(self.sort_tag.nodes[0].pk, self.sort_node.pk, "Sort nodes mismatch!")
+
+        self.assertEqual(self.combinational_tag.related_count, 3, "Combinational tag related count mismatch!")
+        if self.combinational_tag.related_count:
+            r_nodes = self.combinational_tag.related_nodes
+            self.assertIn(self.algo_node, r_nodes, "Algorithm node not in related nodes of combintaional semantic tag!")
+            self.assertIn(self.search_node, r_nodes, "Search node not in related nodes of combintaional semantic tag!")
+            self.assertIn(self.sort_node, r_nodes, "Sort node not in related nodes of combintaional semantic tag!")
 
