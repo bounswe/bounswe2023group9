@@ -11,10 +11,9 @@ class Auth with ChangeNotifier {
   User? user;
   BasicUser? basicUser;
   //User? user = User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer");
-  String token = "";
 
   bool get isSignedIn {
-    return user != null;
+    return user != null && user!.token.isNotEmpty;
   }
 
   Future<void> login(String email, String password) async {
@@ -34,13 +33,13 @@ class Auth with ChangeNotifier {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        token = data['token'];
+        final token = data['token'];
 
         Uri url = Uri.parse("${Constants.apiUrl}/get_authenticated_user/");
         final tokenHeaders = {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': "Token ${data['token']}"
+          'Authorization': "Token $token"
         };
 
         final tokenResponse = await http.get(url, headers: tokenHeaders);
@@ -50,7 +49,8 @@ class Auth with ChangeNotifier {
               id: userData['id'],
               email: userData['email'],
               firstName: userData['first_name'],
-              lastName: userData['last_name']);
+              lastName: userData['last_name'],
+              token: token);
         } else {
           throw Exception("Something has happened");
         }
@@ -115,7 +115,6 @@ class Auth with ChangeNotifier {
 
   void logout() {
     user = null;
-    token = "";
     notifyListeners();
   }
 }
