@@ -61,7 +61,7 @@ class WorkspaceExplanation extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
           child: Text(
             "Workspaces empower your collaborative work, providing a dynamic, flexible and all-in-one hub for your contributions.",
-            style: TextStyles.title4,
+            style: TextStyles.title4.copyWith(fontSize: 24),
           ),
         ),
         Container(
@@ -105,7 +105,7 @@ class ProfileExplanation extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
           child: Text(
             "Signing up brings a host of benefits",
-            style: TextStyles.title4,
+            style: TextStyles.title4.copyWith(fontSize: 24),
           ),
         ),
         Container(
