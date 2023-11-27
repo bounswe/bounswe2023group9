@@ -152,12 +152,23 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      name: "/profile",
+      path: ProfilePage.routeName,
+      builder: (context, state) {
+        if (!context.read<Auth>().isSignedIn) {
+          return PleaseLoginPage(pageType: ProfilePage.routeName.substring(1));
+        }
+        return ProfilePage(email: "");
+      },
+    ),
+    GoRoute(
       name: ProfilePage.routeName.substring(1),
       path: "${ProfilePage.routeName}/:email",
       builder: (context, state) {
         Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.profile);
         final String encodedEmail = state.pathParameters['email'] ?? '';
         final String email = Uri.decodeComponent(encodedEmail);
+        print(context.read<Auth>().isSignedIn);
         return ProfilePage(email: email);
       },
       redirect: (context, state) {
