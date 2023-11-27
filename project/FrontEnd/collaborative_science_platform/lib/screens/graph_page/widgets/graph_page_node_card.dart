@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'dart:convert';
@@ -46,7 +47,7 @@ class GraphPageNodeCard extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
-                        child: SelectableText(
+                        child: AnnotationText(
                           utf8.decode(node.nodeTitle.codeUnits),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
