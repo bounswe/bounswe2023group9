@@ -3,10 +3,12 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspace.
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_content.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
+import '../../../widgets/app_button.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
@@ -50,7 +52,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
       workspacesData.workspaces.add(
         WorkspacesObject(
           workspaceId: i+1,
-          workspaceTitle: "Workspace Title ${i+1}",
+          workspaceTitle: "Workspace Title xxxxxxxxxxxxxxxxxx ${i+1}",
           pending: false,
         ),
       );
@@ -78,8 +80,26 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
       backgroundColor: Colors.grey.shade300,
       child: IconButton(
         iconSize: 28.0,
-        onPressed: () { /* Navigate to the page where new workspaces are created */ },
         icon: const Icon(Icons.add),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => AppAlertDialog(
+              text: "Create Workspace",
+              content: const CreateWorkspaceForm(),
+              actions: [
+                AppButton(
+                  text: "Create New Workspace",
+                  height: 50,
+                  onTap: () {
+                    // Create Workspace
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -91,37 +111,99 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
         height: 80.0,
         child: Card(
           elevation: 4.0,
-          shadowColor: AppColors.primaryColor,
-          color: AppColors.primaryLightColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    pending ? "Pending" : "Your Work",
-                    style: TextStyle(
-                      color: pending ? Colors.red.shade800
-                          : Colors.green.shade800,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.0,
+          child: InkWell(
+            customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            onTap: pending ? () { // accept or reject the review
+              showDialog(
+                context: context,
+                builder: (context) => AppAlertDialog(
+                  text: "Do you accept the work?",
+                  actions: [
+                    AppButton(
+                      text: "Accept",
+                      height: 40,
+                      onTap: () {
+                        /* Send to review */
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  ),
-                  Text(
-                    workspacesObject.workspaceTitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20.0,
+                    AppButton(
+                      text: "Reject",
+                      height: 40,
+                      onTap: () { Navigator.of(context).pop(); },
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              );
+            } : () { // send to review
+              showDialog(
+                context: context,
+                builder: (context) => AppAlertDialog(
+                  text: "Do you want to send it to review?",
+                  actions: [
+                    AppButton(
+                      text: "Yes",
+                      height: 40,
+                      onTap: () {
+                        /* Send to review */
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    AppButton(
+                      text: "No",
+                      height: 40,
+                      onTap: () { Navigator.of(context).pop(); },
+                    ),
+                  ],
+                ),
+              );
+            },
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 2.0),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            pending ? "Pending" : "Your Work",
+                            style: TextStyle(
+                              color: pending ? Colors.red.shade800
+                                  : Colors.green.shade800,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15.0,
+                            ),
+                          ),
+                          Text(
+                            workspacesObject.workspaceTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                      child: pending ? const Icon(Icons.keyboard_arrow_right)
+                        : const Icon(Icons.send),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -180,7 +262,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
           style: const TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.w500,
-            color: AppColors.primaryDarkColor,
           ),
         ),
       ],

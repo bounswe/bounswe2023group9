@@ -24,43 +24,45 @@ class NodeList extends StatefulWidget {
 class _NodeListState extends State<NodeList> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Card(
-        color: Colors.white,
-        elevation: 2.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-          title: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24.0,
+    return Column(
+      children: [
+        SizedBox(height: 5),
+        Card(
+          color: Colors.white,
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: ExpansionTile(
+            shape: const Border(),
+            tilePadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+            title: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0,
+                  ),
                 ),
               ),
             ),
+            children: [
+              // Display the list of nodes
+              Column(
+                children: widget.nodes.map((node) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                    child: GraphNodeCard(
+                        node: node, onTap: () => _showNodeDetailsPopup(context, node)),
+                  );
+                }).toList(),
+              ),
+            ],
           ),
-          children: [
-            // Display the list of nodes
-            Column(
-              children: widget.nodes.map((node) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                  child:
-                      GraphNodeCard(node: node, onTap: () => _showNodeDetailsPopup(context, node)),
-                );
-              }).toList(),
-            ),
-          ],
         ),
-      ),
+      ],
     );
   }
 

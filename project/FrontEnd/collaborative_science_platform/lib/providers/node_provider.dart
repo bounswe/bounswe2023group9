@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/exceptions/node_details_exception
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
@@ -13,6 +14,8 @@ class NodeProvider with ChangeNotifier {
   final List<Node> _searchNodeResult = [];
   NodeDetailed? nodeDetailed;
 
+  final List<SemanticTag> semanticTags = [];
+
   void clearAll() {
     nodeDetailed = null;
   }
@@ -21,12 +24,22 @@ class NodeProvider with ChangeNotifier {
     return [..._searchNodeResult];
   }
 
-  Future<void> search(SearchType type, String query) async {
-    _searchNodeResult.clear();
+  SemanticTag getSemanticTag(String label) {
+    return semanticTags.firstWhere((element) => element.label == label);
+  }
+
+  Future<void> search(SearchType type, String query,
+      {bool random = false, bool semantic = false}) async {
     if (type == SearchType.author) {
       throw WrongSearchTypeError();
     }
     String queryType = searchTypeToString[type]!;
+    if (random) {
+      queryType = "random";
+    }
+    if (semantic) {
+      queryType = "semantic";
+    }
     Uri url = Uri.parse("${Constants.apiUrl}/search/?query=$query&type=$queryType");
     final Map<String, String> headers = {
       "Accept": "application/json",
@@ -37,6 +50,7 @@ class NodeProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        _searchNodeResult.clear();
         _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
               contributors: (node['authors'] as List<dynamic>)
                   .map((author) => User(
@@ -49,11 +63,38 @@ class NodeProvider with ChangeNotifier {
               nodeTitle: node['title'],
               publishDate: DateTime.parse(node['date']),
             )));
-
         notifyListeners();
       } else if (response.statusCode == 400) {
         throw SearchError();
       } else {
+        throw Exception("Error");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> semanticSuggestions(String keyword) async {
+    semanticTags.clear();
+    Uri url = Uri.parse("${Constants.apiUrl}/get_semantic_suggestion/?keyword=$keyword");
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type": "application/json"
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        data = data["suggestions"];
+        for (var element in data) {
+          semanticTags.add(SemanticTag.fromJson(element));
+        }
+      } else if (response.statusCode == 400) {
+        throw SearchError();
+      } else {
+        if (json.decode(response.body)["message"] == "There are no nodes with this semantic tag.") {
+          throw SearchError();
+        }
         throw Exception("Error");
       }
     } catch (e) {

@@ -12,7 +12,7 @@ class LogOutButton extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           Provider.of<Auth>(context, listen: false).logout();
-          context.go(PleaseLoginPage2.routeName);
+          context.go(PleaseLoginPage.routeName);
         },
         child: Container(
           height: 40.0,

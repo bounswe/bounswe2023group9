@@ -7,14 +7,15 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/user_ca
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
+import 'package:collaborative_science_platform/widgets/search_bar_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final Function onSearch;
+  final Function onSemanticSearch;
   final bool isLoading;
-  final bool firstSearch;
   final bool error;
   final String errorMessage;
 
@@ -22,8 +23,8 @@ class MobileHomePage extends StatelessWidget {
     super.key,
     required this.searchBarFocusNode,
     required this.onSearch,
+    required this.onSemanticSearch,
     required this.isLoading,
-    required this.firstSearch,
     required this.error,
     required this.errorMessage,
   });
@@ -45,16 +46,19 @@ class MobileHomePage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 16.0, 8.0, 0.0),
-                child: AppSearchBar(
-                  focusNode: searchBarFocusNode,
-                  onSearch: onSearch,
-                ),
+                child: Responsive(
+                    mobile: AppSearchBar(focusNode: searchBarFocusNode, onSearch: onSearch),
+                    desktop:
+                        SearchBarExtended(exactSearch: onSearch, semanticSearch: onSemanticSearch)),
               ),
               Padding(
-                  padding: const EdgeInsets.only(top: 18.0),
+                  padding: const EdgeInsets.only(top: 10.0),
                   child: isLoading
-                      ? const Center(
-                          child: CircularProgressIndicator(),
+                      ? const Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
                         )
                       : error
                           ? SelectableText(
@@ -65,11 +69,9 @@ class MobileHomePage extends StatelessWidget {
                           : (SearchHelper.searchType == SearchType.author)
                               ? UserCards(
                                   userList: userProvider.searchUserResult,
-                                  firstSearch: firstSearch,
                                 )
                               : NodeCards(
                                   nodeList: nodeProvider.searchNodeResult,
-                                  firstSearch: firstSearch,
                                 )),
             ],
           ),
