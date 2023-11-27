@@ -1,6 +1,4 @@
 // GoRouter configuration
-import 'dart:math';
-
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
