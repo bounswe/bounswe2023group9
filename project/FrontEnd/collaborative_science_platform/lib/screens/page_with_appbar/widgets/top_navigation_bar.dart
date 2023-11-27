@@ -82,14 +82,16 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
         onTap: () {
           ScreenTab selected = widget.value;
           if (selected == ScreenTab.profile) {
-            Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected, context,
-                email: Uri.decodeComponent(Provider.of<Auth>(context, listen: false).user!.email));
+            String userEmail = Provider.of<Auth>(context, listen: false).user?.email ?? "";
+            Provider.of<ScreenNavigation>(context, listen: false)
+                .setSelectedTab(selected, context, email: Uri.decodeComponent(userEmail));
             return;
           } else {
             Provider.of<ScreenNavigation>(context, listen: false).setSelectedTab(selected, context);
           }
         },
         child: Container(
+          padding: const EdgeInsets.only(top: 16),
           color: isHovering ? Colors.grey[300] : Colors.transparent,
           child: Column(
               mainAxisAlignment: MainAxisAlignment.end,

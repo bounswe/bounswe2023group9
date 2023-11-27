@@ -27,6 +27,10 @@ class ScreenNavigation extends ChangeNotifier {
 
   ScreenTab get selectedTab => _selectedTab;
 
+  void changeSelectedTab(ScreenTab tab) {
+    _selectedTab = tab;
+  }
+
   void setSelectedTab(ScreenTab tab, BuildContext context, {String? email}) {
     _selectedTab = tab;
     switch (tab) {
@@ -49,7 +53,11 @@ class ScreenNavigation extends ChangeNotifier {
         context.go(NotificationPage.routeName);
         break;
       case ScreenTab.profile:
-        context.go('${ProfilePage.routeName}/$email');
+        if (email == "") {
+          context.go(ProfilePage.routeName);
+        } else {
+          context.go('${ProfilePage.routeName}/$email');
+        }
         break;
       case ScreenTab.pleaseLogin:
         context.go(PleaseLoginPage.routeName);

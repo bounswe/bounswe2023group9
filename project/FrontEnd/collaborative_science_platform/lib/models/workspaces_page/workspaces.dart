@@ -10,7 +10,7 @@ class Workspaces {
 
   factory Workspaces.fromJson(Map<String, dynamic> jsonString) {
     var workspacesList = jsonString['workspaces'] as List;
-    var pendingWorkspacesList = jsonString['workspaces'] as List;
+    var pendingWorkspacesList = jsonString['pending_workspaces'] as List;
 
     List<WorkspacesObject> workspaces =
         workspacesList.map((e) => WorkspacesObject.fromJson(e)).toList();

@@ -49,6 +49,7 @@ dependencies:
   flutter_tex: ^4.0.3+4
   easy_search_bar: ^2.5.0
   share_plus: ^7.2.1
+  material_floating_search_bar_2: ^0.5.0
 
 dev_dependencies:
   flutter_test:

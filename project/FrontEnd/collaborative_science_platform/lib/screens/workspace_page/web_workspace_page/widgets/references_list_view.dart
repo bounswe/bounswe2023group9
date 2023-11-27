@@ -26,7 +26,7 @@ class ReferencesListView extends StatelessWidget {
           child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
             const Text(
               "References",
-              style: TextStyles.title3secondary,
+              style: TextStyles.title4secondary,
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
@@ -67,10 +67,13 @@ class ReferencesListView extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width / 8,
+                                  child: Text(
                                   references[index].nodeTitle,
                                   style: TextStyles.bodyBold,
                                   textAlign: TextAlign.start,
+                                ),
                                 ),
                                 IconButton(
                                     onPressed: () {

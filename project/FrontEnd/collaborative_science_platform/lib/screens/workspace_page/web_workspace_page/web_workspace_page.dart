@@ -16,8 +16,10 @@ import 'package:flutter/material.dart';
 class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
+  final bool isLoading;
 
-  const WebWorkspacePage({super.key, required this.workspace, required this.workspaces});
+  const WebWorkspacePage(
+      {super.key, required this.workspace, required this.workspaces, required this.isLoading});
 
   @override
   State<WebWorkspacePage> createState() => _WebWorkspacePageState();
@@ -34,7 +36,6 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   bool error = false;
   String errorMessage = "";
 
-  bool isLoading = false;
   bool showSidebar = true;
   double minHeight = 750;
 
@@ -72,7 +73,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
     return PageWithAppBar(
         appBar: const HomePageAppBar(),
         pageColor: Colors.grey.shade200,
-        child: isLoading
+        child: widget.isLoading
             ? Container(
                 padding: const EdgeInsets.only(top: 32),
                 decoration: const BoxDecoration(color: Colors.white),
@@ -91,8 +92,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           controller: controller1,
                           hideSidebar: hideSideBar,
                           height: minHeight,
-                          workspaces: widget.workspaces ??
-                              Workspaces(workspaces: [], pendingWorkspaces: []),
+                          workspaces: widget.workspaces,
                         ),
                       if (!showSidebar)
                         Container(
@@ -170,6 +170,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   children: [
                                     ContributorsListView(
                                       contributors: widget.workspace!.contributors,
+                                      pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
                                       height: minHeight / 2,
                                     ),

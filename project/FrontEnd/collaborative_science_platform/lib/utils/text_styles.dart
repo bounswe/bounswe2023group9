@@ -27,10 +27,15 @@ class TextStyles {
     fontSize: 24,
     fontWeight: FontWeight.bold,
   );
+  static const TextStyle title4secondary = TextStyle(
+    color: AppColors.secondaryDarkColor,
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+  );
 
   static const TextStyle title4 = TextStyle(
     color: AppColors.primaryDarkColor,
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: FontWeight.normal,
   );
   static const TextStyle title4black = TextStyle(
@@ -47,7 +52,7 @@ class TextStyles {
     fontSize: 16,
   );
   static const TextStyle bodyGrey = TextStyle(
-    fontSize: 16,
+    fontSize: 10,
     color: Colors.grey,
   );
 
