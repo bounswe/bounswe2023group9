@@ -1,6 +1,5 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
-import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'dart:convert';
@@ -55,7 +54,7 @@ class GraphPageNodeCard extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(8.0), // Add padding inside the box
                 child: TeXView(
-                    renderingEngine: TeXViewRenderingEngine.katex(),
+                    renderingEngine: const TeXViewRenderingEngine.katex(),
                     child: TeXViewDocument(utf8.decode(node.theorem!.theoremContent.codeUnits))),
               ),
               const SizedBox(height: 8.0),

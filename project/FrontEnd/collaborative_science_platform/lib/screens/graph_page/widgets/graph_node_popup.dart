@@ -96,9 +96,9 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
                   'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
               Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
               TeXView(
-                  renderingEngine: TeXViewRenderingEngine.katex(),
+                  renderingEngine: const TeXViewRenderingEngine.katex(),
                   child: TeXViewDocument(
-                      '<b>Theorem Content:</b> ${utf8.decode(node.theorem!.theoremContent.codeUnits) ?? "No theorem"}')),
+                      '<b>Theorem Content:</b> ${node.theorem == null ? "No theorem" : utf8.decode(node.theorem!.theoremContent.codeUnits)}')),
             ],
           ),
           actions: [
