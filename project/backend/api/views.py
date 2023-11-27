@@ -251,7 +251,7 @@ def get_profile(request):
                                            'answerer_id':ans.answerer.id, 'question_content':ans.question_content,
                                        'answer_content':ans.answer_content,'answer_date':ans.answered_at,'is_answered':1})
 
-    user_asked_qs = Question.objects.filter(asker=cont[0].id)
+    user_asked_qs = Question.objects.filter(asker=basic_user.id)
     for q in user_asked_qs:
         asker_user = User.objects.get(id=q.asker.user_id)
         if q.answerer == None:
