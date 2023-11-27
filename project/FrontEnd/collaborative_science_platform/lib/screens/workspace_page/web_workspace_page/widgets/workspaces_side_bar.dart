@@ -1,44 +1,33 @@
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
-import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 
 class WorkspacesSideBar extends StatefulWidget {
   final ScrollController controller;
   final Function? hideSidebar;
   final double height;
+  final Workspaces workspaces;
 
   const WorkspacesSideBar(
-      {super.key, required this.controller, this.hideSidebar, required this.height});
+      {super.key,
+      required this.controller,
+      this.hideSidebar,
+      required this.height,
+      required this.workspaces});
 
   @override
   State<WorkspacesSideBar> createState() => _WorkspacesSideBarState();
 }
 
 class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
-  //mock data
-  Workspaces workspaces = Workspaces(workspaces: [
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My First Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My Second Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My First Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My Second Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My First Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "My Second Workspace", pending: false),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-  ], pendingWorkspaces: [
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-    WorkspacesObject(workspaceId: 1, workspaceTitle: "Someone's Workspace", pending: true),
-  ]);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -111,32 +100,41 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                         shrinkWrap: true,
                         padding: const EdgeInsets.all(8),
                         itemCount:
-                            (workspaces.workspaces.length + workspaces.pendingWorkspaces.length),
+                            (widget.workspaces.workspaces.length +
+                            widget.workspaces.pendingWorkspaces.length),
                         itemBuilder: (BuildContext context, int index) {
-                          if (index < workspaces.workspaces.length &&
-                              !workspaces.workspaces[index].pending) {
+                          if (index < widget.workspaces.workspaces.length &&
+                              !widget.workspaces.workspaces[index].pending) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
                               child: CardContainer(
-                                onTap: () {},
+                                onTap: () {
+                                  context.push(
+                                      "${WorkspacesPage.routeName}/${widget.workspaces.workspaces[index].workspaceId}");
+                                },
                                 child: Text(
-                                  workspaces.workspaces[index].workspaceTitle,
+                                  widget.workspaces.workspaces[index].workspaceTitle,
                                   style: TextStyles.title4,
                                   textAlign: TextAlign.start,
                                 ),
                               ),
                             );
-                          } else if (index >= workspaces.workspaces.length) {
+                          } else if (index >= widget.workspaces.workspaces.length) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
                               child: CardContainer(
-                                  onTap: () {},
+                                  onTap: () {
+                                    context.push(
+                                        "${WorkspacesPage.routeName}/${widget.workspaces.workspaces[index].workspaceId}");
+                                  },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
                                       Text(
-                                        workspaces
-                                            .pendingWorkspaces[index - workspaces.workspaces.length]
+                                        widget
+                                            .workspaces
+                                            .pendingWorkspaces[
+                                                index - widget.workspaces.workspaces.length]
                                             .workspaceTitle,
                                         style: TextStyles.bodyBold,
                                         textAlign: TextAlign.start,
