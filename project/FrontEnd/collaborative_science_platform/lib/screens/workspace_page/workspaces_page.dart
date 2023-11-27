@@ -31,11 +31,12 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
   void getWorkspaceById(int id) async {
     try {
       final workspaceProvider = Provider.of<WorkspaceProvider>(context);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.getWorkspaceById(id);
+      await workspaceProvider.getWorkspaceById(id, auth.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
       });
@@ -64,7 +65,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.getUserWorkspaces(auth.user!.id);
+      await workspaceProvider.getUserWorkspaces(auth.user!.id, auth.token);
       setState(() {
         workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
       });
@@ -85,7 +86,6 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
