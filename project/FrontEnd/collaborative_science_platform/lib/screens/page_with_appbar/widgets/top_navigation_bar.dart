@@ -91,6 +91,7 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
           }
         },
         child: Container(
+          padding: const EdgeInsets.only(top: 16),
           color: isHovering ? Colors.grey[300] : Colors.transparent,
           child: Column(
               mainAxisAlignment: MainAxisAlignment.end,

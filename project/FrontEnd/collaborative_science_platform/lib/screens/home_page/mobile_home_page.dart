@@ -47,7 +47,8 @@ class MobileHomePage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(10.0, 16.0, 8.0, 0.0),
                 child: Responsive(
-                    mobile: AppSearchBar(focusNode: searchBarFocusNode, onSearch: onSearch),
+                    mobile:
+                        SearchBarExtended(exactSearch: onSearch, semanticSearch: onSemanticSearch),
                     desktop:
                         SearchBarExtended(exactSearch: onSearch, semanticSearch: onSemanticSearch)),
               ),

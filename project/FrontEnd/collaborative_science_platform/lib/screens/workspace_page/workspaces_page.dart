@@ -36,7 +36,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.getWorkspaceById(id, auth.token);
+      await workspaceProvider.getWorkspaceById(id, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
       });
@@ -65,7 +65,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.getUserWorkspaces(auth.user!.id, auth.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
       setState(() {
         workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
       });

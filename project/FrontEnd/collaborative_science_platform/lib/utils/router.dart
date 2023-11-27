@@ -25,7 +25,10 @@ final router = GoRouter(
     GoRoute(
       name: 'home',
       path: HomePage.routeName,
-      builder: (context, state) => const HomePage(),
+      builder: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.home);
+        return const HomePage();
+      },
     ),
     GoRoute(
       name: LoginPage.routeName.substring(1),
@@ -55,9 +58,13 @@ final router = GoRouter(
         name: WorkspacesPage.routeName.substring(1),
         path: WorkspacesPage.routeName,
         builder: (context, state) {
+          Provider.of<ScreenNavigation>(context, listen: false)
+              .changeSelectedTab(ScreenTab.workspaces);
           return const WorkspacesPage();
         },
         redirect: (context, state) {
+          Provider.of<ScreenNavigation>(context, listen: false)
+              .changeSelectedTab(ScreenTab.workspaces);
           if (!context.read<Auth>().isSignedIn) {
             return '${PleaseLoginPage.routeName}${WorkspacesPage.routeName}';
           } else {
@@ -69,6 +76,8 @@ final router = GoRouter(
             name: "workspace",
             path: ":workspaceId",
             builder: (context, state) {
+              Provider.of<ScreenNavigation>(context, listen: false)
+                  .changeSelectedTab(ScreenTab.workspaces);
               final int workspaceId = int.tryParse(state.pathParameters['workspaceId'] ?? '') ?? 0;
               return WorkspacesPage(workspaceId: workspaceId);
             },
@@ -83,6 +92,7 @@ final router = GoRouter(
       name: GraphPage.routeName.substring(1),
       path: "${GraphPage.routeName}/:nodeId",
       builder: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
         final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
         return GraphPage(nodeId: nodeId);
       },
@@ -91,6 +101,7 @@ final router = GoRouter(
       name: "/graph",
       path: GraphPage.routeName,
       redirect: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
         final int nodeId = Random().nextInt(100);
         return "${GraphPage.routeName}/$nodeId";
       },
@@ -98,8 +109,14 @@ final router = GoRouter(
     GoRoute(
       name: NotificationPage.routeName.substring(1),
       path: NotificationPage.routeName,
-      builder: (context, state) => const NotificationPage(),
+      builder: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false)
+            .changeSelectedTab(ScreenTab.notifications);
+        return const NotificationPage();
+      },
       redirect: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false)
+            .changeSelectedTab(ScreenTab.notifications);
         if (!context.read<Auth>().isSignedIn) {
           return '${PleaseLoginPage.routeName}${NotificationPage.routeName}';
         } else {
@@ -129,6 +146,7 @@ final router = GoRouter(
       name: NodeDetailsPage.routeName.substring(1),
       path: "${NodeDetailsPage.routeName}/:nodeId",
       builder: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.none);
         final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
         return NodeDetailsPage(nodeID: nodeId);
       },
@@ -147,13 +165,14 @@ final router = GoRouter(
       name: ProfilePage.routeName.substring(1),
       path: "${ProfilePage.routeName}/:email",
       builder: (context, state) {
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.profile);
         final String encodedEmail = state.pathParameters['email'] ?? '';
         final String email = Uri.decodeComponent(encodedEmail);
         print(context.read<Auth>().isSignedIn);
         return ProfilePage(email: email);
       },
       redirect: (context, state) {
-        print(context.read<Auth>().isSignedIn);
+        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.profile);
         if (!context.read<Auth>().isSignedIn &&
             (state.pathParameters['email'] == null || state.pathParameters['email'] == '')) {
           return '${PleaseLoginPage.routeName}${ProfilePage.routeName}';
