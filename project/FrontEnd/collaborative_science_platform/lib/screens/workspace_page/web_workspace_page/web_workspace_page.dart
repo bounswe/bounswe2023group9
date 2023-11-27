@@ -1,6 +1,3 @@
-import 'package:collaborative_science_platform/models/node.dart';
-import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
