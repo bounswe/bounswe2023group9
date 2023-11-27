@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class GraphNodeCard extends StatefulWidget {
   final Node node;
@@ -35,7 +36,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SelectableText(
-                widget.node.nodeTitle,
+                utf8.decode(widget.node.nodeTitle.codeUnits),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16.0,

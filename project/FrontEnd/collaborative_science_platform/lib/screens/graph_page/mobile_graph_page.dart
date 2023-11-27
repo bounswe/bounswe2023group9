@@ -5,6 +5,7 @@ import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
@@ -77,20 +78,18 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
 
   Widget referencesCardList() {
     // pre
-    return Flex(
-      direction: Axis.horizontal, // or Axis.vertical depending on your layout
+    return Column(
       children: [
-        Expanded(
-          child: ListView.builder(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            itemCount: widget.node.references.length,
-            itemBuilder: (context, index) => HomePageNodeCard(
-              smallNode: widget.node.references[index],
-              onTap: () {
-                context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-              },
-            ),
+        const SubSectionTitle(title: "References"),
+        ListView.builder(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(3),
+          itemCount: widget.node.references.length,
+          itemBuilder: (context, index) => HomePageNodeCard(
+            smallNode: widget.node.references[index],
+            onTap: () {
+              context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+            },
           ),
         ),
       ],
@@ -98,20 +97,18 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
   }
 
   Widget referentsCardList() {
-    return Flex(
-      direction: Axis.horizontal, // or Axis.vertical depending on your layout
+    return Column(
       children: [
-        Expanded(
-          child: ListView.builder(
-            shrinkWrap: true,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-            itemCount: widget.node.citations.length,
-            itemBuilder: (context, index) => HomePageNodeCard(
-              smallNode: widget.node.citations[index],
-              onTap: () {
-                context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
-              },
-            ),
+        const SubSectionTitle(title: "Referents"),
+        ListView.builder(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(3),
+          itemCount: widget.node.citations.length,
+          itemBuilder: (context, index) => HomePageNodeCard(
+            smallNode: widget.node.citations[index],
+            onTap: () {
+              context.push("${GraphPage.routeName}/${widget.node.citations[index].id}");
+            },
           ),
         ),
       ],
@@ -121,13 +118,16 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
   Widget slidingPages(BuildContext context) {
     List<Widget> subpages = <Widget>[
       !widget.isLoading ? referencesCardList() : const Center(child: CircularProgressIndicator()),
-      Center(
-        child: GraphPageNodeCard(
-          node: widget.node,
-          onTap: () {
-            context.push("${NodeDetailsPage.routeName}/${widget.node.nodeId}");
-          },
-        ),
+      Column(
+        children: [
+          const SubSectionTitle(title: "Theorem"),
+          GraphPageNodeCard(
+            node: widget.node,
+            onTap: () {
+              context.push("${NodeDetailsPage.routeName}/${widget.node.nodeId}");
+            },
+          ),
+        ],
       ),
       !widget.isLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
     ];

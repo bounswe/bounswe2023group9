@@ -62,8 +62,7 @@ final router = GoRouter(
         },
         redirect: (context, state) {
           if (!context.read<Auth>().isSignedIn) {
-            // please login
-            return LoginPage.routeName;
+            return '${PleaseLoginPage.routeName}${WorkspacesPage.routeName}';
           } else {
             return null;
           }
@@ -105,6 +104,13 @@ final router = GoRouter(
       name: NotificationPage.routeName.substring(1),
       path: NotificationPage.routeName,
       builder: (context, state) => const NotificationPage(),
+      redirect: (context, state) {
+        if (!context.read<Auth>().isSignedIn) {
+          return '${PleaseLoginPage.routeName}${NotificationPage.routeName}';
+        } else {
+          return null;
+        }
+      },
     ),
     GoRoute(
       name: AccountSettingsPage.routeName.substring(1),
@@ -112,11 +118,17 @@ final router = GoRouter(
       builder: (context, state) => const AccountSettingsPage(),
     ),
     GoRoute(
-      name: PleaseLoginPage2.routeName.substring(1),
-      path: PleaseLoginPage2.routeName,
-      // Different login messages might be given for difference pages
-      builder: (context, state) =>
-          const PleaseLoginPage2(message: "To be able to see this page, please login!"),
+      name: "/please-login",
+      path: PleaseLoginPage.routeName,
+      builder: (context, state) => const PleaseLoginPage(),
+    ),
+    GoRoute(
+      name: PleaseLoginPage.routeName.substring(1),
+      path: "${PleaseLoginPage.routeName}/:pageType",
+      builder: (context, state) {
+        final String pageType = state.pathParameters['pageType'] ?? '';
+        return PleaseLoginPage(pageType: pageType);
+      },
     ),
     GoRoute(
       name: NodeDetailsPage.routeName.substring(1),
@@ -127,12 +139,21 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-        name: ProfilePage.routeName.substring(1),
-        path: "${ProfilePage.routeName}/:email",
-        builder: (context, state) {
-          final String encodedEmail = state.pathParameters['email'] ?? '';
-          final String email = Uri.decodeComponent(encodedEmail);
-          return ProfilePage(email: email);
-        }),
+      name: ProfilePage.routeName.substring(1),
+      path: "${ProfilePage.routeName}/:email",
+      builder: (context, state) {
+        final String encodedEmail = state.pathParameters['email'] ?? '';
+        final String email = Uri.decodeComponent(encodedEmail);
+        return ProfilePage(email: email);
+      },
+      redirect: (context, state) {
+        if (!context.read<Auth>().isSignedIn &&
+            (state.pathParameters['email'] == null || state.pathParameters['email'] == '')) {
+          return '${PleaseLoginPage.routeName}${ProfilePage.routeName}';
+        } else {
+          return null;
+        }
+      },
+    ),
   ],
 );
