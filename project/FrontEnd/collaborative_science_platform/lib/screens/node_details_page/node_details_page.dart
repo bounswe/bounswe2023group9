@@ -3,9 +3,9 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
-import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/suggestion_node_card.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -164,30 +164,28 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        NodeDetails(
-          node: widget.node,
-          controller: controller2,
-        ),
-        Row(
-          children: [
-            Contributors(
-              contributors: widget.node.contributors, //widget.inputNode.contributors,
-              controller: controller1,
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            YouMayLike(
-              isLoading: isLoading,
-              error: error,
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 32),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Contributors(
+            contributors: widget.node.contributors, //widget.inputNode.contributors,
+            controller: controller1,
+          ),
+          const SizedBox(width: 12),
+          NodeDetails(
+            node: widget.node,
+            controller: controller2,
+          ),
+          const SizedBox(width: 12),
+          YouMayLike(
+            isLoading: isLoading,
+            error: error,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -209,7 +207,7 @@ class YouMayLike extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Text(
             "You may also like",
@@ -229,17 +227,22 @@ class YouMayLike extends StatelessWidget {
                     )
                   : nodes.isEmpty
                       ? const Text("No nodes found")
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: nodes.length,
-                          itemBuilder: (context, index) {
-                            return HomePageNodeCard(
-                                smallNode: nodes[index],
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(NodeDetailsPage.routeName,
-                                      arguments: <String, dynamic>{"nodeID": nodes[index].id});
-                                });
-                          },
+                      : SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: Expanded(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: nodes.length,
+                              itemBuilder: (context, index) {
+                                return SuggestionNodeCard(
+                                    smallNode: nodes[index],
+                                    onTap: () {
+                                      Navigator.of(context).pushNamed(NodeDetailsPage.routeName,
+                                          arguments: <String, dynamic>{"nodeID": nodes[index].id});
+                                    });
+                              },
+                            ),
+                          ),
                         ),
         ],
       ),
