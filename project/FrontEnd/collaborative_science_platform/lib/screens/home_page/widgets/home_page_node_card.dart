@@ -23,7 +23,7 @@ class HomePageNodeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.0),
       ),
       child: InkWell(
-        onTap: onTap, // Navigate to the screen of the Node
+        onTap: onTap,
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
@@ -32,12 +32,18 @@ class HomePageNodeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SelectableText(
-                smallNode.nodeTitle,
-                onTap: onTap,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: InkWell(
+                  onTap: onTap,
+                  child: Text(
+                    smallNode.nodeTitle,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                      color: Colors.blue,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 8.0),
@@ -45,10 +51,9 @@ class HomePageNodeCard extends StatelessWidget {
                 smallNode.contributors
                     .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
                     .join(", "),
-                onTap: onTap,
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
-                  fontSize: 14.0,
+                  fontSize: 10.0,
                   color: Colors.grey,
                 ),
               ),
@@ -60,6 +65,7 @@ class HomePageNodeCard extends StatelessWidget {
                     getDurationFromNow(smallNode.publishDate),
                     style: const TextStyle(
                       color: Colors.grey,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

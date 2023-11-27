@@ -22,79 +22,84 @@ class PageWithAppBar extends StatelessWidget {
   /// The [appBar] parameter is a widget that serves as the app bar.
   /// The [pageColor] parameter specifies the background color of the content area (default: Colors.white).
   /// The [isScrollable] parameter indicates whether the content is scrollable (default: true).
-  const PageWithAppBar({
-    required this.child,
-    required this.appBar,
-    this.pageColor = Colors.white,
-    this.isScrollable = true,
-    this.navigator,
-    this.floatingActionButton,
-    super.key
-  });
+  const PageWithAppBar(
+      {required this.child,
+      required this.appBar,
+      this.pageColor = Colors.white,
+      this.isScrollable = true,
+      this.navigator,
+      this.floatingActionButton,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      floatingActionButton: floatingActionButton,
-      body: (Responsive.isMobile(context))
-          ? NestedScrollView(
-              physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-              headerSliverBuilder: (_, __) => [
-                SliverAppBar(
-                  backgroundColor: Colors.white,
-                  elevation: 5,
-                  floating: true,
-                  snap: true,
-                  surfaceTintColor: Colors.transparent,
-                  leading: const SizedBox(),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(0),
-                    child: Divider(
+    return SelectionArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        floatingActionButton: floatingActionButton,
+        body: (Responsive.isMobile(context))
+            ? NestedScrollView(
+                physics: isScrollable
+                    ? const BouncingScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                headerSliverBuilder: (_, __) => [
+                  SliverAppBar(
+                    backgroundColor: Colors.white,
+                    elevation: 5,
+                    floating: true,
+                    snap: true,
+                    surfaceTintColor: Colors.transparent,
+                    leading: const SizedBox(),
+                    bottom: PreferredSize(
+                      preferredSize: const Size.fromHeight(0),
+                      child: Divider(
+                        height: 0,
+                        thickness: 2,
+                        color: Colors.grey[300],
+                      ),
+                    ),
+                    collapsedHeight: 60,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
+                        child: appBar,
+                      ),
+                    ),
+                  ),
+                ],
+                body: navigator != null
+                    ? navigator!
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            color: pageColor,
+                            child: child,
+                          ),
+                        ],
+                      ),
+              )
+            : SingleChildScrollView(
+                physics: isScrollable
+                    ? const BouncingScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    appBar,
+                    Divider(
                       height: 0,
                       thickness: 2,
                       color: Colors.grey[300],
                     ),
-                  ),
-                  collapsedHeight: 60,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
-                      child: appBar,
-                    ),
-                  ),
+                    child,
+                  ],
                 ),
-              ],
-              body: navigator != null
-                  ? navigator!
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: pageColor,
-                          child: child,
-                        ),
-                      ],
-                    ),
-            )
-          : SingleChildScrollView(
-              physics: isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  appBar,
-                  Divider(
-                    height: 0,
-                    thickness: 2,
-                    color: Colors.grey[300],
-                  ),
-                  child,
-                ],
               ),
-            ),
+      ),
     );
   }
 }

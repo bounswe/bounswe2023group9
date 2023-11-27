@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
@@ -145,9 +146,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                             child: TeXView(
-                                renderingEngine: TeXViewRenderingEngine.katex(),
+                                renderingEngine: const TeXViewRenderingEngine.katex(),
                                 child: TeXViewDocument(
-                                    utf8.decode(widget.node.theorem!.theoremContent.codeUnits)))),
+                                    NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
                           TextSpan(children: <TextSpan>[

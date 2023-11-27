@@ -96,7 +96,7 @@ class _GraphPageState extends State<GraphPage> {
         child: Center(
             child: isLoading
                 ? const CircularProgressIndicator()
-                : SelectableText(
+                : Text(
                     errorMessage,
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
@@ -110,49 +110,3 @@ class _GraphPageState extends State<GraphPage> {
     }
   }
 }
-
-
-  // void getDummyNode() async {
-  //   final references = List<Node>.generate(
-  //     10,
-  //     (index) => Node(
-  //       id: index + 1,
-  //       nodeTitle: "Reference ${index + 1}",
-  //       contributors: [
-  //         User(
-  //             firstName: "Contributor Name ${index + 1}",
-  //             lastName: "Contributor Surname ${index + 1}",
-  //             email: "contributor${index + 1}@mail.com"),
-  //       ],
-  //       publishDate: DateTime(1590, 12, 12),
-  //     ),
-  //   );
-  //   final referents = List<Node>.generate(
-  //     10,
-  //     (index) => Node(
-  //       id: index + 1,
-  //       nodeTitle: "Referent ${index + 1}",
-  //       contributors: [
-  //         User(
-  //             firstName: "Contributor Name ${index + 1}",
-  //             lastName: "Contributor Surname ${index + 1}",
-  //             email: "contributor${index + 1}@mail.com"),
-  //       ],
-  //       publishDate: DateTime(1590, 12, 12),
-  //     ),
-  //   );
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   node = NodeDetailed(
-  //     nodeId: 1,
-  //     nodeTitle: "Node Title",
-  //     contributors: [User(email: "abc", firstName: "abc", lastName: "edf")],
-  //     publishDate: DateTime(1590, 12, 12),
-  //     references: references,
-  //     citations: referents,
-  //   );
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  // }

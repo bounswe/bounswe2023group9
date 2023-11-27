@@ -1,6 +1,3 @@
-import 'package:collaborative_science_platform/models/node.dart';
-import 'package:collaborative_science_platform/models/user.dart';
-import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
@@ -40,77 +37,6 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   bool isLoading = false;
   bool showSidebar = true;
   double minHeight = 750;
-//Mock data for testing purposes
-  Workspace workspace = Workspace(
-      workspaceId: 10,
-      workspaceTitle: "My First Workspace",
-      entries: [
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: true,
-            isFinalEntry: false,
-            isProofEntry: false,
-            isTheoremEntry: false),
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: false,
-            isFinalEntry: true,
-            isProofEntry: false,
-            isTheoremEntry: true),
-        Entry(
-            content: "ENTRY !111",
-            entryDate: DateTime.now(),
-            entryId: 1,
-            entryNumber: 1,
-            index: 0,
-            isEditable: true,
-            isFinalEntry: false,
-            isProofEntry: true,
-            isTheoremEntry: false),
-      ],
-      status: WorkspaceStatus.workable,
-      numApprovals: 0,
-      contributors: [
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
-        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-      ],
-      pendingContributors: [
-        User(email: "someone@gmail.com", firstName: "collaborator", lastName: "user")
-      ],
-      references: [
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
-        Node(contributors: [
-          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
-          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
-        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001))
-      ]);
 
   @override
   void dispose() {
@@ -131,7 +57,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
         minHeight = MediaQuery.of(context).size.height;
       });
     }
-    
+
     super.didChangeDependencies();
   }
 
@@ -211,53 +137,53 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               ],
                             )),
                       if (widget.workspace != null)
-                      Column(
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.75,
-                            height: 100,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                  Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width / 5,
-                                  child: AppButton(
-                                    text: "Send Workspace to Review",
-                                    height: 45,
-                                    onTap: () {},
-                                    type: "primary",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              EntriesListView(
-                                  entries: widget.workspace!.entries,
-                                controller: controller2,
-                                showSidebar: showSidebar,
-                                height: minHeight,
-                              ),
-                              Column(
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.75,
+                              height: 100,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  ContributorsListView(
-                                      contributors: widget.workspace!.contributors,
-                                    controller: controller3,
-                                    height: minHeight / 2,
-                                  ),
-                                  ReferencesListView(
-                                      references: widget.workspace!.references,
-                                    controller: controller4,
-                                    height: minHeight / 2,
+                                  Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width / 5,
+                                    child: AppButton(
+                                      text: "Send Workspace to Review",
+                                      height: 45,
+                                      onTap: () {},
+                                      type: "primary",
+                                    ),
                                   ),
                                 ],
-                              )
-                            ],
-                          )
-                        ],
-                      )
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                EntriesListView(
+                                  entries: widget.workspace!.entries,
+                                  controller: controller2,
+                                  showSidebar: showSidebar,
+                                  height: minHeight,
+                                ),
+                                Column(
+                                  children: [
+                                    ContributorsListView(
+                                      contributors: widget.workspace!.contributors,
+                                      controller: controller3,
+                                      height: minHeight / 2,
+                                    ),
+                                    ReferencesListView(
+                                      references: widget.workspace!.references,
+                                      controller: controller4,
+                                      height: minHeight / 2,
+                                    ),
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
+                        )
                       else
                         SizedBox(
                           width: showSidebar
