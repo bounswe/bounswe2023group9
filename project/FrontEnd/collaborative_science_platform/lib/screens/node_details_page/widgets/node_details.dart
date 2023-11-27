@@ -13,7 +13,9 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
@@ -62,7 +64,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                       padding: Responsive.isDesktop(context)
                           ? const EdgeInsets.all(70.0)
                           : const EdgeInsets.all(10.0),
-                      child: AnnotationText(widget.node.nodeTitle,
+                      child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
                           textAlign: TextAlign.center, style: TextStyles.title2)),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(
@@ -141,10 +143,11 @@ class _NodeDetailsState extends State<NodeDetails> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          child: AnnotationText(widget.node.theorem!.theoremContent,
-                              style: TextStyles.bodyBlack),
-                        ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            child: TeXView(
+                                renderingEngine: TeXViewRenderingEngine.katex(),
+                                child: TeXViewDocument(
+                                    utf8.decode(widget.node.theorem!.theoremContent.codeUnits)))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
                           TextSpan(children: <TextSpan>[
@@ -195,4 +198,9 @@ class _NodeDetailsState extends State<NodeDetails> {
       ),
     );
   }
+}
+
+bool containsMathExpression(String text) {
+  // Check if the text contains the '$' symbol indicating a mathematical expression
+  return text.contains(r'$');
 }
