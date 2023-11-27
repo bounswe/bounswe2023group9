@@ -1,9 +1,11 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
 
@@ -12,12 +14,14 @@ class EntriesListView extends StatelessWidget {
   final ScrollController controller;
   final bool showSidebar;
   final double height;
+  final int workspaceId;
   const EntriesListView(
       {super.key,
       required this.entries,
       required this.controller,
       required this.showSidebar,
-      required this.height});
+      required this.height,
+      required this.workspaceId});
 
   @override
   Widget build(BuildContext context) {
@@ -46,14 +50,14 @@ class EntriesListView extends StatelessWidget {
                       context: context,
                       builder: (context) => AppAlertDialog(
                         text: "New Entry",
-                        content: const EntryForm(newEntry: true),
-                        actions: [
-                          AppButton(
-                            text: "Create New Entry",
-                            height: 40,
-                            onTap: () { /* Create new Entry */ },
-                          ),
-                        ],
+                        content: EntryForm(
+                          onCreate: () {
+                            context.go("${WorkspacesPage.routeName}/${workspaceId}");
+                          },
+                          newEntry: true,
+                          workspaceId: workspaceId,
+                          content: "",
+                        ),
                       ),
                     );
                   },
@@ -61,7 +65,9 @@ class EntriesListView extends StatelessWidget {
                 ),
               ),
             ]),
-            ListView.builder(
+            SizedBox(
+              height: height * 0.8,
+              child: ListView.builder(
                 controller: controller,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
@@ -95,14 +101,14 @@ class EntriesListView extends StatelessWidget {
                                             context: context,
                                             builder: (context) => AppAlertDialog(
                                               text: "Edit Entry",
-                                              content: EntryForm(id: entries[index].entryId),
-                                              actions: [
-                                                AppButton(
-                                                    text: "Save Entry",
-                                                    height: 40,
-                                                    onTap: () { /* Edit the Entry */ },
-                                                ),
-                                              ],
+                                                content: EntryForm(
+                                                    onCreate: () {
+                                                      context.go(
+                                                          "${WorkspacesPage.routeName}/${workspaceId}");
+                                                    },
+                                                    id: entries[index].entryId,
+                                                    workspaceId: workspaceId,
+                                                    content: entries[index].content),
                                             ),
                                           );
                                         },
@@ -146,7 +152,9 @@ class EntriesListView extends StatelessWidget {
                       ),
                     ),
                   );
-                })
+                  }),
+            ),
+            
           ],
         )),
       ),

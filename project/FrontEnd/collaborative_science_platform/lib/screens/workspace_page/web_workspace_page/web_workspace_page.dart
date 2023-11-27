@@ -165,6 +165,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   controller: controller2,
                                   showSidebar: showSidebar,
                                   height: minHeight,
+                                  workspaceId: widget.workspace!.workspaceId,
                                 ),
                                 Column(
                                   children: [

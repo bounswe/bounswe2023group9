@@ -1,6 +1,8 @@
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../../exceptions/workspace_exceptions.dart';
 import '../../../../models/node.dart';
@@ -108,17 +110,15 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     int length = workspaceData.entries.length;
     Widget alertDialog = AppAlertDialog(
       text: 'New Entry',
-      content: const EntryForm(newEntry: true),
-      actions: [
-        AppButton(
-          text: "Create New Entry",
-          height: 40,
-          onTap: () {
-            /* Create Entry */
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
+      content: EntryForm(
+        onCreate: () {
+          context.go("${WorkspacesPage.routeName}/${widget.workspaceId}");
+        },
+        newEntry: true,
+        workspaceId: widget.workspaceId,
+        content: "",
+      ),
+
     );
 
     return workspaceData.entries.isNotEmpty
