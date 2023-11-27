@@ -1,6 +1,6 @@
 import 'package:collaborative_science_platform/models/node.dart';
-import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node.dart';
 import 'package:collaborative_science_platform/screens/graph_page/widgets/graph_node_popup.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_node_card.dart';
 import 'package:flutter/material.dart';
 
 class NodeList extends StatefulWidget {
@@ -26,7 +26,7 @@ class _NodeListState extends State<NodeList> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Card(
           color: Colors.white,
           elevation: 2.0,
@@ -54,8 +54,8 @@ class _NodeListState extends State<NodeList> {
                 children: widget.nodes.map((node) {
                   return Container(
                     margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-                    child: GraphNodeCard(
-                        node: node, onTap: () => _showNodeDetailsPopup(context, node)),
+                    child: HomePageNodeCard(
+                        smallNode: node, onTap: () => _showNodeDetailsPopup(context, node)),
                   );
                 }).toList(),
               ),

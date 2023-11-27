@@ -39,7 +39,7 @@ class ProofListView extends StatelessWidget {
                     //   textAlign: TextAlign.start,
                     // ),
                     TeXView(
-                        renderingEngine: TeXViewRenderingEngine.katex(),
+                        renderingEngine: const TeXViewRenderingEngine.katex(),
                         child: TeXViewDocument(utf8.decode(proof[index].proofContent.codeUnits))),
 
                     // Row(

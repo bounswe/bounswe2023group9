@@ -3,6 +3,7 @@
 import 'dart:ui';
 
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
+import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
@@ -86,7 +87,13 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
-          title: const Text('Node Details'),
+          title: AnnotationText(
+            utf8.decode(node.nodeTitle.codeUnits),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+            ),
+          ),
           content: Container(
             decoration: const BoxDecoration(
               border: Border(
@@ -101,15 +108,37 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    //SizedBox(height: 10.0),
-                    AnnotationText('Title: ${utf8.decode(node.nodeTitle.codeUnits)}'),
-                    Text(
-                        'Contributors: ${node.contributors.map((user) => "${user.firstName} ${user.lastName} (${user.email})").join(", ")}'),
-                    Text('Publish Date: ${getDurationFromNow(node.publishDate!)}'),
                     TeXView(
-                        renderingEngine: const TeXViewRenderingEngine.katex(),
-                        child: TeXViewDocument(
-                            '<b>Theorem Content:</b> ${node.theorem == null ? "No theorem" : utf8.decode(node.theorem!.theoremContent.codeUnits)}')),
+                      renderingEngine: const TeXViewRenderingEngine.katex(),
+                      child: TeXViewDocument(
+                        NodeHelper.getNodeContentLatex(node, "short"),
+                      ),
+                    ),
+                    const SizedBox(height: 6.0),
+                    Text(
+                      node.contributors
+                          .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
+                          .join(", "),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 10.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 2.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          getDurationFromNow(node.publishDate!),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
