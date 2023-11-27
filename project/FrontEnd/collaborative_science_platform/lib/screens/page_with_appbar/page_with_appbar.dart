@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
 /// A widget for creating a page with a customizable app bar and content.
@@ -38,67 +37,23 @@ class PageWithAppBar extends StatelessWidget {
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         floatingActionButton: floatingActionButton,
-        body: (Responsive.isMobile(context))
-            ? NestedScrollView(
-                physics: isScrollable
-                    ? const BouncingScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                headerSliverBuilder: (_, __) => [
-                  SliverAppBar(
-                    backgroundColor: Colors.white,
-                    elevation: 5,
-                    floating: true,
-                    snap: true,
-                    surfaceTintColor: Colors.transparent,
-                    leading: const SizedBox(),
-                    bottom: PreferredSize(
-                      preferredSize: const Size.fromHeight(0),
-                      child: Divider(
-                        height: 0,
-                        thickness: 2,
-                        color: Colors.grey[300],
-                      ),
-                    ),
-                    collapsedHeight: 60,
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Container(
-                        //padding: EdgeInsets.symmetric(vertical: Responsive.isMobile(context) ? 12 : 16, horizontal: 16),
-                        child: appBar,
-                      ),
-                    ),
-                  ),
-                ],
-                body: navigator != null
-                    ? navigator!
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            color: pageColor,
-                            child: child,
-                          ),
-                        ],
-                      ),
-              )
-            : SingleChildScrollView(
-                physics: isScrollable
-                    ? const BouncingScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    appBar,
-                    Divider(
-                      height: 0,
-                      thickness: 2,
-                      color: Colors.grey[300],
-                    ),
-                    child,
-                  ],
-                ),
+        body: SingleChildScrollView(
+          physics:
+              isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              appBar,
+              Divider(
+                height: 0,
+                thickness: 2,
+                color: Colors.grey[300],
               ),
+              child,
+            ],
+          ),
+        ),
       ),
     );
   }
