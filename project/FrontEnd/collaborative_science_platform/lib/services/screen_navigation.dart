@@ -38,16 +38,16 @@ class ScreenNavigation extends ChangeNotifier {
         context.go(HomePage.routeName);
         break;
       case ScreenTab.graph:
-        context.push(GraphPage.routeName);
+        context.go(GraphPage.routeName);
         break;
       case ScreenTab.workspaces: // Goes to the page where workspace names are listed
         context.go(WorkspacesPage.routeName);
         break;
       case ScreenTab.workspace: // Goes to the page where details of a workspace are listed
-        context.push(WorkspacesPage.routeName);
+        context.go(WorkspacesPage.routeName);
         break;
       case ScreenTab.createWorkspace: // Goes to the page where workspaces are created
-        context.push(MobileCreateWorkspacePage.routeName);
+        context.go(MobileCreateWorkspacePage.routeName);
         break;
       case ScreenTab.notifications:
         context.go(NotificationPage.routeName);

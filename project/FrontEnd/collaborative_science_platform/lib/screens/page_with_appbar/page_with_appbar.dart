@@ -32,26 +32,28 @@ class PageWithAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SelectionArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        resizeToAvoidBottomInset: true,
-        floatingActionButton: floatingActionButton,
-        body: SingleChildScrollView(
-          physics:
-              isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              appBar,
-              Divider(
-                height: 0,
-                thickness: 2,
-                color: Colors.grey[300],
-              ),
-              child,
-            ],
+    return SafeArea(
+      child: SelectionArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: true,
+          floatingActionButton: floatingActionButton,
+          body: SingleChildScrollView(
+            physics:
+                isScrollable ? const BouncingScrollPhysics() : const NeverScrollableScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                appBar,
+                Divider(
+                  height: 0,
+                  thickness: 2,
+                  color: Colors.grey[300],
+                ),
+                child,
+              ],
+            ),
           ),
         ),
       ),

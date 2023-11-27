@@ -1,6 +1,4 @@
 // GoRouter configuration
-import 'dart:math';
-
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
@@ -90,21 +88,23 @@ final router = GoRouter(
     ),
     GoRoute(
       name: GraphPage.routeName.substring(1),
-      path: "${GraphPage.routeName}/:nodeId",
+      path: GraphPage.routeName,
       builder: (context, state) {
         Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
-        final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
-        return GraphPage(nodeId: nodeId);
+        return const GraphPage();
       },
-    ),
-    GoRoute(
-      name: "/graph",
-      path: GraphPage.routeName,
-      redirect: (context, state) {
-        Provider.of<ScreenNavigation>(context, listen: false).changeSelectedTab(ScreenTab.graph);
-        final int nodeId = Random().nextInt(100);
-        return "${GraphPage.routeName}/$nodeId";
-      },
+      routes: [
+        GoRoute(
+          name: "graphNode",
+          path: ":nodeId",
+          builder: (context, state) {
+            Provider.of<ScreenNavigation>(context, listen: false)
+                .changeSelectedTab(ScreenTab.graph);
+            final int nodeId = int.tryParse(state.pathParameters['nodeId'] ?? '') ?? 0;
+            return GraphPage(nodeId: nodeId);
+          },
+        ),
+      ],
     ),
     GoRoute(
       name: NotificationPage.routeName.substring(1),
