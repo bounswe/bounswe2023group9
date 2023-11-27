@@ -3,8 +3,14 @@ class User {
   String email;
   String firstName;
   String lastName;
+  String token;
 
-  User({this.id = 0, required this.email, required this.firstName, required this.lastName});
+  User(
+      {this.id = 0,
+      this.token = '',
+      required this.email,
+      required this.firstName,
+      required this.lastName});
 
   factory User.fromJson(Map<String, dynamic> jsonString) {
     return User(
