@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 
 class NodeProvider with ChangeNotifier {
   final List<Node> _searchNodeResult = [];
+  final List<Node> _youMayLikeNodeResult = [];
   NodeDetailed? nodeDetailed;
 
   final List<SemanticTag> semanticTags = [];
@@ -24,12 +25,16 @@ class NodeProvider with ChangeNotifier {
     return [..._searchNodeResult];
   }
 
+  List<Node> get youMayLikeNodeResult {
+    return [..._youMayLikeNodeResult];
+  }
+
   SemanticTag getSemanticTag(String label) {
     return semanticTags.firstWhere((element) => element.label == label);
   }
 
   Future<void> search(SearchType type, String query,
-      {bool random = false, bool semantic = false}) async {
+      {bool random = false, bool semantic = false, bool suggestions = false}) async {
     if (type == SearchType.author) {
       throw WrongSearchTypeError();
     }
@@ -50,6 +55,23 @@ class NodeProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (suggestions) {
+          _youMayLikeNodeResult.clear();
+          _youMayLikeNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
+                contributors: (node['authors'] as List<dynamic>)
+                    .map((author) => User(
+                        id: author['id'],
+                        firstName: author['name'],
+                        lastName: author['surname'],
+                        email: author['username']))
+                    .toList(),
+                id: node['id'],
+                nodeTitle: node['title'],
+                publishDate: DateTime.parse(node['date']),
+              )));
+          notifyListeners();
+          return;
+        }
         _searchNodeResult.clear();
         _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
               contributors: (node['authors'] as List<dynamic>)
@@ -124,11 +146,15 @@ class NodeProvider with ChangeNotifier {
       rethrow;
     }
   }
-}
 
-Map<SearchType, String> searchTypeToString = {
-  SearchType.theorem: "node",
-  SearchType.author: "author",
-  SearchType.by: "by",
-  SearchType.both: "all"
-};
+  Future<void> getNodeSuggestions() async {
+    await search(SearchType.theorem, "", random: true, suggestions: true);
+  }
+
+  Map<SearchType, String> searchTypeToString = {
+    SearchType.theorem: "node",
+    SearchType.author: "author",
+    SearchType.by: "by",
+    SearchType.both: "all"
+  };
+}
