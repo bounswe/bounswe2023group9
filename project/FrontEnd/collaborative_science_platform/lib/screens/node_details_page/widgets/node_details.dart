@@ -49,6 +49,7 @@ class _NodeDetailsState extends State<NodeDetails> {
       width: Responsive.isDesktop(context)
           ? Responsive.desktopPageWidth * 0.8
           : Responsive.getGenericPageWidth(context),
+      height: MediaQuery.of(context).size.height - 60,
       child: SingleChildScrollView(
         primary: false,
         scrollDirection: Axis.vertical,

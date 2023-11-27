@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class SuggestionNodeCard extends StatelessWidget {
@@ -37,7 +38,7 @@ class SuggestionNodeCard extends StatelessWidget {
                 smallNode.nodeTitle,
                 onTap: onTap,
                 style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 10.0, color: Colors.blue),
+                    fontWeight: FontWeight.bold, fontSize: 10.0, color: AppColors.primaryDarkColor),
               ),
               const SizedBox(height: 8.0),
               Row(

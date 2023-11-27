@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class HomePageNodeCard extends StatelessWidget {
@@ -41,7 +42,7 @@ class HomePageNodeCard extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14.0,
-                      color: Colors.blue,
+                      color: AppColors.primaryDarkColor,
                     ),
                   ),
                 ),
