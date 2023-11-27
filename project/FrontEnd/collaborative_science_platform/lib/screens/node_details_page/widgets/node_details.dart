@@ -5,11 +5,13 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
+import 'package:collaborative_science_platform/services/share_page.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:go_router/go_router.dart';
@@ -83,15 +85,39 @@ class _NodeDetailsState extends State<NodeDetails> {
                     ),
                     Column(
                       children: [
-                        SizedBox(
-                          width: Responsive.getGenericPageWidth(context) * 0.35,
-                          child: AppButton(
-                              text: "See the Graph",
-                              height: 40,
-                              type: "secondary",
-                              onTap: () {
-                                context.push('${GraphPage.routeName}/${widget.node.nodeId}');
-                              }),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 110,
+                              child: AppButton(
+                                  text: "Graph",
+                                  height: 40,
+                                  icon: const Icon(
+                                    CupertinoIcons.square_grid_3x2,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  type: "secondary",
+                                  onTap: () {
+                                    context.push('${GraphPage.routeName}/${widget.node.nodeId}');
+                                  }),
+                            ),
+                            const SizedBox(width: 10),
+                            SizedBox(
+                              width: 110,
+                              child: AppButton(
+                                text: "Share",
+                                icon: const Icon(
+                                  Icons.share,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                height: 40,
+                                type: "primary",
+                                onTap: () => SharePage.shareNodeView(widget.node),
+                              ),
+                            ),
+                          ],
                         )
                       ],
                     ),

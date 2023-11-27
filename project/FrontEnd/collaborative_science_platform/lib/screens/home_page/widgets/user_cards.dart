@@ -7,23 +7,22 @@ import 'package:go_router/go_router.dart';
 
 class UserCards extends StatelessWidget {
   final List<ProfileData> userList;
-  final bool firstSearch;
 
   const UserCards({
     super.key,
     required this.userList,
-    required this.firstSearch,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
-      child: firstSearch && userList.isEmpty
+      child: userList.isEmpty
           ? const Center(
               child: SelectableText("No results found."),
             )
           : ListView.builder(
+              padding: const EdgeInsets.all(0),
               physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
