@@ -107,6 +107,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         workspaces: workspaces,
       ),
       desktop: WebWorkspacePage(
+        isLoading: isLoading,
         workspace: workspace,
         workspaces: workspaces,
       ),

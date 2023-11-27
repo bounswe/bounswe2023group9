@@ -14,14 +14,14 @@ class WorkspacesSideBar extends StatefulWidget {
   final ScrollController controller;
   final Function? hideSidebar;
   final double height;
-  final Workspaces workspaces;
+  final Workspaces? workspaces;
 
   const WorkspacesSideBar(
       {super.key,
       required this.controller,
       this.hideSidebar,
       required this.height,
-      required this.workspaces});
+      this.workspaces});
 
   @override
   State<WorkspacesSideBar> createState() => _WorkspacesSideBarState();
@@ -51,7 +51,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text("My Workspaces", style: TextStyles.title2secondary),
+                    const Text("My Workspaces", style: TextStyles.title3secondary),
                     AppBarButton(
                       onPressed: () {
                         widget.hideSidebar!();
@@ -94,47 +94,46 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                       )),
                 ),
                 SizedBox(
-                    height: widget.height * 0.9,
-                    child: ListView.builder(
+                  height: (widget.workspaces != null) ? widget.height * 0.9 : 40,
+                  child: (widget.workspaces != null)
+                      ? ListView.builder(
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
                         padding: const EdgeInsets.all(8),
-                        itemCount:
-                            (widget.workspaces.workspaces.length +
-                            widget.workspaces.pendingWorkspaces.length),
+                          itemCount: (widget.workspaces!.workspaces.length +
+                              widget.workspaces!.pendingWorkspaces.length),
                         itemBuilder: (BuildContext context, int index) {
-                          if (index < widget.workspaces.workspaces.length &&
-                              !widget.workspaces.workspaces[index].pending) {
+                            if (index < widget.workspaces!.workspaces.length) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
                               child: CardContainer(
                                 onTap: () {
                                   context.push(
-                                      "${WorkspacesPage.routeName}/${widget.workspaces.workspaces[index].workspaceId}");
+                                        "${WorkspacesPage.routeName}/${widget.workspaces!.workspaces[index].workspaceId}");
                                 },
                                 child: Text(
-                                  widget.workspaces.workspaces[index].workspaceTitle,
+                                    widget.workspaces!.workspaces[index].workspaceTitle,
                                   style: TextStyles.title4,
                                   textAlign: TextAlign.start,
                                 ),
                               ),
                             );
-                          } else if (index >= widget.workspaces.workspaces.length) {
+                            } else if (index >= widget.workspaces!.workspaces.length) {
                             return Padding(
                               padding: const EdgeInsets.all(5),
                               child: CardContainer(
                                   onTap: () {
                                     context.push(
-                                        "${WorkspacesPage.routeName}/${widget.workspaces.workspaces[index].workspaceId}");
+                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                                     children: [
                                       Text(
                                         widget
-                                            .workspaces
+                                              .workspaces!
                                             .pendingWorkspaces[
-                                                index - widget.workspaces.workspaces.length]
+                                                  index - widget.workspaces!.workspaces.length]
                                             .workspaceTitle,
                                         style: TextStyles.bodyBold,
                                         textAlign: TextAlign.start,
@@ -163,7 +162,9 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                           } else {
                             return const SizedBox();
                           }
-                        })),
+                          })
+                      : const CircularProgressIndicator(),
+                ),
               ],
             )));
   }
