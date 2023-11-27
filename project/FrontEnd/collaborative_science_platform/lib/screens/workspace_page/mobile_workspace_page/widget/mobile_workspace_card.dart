@@ -1,6 +1,10 @@
+import 'package:collaborative_science_platform/exceptions/workspace_exceptions.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../models/workspaces_page/workspaces_object.dart';
+import '../../../../providers/auth.dart';
+import '../../../../providers/workspace_provider.dart';
 import '../../../../utils/colors.dart';
 import '../../../../widgets/app_button.dart';
 import 'app_alert_dialog.dart';
@@ -22,6 +26,8 @@ class _MobileWorkspaceCardState extends State<MobileWorkspaceCard> {
   final titleTextController = TextEditingController();
   final focusNode = FocusNode();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +40,34 @@ class _MobileWorkspaceCardState extends State<MobileWorkspaceCard> {
     focusNode.dispose();
     super.dispose();
   }
+
+  Future<void> changeTitle(String newTitle) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await workspaceProvider.updateWorkspaceTitle(
+        widget.workspacesObject.workspaceId,
+        auth.token,
+        newTitle,
+      );
+    } on WorkspacePermissionException {
+      print(WorkspacePermissionException().message);
+      // Do something specific to this exception
+    } on CreateWorkspaceException {
+      print(CreateWorkspaceException().message);
+      // Do something specific to this exception
+    } catch (e) {
+      // Do something else
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -111,11 +145,12 @@ class _MobileWorkspaceCardState extends State<MobileWorkspaceCard> {
                               ),
                               actions: [
                                 AppButton(
+                                  isLoading: isLoading,
                                   text: "Change",
                                   height: 40,
-                                  onTap: () {
-                                    // Change the title of the workspace
-                                    Navigator.of(context).pop();
+                                  onTap: () async {
+                                    await changeTitle(titleTextController.text);
+                                    if (context.mounted) Navigator.of(context).pop();
                                   },
                                 ),
                                 AppButton(

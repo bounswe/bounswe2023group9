@@ -54,8 +54,8 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
 
   Future<void> sendRequest(int receiverId, String title, String requestBody, int workspaceId) async {
     try {
-      final auth = Provider.of<Auth>(context);
-      final workspaceProvider = Provider.of<WorkspaceProvider>(context);
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
       setState(() {
         error = false;
         isLoading = true;

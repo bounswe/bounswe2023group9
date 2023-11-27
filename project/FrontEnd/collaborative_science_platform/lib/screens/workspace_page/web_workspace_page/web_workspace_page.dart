@@ -177,6 +177,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       references: widget.workspace!.references,
                                       controller: controller4,
                                       height: minHeight / 2,
+                                      workspaceId: widget.workspace!.workspaceId,
                                     ),
                                   ],
                                 )

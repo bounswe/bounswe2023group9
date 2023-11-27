@@ -5,9 +5,11 @@ import '../../../node_details_page/node_details_page.dart';
 
 class ReferenceCard extends StatelessWidget {
   final Node reference;
+  final Function() onDelete;
   const ReferenceCard({
     super.key,
     required this.reference,
+    required this.onDelete,
   });
 
   @override
@@ -81,7 +83,7 @@ class ReferenceCard extends StatelessWidget {
                   const Expanded(child: SizedBox(width: 4.0)),
                   IconButton(
                     onPressed: () { //remove reference
-
+                      onDelete();
                     },
                     icon: const Icon(Icons.delete),
                   )

@@ -128,7 +128,7 @@ class WorkspaceProvider with ChangeNotifier {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
-      print("Create Response Body: ${response.body}");
+      print("Create Response Body: ${response.body} - ${response.statusCode}");
       if (response.statusCode == 200) {
         notifyListeners();
       } else if (response.statusCode == 400) {
@@ -136,7 +136,7 @@ class WorkspaceProvider with ChangeNotifier {
       } else if (response.statusCode == 403) {
         throw WorkspacePermissionException();
       } else {
-        throw Exception("Something has happened");
+        // throw Exception("Something has happened");
       }
     } catch (e) {
       print(e.toString());
@@ -188,6 +188,7 @@ class WorkspaceProvider with ChangeNotifier {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
+      print("Update Workspace Title Response Body: ${response.body}");
       if (response.statusCode == 200) {
         notifyListeners();
       } else if (response.statusCode == 400) {
@@ -198,6 +199,7 @@ class WorkspaceProvider with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (e) {
+      print(e.toString());
       rethrow;
     }
   }
@@ -214,9 +216,10 @@ class WorkspaceProvider with ChangeNotifier {
       'workspace_id': workspaceId,
       'node_id': nodeId,
     });
-
+    print("Add Reference request body: ${body}");
     try {
       final response = await http.post(url, headers: headers, body: body);
+      print("Add Reference: ${response.statusCode} - ${response.body}");
       if (response.statusCode == 200) {
         notifyListeners();
       } else if (response.statusCode == 400) {
@@ -297,6 +300,7 @@ class WorkspaceProvider with ChangeNotifier {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
+      print("Delete Reference: ${response.statusCode} - ${response.body}");
       if (response.statusCode == 200) {
         notifyListeners();
       } else if (response.statusCode == 400) {

@@ -5,8 +5,16 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../exceptions/workspace_exceptions.dart';
+import '../../../../providers/auth.dart';
+import '../../../../providers/workspace_provider.dart';
+
 class AddReferenceForm extends StatefulWidget {
-  const AddReferenceForm({super.key});
+  final int workspaceId;
+  const AddReferenceForm({
+    super.key,
+    required this.workspaceId,
+  });
 
   @override
   State<AddReferenceForm> createState() => _AddReferenceFormState();
@@ -46,6 +54,32 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> addReference(int workspaceId, int nodeId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await workspaceProvider.addReference(workspaceId, nodeId, auth.token);
+    } on AddReferenceException {
+      setState(() {
+        error = true;
+        errorMessage = AddReferenceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+    print(errorMessage);
   }
 
   @override
@@ -123,8 +157,11 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                                       ),
                                     ),
                                     IconButton(
-                                      onPressed: () {
-                                        //add reference
+                                      onPressed: () async {
+                                        await addReference(
+                                            widget.workspaceId,
+                                            nodeProvider.searchNodeResult[index].id,
+                                        );
                                       },
                                       icon: Icon(
                                         Icons.add,

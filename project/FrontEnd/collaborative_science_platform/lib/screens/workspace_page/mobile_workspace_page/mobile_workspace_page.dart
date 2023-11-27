@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
-import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_card.dart';
@@ -10,14 +9,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import '../../../exceptions/workspace_exceptions.dart';
-import '../../../providers/auth.dart';
-import '../../../widgets/app_button.dart';
-import '../../home_page/home_page.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
-import '../workspaces_page.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;

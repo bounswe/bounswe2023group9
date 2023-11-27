@@ -84,7 +84,7 @@ class _CreateWorkspaceFormState extends State<CreateWorkspaceForm> {
               obscureText: false,
               height: 64,
               onChanged: (text) {
-                setState(() {}); // Makes the app button active or disactive
+                setState(() {}); // Makes the app button active or inactive
               },
             ),
             const SizedBox(height: 40.0),

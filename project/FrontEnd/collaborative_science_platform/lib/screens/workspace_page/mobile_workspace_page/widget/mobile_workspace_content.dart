@@ -2,10 +2,12 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../exceptions/workspace_exceptions.dart';
 import '../../../../models/node.dart';
 import '../../../../models/user.dart';
 import '../../../../models/workspaces_page/entry.dart';
 import '../../../../models/workspaces_page/workspace.dart';
+import '../../../../providers/auth.dart';
 import '../../../../providers/workspace_provider.dart';
 import '../../../../utils/responsive/responsive.dart';
 import '../../../../widgets/app_button.dart';
@@ -190,11 +192,35 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     );
   }
 
+  Future<void> deleteReference(int nodeId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await workspaceProvider.deleteReference(workspaceData.workspaceId, nodeId, auth.token);
+    } on DeleteReferenceException {
+      setState(() {
+        error = true;
+        errorMessage = DeleteReferenceException().message;
+      });
+    } catch (e) {
+      error = true;
+      errorMessage = e.toString();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Widget referenceList() {
     int length = workspaceData.references.length;
-    Widget alertDialog = const AppAlertDialog
+    print(widget.workspaceId.toString());
+    Widget alertDialog = AppAlertDialog
       (text: "Add Reference",
-      content: AddReferenceForm(),
+      content: AddReferenceForm(workspaceId: widget.workspaceId),
     );
 
     return (workspaceData.references.isNotEmpty)
@@ -206,7 +232,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: length + 1,
             itemBuilder: (context, index) => (index < length)
-              ? ReferenceCard(reference: workspaceData.references[index])
+              ? ReferenceCard(
+              reference: workspaceData.references[index],
+              onDelete: () async {
+                await deleteReference(workspaceData.references[index].id);
+              },
+            )
               : addIcon(() {
                 showDialog(
                   context: context,

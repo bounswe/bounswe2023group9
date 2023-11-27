@@ -7,13 +7,25 @@ import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../providers/auth.dart';
+import '../../../../providers/workspace_provider.dart';
 
 class ReferencesListView extends StatelessWidget {
   final List<Node> references;
   final ScrollController controller;
   final double height;
-  const ReferencesListView(
-      {super.key, required this.references, required this.controller, required this.height});
+  final int workspaceId;
+  const ReferencesListView({
+    super.key,
+    required this.references,
+    required this.controller,
+    required this.height,
+    required this.workspaceId,
+  });
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +49,9 @@ class ReferencesListView extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                      builder: (context) => const AppAlertDialog(
+                      builder: (context) => AppAlertDialog(
                         text: "Add References",
-                        content: AddReferenceForm(),
+                        content: AddReferenceForm(workspaceId: workspaceId),
                       ),
                   );
                 },
@@ -73,8 +85,14 @@ class ReferencesListView extends StatelessWidget {
                                   textAlign: TextAlign.start,
                                 ),
                                 IconButton(
-                                    onPressed: () {
-                                      //remove reference
+                                    onPressed: () async {
+                                      try { // A BETTER IMPLEMENTATION IS NEEDED
+                                        final auth = Provider.of<Auth>(context, listen: false);
+                                        final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+                                        await workspaceProvider.deleteReference(workspaceId, references[index].id, auth.token);
+                                      } catch (e) {
+                                        print(e.toString());
+                                      }
                                     },
                                     icon: Icon(
                                       Icons.delete,

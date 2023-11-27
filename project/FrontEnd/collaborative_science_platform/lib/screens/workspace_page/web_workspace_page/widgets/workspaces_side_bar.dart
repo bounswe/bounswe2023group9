@@ -21,7 +21,8 @@ class WorkspacesSideBar extends StatefulWidget {
       required this.controller,
       this.hideSidebar,
       required this.height,
-      required this.workspaces});
+      required this.workspaces,
+      });
 
   @override
   State<WorkspacesSideBar> createState() => _WorkspacesSideBarState();
@@ -85,14 +86,11 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                     surfaceTintColor: Colors.white,
                                     content: CreateWorkspaceForm(
                                       onCreate: () {
-                                        context.go(WorkspacesPage.routeName);
+                                        // refresh the page
                                       },
                                     ),
-                                    actions: [
-                                      AppButton(
-                                          text: "Create New Workspace", height: 50, onTap: () {})
-                                    ],
-                                  ));
+                                  ),
+                          );
                         },
                         type: "outlined",
                       )),
