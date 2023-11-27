@@ -1,9 +1,10 @@
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
+import 'dart:convert';
 
 class ProofListView extends StatelessWidget {
   final List<Proof> proof;
@@ -37,11 +38,10 @@ class ProofListView extends StatelessWidget {
                     //   style: TextStyles.title4,
                     //   textAlign: TextAlign.start,
                     // ),
-                    AnnotationText(
-                      proof[index].proofContent,
-                      style: TextStyles.bodyBlack,
-                      textAlign: TextAlign.start,
-                    ),
+                    TeXView(
+                        renderingEngine: TeXViewRenderingEngine.katex(),
+                        child: TeXViewDocument(utf8.decode(proof[index].proofContent.codeUnits))),
+
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.end,
                     //   crossAxisAlignment: CrossAxisAlignment.end,

@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/helpers/date_to_string.dart';
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class GraphNodeCard extends StatefulWidget {
   final Node node;
@@ -25,7 +26,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
     return InkWell(
       onTap: widget.onTap,
       customBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(2.0),
       ),
       child: Card(
         elevation: 4,
@@ -35,10 +36,10 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SelectableText(
-                widget.node.nodeTitle,
+                utf8.decode(widget.node.nodeTitle.codeUnits),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
+                  fontSize: 16.0,
                 ),
               ),
               const SizedBox(height: 8.0), // Increased spacing
@@ -46,7 +47,7 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
                 getContributorsText(widget.node.contributors),
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: 14.0,
+                  fontSize: 12.0,
                   color: Colors.grey,
                 ),
               ),
@@ -77,6 +78,6 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
   String getContributorsText(List<User> contributors) {
     return contributors
         .map((user) => "${user.firstName} ${user.lastName} (${user.email})")
-        .join(", ");
+        .join(",\n");
   }
 }

@@ -40,6 +40,77 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   bool isLoading = false;
   bool showSidebar = true;
   double minHeight = 750;
+//Mock data for testing purposes
+  Workspace workspace = Workspace(
+      workspaceId: 10,
+      workspaceTitle: "My First Workspace",
+      entries: [
+        Entry(
+            content: "ENTRY !111",
+            entryDate: DateTime.now(),
+            entryId: 1,
+            entryNumber: 1,
+            index: 0,
+            isEditable: true,
+            isFinalEntry: false,
+            isProofEntry: false,
+            isTheoremEntry: false),
+        Entry(
+            content: "ENTRY !111",
+            entryDate: DateTime.now(),
+            entryId: 1,
+            entryNumber: 1,
+            index: 0,
+            isEditable: false,
+            isFinalEntry: true,
+            isProofEntry: false,
+            isTheoremEntry: true),
+        Entry(
+            content: "ENTRY !111",
+            entryDate: DateTime.now(),
+            entryId: 1,
+            entryNumber: 1,
+            index: 0,
+            isEditable: true,
+            isFinalEntry: false,
+            isProofEntry: true,
+            isTheoremEntry: false),
+      ],
+      status: WorkspaceStatus.workable,
+      numApprovals: 0,
+      contributors: [
+        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
+        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say"),
+        User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+        User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+      ],
+      pendingContributors: [
+        User(email: "someone@gmail.com", firstName: "collaborator", lastName: "user")
+      ],
+      references: [
+        Node(contributors: [
+          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
+        Node(contributors: [
+          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
+        Node(contributors: [
+          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
+        Node(contributors: [
+          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001)),
+        Node(contributors: [
+          User(firstName: "omar", lastName: "uyduran", email: "oma11r@omar.com"),
+          User(email: "Cem.say@cem.say", firstName: "Cem", lastName: "Say")
+        ], id: 99, nodeTitle: "A Node", publishDate: DateTime(2001))
+      ]);
 
   @override
   void dispose() {

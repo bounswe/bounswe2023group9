@@ -1,15 +1,19 @@
-import 'package:collaborative_science_platform/models/tag.dart';
+class SemanticTag {
+  final String id;
+  final String label;
+  final String description;
 
-class SemanticTag extends Tag {
-  List<SemanticTag> superTags;
-  List<SemanticTag> subTags;
+  SemanticTag({
+    required this.id,
+    required this.label,
+    required this.description,
+  });
 
-  SemanticTag(
-      {required int tagId,
-      required String tagBody,
-      required String tagLocation,
-      required DateTime createdAt,
-      required this.superTags,
-      required this.subTags})
-      : super(tagId: tagId, tagBody: tagBody, tagLocation: tagLocation, createdAt: createdAt);
+  factory SemanticTag.fromJson(Map<String, dynamic> json) {
+    return SemanticTag(
+      id: json['id'],
+      label: json['label'],
+      description: json['description'],
+    );
+  }
 }

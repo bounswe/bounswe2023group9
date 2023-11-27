@@ -11,6 +11,11 @@ import '../../../../models/workspaces_page/workspace.dart';
 import '../../../../providers/auth.dart';
 import '../../../../utils/lorem_ipsum.dart';
 import '../../../../utils/responsive/responsive.dart';
+import '../../../../widgets/app_button.dart';
+import '../../web_workspace_page/widgets/add_reference_form.dart';
+import '../../web_workspace_page/widgets/entry_form.dart';
+import '../../web_workspace_page/widgets/send_collaboration_request_form.dart';
+import 'app_alert_dialog.dart';
 import 'contributor_card.dart';
 import 'entry_card.dart';
 
@@ -95,6 +100,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       numApprovals: 0,
       contributors: <User>[
         // Automatically add the user to the list of contributors
+        // It will be deleted once the providers are implemented
         if (!widget.pending) Provider.of<Auth>(context).user as User,
         User(
           email: "dummy1@mail.com",
@@ -116,7 +122,18 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       ],
       references: <Node>[
         Node(
-          contributors: <User>[],
+          contributors: <User>[
+            User(
+              email: "dummy1@mail.com",
+              firstName: "dummy 1",
+              lastName: "jackson",
+            ),
+            User(
+              email: "dummy2@mail.com",
+              firstName: "dummy 2",
+              lastName: "jackson",
+            ),
+          ],
           id: 1,
           nodeTitle: "Awesome Node Title",
           publishDate: DateTime.now(),
@@ -148,17 +165,32 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             message,
             style: const TextStyle(
               fontSize: 16.0,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        addIcon(() {/* Navigate to a page where new entries are created */}),
+        addIcon(onPressed),
       ],
     );
   }
 
   Widget entryList() {
     int length = workspaceData.entries.length;
+    Widget alertDialog = AppAlertDialog(
+      text: 'New Entry',
+      content: const EntryForm(newEntry: true),
+      actions: [
+        AppButton(
+          text: "Create New Entry",
+          height: 40,
+          onTap: () {
+            /* Create Entry */
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
     return workspaceData.entries.isNotEmpty
       ? Padding(
         padding: const EdgeInsets.only(bottom: 12.0),
@@ -176,16 +208,31 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 });
               },
               pending: widget.pending,
-            ) : addIcon(() {/* Navigate to a page where new entries are created */}),
+            ) : addIcon(() {
+              showDialog(
+                context: context,
+                builder: (context) => alertDialog
+              );
+            }),
           ),
         ) : firstAddition(
           "Add Your First Entry!",
-          () {/* Navigate to a page where new entries are created */},
+          () {
+            showDialog(
+              context: context,
+              builder: (context) => alertDialog
+            );
+          },
     );
   }
 
   Widget contributorList() {
     int length = workspaceData.contributors.length;
+    Widget alertDialog =  const AppAlertDialog(
+      text: "Send Collaboration Request",
+      content: SendCollaborationRequestForm(),
+    );
+
     return workspaceData.contributors.isNotEmpty
         ? Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
@@ -196,16 +243,32 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             itemCount: length + 1,
             itemBuilder: (context, index) => (index < length)
               ? ContributorCard(contributor: workspaceData.contributors[index])
-              : addIcon(() => {/* Navigate to a page where new contributors are added */}),
+              : addIcon(() {
+                showDialog(
+                  context: context,
+                  builder: (context) => alertDialog
+                );
+              }
+            ),
             ),
           ) : firstAddition(
           "Add The First Contributor!",
-          () {/* Navigate to a page where new contributors are added */},
+          () {
+            showDialog(
+              context: context,
+              builder: (context) => alertDialog
+            );
+          },
     );
   }
 
   Widget referenceList() {
     int length = workspaceData.references.length;
+    Widget alertDialog = const AppAlertDialog
+      (text: "Add Reference",
+      content: AddReferenceForm(),
+    );
+
     return (workspaceData.references.isNotEmpty)
         ? Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
@@ -216,11 +279,21 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             itemCount: length + 1,
             itemBuilder: (context, index) => (index < length)
               ? ReferenceCard(reference: workspaceData.references[index])
-              : addIcon(() => {/* Navigate to a page where new references are added */}),
+              : addIcon(() {
+                showDialog(
+                  context: context,
+                  builder: (context) => alertDialog
+              );
+            }),
             ),
           ) : firstAddition(
           "Add Your First Reference!",
-          () {/* Navigate to a page where new references are added */},
+          () {
+            showDialog(
+                context: context,
+                builder: (context) => alertDialog
+            );
+          },
     );
   }
 
@@ -257,6 +330,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "References"),
             referenceList(),
+            const SizedBox(height: 20.0),
           ],
         ),
       );

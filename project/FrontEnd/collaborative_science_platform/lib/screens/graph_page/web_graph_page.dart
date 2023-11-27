@@ -34,7 +34,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
                   child: SelectableText(
                     "No references",
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -57,7 +57,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
                   child: SelectableText(
                     "No citations",
                     style: TextStyle(
-                      fontSize: 24.0,
+                      fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -67,7 +67,7 @@ class _WebGraphPageState extends State<WebGraphPage> {
                   child: NodeList(
                     nodes: widget.node.citations,
                     title: "Citations",
-                    width: MediaQuery.of(context).size.width / 3.2,
+                    width: MediaQuery.of(context).size.width / 5,
                   ),
                 ),
         ],
