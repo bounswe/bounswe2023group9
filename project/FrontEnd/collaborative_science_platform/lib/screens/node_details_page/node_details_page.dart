@@ -1,5 +1,4 @@
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
-import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
@@ -194,4 +193,3 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
     );
   }
 }
-

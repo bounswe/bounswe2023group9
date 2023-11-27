@@ -184,7 +184,7 @@ class _SearchBarExtendedState extends State<SearchBarExtended> {
                   children: [
                     Icon(Icons.person),
                     SizedBox(width: 4.0),
-                    Text("Author"),
+                    Text("User"),
                   ],
                 ),
               ),
@@ -194,7 +194,7 @@ class _SearchBarExtendedState extends State<SearchBarExtended> {
                   children: [
                     Icon(Icons.person_2_outlined),
                     SizedBox(width: 4.0),
-                    Text("By"),
+                    Text("Author"),
                   ],
                 ),
               ),
