@@ -2,19 +2,28 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
+import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_content.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../models/user.dart';
+import '../../../providers/auth.dart';
 import '../../../widgets/app_button.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
-  const MobileWorkspacePage({super.key, required this.workspace, required this.workspaces});
+  const MobileWorkspacePage({
+    super.key,
+    required this.workspace,
+    required this.workspaces,
+  });
 
   @override
   State<MobileWorkspacePage> createState() => _MobileWorkspacesPageState();
@@ -29,6 +38,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   );
 
   bool isLoading = false;
+  bool _isFirstTime = true;
   bool error = false;
   String errorMessage = "";
 
@@ -39,39 +49,36 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   int workspaceIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    getWorkspacesData();
+  void didChangeDependencies() {
+    if (_isFirstTime) {
+      getWorkspacesData();
+      _isFirstTime = false;
+    }
+    super.didChangeDependencies();
   }
 
-  void getWorkspacesData() {
-    setState(() {
-      isLoading = true;
-    });
-    for (int i = 0; i < 4; i++) {
-      workspacesData.workspaces.add(
-        WorkspacesObject(
-          workspaceId: i+1,
-          workspaceTitle: "Workspace Title xxxxxxxxxxxxxxxxxx ${i+1}",
-          pending: false,
-        ),
-      );
+  Future<void> getWorkspacesData() async {
+    try {
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      final auth = Provider.of<Auth>(context, listen: false);
+      setState(() {
+        isLoading = true;
+      });
+      await workspaceProvider.getUserWorkspaces(auth.basicUser.basicUserId, auth.token);
+      setState(() {
+        workspacesData = workspaceProvider.workspaces ?? {} as Workspaces;
+      });
+    } catch (e) {
+      error = true;
+      errorMessage = e.toString();
+    } finally {
+      setState(() {
+        yourWorkLength = workspacesData.workspaces.length;
+        pendingLength = workspacesData.pendingWorkspaces.length;
+        totalLength = yourWorkLength + pendingLength;
+        isLoading = false;
+      });
     }
-    for (int i = 0; i < 2; i++) {
-      workspacesData.pendingWorkspaces.add(
-        WorkspacesObject(
-          workspaceId: i+workspacesData.workspaces.length+1,
-          workspaceTitle: "Pending Workspace Title ${i+1}",
-          pending: true,
-        ),
-      );
-    }
-    yourWorkLength = workspacesData.workspaces.length;
-    pendingLength = workspacesData.pendingWorkspaces.length;
-    totalLength = yourWorkLength + pendingLength;
-    setState(() {
-      isLoading = false;
-    });
   }
 
   Widget mobileAddNewWorkspaceIcon() {
@@ -93,6 +100,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                   height: 50,
                   onTap: () {
                     // Create Workspace
+                    final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+
                     Navigator.of(context).pop();
                   },
                 ),
@@ -100,114 +109,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget mobileWorkspaceCard(WorkspacesObject workspacesObject, bool pending) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      child: SizedBox(
-        height: 80.0,
-        child: Card(
-          elevation: 4.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: InkWell(
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            onTap: pending ? () { // accept or reject the review
-              showDialog(
-                context: context,
-                builder: (context) => AppAlertDialog(
-                  text: "Do you accept the work?",
-                  actions: [
-                    AppButton(
-                      text: "Accept",
-                      height: 40,
-                      onTap: () {
-                        /* Send to review */
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    AppButton(
-                      text: "Reject",
-                      height: 40,
-                      onTap: () { Navigator.of(context).pop(); },
-                    ),
-                  ],
-                ),
-              );
-            } : () { // send to review
-              showDialog(
-                context: context,
-                builder: (context) => AppAlertDialog(
-                  text: "Do you want to send it to review?",
-                  actions: [
-                    AppButton(
-                      text: "Yes",
-                      height: 40,
-                      onTap: () {
-                        /* Send to review */
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                    AppButton(
-                      text: "No",
-                      height: 40,
-                      onTap: () { Navigator.of(context).pop(); },
-                    ),
-                  ],
-                ),
-              );
-            },
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 2.0),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            pending ? "Pending" : "Your Work",
-                            style: TextStyle(
-                              color: pending ? Colors.red.shade800
-                                  : Colors.green.shade800,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15.0,
-                            ),
-                          ),
-                          Text(
-                            workspacesObject.workspaceTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                      child: pending ? const Icon(Icons.keyboard_arrow_right)
-                        : const Icon(Icons.send),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -222,12 +123,12 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
           items: List.generate(
             totalLength+1,
             (index) => (index == 0) ? mobileAddNewWorkspaceIcon()
-            : (index <= yourWorkLength) ? mobileWorkspaceCard(
-              workspacesData.workspaces[index-1],
-              false,
-            ) : mobileWorkspaceCard(
-              workspacesData.pendingWorkspaces[index-yourWorkLength-1],
-              true,
+            : (index <= yourWorkLength) ? MobileWorkspaceCard(
+                workspacesObject: workspacesData.workspaces[index-1],
+                pending: false
+            ) : MobileWorkspaceCard(
+              workspacesObject: workspacesData.pendingWorkspaces[index-yourWorkLength-1],
+              pending: true,
             ),
           ),
           options: CarouselOptions(
