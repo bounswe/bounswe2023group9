@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
+import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,6 @@ class GraphPageNodeCard extends StatelessWidget {
                     Container(
                       decoration: const BoxDecoration(
                         border: Border(
-                          // top: BorderSide(width: 2.0, color: Colors.grey),
                           bottom: BorderSide(width: 2.0, color: Colors.grey),
                         ),
                       ),
@@ -60,9 +60,11 @@ class GraphPageNodeCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8.0), // Add padding inside the box
                       child: TeXView(
-                          renderingEngine: const TeXViewRenderingEngine.katex(),
-                          child:
-                              TeXViewDocument(utf8.decode(node.theorem!.theoremContent.codeUnits))),
+                        renderingEngine: const TeXViewRenderingEngine.katex(),
+                        child: TeXViewDocument(
+                          NodeHelper.getNodeContentLatex(node, "long"),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20.0),
                     Column(

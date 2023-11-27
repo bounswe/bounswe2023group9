@@ -3,7 +3,6 @@ import 'package:collaborative_science_platform/providers/profile_data_provider.d
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/router.dart';
 import 'package:flutter/foundation.dart';
