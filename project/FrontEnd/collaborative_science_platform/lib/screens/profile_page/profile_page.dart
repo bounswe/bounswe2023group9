@@ -280,56 +280,61 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: const TextStyle(color: Colors.red),
                       textAlign: TextAlign.center,
                     )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        AboutMe(
-                          aboutMe: profileData.aboutMe,
-                          email: profileData.email,
-                          name: profileData.name,
-                          surname: profileData.surname,
-                          noWorks: noWorks,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                          child: ProfileActivityTabBar(
-                            callback: updateIndex,
+                  : Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(color: Colors.grey[100]),
+                      height: MediaQuery.of(context).size.height - 60,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AboutMe(
+                            aboutMe: profileData.aboutMe,
+                            email: profileData.email,
+                            name: profileData.name,
+                            surname: profileData.surname,
+                            noWorks: noWorks,
                           ),
-                        ),
-                        if (currentIndex == 0)
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: CardContainer(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(0),
-                                physics:
-                                    const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-                                scrollDirection: Axis.vertical,
-                                shrinkWrap: true,
-                                itemCount: profileData.nodes.length,
-                                itemBuilder: (context, index) {
-                                  return ProfileNodeCard(
-                                    profileNode: profileData.nodes.elementAt(index),
-                                    onTap: () {
-                                      context.push(
-                                          '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
-                                    },
-                                  );
-                                },
-                              ),
+                            child: ProfileActivityTabBar(
+                              callback: updateIndex,
                             ),
                           ),
-                        if (currentIndex == 1)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: CardContainer(
-                              child: SizedBox(
-                                height: 400,
-                                child: QuestionActivity(),
+                          if (currentIndex == 0)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              child: CardContainer(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(0),
+                                  physics:
+                                      const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  itemCount: profileData.nodes.length,
+                                  itemBuilder: (context, index) {
+                                    return ProfileNodeCard(
+                                      profileNode: profileData.nodes.elementAt(index),
+                                      onTap: () {
+                                        context.push(
+                                            '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
+                                      },
+                                    );
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                          if (currentIndex == 1)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                              child: CardContainer(
+                                child: SizedBox(
+                                  height: 400,
+                                  child: QuestionActivity(),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
         ),
       ),
