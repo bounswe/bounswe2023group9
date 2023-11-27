@@ -34,7 +34,7 @@ class EntriesListView extends StatelessWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               const Text(
                 "Entries",
-                style: TextStyles.title2secondary,
+                style: TextStyles.title3secondary,
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width / 6,
@@ -61,6 +61,7 @@ class EntriesListView extends StatelessWidget {
                 ),
               ),
             ]),
+            if (entries.length > 0)
             ListView.builder(
                 controller: controller,
                 scrollDirection: Axis.vertical,
@@ -147,6 +148,15 @@ class EntriesListView extends StatelessWidget {
                     ),
                   );
                 })
+            else
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  "No Entries Yet!",
+                  style: TextStyles.bodyGrey,
+                ),
+              )
+              
           ],
         )),
       ),
