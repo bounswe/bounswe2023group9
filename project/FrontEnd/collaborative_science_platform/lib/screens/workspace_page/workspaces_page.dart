@@ -65,7 +65,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.getUserWorkspaces(auth.user!.id, auth.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.token);
       setState(() {
         workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
       });
