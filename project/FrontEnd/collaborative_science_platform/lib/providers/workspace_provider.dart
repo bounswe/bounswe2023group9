@@ -128,6 +128,7 @@ class WorkspaceProvider with ChangeNotifier {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
+      print("Create Response Body: ${response.body}");
       if (response.statusCode == 200) {
         notifyListeners();
       } else if (response.statusCode == 400) {
@@ -138,6 +139,7 @@ class WorkspaceProvider with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (e) {
+      print(e.toString());
       rethrow;
     }
   }

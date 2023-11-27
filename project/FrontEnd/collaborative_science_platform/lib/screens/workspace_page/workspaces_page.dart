@@ -4,9 +4,9 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspaces
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/web_workspace_page.dart';
+import 'package:collaborative_science_platform/widgets/app_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../utils/responsive/responsive.dart';
 import 'mobile_workspace_page/mobile_workspace_page.dart';
 
@@ -101,7 +101,11 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Responsive(
+    return (isLoading || error) ? AppCircularProgressIndicator(
+        isLoading: isLoading,
+        error: error,
+      errorMessage: errorMessage,
+    ) : Responsive(
       mobile: MobileWorkspacePage(
         workspace: workspace,
         workspaces: workspaces,

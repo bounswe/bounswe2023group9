@@ -10,6 +10,7 @@ class BasicUser {
     required this.emailNotificationPreference,
     required this.showActivity,
   });
+
   factory BasicUser.fromJson(Map<String, dynamic> jsonString) {
     return BasicUser(
       basicUserId: jsonString["basic_user_id"],

@@ -83,7 +83,11 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                     ),
                                     backgroundColor: Colors.white,
                                     surfaceTintColor: Colors.white,
-                                    content: const CreateWorkspaceForm(),
+                                    content: CreateWorkspaceForm(
+                                      onCreate: () {
+                                        context.go(WorkspacesPage.routeName);
+                                      },
+                                    ),
                                     actions: [
                                       AppButton(
                                           text: "Create New Workspace", height: 50, onTap: () {})

@@ -8,10 +8,16 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_content.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/widgets/app_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../../exceptions/workspace_exceptions.dart';
+import '../../../providers/auth.dart';
 import '../../../widgets/app_button.dart';
+import '../../home_page/home_page.dart';
 import '../../home_page/widgets/home_page_appbar.dart';
+import '../workspaces_page.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
@@ -40,11 +46,11 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   int workspaceIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     yourWorkLength = widget.workspaces!.workspaces.length;
     pendingLength = widget.workspaces!.pendingWorkspaces.length;
     totalLength = yourWorkLength + pendingLength;
+    super.didChangeDependencies();
   }
 
   Widget mobileAddNewWorkspaceIcon() {
@@ -59,19 +65,11 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
             context: context,
             builder: (context) => AppAlertDialog(
               text: "Create Workspace",
-              content: const CreateWorkspaceForm(),
-              actions: [
-                AppButton(
-                  text: "Create New Workspace",
-                  height: 50,
-                  onTap: () {
-                    // Create Workspace
-                    final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
-
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+              content: CreateWorkspaceForm(
+                onCreate: () {
+                  // Refresh the page
+                },
+              ),
             ),
           );
         },
@@ -137,19 +135,11 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading || error) {
-      return PageWithAppBar(
-        appBar: const HomePageAppBar(),
-        child: Center(
-          child: isLoading
-              ? const CircularProgressIndicator()
-              : error
-                  ? SelectableText(errorMessage)
-                  : const SelectableText("Something went wrong!"),
-        ),
-      );
-    } else {
-      return PageWithAppBar(
+    return (isLoading || error) ? AppCircularProgressIndicator(
+        isLoading: isLoading,
+        error: error,
+        errorMessage: errorMessage,
+    ) : PageWithAppBar(
         appBar: const HomePageAppBar(),
         child: SizedBox(
           width: Responsive.getGenericPageWidth(context),
@@ -182,5 +172,4 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
         ),
       );
     }
-  }
 }

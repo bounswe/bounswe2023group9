@@ -5,6 +5,10 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../exceptions/workspace_exceptions.dart';
+import '../../../../providers/auth.dart';
+import '../../../../providers/workspace_provider.dart';
+
 class SendCollaborationRequestForm extends StatefulWidget {
   const SendCollaborationRequestForm({super.key});
 
@@ -40,6 +44,39 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> sendRequest(int receiverId, String title, String requestBody, int workspaceId) async {
+    try {
+      final auth = Provider.of<Auth>(context);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.sendCollaborationRequest(
+          auth.basicUser!.basicUserId,
+          receiverId,
+          title,
+          requestBody,
+          workspaceId,
+          auth.token,
+      );
+    } on SendCollaborationRequestException {
+      setState(() {
+        error = true;
+        errorMessage = SendCollaborationRequestException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
       });
     } finally {
       setState(() {
@@ -113,7 +150,12 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        // send collaboration request
+                                        sendRequest(
+                                            1, // dummy receiver id
+                                            "You have a collaboration request!", // dummy request title
+                                            "Someone is calling you to work with him/her", // dummy request body
+                                            1, // dummy workspace id
+                                        );
                                       },
                                       icon: Icon(
                                         Icons.send,
