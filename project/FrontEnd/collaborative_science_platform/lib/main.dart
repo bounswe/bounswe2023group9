@@ -69,7 +69,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: Constants.appName,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
+            colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 85, 234, 145)),
             useMaterial3: true,
           ),
         ),

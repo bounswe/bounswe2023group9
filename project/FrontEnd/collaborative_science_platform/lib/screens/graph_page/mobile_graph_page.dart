@@ -132,6 +132,8 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
       !widget.isLoading ? referentsCardList() : const Center(child: CircularProgressIndicator()),
     ];
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Center(

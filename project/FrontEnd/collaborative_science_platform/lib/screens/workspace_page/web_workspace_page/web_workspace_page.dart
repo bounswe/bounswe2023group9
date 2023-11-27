@@ -52,8 +52,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: true,
             isFinalEntry: false,
             isProofEntry: false,
-            isTheoremEntry: false
-        ),
+            isTheoremEntry: false),
         Entry(
             content: "ENTRY !111",
             entryDate: DateTime.now(),
@@ -63,8 +62,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: false,
             isFinalEntry: true,
             isProofEntry: false,
-            isTheoremEntry: true
-        ),
+            isTheoremEntry: true),
         Entry(
             content: "ENTRY !111",
             entryDate: DateTime.now(),
@@ -74,8 +72,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
             isEditable: true,
             isFinalEntry: false,
             isProofEntry: true,
-            isTheoremEntry: false
-        ),
+            isTheoremEntry: false),
       ],
       status: WorkspaceStatus.workable,
       numApprovals: 0,
