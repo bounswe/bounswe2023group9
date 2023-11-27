@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SettingsProvider with ChangeNotifier {
-  String token = "cd018223f0564aa0f66af496d754c819494de87f"; //TEST
-  Future<void> changePassword(String oldPass, String newPass) async {
+  Future<int> changePassword(User? user, String oldPass, String newPass) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': 'Token $token',
+      'Authorization': "Token"// ${user!.token}",
     };
 
     try {
@@ -24,16 +24,17 @@ class SettingsProvider with ChangeNotifier {
         ),
       );
       print(response.statusCode);
+      return response.statusCode;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> changePreferences(String bio, bool sendNotification, bool showActivity) async {
+  Future<void> changePreferences(User? user, String bio, bool sendNotification, bool showActivity) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': 'Token $token',
+      'Authorization': "Token"// ${user!.token}",
     };
 
     try {

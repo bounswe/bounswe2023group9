@@ -1,7 +1,6 @@
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/about_me_edit.dart';
 import 'package:collaborative_science_platform/screens/profile_page/widgets/change_password_form.dart';
@@ -12,9 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AccountSettingsForm extends StatefulWidget {
-  const AccountSettingsForm({
-    super.key,
-  });
+  const AccountSettingsForm({super.key});
 
   @override
   State<AccountSettingsForm> createState() => _AccountSettingsFormState();
@@ -30,44 +27,8 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
 
   bool isSwitched = false;
   bool isSwitched2 = false;
-
-  bool firstTime = true;
-  int noWorks = 0;
   bool error = false;
-  String errorMessage = "";
-  bool isLoading = false;
-  bool _isFirstTime = true;
-
-  int currentIndex = 0;
-
-  @override
-  void didChangeDependencies() {
-    if (_isFirstTime) {
-      getUserData();
-      _isFirstTime = false;
-    }
-    super.didChangeDependencies();
-  }
-
-  void getUserData() async {
-    try {
-      final User user = Provider.of<Auth>(context).user!;
-      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
-      setState(() {
-        isLoading = true;
-      });
-      await profileDataProvider.getData(user.email);
-      setState(() {
-        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
-        noWorks = profileData.nodes.length;
-      });
-    } catch (e) {
-      setState(() {
-        error = true;
-        errorMessage = "Something went wrong!";
-      });
-    }
-  }
+  String message = "";
 
   @override
   void dispose() {
@@ -79,14 +40,24 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
   }
 
   void changePreff() async {
-    
-      final settingsProvider = Provider.of<SettingsProvider>(context,listen: false);
-      await settingsProvider.changePreferences(aboutMeController.text, isSwitched, isSwitched2); 
-      
+    try {
+      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+      await settingsProvider.changePreferences(
+          user, aboutMeController.text, isSwitched, isSwitched2);
+      error = false;
+      message = "Changed Successfully.";
+    } catch (e) {
+      setState(() {
+        error = true;
+        message = "Something went wrong!";
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final User? user = Provider.of<Auth>(context).user;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       width: Responsive.getGenericPageWidth(context),
@@ -138,63 +109,70 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
               ),
             ],
           ),
-          const SizedBox(height: 10.0),
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () => changePreff(),
-              child: Container(
-                height: 40.0,
-                width: MediaQuery.of(context).size.width - 40,
-                decoration: BoxDecoration(
-                    color: AppColors.secondaryColor, borderRadius: BorderRadius.circular(5.0)),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Save',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
-                  ],
+          const SizedBox(height: 20.0),
+          Container(
+            width: 400,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () => changePreff(),
+                child: Container(
+                  height: 40.0,
+                  width: MediaQuery.of(context).size.width - 40,
+                  decoration: BoxDecoration(
+                      color: AppColors.primaryColor, borderRadius: BorderRadius.circular(5.0)),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Save',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
+          const SizedBox(height: 10),
+          Text(message),
           const Divider(height: 40.0),
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () {
-                // Show Popup with EditProfileForm content
-                showDialog(
-                  context: context,
-                  builder: (context) => const AlertDialog(
-                    title: SizedBox(
-                      width: 500,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Change Password', style: TextStyle(fontSize: 20.0)),
-                        ],
+          Container(
+            width: 400,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const SizedBox(
+                        width: 500,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Change Password', style: TextStyle(fontSize: 20.0)),
+                          ],
+                        ),
                       ),
+                      backgroundColor: Colors.white,
+                      shadowColor: Colors.white,
+                      content: ChangePasswordForm(user: user),
                     ),
-                    backgroundColor: Colors.white,
-                    shadowColor: Colors.white,
-                    content: ChangePasswordForm(),
+                  );
+                },
+                child: Container(
+                  height: 40.0,
+                  width: MediaQuery.of(context).size.width - 40,
+                  decoration: BoxDecoration(
+                      color: AppColors.primaryColor, borderRadius: BorderRadius.circular(5.0)),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Change Password',
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
+                    ],
                   ),
-                );
-              },
-              child: Container(
-                height: 40.0,
-                width: MediaQuery.of(context).size.width - 40,
-                decoration: BoxDecoration(
-                    color: AppColors.primaryColor, borderRadius: BorderRadius.circular(5.0)),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Change Password',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16.0)),
-                  ],
                 ),
               ),
             ),

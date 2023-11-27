@@ -115,7 +115,7 @@ final router = GoRouter(
     GoRoute(
       name: AccountSettingsPage.routeName.substring(1),
       path: AccountSettingsPage.routeName,
-      builder: (context, state) => const AccountSettingsPage(),
+      builder: (context, state) => AccountSettingsPage(),
     ),
     GoRoute(
       name: "/please-login",
