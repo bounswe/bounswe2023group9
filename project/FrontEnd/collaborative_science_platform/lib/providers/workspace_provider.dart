@@ -15,10 +15,10 @@ class WorkspaceProvider with ChangeNotifier {
     workspaces = null;
   }
 
-  Future<void> getUserWorkspaces(int id) async {
+  Future<void> getUserWorkspaces(int id, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/get_user_workspaces/?user_id=$id");
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
     try {
@@ -35,10 +35,10 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getWorkspaceById(int id) async {
+  Future<void> getWorkspaceById(int id, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/get_workspace/?workspace_id=$id");
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
     try {
@@ -58,11 +58,12 @@ class WorkspaceProvider with ChangeNotifier {
   }
 
   Future<void> sendCollaborationRequest(
-      int senderId, int receiverId, String title, String requestBody, int workspaceId) async {
+      int senderId, int receiverId, String title,
+      String requestBody, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/send_collab_req/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -88,11 +89,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateRequest(int id, String status) async {
+  Future<void> updateRequest(int id, String status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_req");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -198,11 +199,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addReference(int workspaceId, int nodeId) async {
+  Future<void> addReference(int workspaceId, int nodeId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/add_reference/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -225,11 +226,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addEntry(String content, int workspaceId) async {
+  Future<void> addEntry(String content, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/add_entry/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -252,11 +253,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> finalizeWorkspace(int workspaceId) async {
+  Future<void> finalizeWorkspace(int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/finalize_workspace/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -278,11 +279,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteReference(int workspaceId, int nodeId) async {
+  Future<void> deleteReference(int workspaceId, int nodeId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/delete_reference/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -305,11 +306,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> editEntry(String content, int entryId) async {
+  Future<void> editEntry(String content, int entryId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/edit_entry/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
@@ -332,11 +333,11 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteEntry(int entryId, int workspaceId) async {
+  Future<void> deleteEntry(int entryId, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/add_entry/");
 
     final Map<String, String> headers = {
-      "Accept": "application/json",
+      "Authorization": "Token $token",
       "content-type": "application/json"
     };
 
