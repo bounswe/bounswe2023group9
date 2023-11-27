@@ -73,8 +73,7 @@ final router = GoRouter(
               return WorkspacesPage(workspaceId: workspaceId);
             },
           ),
-        ]
-    ),
+        ]),
     GoRoute(
       name: MobileCreateWorkspacePage.routeName.substring(1),
       path: MobileCreateWorkspacePage.routeName,
@@ -135,14 +134,26 @@ final router = GoRouter(
       },
     ),
     GoRoute(
+      name: "/profile",
+      path: ProfilePage.routeName,
+      builder: (context, state) {
+        if (!context.read<Auth>().isSignedIn) {
+          return PleaseLoginPage(pageType: ProfilePage.routeName.substring(1));
+        }
+        return ProfilePage(email: "");
+      },
+    ),
+    GoRoute(
       name: ProfilePage.routeName.substring(1),
       path: "${ProfilePage.routeName}/:email",
       builder: (context, state) {
         final String encodedEmail = state.pathParameters['email'] ?? '';
         final String email = Uri.decodeComponent(encodedEmail);
+        print(context.read<Auth>().isSignedIn);
         return ProfilePage(email: email);
       },
       redirect: (context, state) {
+        print(context.read<Auth>().isSignedIn);
         if (!context.read<Auth>().isSignedIn &&
             (state.pathParameters['email'] == null || state.pathParameters['email'] == '')) {
           return '${PleaseLoginPage.routeName}${ProfilePage.routeName}';
