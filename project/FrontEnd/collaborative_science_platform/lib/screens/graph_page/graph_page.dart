@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 class GraphPage extends StatefulWidget {
   static const routeName = '/graph';
   final int nodeId;
-  const GraphPage({super.key, required this.nodeId});
+  const GraphPage({super.key, this.nodeId = -1});
 
   @override
   State<GraphPage> createState() => _GraphPageState();

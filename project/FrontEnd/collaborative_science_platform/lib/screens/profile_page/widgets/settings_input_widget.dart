@@ -7,6 +7,7 @@ class SettingsWidget extends StatelessWidget {
   final String textType;
   final IconData prefixIcon;
   final double widgetWidth;
+  final Function controllerCheck;
 
   const SettingsWidget({
     super.key,
@@ -15,6 +16,7 @@ class SettingsWidget extends StatelessWidget {
     required this.textType,
     required this.prefixIcon,
     required this.widgetWidth,
+    required this.controllerCheck,
   });
 
   @override
@@ -54,7 +56,7 @@ class SettingsWidget extends StatelessWidget {
                   TextField(
                     controller: controller,
                     focusNode: focusNode,
-                    onChanged: null,
+                    onChanged: (_) {controllerCheck();},
                     keyboardType: TextInputType.text,
                     cursorColor: AppColors.primaryColor,
                     maxLines: null, // Allow the input to have multiple lines

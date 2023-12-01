@@ -126,7 +126,12 @@ class NodeProvider with ChangeNotifier {
 
   Future<void> getNode(int id) async {
     clearAll();
-    Uri url = Uri.parse("${Constants.apiUrl}/get_node/?node_id=$id");
+    Uri url = Uri.parse("${Constants.apiUrl}/get_node/");
+
+    if (id > -1) {
+      url = Uri.parse("${Constants.apiUrl}/get_node/?node_id=$id");
+    }
+
     final Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json"
