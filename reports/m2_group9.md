@@ -637,3 +637,62 @@ I gave detailed feedbacks to my teammates in my reviews and also in personal. I 
   - Enhance workspace [#494](https://github.com/bounswe/bounswe2023group9/pull/494)
 
 **Additional information:**
+
+
+
+## Member: Hakan Emre Aktas	
+**Responsibilities:** 
+
+
+As part of the backend team, I have completed several tasks related to implementation of new features. I also solved several bugs. Aside from implementation, I actively participated in the meetings and contributed to the discussions related to the implementation of the whole project. Furthermore, as the team communicator, I ensured that the wishes of the Customers are well received.
+
+**Main contributions:**
+
+Deployment, Implementation, Dockerization, Database maintanence.
+
+**Code-related significant issues:**
+
+
+Fixed a bug that affects profile page api [#515](https://github.com/bounswe/bounswe2023group9/issues/515)
+Implemented a API function to get basic user information from the session token [#503](https://github.com/bounswe/bounswe2023group9/issues/503)
+GET API implementation for Workspace Page [#450](https://github.com/bounswe/bounswe2023group9/issues/450)
+Added question fields to the GET api of Profile page [#416](https://github.com/bounswe/bounswe2023group9/issues/416)
+Fixed several bugs that affect the POST apis of the Workspace page [#497](https://github.com/bounswe/bounswe2023group9/issues/497)
+
+
+
+**Management-related significant issues:**
+
+
+Contributed to the creation of Milestone scenario and test scenario
+
+**Pull requests:**
+
+
+**Created:**
+
+
+ - Workspace backend bug fix [#498](https://github.com/bounswe/bounswe2023group9/pull/498)
+ - Addition of milestone scenarios [#495](https://github.com/bounswe/bounswe2023group9/pull/495)
+ - Semantic and Random search implementation [#487](https://github.com/bounswe/bounswe2023group9/pull/487)
+ - Workspace GET API [#459](https://github.com/bounswe/bounswe2023group9/pull/459)
+ - Search and profile page API update [#417](https://github.com/bounswe/bounswe2023group9/pull/417)
+ - Profile page API bug fix [#519](https://github.com/bounswe/bounswe2023group9/pull/519)
+ - Basic User GET API [#504](https://github.com/bounswe/bounswe2023group9/pull/504)
+
+**Reviewed:**
+
+ - Workspace post api update (with token authentication) [#501](https://github.com/bounswe/bounswe2023group9/pull/501)
+ - Workspace GET api update [#500](https://github.com/bounswe/bounswe2023group9/pull/500)
+ - Implementation of various api methods [#470](https://github.com/bounswe/bounswe2023group9/pull/470)
+ - Semantic tag and wikidata implementation [#468](https://github.com/bounswe/bounswe2023group9/pull/468)
+ - Implementation of POST request methods [#460](https://github.com/bounswe/bounswe2023group9/pull/460)
+ - Update Node model serializers [#410](https://github.com/bounswe/bounswe2023group9/pull/410)
+ - Change backend url  [#483](https://github.com/bounswe/bounswe2023group9/pull/483)
+
+
+**Additional information:**
+	Over the course of the last month, I have fixed issues related to the database and ensured that it is up and running at all times. This included cleaning unwanted migrations and applying unapplied ones. I also deployed the updated version of the backend of our application after almost every PR merge to ease the process of front end development. Aside from that, I also implemented the renderer to render the API documentation of the backend. I am also responsible for deploying the front end.de 
+
+
+
