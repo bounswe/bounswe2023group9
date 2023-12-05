@@ -2,8 +2,13 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 
 from .views  import *
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
+    path('docs/', TemplateView.as_view(
+        template_name='swagger-ui.html'
+    ), name='swagger-ui'),
     path('signup/', SignUpAPIView.as_view(), name='signup'),
     path('login/', obtain_auth_token, name='login'),
     path('get_authenticated_user/', UserDetailAPI.as_view(), name='get_authenticated_user'),
@@ -34,6 +39,8 @@ urlpatterns = [
     path('update_req/', update_request_status, name='update_req'),
     path('send_rev_req/', send_review_request, name='send_rev_req'),
     path('get_semantic_suggestion/', get_semantic_suggestion, name='get_semantic_suggestion'),
+    path('create_node/', create_node, name='create_node'),
+
 
 
 ]
