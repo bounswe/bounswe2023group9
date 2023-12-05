@@ -56,7 +56,7 @@
 | FE - Semantic Tag Search | [#479](https://github.com/bounswe/bounswe2023group9/issues/479) | Abdullah, Ömer Faruk | 27.11.2023 | 5hr |
 | FE - User Get Token | [#480](https://github.com/bounswe/bounswe2023group9/issues/480) | Abdullah | 27.11.2023 | 1hr |
 | FE - Advance Navigation Bar for Routing Options  | [#422](https://github.com/bounswe/bounswe2023group9/issues/422) | Ömer Faruk | 27.11.2023 | 3hr |
-| FE - Show Random Graph  | [#443](https://github.com/bounswe/bounswe2023group9/issues/422) | Abdullah | 27.11.2023 | 2hr |
+| FE - Show Random Graph  | [#443](https://github.com/bounswe/bounswe2023group9/issues/443) | Abdullah | 27.11.2023 | 2hr |
 | Enhance Graph Page | [#442](https://github.com/bounswe/bounswe2023group9/issues/442) | Bengisu | 21.11.2023 | 3.5hr | |
 | Semantic Tag Search enhancement | [#344](https://github.com/bounswe/bounswe2023group9/issues/344) | Hakan | 27.11.2023 | 5hr |
 | Workspace Get Update | [#484](https://github.com/bounswe/bounswe2023group9/issues/484) | Ali Mert | 27.11.2023 | 3hr |
