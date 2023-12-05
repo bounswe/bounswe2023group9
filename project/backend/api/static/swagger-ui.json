@@ -1,0 +1,3783 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Collab Science API",
+    "description": "This API documentation demonstrates  API endpoints yielding requests to Amazon instance.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "http://13.51.55.11"
+    }
+  ],
+  "paths": {
+    "/api/workspace_post/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Workspace POST API",
+        "description": "This HTTP POST request is used to create a new workspace. The request should be sent to the endpoint [http://13.51.55.11:8000/api/workspace_post/?format=json](http://13.51.55.11:8000/api/workspace_post/?format=json).\n\nThe request body should include the following parameters:\n\n- workspace_id (integer): The ID of the workspace.\n- workspace_title (string): The title or name of the workspace.\n- semantic_tags (array of integers): An array of semantic tags associated with the workspace.\n    \n\nPlease note that the values of workspace_id, workspace_title, and semantic_tags may vary in the responses.\n\nMake sure to include the required parameters in the request body to create a new workspace. The response will provide the details of the created workspace, including the assigned workspace_id and any associated semantic tags.",
+        "operationId": "workspacePostApi",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "json"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workspace_title": {
+                    "type": "string",
+                    "example": "Only title created workspace"
+                  }
+                }
+              },
+              "example": {
+                "workspace_title": "Only title created workspace"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success: Create with only title",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "POST, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "87"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 18:41:44 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.12.0"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "semantic_tags": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "workspace_id": {
+                      "type": "number",
+                      "example": 16
+                    },
+                    "workspace_title": {
+                      "type": "string",
+                      "example": "Only title created workspace"
+                    }
+                  }
+                },
+                "examples": {
+                  "Success: Create with only title": {
+                    "value": {
+                      "semantic_tags": [],
+                      "workspace_id": 16,
+                      "workspace_title": "Only title created workspace"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Fail: Create workspace without workspace_title",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "POST, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "79"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 17:50:33 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.12.0"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "non_field_errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "Both workspace_id and workspace_title cannot be empty."
+                      },
+                      "example": [
+                        "Both workspace_id and workspace_title cannot be empty."
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "Fail: Create workspace without workspace_title": {
+                    "value": {
+                      "non_field_errors": [
+                        "Both workspace_id and workspace_title cannot be empty."
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fail: Basic User Tries To Create A Workspace",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "POST, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "63"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 17:48:43 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.12.0"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "You do not have permission to perform this action."
+                    }
+                  }
+                },
+                "examples": {
+                  "Fail: Basic User Tries To Create A Workspace": {
+                    "value": {
+                      "detail": "You do not have permission to perform this action."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/signup/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Signup POST API",
+        "description": "This API endpoint allows you to sign up a new user by sending a POST request to the specified URL.\n\n### Request\n\nThe request should be sent to `http://13.51.55.11:8000/api/signup/` using the HTTP POST method.\n\n### Response\n\nThe response will have a status code of 201 if the user is successfully signed up. The response body will contain the following information:\n\n- `email`: The email address of the user.\n- `first_name`: The first name of the user.\n- `last_name`: The last name of the user.\n    \n\n### Example\n\nRequest:\n\n```\nPOST http://13.51.55.11:8000/api/signup/\n\n ```\n\nResponse:\n\n```\nStatus: 201\n{\n    \"email\": \"utkangezer2@gmail.com\",\n    \"first_name\": \"utkan\",\n    \"last_name\": \"gezer\"\n}\n\n ```\n\nPlease note that the values for `email`, `first_name`, and `last_name` will be empty in the response. You should provide the actual values when making the request.",
+        "operationId": "signupPostApi",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "utkangezer3@gmail.com"
+                  },
+                  "first_name": {
+                    "type": "string",
+                    "example": "utkan"
+                  },
+                  "last_name": {
+                    "type": "string",
+                    "example": "gezer"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "utkangezer123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Signup POST API",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "POST, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "74"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:34:33 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "utkangezer2@gmail.com"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "utkan"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "gezer"
+                    }
+                  }
+                },
+                "examples": {
+                  "Signup POST API": {
+                    "value": {
+                      "email": "utkangezer2@gmail.com",
+                      "first_name": "utkan",
+                      "last_name": "gezer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/login/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Login POST API",
+        "description": "\nThis HTTP POST request is used to login to the API. The request is made to the endpoint `http://13.51.55.11:8000/api/login/` with the query parameter `format=json`.\n\nThe request does not contain any specific request parameters in the body or headers. The login credentials are expected to be provided in the request body.\n\nThe response to the request has a status code of 200, indicating a successful login. The response body contains a JSON object with a `token` property. The value of the `token` property is an empty string.\n\nPlease note that the response may vary depending on the provided login credentials.\n\n",
+        "operationId": "loginPostApi",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "json"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "Pforo111!"
+                  },
+                  "username": {
+                    "type": "string",
+                    "example": "bengisu@bengisu.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/get_semantic_suggestion/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "semantic search suggestion",
+        "description": "This API endpoint allows you to retrieve semantic suggestions based on a given keyword.\n\nTo make a request, send an HTTP GET request to the following URL:\n\n```\nhttp://13.51.55.11:8000/api/get_semantic_suggestion/?keyword=abstract machine\n\n ```\n\nThe `keyword` parameter in the URL represents the keyword for which you want to retrieve semantic suggestions. In this case, the keyword is \"abstract machine\".\n\nThe API will respond with a JSON object containing an array of suggestions. Each suggestion object in the array has the following properties:\n\n- `id`: The unique identifier for the suggestion.\n- `label`: The label or name of the suggestion.\n- `description`: A description providing additional information about the suggestion.\n    \n\nHere is an example response:\n\n``` json\n{\n    \"suggestions\": [\n        {\n            \"id\": \"Q787114\",\n            \"label\": \"abstract machine\",\n            \"description\": \"theoretical model of a computer hardware or software system used in automata theory\"\n        }\n    ]\n}\n\n ```\n\nPlease note that the values for `id`, `label`, and `description` will vary depending on the specific suggestion.\n\nMake sure to replace \"abstract machine\" in the URL with your desired keyword to retrieve relevant suggestions.",
+        "operationId": "semanticSearchSuggestion",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "abstract machine"
+            },
+            "description": "string to search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "semantic search suggestion Copy",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "167"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 26 Nov 2023 13:09:03 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "suggestions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "description": {
+                            "type": "string",
+                            "example": "theoretical model of a computer hardware or software system used in automata theory"
+                          },
+                          "id": {
+                            "type": "string",
+                            "example": "Q787114"
+                          },
+                          "label": {
+                            "type": "string",
+                            "example": "abstract machine"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "description": "theoretical model of a computer hardware or software system used in automata theory",
+                          "id": "Q787114",
+                          "label": "abstract machine"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "semantic search suggestion Copy": {
+                    "value": {
+                      "suggestions": [
+                        {
+                          "description": "theoretical model of a computer hardware or software system used in automata theory",
+                          "id": "Q787114",
+                          "label": "abstract machine"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Search GET API",
+        "description": "This API endpoint allows you to search for nodes and authors based on a given query and type.\n\nTo search, make an HTTP GET request to the following URL: `http://54.234.226.156:8000/api/search/`\n\nThe request should include the following query parameters:\n\n- `query` (string): The search query.\n- `type` (string): The type of search to perform. Possible values are \"all\", \"nodes\", or \"authors\".\n    \n\nFor example, to search for the query \"omar\" in both nodes and authors, you can make the following request:\n\n```\nGET http://54.234.226.156:8000/api/search/?query=omar&type=all\n\n ```\n\nThe `nodes` field contains an array of nodes that match the search query. Each node has an `id`, `title`, `date`, and an array of `authors` who contributed to the node. Each author has a `name`, `surname`, `username`, and an `id`.\n\nThe `authors` field contains an array of authors that match the search query. Each author has a `name`, `surname`, `username`, and an `id`.",
+        "operationId": "searchGetApi",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "Q787114"
+            },
+            "description": "string to search"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "random"
+            },
+            "description": "'author' , 'node', 'by', 'semantic', 'random' or 'both'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "random",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "1246"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 26 Nov 2023 13:10:17 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authors": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "authors": {
+                            "type": "array",
+                            "items": {},
+                            "example": []
+                          },
+                          "date": {
+                            "type": "string",
+                            "example": "2023-10-23"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Test Node"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "authors": [],
+                          "date": "2023-10-23",
+                          "id": 1,
+                          "title": "Test Node"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-31",
+                          "id": 2,
+                          "title": "Finite state verifiers with both private and public coins"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 42,
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "id": 41,
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 99,
+                          "title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-28",
+                          "id": 100,
+                          "title": "Finite state verifiers with constant private randomness"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-11-23",
+                          "id": 33,
+                          "title": "asdads"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 34,
+                              "name": "omar",
+                              "surname": "uyduran",
+                              "username": "oma11r@omar.com"
+                            }
+                          ],
+                          "date": "2023-10-25",
+                          "id": 45,
+                          "title": "Horses are jumping back and forth"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-10",
+                          "id": 22,
+                          "title": "search to title"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 42,
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "id": 41,
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 55,
+                          "title": " Multihead finite automata and logarithmic space Turing machine"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "random": {
+                    "value": {
+                      "authors": [],
+                      "nodes": [
+                        {
+                          "authors": [],
+                          "date": "2023-10-23",
+                          "id": 1,
+                          "title": "Test Node"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-31",
+                          "id": 2,
+                          "title": "Finite state verifiers with both private and public coins"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 42,
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "id": 41,
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 99,
+                          "title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-28",
+                          "id": 100,
+                          "title": "Finite state verifiers with constant private randomness"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-11-23",
+                          "id": 33,
+                          "title": "asdads"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 34,
+                              "name": "omar",
+                              "surname": "uyduran",
+                              "username": "oma11r@omar.com"
+                            }
+                          ],
+                          "date": "2023-10-25",
+                          "id": 45,
+                          "title": "Horses are jumping back and forth"
+                        },
+                        {
+                          "authors": [],
+                          "date": "2023-10-10",
+                          "id": 22,
+                          "title": "search to title"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "id": 42,
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "id": 41,
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 55,
+                          "title": " Multihead finite automata and logarithmic space Turing machine"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_profile_info/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Profile GET API",
+        "description": "This API endpoint is used to retrieve profile information for a user. It is an HTTP GET request that should be made to the following URL: `http://13.51.55.11:8000/api/get_profile_info/`.\n\nThe request should include the user's email address as a query parameter. For example, to retrieve the profile information for the user with the email address `omer.com`, the request URL would be `http://13.51.55.11:8000/api/get_profile_info/?@omer.com`.\n\nThe response to this request will include various fields related to the user's profile. Here are the details of the response fields:\n\n- `name`: The user's name.\n- `surname`: The user's surname.\n- `bio`: The user's biography.\n- `nodes`: An array of nodes associated with the user. Each node has the following properties:\n    - `id`: The ID of the node.\n    - `title`: The title of the node.\n    - `date`: The date of the node.\n    - `authors`: An array of authors associated with the node. Each author has the following properties:\n        - `name`: The name of the author.\n        - `surname`: The surname of the author.\n        - `username`: The username of the author.\n- `asked_questions`: An array of questions asked by the user. Each question has the following properties:\n    - `id`: The ID of the question.\n    - `ask_date`: The date the question was asked.\n    - `node_id`: The ID of the node associated with the question.\n    - `node_title`: The title of the node associated with the question.\n    - `node_date`: The date of the node associated with the question.\n    - `asker_id`: The ID of the user who asked the question.\n    - `asker_name`: The name of the user who asked the question.\n    - `asker_surname`: The surname of the user who asked the question.\n    - `asker_mail`: The email address of the user who asked the question.\n    - `question_content`: The content of the question.\n    - `is_answered`: A flag indicating whether the question has been answered (0 for unanswered, 1 for answered).\n- `answered_questions`: An array of questions answered by the user. Each answered question has the following properties:\n    - `id`: The ID of the question.\n    - `ask_date`: The date the question was asked.\n    - `node_id`: The ID of the node associated with the question.\n    - `node_title`: The title of the node associated with the question.\n    - `node_date`: The date of the node associated with the question.\n    - `asker_id`: The ID of the user who asked the question.\n    - `asker_name`: The name of the user who asked the question.\n    - `asker_surname`: The surname of the user who asked the question.\n    - `asker_mail`: The email address of the user who asked the question.\n    - `answerer_name`: The name of the user who answered the question.\n    - `answerer_surname`: The surname of the user who answered the question.\n    - `answerer_mail`: The email address of the user who answered the question.\n    - `answerer_id`: The ID of the user who answered the question.\n    - `question_content`: The content of the question.\n    - `answer_content`: The content of the answer.\n    - `answer_date`: The date the answer was provided.\n    - `is_answered`: A flag indicating whether the question has been answered (0 for unanswered, 1 for answered).\n\nPlease note that some fields may be empty or have default values if no information is available.\n\nExample response:\n\n``` json\n{\n    \"name\": \"Cem\",\n    \"surname\": \"Say\",\n    \"bio\": \"Yes its me\",\n    \"nodes\": [\n        {\n            \"id\": 55,\n            \"title\": \" Multihead finite automata and logarithmic space Turing machine\",\n            \"date\": \"2023-10-28\",\n            \"authors\": [\n                {\n                    \"name\": \"Utkan\",\n                    \"surname\": \"Gezer\",\n                    \"username\": \"utkan.gezer@gezer.utkan\"\n                },\n                {\n                    \"name\": \"Cem\",\n                    \"surname\": \"Say\",\n                    \"username\": \"Cem.say@cem.say\"\n                }\n            ]\n        },\n        {\n            \"id\": 99,\n            \"title\": \"Implementing a polynomial-time “clock” in a probabilistic finite automaton\",\n            \"date\": \"2023-10-28\",\n            \"authors\": [\n                {\n                    \"name\": \"Utkan\",\n                    \"surname\": \"Gezer\",\n                    \"username\": \"utkan.gezer@gezer.utkan\"\n                },\n                {\n                    \"name\": \"Cem\",\n                    \"surname\": \"Say\",\n                    \"username\": \"Cem.say@cem.say\"\n                }\n            ]\n        }\n    ],\n    \"asked_questions\": [\n        {\n            \"id\": 2,\n            \"ask_date\": \"2023-11-13T08:20:50Z\",\n            \"node_id\": 100,\n            \"node_title\": \"Finite state verifiers with constant private randomness\",\n            \"node_date\": \"2023-10-28\",\n            \"asker_id\": 41,\n            \"asker_name\": \"Cem\",\n            \"asker_surname\": \"Say\",\n            \"asker_mail\": \"Cem.say@cem.say\",\n            \"question_content\": \"QUESTIONN\",\n            \"is_answered\": 0\n        }\n    ],\n    \"answered_questions\": [\n        {\n            \"id\": 1,\n            \"ask_date\": \"2023-11-10T07:01:21Z\",\n            \"node_id\": 55,\n            \"node_title\": \" Multihead finite automata and logarithmic space Turing machine\",\n            \"node_date\": \"2023-10-28\",\n            \"asker_id\": 47,\n            \"asker_name\": \"Omer\",\n            \"asker_surname\": \"Unal\",\n            \"asker_mail\": \"omer@boun.edu.tr\",\n            \"answerer_name\": \"Cem\",\n            \"answerer_surname\": \"Say\",\n            \"answerer_mail\": \"Cem.say@cem.say\",\n            \"answerer_id\": 41,\n            \"question_content\": \"HEYO\",\n            \"answer_content\": \"ANSWER CONTENT\",\n            \"answer_date\": \"2023-11-24T07:02:05Z\",\n            \"is_answered\": 1\n        },\n        {\n            \"id\": 3,\n            \"ask_date\": \"2023-11-10T17:45:39.742Z\",\n            \"node_id\": 1,\n            \"node_title\": \"Test Node\",\n            \"node_date\": \"2023-10-23\",\n            \"asker_id\": 34,\n            \"asker_name\": \"omar\",\n            \"asker_surname\": \"uyduran\",\n            \"asker_mail\": \"oma11r@omar.com\",\n            \"answerer_name\": \"Cem\",\n            \"answerer_surname\": \"Say\",\n            \"answerer_mail\": \"Cem.say@cem.say\",\n            \"answerer_id\": 41,\n            \"question_content\": \"Test Question 1\",\n            \"answer_content\": \"Test Answer 1\",\n            \"answer_date\": \"2023-11-10T17:45:34Z\",\n            \"is_answered\": 1\n        }\n    ]\n}\n\n ```",
+        "operationId": "profileGetApi",
+        "parameters": [
+          {
+            "name": "@omer.com",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile GET API",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "1922"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 10 Nov 2023 18:24:01 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "answered_questions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "answer_content": {
+                            "type": "string",
+                            "example": "ANSWER CONTENT"
+                          },
+                          "answer_date": {
+                            "type": "string",
+                            "example": "2023-11-24T07:02:05Z"
+                          },
+                          "answerer_id": {
+                            "type": "number",
+                            "example": 41
+                          },
+                          "answerer_mail": {
+                            "type": "string",
+                            "example": "Cem.say@cem.say"
+                          },
+                          "answerer_name": {
+                            "type": "string",
+                            "example": "Cem"
+                          },
+                          "answerer_surname": {
+                            "type": "string",
+                            "example": "Say"
+                          },
+                          "ask_date": {
+                            "type": "string",
+                            "example": "2023-11-10T07:01:21Z"
+                          },
+                          "asker_id": {
+                            "type": "number",
+                            "example": 47
+                          },
+                          "asker_mail": {
+                            "type": "string",
+                            "example": "omer@boun.edu.tr"
+                          },
+                          "asker_name": {
+                            "type": "string",
+                            "example": "Omer"
+                          },
+                          "asker_surname": {
+                            "type": "string",
+                            "example": "Unal"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "is_answered": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "node_date": {
+                            "type": "string",
+                            "example": "2023-10-28"
+                          },
+                          "node_id": {
+                            "type": "number",
+                            "example": 55
+                          },
+                          "node_title": {
+                            "type": "string",
+                            "example": " Multihead finite automata and logarithmic space Turing machine"
+                          },
+                          "question_content": {
+                            "type": "string",
+                            "example": "HEYO"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "answer_content": "ANSWER CONTENT",
+                          "answer_date": "2023-11-24T07:02:05Z",
+                          "answerer_id": 41,
+                          "answerer_mail": "Cem.say@cem.say",
+                          "answerer_name": "Cem",
+                          "answerer_surname": "Say",
+                          "ask_date": "2023-11-10T07:01:21Z",
+                          "asker_id": 47,
+                          "asker_mail": "omer@boun.edu.tr",
+                          "asker_name": "Omer",
+                          "asker_surname": "Unal",
+                          "id": 1,
+                          "is_answered": 1,
+                          "node_date": "2023-10-28",
+                          "node_id": 55,
+                          "node_title": " Multihead finite automata and logarithmic space Turing machine",
+                          "question_content": "HEYO"
+                        },
+                        {
+                          "answer_content": "Test Answer 1",
+                          "answer_date": "2023-11-10T17:45:34Z",
+                          "answerer_id": 41,
+                          "answerer_mail": "Cem.say@cem.say",
+                          "answerer_name": "Cem",
+                          "answerer_surname": "Say",
+                          "ask_date": "2023-11-10T17:45:39.742Z",
+                          "asker_id": 34,
+                          "asker_mail": "oma11r@omar.com",
+                          "asker_name": "omar",
+                          "asker_surname": "uyduran",
+                          "id": 3,
+                          "is_answered": 1,
+                          "node_date": "2023-10-23",
+                          "node_id": 1,
+                          "node_title": "Test Node",
+                          "question_content": "Test Question 1"
+                        }
+                      ]
+                    },
+                    "asked_questions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ask_date": {
+                            "type": "string",
+                            "example": "2023-11-13T08:20:50Z"
+                          },
+                          "asker_id": {
+                            "type": "number",
+                            "example": 41
+                          },
+                          "asker_mail": {
+                            "type": "string",
+                            "example": "Cem.say@cem.say"
+                          },
+                          "asker_name": {
+                            "type": "string",
+                            "example": "Cem"
+                          },
+                          "asker_surname": {
+                            "type": "string",
+                            "example": "Say"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "is_answered": {
+                            "type": "number",
+                            "example": 0
+                          },
+                          "node_date": {
+                            "type": "string",
+                            "example": "2023-10-28"
+                          },
+                          "node_id": {
+                            "type": "number",
+                            "example": 100
+                          },
+                          "node_title": {
+                            "type": "string",
+                            "example": "Finite state verifiers with constant private randomness"
+                          },
+                          "question_content": {
+                            "type": "string",
+                            "example": "QUESTIONN"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "ask_date": "2023-11-13T08:20:50Z",
+                          "asker_id": 41,
+                          "asker_mail": "Cem.say@cem.say",
+                          "asker_name": "Cem",
+                          "asker_surname": "Say",
+                          "id": 2,
+                          "is_answered": 0,
+                          "node_date": "2023-10-28",
+                          "node_id": 100,
+                          "node_title": "Finite state verifiers with constant private randomness",
+                          "question_content": "QUESTIONN"
+                        }
+                      ]
+                    },
+                    "bio": {
+                      "type": "string",
+                      "example": "Yes its me"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Cem"
+                    },
+                    "nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "authors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string",
+                                  "example": "Utkan"
+                                },
+                                "surname": {
+                                  "type": "string",
+                                  "example": "Gezer"
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "example": "utkan.gezer@gezer.utkan"
+                                }
+                              }
+                            },
+                            "example": [
+                              {
+                                "name": "Utkan",
+                                "surname": "Gezer",
+                                "username": "utkan.gezer@gezer.utkan"
+                              },
+                              {
+                                "name": "Cem",
+                                "surname": "Say",
+                                "username": "Cem.say@cem.say"
+                              }
+                            ]
+                          },
+                          "date": {
+                            "type": "string",
+                            "example": "2023-10-28"
+                          },
+                          "id": {
+                            "type": "number",
+                            "example": 55
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": " Multihead finite automata and logarithmic space Turing machine"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "authors": [
+                            {
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 55,
+                          "title": " Multihead finite automata and logarithmic space Turing machine"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 99,
+                          "title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton"
+                        }
+                      ]
+                    },
+                    "surname": {
+                      "type": "string",
+                      "example": "Say"
+                    }
+                  }
+                },
+                "examples": {
+                  "Profile GET API": {
+                    "value": {
+                      "answered_questions": [
+                        {
+                          "answer_content": "ANSWER CONTENT",
+                          "answer_date": "2023-11-24T07:02:05Z",
+                          "answerer_id": 41,
+                          "answerer_mail": "Cem.say@cem.say",
+                          "answerer_name": "Cem",
+                          "answerer_surname": "Say",
+                          "ask_date": "2023-11-10T07:01:21Z",
+                          "asker_id": 47,
+                          "asker_mail": "omer@boun.edu.tr",
+                          "asker_name": "Omer",
+                          "asker_surname": "Unal",
+                          "id": 1,
+                          "is_answered": 1,
+                          "node_date": "2023-10-28",
+                          "node_id": 55,
+                          "node_title": " Multihead finite automata and logarithmic space Turing machine",
+                          "question_content": "HEYO"
+                        },
+                        {
+                          "answer_content": "Test Answer 1",
+                          "answer_date": "2023-11-10T17:45:34Z",
+                          "answerer_id": 41,
+                          "answerer_mail": "Cem.say@cem.say",
+                          "answerer_name": "Cem",
+                          "answerer_surname": "Say",
+                          "ask_date": "2023-11-10T17:45:39.742Z",
+                          "asker_id": 34,
+                          "asker_mail": "oma11r@omar.com",
+                          "asker_name": "omar",
+                          "asker_surname": "uyduran",
+                          "id": 3,
+                          "is_answered": 1,
+                          "node_date": "2023-10-23",
+                          "node_id": 1,
+                          "node_title": "Test Node",
+                          "question_content": "Test Question 1"
+                        }
+                      ],
+                      "asked_questions": [
+                        {
+                          "ask_date": "2023-11-13T08:20:50Z",
+                          "asker_id": 41,
+                          "asker_mail": "Cem.say@cem.say",
+                          "asker_name": "Cem",
+                          "asker_surname": "Say",
+                          "id": 2,
+                          "is_answered": 0,
+                          "node_date": "2023-10-28",
+                          "node_id": 100,
+                          "node_title": "Finite state verifiers with constant private randomness",
+                          "question_content": "QUESTIONN"
+                        }
+                      ],
+                      "bio": "Yes its me",
+                      "name": "Cem",
+                      "nodes": [
+                        {
+                          "authors": [
+                            {
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 55,
+                          "title": " Multihead finite automata and logarithmic space Turing machine"
+                        },
+                        {
+                          "authors": [
+                            {
+                              "name": "Utkan",
+                              "surname": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "name": "Cem",
+                              "surname": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "date": "2023-10-28",
+                          "id": 99,
+                          "title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton"
+                        }
+                      ],
+                      "surname": "Say"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "user not found",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "57"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 23 Oct 2023 21:22:59 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User with this mail adress does not exist."
+                    }
+                  }
+                },
+                "examples": {
+                  "user not found": {
+                    "value": {
+                      "message": "User with this mail adress does not exist."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/change_password/": {
+      "put": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Change password PUT API",
+        "description": "PUT request\n\nHeaderda Authorization: Token\n\nBodyde form-data olarak verilecek pairler:\n\n- old_password: userın eski passworfu\n- password: userın yeni passwordu\n    \n\nResponselar:\n\nEğer headerda token sağlanmamış ise:\n\n- STATUS_CODE: 401\n- Json:\n    \n\n{\n\n\"detail\": \"Authentication credentials were not provided.\"\n\n}\n\nEğer token yanlış ise:\n\n- STATUS_CODE: 401\n- Json:\n    \n\n{\n\n\"detail\": \"Invalid token.\"\n\n}\n\nEğer old_password yanlış ise:\n\n- STATUS_CODE: 400\n- Json:\n    \n\n{\n\n\"old_password\": {\n\n\"error\": \"Old password is not correct\"\n\n}\n\n}\n\nEğer işlem başarılı ise:\n\n- STATUS_CODE: 200\n- empty json response: {}",
+        "operationId": "changePasswordPutApi",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "old_password": {
+                    "type": "string",
+                    "example": "pforo111"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "pforo111"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Change password PUT API Copy",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "PUT, PATCH, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "2"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:35:01 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                },
+                "examples": {
+                  "Change password PUT API Copy": {
+                    "value": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/change_profile_settings/": {
+      "put": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Change profile settings PUT API",
+        "description": "PUT request\n\nHeaderda Authorization: Token\n\nBodyde form-data olarak verilecek pairler:\n\n- bio: string, userın biosu\n- email_notification_preference: boolean, userın notification tercihi\n- show_activity_preference: boolean, userın profile pagede activity gösterme preferenceı\n    \n\nDİKKAT: bu fieldlardan sadece değiştirilmesi istenenler eklenir. değiştirilmesi istenmeyenler key-value pair olarak eklenmez.\n\nResponselar:\n\nEğer headerda token sağlanmamış ise:\n\n- STATUS_CODE: 401\n- Json:\n    \n\n{\n\n\"detail\": \"Authentication credentials were not provided.\"\n\n}\n\nEğer token yanlış ise:\n\n- STATUS_CODE: 401\n- Json:\n    \n\n{\n\n\"detail\": \"Invalid token.\"\n\n}\n\n}\n\nEğer işlem başarılı ise:\n\n- STATUS_CODE: 200\n- Json: hangi fieldların updatelendiğine bakmaksızın 3 fieldın da update sonrası güncel halini verir. örneği mevcut",
+        "operationId": "changeProfileSettingsPutApi",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "bio": {
+                    "type": "string",
+                    "example": "Hi there, I am using Whatsapp! 2"
+                  },
+                  "email_notification_preference": {
+                    "type": "string",
+                    "example": "false"
+                  },
+                  "show_activity_preference": {
+                    "type": "string",
+                    "example": "true"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "success",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "PUT, PATCH, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "112"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 29 Oct 2023 21:12:30 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "bio": {
+                      "type": "string",
+                      "example": "Hi there, I am using Whatsapp! 2"
+                    },
+                    "email_notification_preference": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "show_activity_preference": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "bio": "Hi there, I am using Whatsapp! 2",
+                      "email_notification_preference": true,
+                      "show_activity_preference": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid token",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "PUT, PATCH, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "27"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sun, 29 Oct 2023 21:12:05 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string",
+                  "example": "Token"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Invalid token."
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid token": {
+                    "value": {
+                      "detail": "Invalid token."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_node/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Node GET API",
+        "description": "This API endpoint allows you to retrieve information about a specific node by making an HTTP GET request to the specified URL. The request should include the `node_id` parameter in the query string to identify the node.\n\n### Request\n\n- Method: GET\n- URL: `http://13.51.55.11:8000/api/get_node/`\n- Query Parameters:\n    - `node_id` (required): The ID of the node to retrieve information for.\n\n### Response\n\nThe response will contain information about the requested node in JSON format. Here is an example of a response:\n\n``` json\n{\n    \"node_id\": 99,\n    \"node_title\": \"Implementing a polynomial-time “clock” in a probabilistic finite automaton\",\n    \"publish_date\": \"2023-10-28\",\n    \"is_valid\": true,\n    \"num_visits\": 15,\n    \"theorem\": {\n        \"theorem_content\":\"For any constant t > 0, integer-valued function f(n) ∈ O(n\\nt\\n), and\\ndesired “error” bound ε > 0, there exists a probabilistic finite automaton with an\\nexpected runtime in O\\n\\nn\\nt+1\u0001\\n, such that the probability that this machine halts\\nsooner than f(n) time-steps is ε\",\n        \"publish_date\": \"2023-10-28\"\n    },\n    \"contributors\": [\n        {\n            \"id\": 41,\n            \"first_name\": \"Cem\",\n            \"last_name\": \"Say\",\n            \"username\": \"Cem.say@cem.say\"\n        },\n        {\n            \"id\": 42,\n            \"first_name\": \"Utkan\",\n            \"last_name\": \"Gezer\",\n            \"username\": \"utkan.gezer@gezer.utkan\"\n        }\n    ],\n    \"reviewers\": [],\n    \"from_referenced_nodes\": [\n        {\n            \"node_id\": 55,\n            \"node_title\": \" Multihead finite automata and logarithmic space Turing machine\",\n            \"contributors\": [\n                {\n                    \"id\": 41,\n                    \"first_name\": \"Cem\",\n                    \"last_name\": \"Say\",\n                    \"username\": \"Cem.say@cem.say\"\n                },\n                {\n                    \"id\": 42,\n                    \"first_name\": \"Utkan\",\n                    \"last_name\": \"Gezer\",\n                    \"username\": \"utkan.gezer@gezer.utkan\"\n                }\n            ],\n            \"publish_date\": \"2023-10-28\"\n        }\n    ],\n    \"to_referenced_nodes\": [\n        {\n            \"node_id\": 100,\n            \"node_title\": \"Finite state verifiers with constant private randomness\",\n            \"contributors\": [],\n            \"publish_date\": \"2023-10-28\"\n        }\n    ],\n    \"proofs\": [\n        {\n            \"proof_content\": \" Assume, for the sake of simplicity, that t is an integer. We program\\na probabilistic finite state automaton to make t random walks with its input\\nhead, each starting from the first symbol on the input and ending at either one\\nof the end-markers. If all the walks have ended on the right end-marker, the\\nmachine halts. Otherwise, the process is repeated. The analysis shows that such\\na machine has all the necessary characteristics in its runtime\",\n            \"publish_date\": \"2023-10-28\"\n        },\n        {\n            \"proof_content\":\"By the implications of f(n) ∈ O(n\\nt\\n), let c > 0 and n0 > ε−1 be the\\ninteger constants large enough to satisfy f(n) ≤ c · n\\nt\\nfor all n ≥ n0. The extra\\nconstraint upon n0 to be larger than ε\\n−1 will be evident by the end of the proof.\\nThen, let Mt,c,n0 be a constant-space verifier with the following algorithm:\\nMt,c,n0 = “On input w:\\n1. If n < n0,\\n13 pause for max\\nf(n),\\n\u0006\\nc · n\\nt+1\u0007\u0001 time-steps and halt.\\n2. If t ≤ 1, move the input head back to ▷ while pausing it for c − 1\\ntime-steps after each movement, then halt.\\n3. Repeat the following ⌈t⌉ times:\\n4. Move the input head to the beginning of w.\\n5. Perform a random walk with the input head (i.e., repeatedly\\nmove the input head towards left or right by the flips of a coin)\\nuntil the input head reaches ▷ or ◁. Pause for c − 1 time-steps\\nafter each step moving the input head 6. If any of the last ⌈t⌉ random walks have ended with the input head reaching ▷, go back to Stage 3. 7. Halt.” Stage 1 initially takes n + 1 steps to check whether n < n0. If so, Mt,c,n0 runs for a total of max(f(n), \u0006 c · n t+1\u0007 ) +n+ 1 time-steps and then halts, which yields a runtime within desired bounds with certainty. When n ≥ n0 and t ≤ 1, Mt,c,n0 halts after running for (c + 1)·(n + 1) steps in Stages 1 and 2 combined, which is again within the expected and minimum time limits, and with certainty. The rest of the proof will examine the claims for n ≥ n0 and t > 1. Expected runtime. Each random walk at Stage 5 is commonly known as the gambler’s ruin, and the probability of each ending at the right-hand side of the input tape is (n + 1)−1 by their Markov chain analysis [10, Section 7.1]. Consequently, the probability of having a “terminating batch” (a batch of ⌈t⌉ random walks where each of them ends up at the right-hand side of the input tape) is (n + 1)−⌈t⌉ . The expected number of independent trials to observe a binomial event is the reciprocal of its occurrence probability [3, Section C.4]. Therefore the expected number of random walks until termination is ⌈t⌉ · (n + 1)⌈t⌉ . The expected runtime of each random walk is cn steps [10, Section 7.1]. The reset in Stage 4 takes exactly n + 2 steps before the first random walk, and it is expected to take another (n + 1)−1 · (n + 2) | {z } resetting from ◁ + (1 − (n + 1)−1 ) · 1 | {z } resetting from ▷ = 2 steps before every subsequent one. Taking Stage 1 into account as well, the expected runtime of Mt,c,n0 is ⌈t⌉ · (n + 1)⌈t⌉ · (cn + 2) + 2n + 1 ∈ O \u0010 n ⌈t⌉+1\u0011 . Minimum runtime. For simplicity, we note that the probability of a terminating batch occurring, (n + 1)−⌈t⌉ , is less than n −t . It is evident that the execution of a terminating batch takes more than ⌈t⌉ · nc ≥ tnc time-steps, and thus, in a time frame of f(n) ≤ c · n t steps, there are at most n t−1 t opportunities for terminating batches to occur, which is less than n t−1 (given t > 1). The probability of an event with an occurrence probability less than n −t happening at least once given less than n t−1 opportunities, is less than gt(n) = 1 − 1 − n −t \u0001n t−1 \",\n            \"publish_date\": \"2023-10-28\"\n        }\n    ],\n    \"question_set\": [],\n    \"semantic_tags\": [\n        1\n    ],\n    \"annotations\": []\n}\n\n ```\n\nThe response includes various properties related to the requested node, such as its ID, title, publication date, validity status, number of visits, theorem content, contributors, reviewers, referenced nodes, proofs, question set, semantic tags, wiki tags, and annotations.\n\nPlease note that the example response provided here may contain empty or placeholder values for some properties. The actual response will include specific information for the requested node.",
+        "operationId": "nodeGetApi",
+        "parameters": [
+          {
+            "name": "node_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "99"
+            },
+            "description": "id of the node"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Node GET API Copy",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, HEAD, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "1331"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Fri, 10 Nov 2023 18:23:29 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "annotations": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "contributors": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "from_referenced_nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "contributors": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "first_name": {
+                                  "type": "string",
+                                  "example": "Utkan"
+                                },
+                                "id": {
+                                  "type": "number",
+                                  "example": 42
+                                },
+                                "last_name": {
+                                  "type": "string",
+                                  "example": "Gezer"
+                                },
+                                "username": {
+                                  "type": "string",
+                                  "example": "utkan.gezer@gezer.utkan"
+                                }
+                              }
+                            },
+                            "example": [
+                              {
+                                "first_name": "Utkan",
+                                "id": 42,
+                                "last_name": "Gezer",
+                                "username": "utkan.gezer@gezer.utkan"
+                              },
+                              {
+                                "first_name": "Cem",
+                                "id": 41,
+                                "last_name": "Say",
+                                "username": "Cem.say@cem.say"
+                              }
+                            ]
+                          },
+                          "node_id": {
+                            "type": "number",
+                            "example": 99
+                          },
+                          "node_title": {
+                            "type": "string",
+                            "example": "Implementing a polynomial-time “clock” in a probabilistic finite automaton"
+                          },
+                          "publish_date": {
+                            "type": "string",
+                            "example": "2023-10-28"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "contributors": [
+                            {
+                              "first_name": "Utkan",
+                              "id": 42,
+                              "last_name": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "first_name": "Cem",
+                              "id": 41,
+                              "last_name": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "node_id": 99,
+                          "node_title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton",
+                          "publish_date": "2023-10-28"
+                        },
+                        {
+                          "contributors": [],
+                          "node_id": 2,
+                          "node_title": "Finite state verifiers with both private and public coins",
+                          "publish_date": "2023-10-31"
+                        }
+                      ]
+                    },
+                    "is_valid": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "node_id": {
+                      "type": "number",
+                      "example": 100
+                    },
+                    "node_title": {
+                      "type": "string",
+                      "example": "Finite state verifiers with constant private randomness"
+                    },
+                    "num_visits": {
+                      "type": "number",
+                      "example": 22
+                    },
+                    "proofs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "proof_content": {
+                            "type": "string",
+                            "example": "IP(log-space, poly-public-coins, poly-time) = P"
+                          },
+                          "publish_date": {
+                            "type": "string",
+                            "example": "2023-10-28"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "proof_content": "IP(log-space, poly-public-coins, poly-time) = P",
+                          "publish_date": "2023-10-28"
+                        }
+                      ]
+                    },
+                    "publish_date": {
+                      "type": "string",
+                      "example": "2023-10-28"
+                    },
+                    "question_set": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "answer_content": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "answered_at": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "answerer": {
+                            "nullable": true,
+                            "example": null
+                          },
+                          "asker": {
+                            "type": "object",
+                            "properties": {
+                              "first_name": {
+                                "type": "string",
+                                "example": "Cem"
+                              },
+                              "id": {
+                                "type": "number",
+                                "example": 41
+                              },
+                              "last_name": {
+                                "type": "string",
+                                "example": "Say"
+                              },
+                              "username": {
+                                "type": "string",
+                                "example": "Cem.say@cem.say"
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2023-11-13T08:20:50Z"
+                          },
+                          "question_content": {
+                            "type": "string",
+                            "example": "QUESTIONN"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "answer_content": null,
+                          "answered_at": null,
+                          "answerer": null,
+                          "asker": {
+                            "first_name": "Cem",
+                            "id": 41,
+                            "last_name": "Say",
+                            "username": "Cem.say@cem.say"
+                          },
+                          "created_at": "2023-11-13T08:20:50Z",
+                          "question_content": "QUESTIONN"
+                        }
+                      ]
+                    },
+                    "reviewers": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "semantic_tags": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    },
+                    "theorem": {
+                      "type": "object",
+                      "properties": {
+                        "publish_date": {
+                          "type": "string",
+                          "example": "2023-10-28"
+                        },
+                        "theorem_content": {
+                          "type": "string",
+                          "example": "IP(con-space, con-private-coins, poly∗-public-coins, poly∗-time) = P"
+                        }
+                      }
+                    },
+                    "to_referenced_nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "contributors": {
+                            "type": "array",
+                            "items": {},
+                            "example": []
+                          },
+                          "node_id": {
+                            "type": "number",
+                            "example": 2
+                          },
+                          "node_title": {
+                            "type": "string",
+                            "example": "Finite state verifiers with both private and public coins"
+                          },
+                          "publish_date": {
+                            "type": "string",
+                            "example": "2023-10-31"
+                          }
+                        }
+                      },
+                      "example": [
+                        {
+                          "contributors": [],
+                          "node_id": 2,
+                          "node_title": "Finite state verifiers with both private and public coins",
+                          "publish_date": "2023-10-31"
+                        }
+                      ]
+                    },
+                    "wiki_tags": {
+                      "type": "array",
+                      "items": {},
+                      "example": []
+                    }
+                  }
+                },
+                "examples": {
+                  "Node GET API Copy": {
+                    "value": {
+                      "annotations": [],
+                      "contributors": [],
+                      "from_referenced_nodes": [
+                        {
+                          "contributors": [
+                            {
+                              "first_name": "Utkan",
+                              "id": 42,
+                              "last_name": "Gezer",
+                              "username": "utkan.gezer@gezer.utkan"
+                            },
+                            {
+                              "first_name": "Cem",
+                              "id": 41,
+                              "last_name": "Say",
+                              "username": "Cem.say@cem.say"
+                            }
+                          ],
+                          "node_id": 99,
+                          "node_title": "Implementing a polynomial-time “clock” in a probabilistic finite automaton",
+                          "publish_date": "2023-10-28"
+                        },
+                        {
+                          "contributors": [],
+                          "node_id": 2,
+                          "node_title": "Finite state verifiers with both private and public coins",
+                          "publish_date": "2023-10-31"
+                        }
+                      ],
+                      "is_valid": true,
+                      "node_id": 100,
+                      "node_title": "Finite state verifiers with constant private randomness",
+                      "num_visits": 22,
+                      "proofs": [
+                        {
+                          "proof_content": "IP(log-space, poly-public-coins, poly-time) = P",
+                          "publish_date": "2023-10-28"
+                        }
+                      ],
+                      "publish_date": "2023-10-28",
+                      "question_set": [
+                        {
+                          "answer_content": null,
+                          "answered_at": null,
+                          "answerer": null,
+                          "asker": {
+                            "first_name": "Cem",
+                            "id": 41,
+                            "last_name": "Say",
+                            "username": "Cem.say@cem.say"
+                          },
+                          "created_at": "2023-11-13T08:20:50Z",
+                          "question_content": "QUESTIONN"
+                        }
+                      ],
+                      "reviewers": [],
+                      "semantic_tags": [],
+                      "theorem": {
+                        "publish_date": "2023-10-28",
+                        "theorem_content": "IP(con-space, con-private-coins, poly∗-public-coins, poly∗-time) = P"
+                      },
+                      "to_referenced_nodes": [
+                        {
+                          "contributors": [],
+                          "node_id": 2,
+                          "node_title": "Finite state verifiers with both private and public coins",
+                          "publish_date": "2023-10-31"
+                        }
+                      ],
+                      "wiki_tags": []
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_proof/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Proof GET API",
+        "description": "This API endpoint is used to retrieve information about a specific proof. The proof_id parameter in the request URL is used to specify the proof to be retrieved.\n\n### Request\n\n`GET /api/get_proof/?proof_id=5`\n\n### Response\n\nThe API returns a JSON object with the following properties:\n\n- `proof_id` (integer): The unique identifier of the proof.\n- `proof_title` (string): The title of the proof.\n- `proof_content` (string): The content of the proof.\n- `is_valid` (boolean): Indicates whether the proof is valid or not.\n- `is_disproof` (boolean): Indicates whether the proof is a disproof or not.\n- `publish_date` (string): The date when the proof was published.\n    \n\n### Example\n\n```\nGET /api/get_proof/?proof_id=5\nResponse:\n{\n    \"proof_id\": 5,\n    \"proof_title\": \"Great Proof\",\n    \"proof_content\": \" Assume, for the sake of simplicity, that t is an integer. We program\\na probabilistic finite state automaton to make t random walks with its input\\nhead, each starting from the first symbol on the input and ending at either one\\nof the end-markers. If all the walks have ended on the right end-marker, the\\nmachine halts. Otherwise, the process is repeated. The analysis shows that such\\na machine has all the necessary characteristics in its runtime\",\n    \"is_valid\": true,\n    \"is_disproof\": false,\n    \"publish_date\": \"2023-10-28\"\n}\n\n ```",
+        "operationId": "proofGetApi",
+        "parameters": [
+          {
+            "name": "proof_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/get_theorem/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Theorem GET API",
+        "description": "This API endpoint is used to retrieve a specific theorem based on its ID. The request should be made using an HTTP GET method to the following URL: `http://13.51.55.11:8000/api/get_theorem/`.\n\n### Request Parameters\n\nThe request should include the following query parameter:\n\n- `theorem_id` (integer): The ID of the theorem to retrieve.\n    \n\n### Response\n\nThe response to the request will be a JSON object with the following properties:\n\n- `theorem_id` (integer): The ID of the retrieved theorem.\n- `theorem_title` (string): The title of the retrieved theorem.\n- `theorem_content` (string): The content of the retrieved theorem.\n- `publish_date` (string): The date when the theorem was published.\n    \n\nExample response:\n\n``` json\n{\n    \"theorem_id\": 6,\n    \"theorem_title\": \"title\",\n    \"theorem_content\": \"NC ⊆ IP(con-space, con-private-coins, O\\n\\nn\\n4\\n\u0001∗\\n-public-coins, O\\n\\nn\\n4\\n\u0001∗\\n-time\",\n    \"publish_date\": \"2023-10-31\"\n}\n\n ```\n\nPlease note that the values for `theorem_id`, `theorem_title`, `theorem_content`, and `publish_date` will be populated with the actual data of the retrieved theorem.",
+        "operationId": "theoremGetApi",
+        "parameters": [
+          {
+            "name": "theorem_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "6"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/get_cont/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Contributor Getter",
+        "description": "This API endpoint makes an HTTP GET request to retrieve the details of a user by their ID. The request should be made to the URL `http://13.51.55.11:8000/api/get_cont/` with the query parameter `id` specifying the ID of the user.\n\nThe last execution of this request returned a response with a status code of 200 and the following JSON data:\n\n``` json\n{\n    \"id\": 41,\n    \"username\": \"Cem.say@cem.say\",\n    \"name\": \"Cem\",\n    \"surname\": \"Say\"\n}\n\n ```\n\nBased on the provided response example, it appears that the response contains information about a user, including their ID, username, name, and surname. However, in this particular example, all the fields are empty or have default values.\n\nPlease note that the actual response may vary depending on the specific user ID provided in the request.\n\nTo use this endpoint, make an HTTP GET request to the specified URL with the `id` query parameter set to the desired user ID. The server will respond with the details of the user corresponding to that ID.\n\nPlease refer to the API documentation or contact the API provider for more information on the expected values for the `id` parameter and the structure of the response.",
+        "operationId": "contributorGetter",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "41"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "success",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "86"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 30 Oct 2023 21:40:51 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.5"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 42
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Utkan"
+                    },
+                    "surname": {
+                      "type": "string",
+                      "example": "Gezer"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "utkan.gezer@gezer.utkan"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "id": 42,
+                      "name": "Utkan",
+                      "surname": "Gezer",
+                      "username": "utkan.gezer@gezer.utkan"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contr",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "52"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 30 Oct 2023 22:00:15 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There is no contributor with this id."
+                    }
+                  }
+                },
+                "examples": {
+                  "No contr": {
+                    "value": {
+                      "message": "There is no contributor with this id."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/send_collab_req/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Send Collab Request",
+        "description": "This API endpoint allows you to send a collaboration request. It is an HTTP POST request that should be sent to `http://13.51.55.11:8000/api/send_collab_req/`.\n\n### Request Parameters\n\nThe request does not require any specific parameters to be included in the body or URL.\n\n### Response\n\nUpon successful execution of the request, the server will respond with a status code of 201 (Created) and a JSON object in the response body. The response object will contain the following properties:\n\n- `id` (number): The unique identifier of the collaboration request.\n- `status` (string): The status of the collaboration request.\n- `sender` (number): The identifier of the user who sent the collaboration request.\n- `receiver` (number): The identifier of the user who received the collaboration request.\n- `workspace` (number): The identifier of the workspace associated with the collaboration request.\n    \n\n### Example Response\n\n``` json\n{\n    \"id\": 21,\n    \"status\": \"P\",\n    \"sender\": 34,\n    \"receiver\": 41,\n    \"workspace\": 5\n}\n\n ```\n\nPlease note that the values in the response example are placeholders and may not reflect the actual data returned by the server.",
+        "operationId": "sendCollabRequest",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Test Collab Req Body"
+                  },
+                  "receiver": {
+                    "type": "string",
+                    "example": "41"
+                  },
+                  "sender": {
+                    "type": "string",
+                    "example": "34"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Test Collab Req Title"
+                  },
+                  "workspace": {
+                    "type": "string",
+                    "example": "5"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Send Collab Request",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "OPTIONS, POST"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "62"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 20:39:26 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 18
+                    },
+                    "receiver": {
+                      "type": "number",
+                      "example": 41
+                    },
+                    "sender": {
+                      "type": "number",
+                      "example": 34
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "P"
+                    },
+                    "workspace": {
+                      "type": "number",
+                      "example": 5
+                    }
+                  }
+                },
+                "examples": {
+                  "Send Collab Request": {
+                    "value": {
+                      "id": 18,
+                      "receiver": 41,
+                      "sender": 34,
+                      "status": "P",
+                      "workspace": 5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/send_rev_req/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Send Review Request",
+        "description": "This API endpoint is used to send a review request. It sends an HTTP POST request to the URL `http://13.51.55.11:8000/api/send_rev_req/`.\n\n### Request Parameters\n\nThis request does not require any specific parameters to be sent in the body or as query parameters.\n\n### Response\n\nThe response received from the server will have a status code of 201, indicating that the request was successful. The response body will contain the following fields:\n\n- `id` (integer): The ID of the review request.\n- `status` (string): The status of the review request.\n- `comment` (null): The comment associated with the review request.\n- `sender` (integer): The ID of the sender of the review request.\n- `receiver` (integer): The ID of the receiver of the review request.\n- `workspace` (integer): The ID of the workspace associated with the review request.\n    \n\n### Example Response\n\nHere is an example response for this request:\n\n```\n{\n    \"id\": 22,\n    \"status\": \"P\",\n    \"comment\": null,\n    \"sender\": 34,\n    \"receiver\": 41,\n    \"workspace\": 6\n}\n\n ```\n\nPlease note that the values in the response may vary based on the actual data.",
+        "operationId": "sendReviewRequest",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Test Review Request Body"
+                  },
+                  "receiver": {
+                    "type": "string",
+                    "example": "41"
+                  },
+                  "sender": {
+                    "type": "string",
+                    "example": "34"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Test Review Request Title"
+                  },
+                  "workspace": {
+                    "type": "string",
+                    "example": "6"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Send Review Request",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "OPTIONS, POST"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "77"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 20:40:23 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "comment": {
+                      "nullable": true,
+                      "example": null
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 20
+                    },
+                    "receiver": {
+                      "type": "number",
+                      "example": 41
+                    },
+                    "sender": {
+                      "type": "number",
+                      "example": 34
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "P"
+                    },
+                    "workspace": {
+                      "type": "number",
+                      "example": 6
+                    }
+                  }
+                },
+                "examples": {
+                  "Send Review Request": {
+                    "value": {
+                      "comment": null,
+                      "id": 20,
+                      "receiver": 41,
+                      "sender": 34,
+                      "status": "P",
+                      "workspace": 6
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/update_req": {
+      "put": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Update Request Status",
+        "description": "This HTTP PUT request is used to update a request in the API. The request should be sent to the endpoint `http://13.51.55.11:8000/api/update_req`.\n\n### Request Parameters\n\nThe request should include the following parameters:\n\n- `id` (integer): The ID of the request to be updated.\n- `status` (string): The new status of the request.\n- `sender` (integer): The ID of the sender of the request.\n- `receiver` (integer): The ID of the receiver of the request.\n    \n\n### Response\n\nThe response will include the updated request information in JSON format. Here is an example response:\n\n``` json\n{\n    \"id\": 17,\n    \"status\": \"A\",\n    \"sender\": 61,\n    \"receiver\": 41\n}\n\n ```\n\nPlease note that the actual values in the response may vary based on the request being updated.",
+        "operationId": "updateRequestStatus",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "": {
+                    "type": "string",
+                    "example": ""
+                  },
+                  "id": {
+                    "type": "string",
+                    "example": "1"
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "A"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update Request Status",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "OPTIONS, PUT"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "48"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 20:41:08 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 17
+                    },
+                    "receiver": {
+                      "type": "number",
+                      "example": 41
+                    },
+                    "sender": {
+                      "type": "number",
+                      "example": 61
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "A"
+                    }
+                  }
+                },
+                "examples": {
+                  "Update Request Status": {
+                    "value": {
+                      "id": 17,
+                      "receiver": 41,
+                      "sender": 61,
+                      "status": "A"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_random_node_id/": {
+      "get": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "Random Node ID GET*",
+        "description": "This API endpoint allows you to retrieve a random node ID from the server. The request is sent as an HTTP GET to the following URL: `http://13.51.55.11:8000/api/get_random_node_id/`.\n\nTo retrieve multiple random node IDs, you can specify the number of IDs you want by including the `count` parameter in the query string. For example, to get 3 random node IDs, you would send a request to `http://13.51.55.11:8000/api/get_random_node_id/?count=3`.\n\nThe response to this request will be a JSON object with a single property `node_ids`, which contains an array of the randomly generated node IDs. For example, a successful response with a count of 3 could look like this:\n\n```\n{\n    \"node_ids\": [\n        139,\n        100,\n        163\n    ]\n}\n\n ```\n\nPlease note that the actual node IDs returned may vary depending on the server's internal logic.\n\nIt is important to note that the response status code for this API endpoint is 200, indicating a successful request.\n\nIf you have any further questions or need assistance, please let us know.",
+        "operationId": "randomNodeIdGet",
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "3"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Random Node ID GET*",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "25"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:35:16 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "node_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "example": 13
+                      },
+                      "example": [
+                        13,
+                        3,
+                        12
+                      ]
+                    }
+                  }
+                },
+                "examples": {
+                  "Random Node ID GET*": {
+                    "value": {
+                      "node_ids": [
+                        13,
+                        3,
+                        12
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/create_workspace/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "workspace create",
+        "description": "This HTTP POST request is used to create a new workspace. The request should be sent to the endpoint `http://13.51.55.11:8000/api/create_workspace/`.\n\n### Request Parameters\n\nThis request does not require any specific parameters in the request body.\n\n### Response\n\nThe response to this request will have a status code of 200 if the workspace is created successfully. The response body will contain the following fields:\n\n- `message`: A string field that provides additional information about the workspace creation process. This field may be empty in some cases.\n- `workspace_id`: An integer field that represents the unique identifier of the newly created workspace. The value of this field will be 0 if the workspace creation was unsuccessful.\n    \n\nPlease note that the response may contain additional fields not mentioned here, but these are the key fields that you should expect in the response.",
+        "operationId": "workspaceCreate",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "example": "37"
+                  },
+                  "workspace_title": {
+                    "type": "string",
+                    "example": "title"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/add_reference/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "add reference to workspace",
+        "description": "This API endpoint allows you to add a reference using an HTTP POST request to the specified URL.\n\n## Request\n\nThe request should be made to the following URL:\n\n```\nhttp://13.51.55.11:8000/api/add_reference/\n\n ```\n\n## Response\n\nThe response will contain a JSON object with a `message` field. Here is some example of possible responses:\n\n```\n{\n    \"message\": \"reference added to the workspace successfully.\"\n}\n\n ```\n\nPlease note that the value of the `message` field may vary depending on the success or failure of the reference addition process.\n\n## Add Documentation\n\nTo add documentation for this API endpoint, please provide the necessary details such as the request parameters, expected response, and any additional instructions you would like to include.",
+        "operationId": "addReferenceToWorkspace",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "node_id": {
+                    "type": "string",
+                    "example": "110"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "13"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "add reference to workspace",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "61"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 18:01:55 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "reference added to the workspace successfully."
+                    }
+                  }
+                },
+                "examples": {
+                  "add reference to workspace": {
+                    "value": {
+                      "message": "reference added to the workspace successfully."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/add_entry/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "add_entry",
+        "description": "This HTTP POST request is used to add an entry to the API. The request should be sent to the endpoint `http://13.51.55.11:8000/api/add_entry/`.\n\n### Request Parameters\n\nThe request does not require any specific parameters. However, the request body should contain the necessary information to create the entry.\n\n### Response\n\nThe response will be in JSON format and will include the following fields:\n\n- `message` (string): A message indicating the status of the request. This field may be empty in some cases.\n- `entry_id` (integer): The ID of the newly created entry. This field will be set to 0 if the entry creation was not successful.\n    \n\n#### Example Response\n\n```\n{\n    \"message\": \"entry content\",\n    \"entry_id\": 8\n}\n\n ```\n\nPlease note that the actual values of the `message` field may vary depending on the outcome of the request.",
+        "operationId": "addEntry",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "entry_content": {
+                    "type": "string",
+                    "example": "entry content"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "8"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "add_entry",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "68"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:38:23 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entry_id": {
+                      "type": "number",
+                      "example": 26
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Entry successfully added to workspace"
+                    }
+                  }
+                },
+                "examples": {
+                  "add_entry": {
+                    "value": {
+                      "entry_id": 26,
+                      "message": "Entry successfully added to workspace"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/finalize_workspace/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "finalize_workspace",
+        "description": "This API endpoint allows you to finalize a workspace. It is an HTTP POST request that should be sent to [http://13.51.55.11:8000/api/finalize_workspace/](http://13.51.55.11:8000/api/finalize_workspace/).\n\n### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n### Response\n\nThe response for this request is a JSON object with a single property \"message\". The value of this property can be an empty string or a descriptive message indicating the result of the workspace finalization process.\n\n### Example\n\nRequest:\n\n```\nPOST http://13.51.55.11:8000/api/finalize_workspace/\n\n ```\n\nResponse:\n\n```\n{\n    \"message\": \"workspace successfully finalized\"\n}\n\n ```\n\nPlease note that the actual response may contain different values for the \"message\" property.",
+        "operationId": "finalizeWorkspace",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "node_id": {
+                    "type": "string",
+                    "example": "33"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "8"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "finalize_workspace",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "47"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:38:30 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "workspace successfully finalized"
+                    }
+                  }
+                },
+                "examples": {
+                  "finalize_workspace": {
+                    "value": {
+                      "message": "workspace successfully finalized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/delete_reference/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "delete_reference",
+        "description": "This endpoint is used to delete a reference from the API. It is an HTTP POST request that should be sent to [http://13.51.55.11:8000/api/delete_reference/](http://13.51.55.11:8000/api/delete_reference/).\n\nThe request does not require any specific parameters to be passed in the body or URL. However, it is important to note that the reference to be deleted should be specified in the request.\n\nThe response received from the last execution of this request had a status code of 200, indicating a successful deletion. The response body contained a message field which was empty.\n\nPlease make sure to include the necessary authorization headers or authentication tokens required to access this endpoint.",
+        "operationId": "deleteReference",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "node_id": {
+                    "type": "string",
+                    "example": "110"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "13"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/delete_contributor/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "delete_contributor",
+        "description": "This HTTP POST request is used to delete a contributor from the API. The request should be sent to the endpoint `http://13.51.55.11:8000/api/delete_contributor/`.\n\n### Request Parameters\n\nThere are no request parameters required for this endpoint.\n\n### Response\n\nThe response will have a status code of 200 if the deletion is successful. The response body will contain a JSON object with a `message` field. The value of the `message` field will be an empty string.",
+        "operationId": "deleteContributor",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contributor_id": {
+                    "type": "string",
+                    "example": "51"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "8"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/delete_workspace/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "delete_workspace",
+        "description": "This API endpoint is used to delete a workspace. It sends an HTTP POST request to the specified URL: `http://13.51.55.11:8000/api/delete_workspace/`.\n\n### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n### Response\n\nThe response to this request will have a status code of 200 if the workspace was successfully deleted. The response body will contain a JSON object with a `message` property. In the last execution, the response was as follows:\n\n```\n{\n    \"message\": \"workspace deleted successfully.\"\n}\n\n ```\n\nPlease note that the value of the `message` property may vary depending on the outcome of the workspace deletion process.",
+        "operationId": "deleteWorkspace",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contributor_id": {
+                    "type": "string",
+                    "example": "51"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "25"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/edit_entry/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "edit_entry",
+        "description": "This API endpoint allows you to edit an entry by making an HTTP POST request to the specified URL. The request should include the necessary parameters to identify the entry that needs to be edited.\n\n### Request Parameters\n\n- No specific request parameters are mentioned.\n    \n\n### Response\n\nThe response for this request will have a status code of 200, indicating a successful request. The response body will be in JSON format and will contain a \"message\" field.\n\n### Examples\n\n#### Request\n\n```\nPOST http://13.51.55.11:8000/api/edit_entry/\n\n ```\n\n#### Response\n\n``` json\n{\n    \"message\": \"workspace deleted successfully.\"\n}\n\n ```",
+        "operationId": "editEntry",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "example": "dcccc"
+                  },
+                  "entry_id": {
+                    "type": "string",
+                    "example": "11"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "edit_entry",
+            "headers": {
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "52"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:40:07 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "entry content is updated successfully"
+                    }
+                  }
+                },
+                "examples": {
+                  "edit_entry": {
+                    "value": {
+                      "message": "entry content is updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/delete_entry/": {
+      "post": {
+        "tags": [
+          "Page APIs"
+        ],
+        "summary": "delete_entry",
+        "description": "This API endpoint is used to delete an entry from the specified resource. It is an HTTP POST request that should be sent to [http://13.51.55.11:8000/api/delete_entry/](http://13.51.55.11:8000/api/delete_entry/).\n\n### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n### Response\n\nThe response returned by this endpoint will have a status code of 200 if the entry was successfully deleted. The response body will contain a JSON object with a \"message\" property. The value of the \"message\" property will be an empty string.\n\nPlease note that this is the last execution response and the actual response may vary based on the specific entry being deleted.",
+        "operationId": "deleteEntry",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "entry_id": {
+                    "type": "string",
+                    "example": "35"
+                  },
+                  "workspace_id": {
+                    "type": "string",
+                    "example": "8"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/get_authenticated_user/": {
+      "get": {
+        "tags": [
+          "Other API's"
+        ],
+        "summary": "Get authenticated user GET API",
+        "description": "This API endpoint makes an HTTP GET request to retrieve the authenticated user's information. The request is sent to the URL `http://13.51.55.11:8000/api/get_authenticated_user/`.\n\n### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n### Response\n\nThe response will be a JSON object containing the following fields:\n\n- `id` (integer): The unique identifier of the authenticated user.\n- `email` (string): The email address of the authenticated user.\n- `first_name` (string): The first name of the authenticated user.\n- `last_name` (string): The last name of the authenticated user.\n    \n\nPlease note that the example response provided above is just a sample and the actual values may vary.",
+        "operationId": "getAuthenticatedUserGetApi",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "Token 9a08d634ad7da3051be2bb1c4848ac1303448215"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get authenticated user GET API",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, HEAD, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "81"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Mon, 27 Nov 2023 17:35:44 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "utkangezer@gmail.com"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "utkan"
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 67
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "gezer"
+                    }
+                  }
+                },
+                "examples": {
+                  "Get authenticated user GET API": {
+                    "value": {
+                      "email": "utkangezer@gmail.com",
+                      "first_name": "utkan",
+                      "id": 67,
+                      "last_name": "gezer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/get_authenticated_basic_user/": {
+      "get": {
+        "tags": [
+          "Other API's"
+        ],
+        "summary": "get_authenticated_basic_user",
+        "description": "This endpoint makes an HTTP GET request to retrieve the details of an authenticated basic user. The request is sent to the URL `http://13.51.55.11:8000/api/get_authenticated_basic_user/`.\n\n### Request Parameters\n\nThis endpoint does not require any request parameters.\n\n### Response\n\nThe response to this request will contain the following fields:\n\n- `basic_user_id` (integer): The unique identifier of the basic user.\n- `bio` (string): The biography of the basic user.\n- `email_notification_preference` (boolean): Indicates whether the basic user has enabled email notifications.\n- `show_activity_preference` (boolean): Indicates whether the basic user has enabled the display of activity.",
+        "operationId": "getAuthenticatedBasicUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "Token 6b4c75c75444cfdb3e6c65e027d5feb752ca9081"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "get_authenticated_basic_user",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "example": "GET, HEAD, OPTIONS"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "string",
+                  "example": "106"
+                }
+              },
+              "Cross-Origin-Opener-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Sat, 25 Nov 2023 22:27:11 GMT"
+                }
+              },
+              "Referrer-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "same-origin"
+                }
+              },
+              "Server": {
+                "schema": {
+                  "type": "string",
+                  "example": "WSGIServer/0.2 CPython/3.11.6"
+                }
+              },
+              "Vary": {
+                "schema": {
+                  "type": "string",
+                  "example": "Accept, origin"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "X-Frame-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "DENY"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "basic_user_id": {
+                      "type": "number",
+                      "example": 66
+                    },
+                    "bio": {
+                      "type": "string",
+                      "example": ""
+                    },
+                    "email_notification_preference": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "show_activity_preference": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                },
+                "examples": {
+                  "get_authenticated_basic_user": {
+                    "value": {
+                      "basic_user_id": 66,
+                      "bio": "",
+                      "email_notification_preference": false,
+                      "show_activity_preference": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Page APIs"
+    },
+    {
+      "name": "Other API's"
+    }
+  ]
+}
