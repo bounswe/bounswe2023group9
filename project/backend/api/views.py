@@ -87,6 +87,7 @@ class NodeAPIView(APIView):
             )
         node = node.first()
         serializer = NodeSerializer(node)
+        node.increment_num_visits()
         return Response(serializer.data)
 
 class IsContributorAndWorkspace(BasePermission):

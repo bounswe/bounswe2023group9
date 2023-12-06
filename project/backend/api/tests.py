@@ -446,13 +446,16 @@ class NodeAPITestCase(TestCase):
 
     def test_get_valid(self):
         data = {"node_id": "1"}
+
+        num_visits_before = self.nodeA.num_visits
+
         response = self.client.get(self.node_url, data=data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["node_id"], self.nodeA.node_id)
         self.assertEqual(response.data["node_title"], self.nodeA.node_title)
         self.assertEqual(response.data["is_valid"], self.nodeA.is_valid)
-        self.assertEqual(response.data["num_visits"], self.nodeA.num_visits)
+        self.assertEqual(response.data["num_visits"], num_visits_before + 1)
 
     def test_get_invalid(self):
         data = {"node_id": "-1"}
