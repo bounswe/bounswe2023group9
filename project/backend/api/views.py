@@ -21,7 +21,7 @@ import random
 
 # Create your views here.
 
-# Class based view to register user
+# Class to check if user is a Contributor
 class IsContributor(BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
@@ -30,7 +30,7 @@ class IsContributor(BasePermission):
             return False
         return True
 
-
+# Class based view to register user
 class SignUpAPIView(generics.CreateAPIView):
     permission_classes = (AllowAny,) 
     serializer_class = RegisterSerializer
