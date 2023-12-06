@@ -688,4 +688,3 @@ class SemanticTagModelTestCase(TestCase):
             self.assertIn(self.algo_node, r_nodes, "Algorithm node not in related nodes of combintaional semantic tag!")
             self.assertIn(self.search_node, r_nodes, "Search node not in related nodes of combintaional semantic tag!")
             self.assertIn(self.sort_node, r_nodes, "Sort node not in related nodes of combintaional semantic tag!")
-

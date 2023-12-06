@@ -21,6 +21,15 @@ import random
 
 # Create your views here.
 
+# Class to check if user is a Contributor
+class IsContributor(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        return True
+
 # Class based view to register user
 class SignUpAPIView(generics.CreateAPIView):
     permission_classes = (AllowAny,) 
@@ -222,8 +231,6 @@ def search(request):
                             'surname': user.last_name, 'username': user.username, 'id': cont.id})
         node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
-
-
 
 def get_profile(request):
     mail = request.GET.get("mail")
@@ -705,4 +712,52 @@ def send_review_request(request):
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
+
+class AskQuestion(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self,  request):
+        node_id = request.data.get('node_id')
+        question_content = request.data.get('question_content')
+        if not node_id or not question_content:
+            return Response({"error": "Node ID and Question Content are required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            node = Node.objects.get(pk=node_id)
+        except Node.DoesNotExist:
+            return Response({"error": "Node not found."}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            asker = BasicUser.objects.get(user_id=request.user.id)
+        except BasicUser.DoesNotExist:
+            return Response({"error": "BasicUser not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        question = Question.objects.create(node=node, asker=asker, question_content=question_content)
+        question.save()
+
+        return Response({"message": "Question submitted successfully."}, status=status.HTTP_201_CREATED)
+
+class AnswerQuestion(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsContributor)
+
+    def post(self, request):
+        question_id = request.data.get('question_id')
+        answer_content = request.data.get('answer_content')
+        if not question_id or not answer_content:
+            return Response({"error": "Question ID and Answer Content are required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            question = Question.objects.get(pk=question_id)
+        except Question.DoesNotExist:
+            return Response({"error": "Question not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
+            answerer = Contributor.objects.get(user_id=request.user.id)
+        except Contributor.DoesNotExist:
+            return Response({"error": "Contributor not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if (question.answer(answer_content, answerer)):
+            return Response({"message": "Answer submitted successfully."}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Question is not asked to logged Contributor or already answered."}, status=status.HTTP_400_BAD_REQUEST)
+
 
