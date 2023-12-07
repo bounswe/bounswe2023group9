@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
-import random
+import random, json
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -337,8 +337,12 @@ def get_contributor_from_id(request):
     return JsonResponse(data, status=200)
 
 def get_workspaces(request):
-    id = int(request.GET.get("user_id"))
-    cont = Contributor.objects.filter(id=id)
+    res = BasicUserDetailAPI.as_view()(request)
+    # basic_user = BasicUser.objects.get(id=json.loads(res.content.decode())['basic_user_id'])
+    if not IsContributor().has_permission(request,get_workspaces):
+        return JsonResponse({'message':'User is not a Contributor'},status=403)
+    # id = int(request.GET.get("user_id"))
+    cont = Contributor.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
     if cont.count() == 0:
         return JsonResponse({'message':'There is no contributor with this id.'},status=404)
     cont = cont[0]
@@ -361,6 +365,13 @@ def get_workspaces(request):
     return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending}, status=200)
 
 def get_workspace_from_id(request):
+    # res = BasicUserDetailAPI.as_view()(request)
+    # request.data['workspace_id'] = int(request.GET.get("workspace_id"))
+    # if not IsContributor().has_permission(request, get_workspace_from_id):
+    #     return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    # if not IsContributorAndWorkspace().has_permission(request,get_workspace_from_id):
+    #     return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
     id = int(request.GET.get("workspace_id"))
     workspace = Workspace.objects.filter(workspace_id=id)
     if workspace.count() == 0:
