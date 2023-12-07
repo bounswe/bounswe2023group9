@@ -122,20 +122,25 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
               showDialog(
                 context: context,
                 builder: (context) => AppAlertDialog(
-                  text: "Do you accept the work?",
+                  text: "Do you accept the collaboration request?",
                   actions: [
                     AppButton(
                       text: "Accept",
+                      type: "primary",
                       height: 40,
                       onTap: () {
-                        /* Send to review */
+                        /* Accept the Collaboration Request */
                         Navigator.of(context).pop();
                       },
                     ),
                     AppButton(
                       text: "Reject",
+                      type: "secondary",
                       height: 40,
-                      onTap: () { Navigator.of(context).pop(); },
+                      onTap: () {
+                        /* Reject the Collaboration Request */
+                        Navigator.of(context).pop();
+                        },
                     ),
                   ],
                 ),
@@ -148,6 +153,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                   actions: [
                     AppButton(
                       text: "Yes",
+                      type: "primary",
                       height: 40,
                       onTap: () {
                         /* Send to review */
@@ -156,6 +162,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                     ),
                     AppButton(
                       text: "No",
+                      type: "secondary",
                       height: 40,
                       onTap: () { Navigator.of(context).pop(); },
                     ),
@@ -287,6 +294,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
         child: SizedBox(
           width: Responsive.getGenericPageWidth(context),
           child: ListView(
+            shrinkWrap: true,
             physics: const ScrollPhysics(),
             padding: const EdgeInsets.only(top: 10.0),
             children: [

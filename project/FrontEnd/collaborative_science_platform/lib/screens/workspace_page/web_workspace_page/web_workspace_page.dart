@@ -7,6 +7,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entries_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/references_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/cupertino.dart';
@@ -149,7 +150,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width / 5,
                                     child: AppButton(
-                                      text: "Send Workspace to Review",
+                                      text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth + 400) ? "Send" : "Send Workspace to Review",
                                       height: 45,
                                       onTap: () {},
                                       type: "primary",
@@ -197,6 +198,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               children: [
                                 Text(
                                   "Select a workspace to see details.",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyles.title2,
                                 )
                               ]),

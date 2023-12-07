@@ -67,60 +67,60 @@ class _NodeDetailsState extends State<NodeDetails> {
                           ? const EdgeInsets.all(70.0)
                           : const EdgeInsets.all(10.0),
                       child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
-                          textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Column(
-                      children: [
-                        SelectableText.rich(
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
+                          textAlign: TextAlign.center, style: TextStyles.title2)
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.calendar_month,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4.0),
+                      SelectableText.rich(
+                        TextSpan(
+                          children: <TextSpan>[
                             TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
-                        ),
-                      ],
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
+                        ],
+                      ),
                     ),
-                    Column(
+                    const Expanded(child: SizedBox()),
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 110,
-                              child: AppButton(
-                                  text: "Graph",
-                                  height: 40,
-                                  icon: const Icon(
-                                    CupertinoIcons.square_grid_3x2,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
-                                  type: "secondary",
-                                  onTap: () {
-                                    context.push('${GraphPage.routeName}/${widget.node.nodeId}');
-                                  }),
-                            ),
-                            const SizedBox(width: 10),
-                            SizedBox(
-                              width: 110,
-                              child: AppButton(
-                                text: "Share",
-                                icon: const Icon(
-                                  Icons.share,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                                height: 40,
-                                type: "primary",
-                                onTap: () => SharePage.shareNodeView(widget.node),
+                        SizedBox(
+                          width: 110,
+                          child: AppButton(
+                              text: "Graph",
+                              height: 40,
+                              icon: const Icon(
+                                CupertinoIcons.square_grid_3x2,
+                                size: 16,
+                                color: Colors.white,
                               ),
+                              type: "secondary",
+                              onTap: () {
+                                context.push('${GraphPage.routeName}/${widget.node.nodeId}');
+                              }),
+                        ),
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 110,
+                          child: AppButton(
+                            text: "Share",
+                            icon: const Icon(
+                              Icons.share,
+                              size: 16,
+                              color: Colors.white,
                             ),
-                          ],
-                        )
+                            height: 40,
+                            type: "primary",
+                            onTap: () => SharePage.shareNodeView(widget.node),
+                          ),
+                        ),
                       ],
                     ),
                   ]),
@@ -140,31 +140,12 @@ class _NodeDetailsState extends State<NodeDetails> {
                     width: Responsive.desktopPageWidth,
                     decoration: BoxDecoration(color: Colors.grey[200]),
                     child: CardContainer(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
+                        child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                             child: TeXView(
                                 renderingEngine: const TeXViewRenderingEngine.katex(),
                                 child: TeXViewDocument(
-                                    NodeHelper.getNodeContentLatex(widget.node, "long")))),
-                        SelectableText.rich(
-                          textAlign: TextAlign.start,
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
-                        ),
-                      ],
-                    )),
+                                    NodeHelper.getNodeContentLatex(widget.node, "long"))))),
                   )),
             if (currentIndex == 1)
               //proofs
@@ -194,7 +175,9 @@ class _NodeDetailsState extends State<NodeDetails> {
               Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                   child: Contributors(
-                      contributors: widget.node.contributors, controller: widget.controller)),
+                      contributors: widget.node.contributors, controller: widget.controller),
+              ),
+            const SizedBox(height: 80.0),
           ],
         ),
       ),

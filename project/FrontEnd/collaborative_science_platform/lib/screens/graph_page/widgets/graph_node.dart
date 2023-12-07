@@ -45,10 +45,12 @@ class _GraphNodeCardState extends State<GraphNodeCard> {
               const SizedBox(height: 8.0), // Increased spacing
               SelectableText(
                 getContributorsText(widget.node.contributors),
+                maxLines: 1,
                 style: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0,
                   color: Colors.grey,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(height: 8.0),

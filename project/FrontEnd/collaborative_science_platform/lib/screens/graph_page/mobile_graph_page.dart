@@ -30,52 +30,6 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
   int current = 1;
   final CarouselController controller = CarouselController();
 
-  // void getReferences() {
-  //   setState(() {
-  //     areReferencesLoading = true;
-  //   });
-  //   references = List<SmallNode>.generate(
-  //     10,
-  //     (index) => SmallNode(
-  //       nodeId: index + 1,
-  //       nodeTitle: "Reference ${index + 1}",
-  //       contributors: [
-  //         Contributor(
-  //             name: "Contributor Name ${index + 1}",
-  //             surname: "Contributor Surname ${index + 1}",
-  //             email: "contributor${index + 1}@mail.com"),
-  //       ],
-  //       publishDate: DateTime(1590, 12, 12),
-  //     ),
-  //   );
-  //   setState(() {
-  //     areReferencesLoading = false;
-  //   });
-  // }
-
-  // void getReferents() {
-  //   setState(() {
-  //     areReferentsLoading = true;
-  //   });
-  //   referents = List<SmallNode>.generate(
-  //     10,
-  //     (index) => SmallNode(
-  //       nodeId: index + 1,
-  //       nodeTitle: "Referent ${index + 1}",
-  //       contributors: [
-  //         Contributor(
-  //             name: "Contributor Name ${index + 1}",
-  //             surname: "Contributor Surname ${index + 1}",
-  //             email: "contributor${index + 1}@mail.com"),
-  //       ],
-  //       publishDate: DateTime(1990, 12, 12),
-  //     ),
-  //   );
-  //   setState(() {
-  //     areReferentsLoading = false;
-  //   });
-  // }
-
   Widget referencesCardList() {
     // pre
     return Column(
@@ -135,29 +89,27 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: CarouselSlider(
-                carouselController: controller,
-                items: subpages,
-                options: CarouselOptions(
-                  scrollPhysics: const ScrollPhysics(),
-                  autoPlay: false,
-                  viewportFraction: 1.0,
-                  enableInfiniteScroll: false,
-                  initialPage: current,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-                  enlargeFactor: 0.3,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      current = index;
-                    });
-                  },
-                ),
+        Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: CarouselSlider(
+              carouselController: controller,
+              items: subpages,
+              options: CarouselOptions(
+                scrollPhysics: const ScrollPhysics(),
+                autoPlay: false,
+                viewportFraction: 1.0,
+                enableInfiniteScroll: false,
+                initialPage: current,
+                enlargeCenterPage: true,
+                enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+                enlargeFactor: 0.3,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    current = index;
+                  });
+                },
               ),
             ),
           ),

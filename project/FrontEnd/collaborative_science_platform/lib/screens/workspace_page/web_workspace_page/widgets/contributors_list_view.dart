@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -115,7 +116,7 @@ class ContributorsListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
-                text: "Send Collaboration Request",
+                text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth + 400) ? "Collaborate" : "Send Collaboration Request",
                 height: 40,
                 type: "outlined",
                 onTap: () {

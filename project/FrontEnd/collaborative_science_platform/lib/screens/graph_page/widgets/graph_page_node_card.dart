@@ -50,7 +50,7 @@ class GraphPageNodeCard extends StatelessWidget {
                         child: AnnotationText(
                           utf8.decode(node.nodeTitle.codeUnits),
                           style: const TextStyle(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             fontSize: 18.0,
                           ),
                         ),
@@ -66,36 +66,36 @@ class GraphPageNodeCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: node.contributors.length,
+                      itemBuilder: (context, index) {
+                        return SelectableText(
+                          "${node.contributors[index].firstName} ${node.contributors[index].lastName} (${node.contributors[index].email})",
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14.0,
+                            color: Colors.black54,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 14.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              node.contributors
-                                  .map((user) =>
-                                      "${user.firstName} ${user.lastName} (${user.email})")
-                                  .join("\n"),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.0,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            SelectableText(
-                              getDurationFromNow(node.publishDate!),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                        SelectableText(
+                          getDurationFromNow(node.publishDate!),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),

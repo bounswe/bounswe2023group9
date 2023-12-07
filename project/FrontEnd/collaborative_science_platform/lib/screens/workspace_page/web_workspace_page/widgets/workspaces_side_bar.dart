@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -28,6 +29,62 @@ class WorkspacesSideBar extends StatefulWidget {
 }
 
 class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
+
+  Widget pendingWorkspaceCardContent(int index) {
+    Widget pendingAcceptIconButton = IconButton(
+      icon: const Icon(
+        CupertinoIcons.check_mark_circled,
+        color: AppColors.infoColor,
+      ),
+      onPressed: () {}, // function to accept collaboration request
+    );
+    Widget pendingRejectIconButton = IconButton(
+      icon: const Icon(
+        CupertinoIcons.clear_circled,
+        color: AppColors.warningColor,
+      ),
+      onPressed: () {}, // function to reject collaboration request
+    );
+    Widget pendingWorkspaceName = Text(
+      widget.workspaces!
+          .pendingWorkspaces[index - widget.workspaces!.workspaces.length]
+          .workspaceTitle,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyles.title4,
+      textAlign: TextAlign.start,
+    );
+
+    return (MediaQuery.of(context).size.width >= Responsive.desktopPageWidth) ? Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        pendingWorkspaceName,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            pendingAcceptIconButton,
+            pendingRejectIconButton,
+          ],
+        ),
+      ],
+    ) : Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        pendingWorkspaceName,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            pendingAcceptIconButton,
+            pendingRejectIconButton,
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,7 +108,12 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text("My Workspaces", style: TextStyles.title3secondary),
+                    Text(
+                      "Workspaces",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth) ? TextStyles.title4secondary : TextStyles.title3secondary,
+                    ),
                     AppBarButton(
                       onPressed: () {
                         widget.hideSidebar!();
@@ -66,7 +128,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                   child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       child: AppButton(
-                        text: "Create New Workspace",
+                        text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth) ? "Create" : "Create Workspace",
                         height: 40,
                         onTap: () {
                           showDialog(
@@ -77,7 +139,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Text('New Workspace', style: TextStyle(fontSize: 20.0)),
+                                          Text('Create New Workspace', style: TextStyle(fontSize: 20.0)),
                                         ],
                                       ),
                                     ),
@@ -86,12 +148,14 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                     content: const CreateWorkspaceForm(),
                                     actions: [
                                       AppButton(
-                                          text: "Create New Workspace", height: 50, onTap: () {})
+                                          text: "Create", height: 50, onTap: () {})
                                     ],
-                                  ));
+                                  )
+                          );
                         },
                         type: "outlined",
-                      )),
+                      )
+                  ),
                 ),
                 SizedBox(
                   height: (widget.workspaces != null) ? widget.height * 0.9 : 40,
@@ -113,6 +177,8 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                 },
                                 child: Text(
                                     widget.workspaces!.workspaces[index].workspaceTitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyles.title4,
                                   textAlign: TextAlign.start,
                                 ),
@@ -124,40 +190,11 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                               child: CardContainer(
                                   onTap: () {
                                     context.push(
-                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
+                                      "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}"
+                                    );
                                   },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        widget
-                                              .workspaces!
-                                            .pendingWorkspaces[
-                                                  index - widget.workspaces!.workspaces.length]
-                                            .workspaceTitle,
-                                        style: TextStyles.bodyBold,
-                                        textAlign: TextAlign.start,
-                                      ),
-                                      Column(children: [
-                                        IconButton(
-                                          icon: const Icon(CupertinoIcons.check_mark_circled,
-                                              color: AppColors.infoColor),
-                                          onPressed: () {
-                                            // function to accept collaboration request
-                                          },
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            CupertinoIcons.clear_circled,
-                                            color: AppColors.warningColor,
-                                          ),
-                                          onPressed: () {
-                                            // function to reject collaboration request
-                                          },
-                                        ),
-                                      ])
-                                    ],
-                                  )),
+                                  child: pendingWorkspaceCardContent(index),
+                              ),
                             );
                           } else {
                             return const SizedBox();
@@ -166,6 +203,8 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                       : const CircularProgressIndicator(),
                 ),
               ],
-            )));
+            ),
+        ),
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/add_reference_form.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -31,7 +32,7 @@ class ReferencesListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
-                text: "Add References",
+                text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth) ? "Add" : "Add References",
                 height: 40,
                 type: "outlined",
                 onTap: () {

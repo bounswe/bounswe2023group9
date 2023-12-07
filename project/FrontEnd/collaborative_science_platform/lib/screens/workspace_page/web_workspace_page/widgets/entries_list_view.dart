@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_form.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -39,7 +40,7 @@ class EntriesListView extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width / 6,
                 child: AppButton(
-                  text: "Create New Entry",
+                  text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth) ? "New Entry" : "Create New Entry",
                   height: 40,
                   onTap: () {
                     showDialog(
@@ -61,7 +62,7 @@ class EntriesListView extends StatelessWidget {
                 ),
               ),
             ]),
-            if (entries.length > 0)
+            if (entries.isNotEmpty)
             ListView.builder(
                 controller: controller,
                 scrollDirection: Axis.vertical,
