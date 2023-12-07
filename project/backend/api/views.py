@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
-import random
+import random, json, datetime
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -122,15 +122,18 @@ class WorkspacePostAPIView(APIView):
             serializer.errors, status=400
         )
 
+
+
 def search(request):
     search = request.GET.get("query")
     search_type = request.GET.get("type")
-    if (search == None or search == "") and search_type != 'random':
+    if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
         return JsonResponse({'status': 'Title to search must be given.'}, status=400)
     if search_type == None or search_type == "":
         return JsonResponse({'status': 'Type to search must be given.'}, status=400)
-    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by'and search_type != 'random' and search_type != 'semantic':
+    if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by'and search_type != 'random' and search_type != 'semantic' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read'  and search_type != 'for_you':
         return JsonResponse({'status': 'invalid search type.'}, status=400)
+
 
     # similars = [] # TODO ADVANCED SEARCH
     # also_sees = []
@@ -146,7 +149,49 @@ def search(request):
     #             el = el[:el.find('.')]
     #             similars.append(el)
     # start search with exact search
+
     nodes = []
+
+    if search_type == 'latest':
+        all = Node.objects.order_by('-publish_date')[:50]
+        for node in all:
+            nodes.append(node.node_id)
+
+    if search_type == 'most_read':
+        all = Node.objects.order_by('-num_visits')[:50]
+        for node in all:
+            print(node.num_visits)
+            nodes.append(node.node_id)
+
+    if search_type == 'trending':
+        all = Node.objects.order_by('-publish_date')[:250]
+        rate = {}
+        for node in all:
+            diff = datetime.datetime.now().date() - node.publish_date
+            rate[node.node_id] = node.num_visits / diff.days.real
+        sort = sorted(rate.items(), key=lambda x:x[1])
+        sort.reverse()
+        sort = sort[:50]
+        for elem in sort:
+            nodes.append(elem[0])
+
+
+    if search_type == 'for_you':
+        rel_nodes = []
+        non_rel_nodes = []
+        res = BasicUserDetailAPI.as_view()(request)
+        basic_user = BasicUser.objects.get(id=json.loads(res.content.decode())['basic_user_id'])
+        for tag in basic_user.semantic_tags.all():
+            nodes_q = tag.nodes
+            related_nodes_q = tag.related_nodes
+            for node in nodes_q:
+                non_rel_nodes.append(node.node_id)
+            for rel_node in related_nodes_q:
+                rel_nodes.append(rel_node.node_id)
+        random.shuffle(non_rel_nodes)
+        random.shuffle(rel_nodes)
+        nodes = non_rel_nodes + rel_nodes
+
 
     if search_type == 'by' or search_type == 'all':
         # print(search_elements)
@@ -166,7 +211,6 @@ def search(request):
                     for node in cont_nodes:
                         nodes.append(node.node_id)
 
-
     contributors = []
     if search_type == 'node' or search_type == 'all':
         search_elements = search.split()
@@ -174,6 +218,7 @@ def search(request):
             res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
                 nodes.append(e.node_id)
+
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
         search_elements = search.split()
         for el in search_elements:
@@ -185,6 +230,7 @@ def search(request):
             for e in res_surname:
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     contributors.append(e.username)
+
     if search_type == 'semantic':
         wid = search
         tag = SemanticTag.objects.filter(wid=wid)
@@ -214,7 +260,8 @@ def search(request):
                 nodes.append(random_node.node_id)
                 i += 1
     contributors = list(set(contributors))
-    nodes = list(set(nodes))
+    if not (search_type == 'latest' or search_type == 'most_read' or search_type == 'for_you'  or search_type == 'trending'):
+        nodes = list(set(nodes))
     res_authors = []
     for cont in contributors:
         user = User.objects.get(username=cont)
@@ -229,7 +276,7 @@ def search(request):
             user = User.objects.get(id=cont.user_id)
             authors.append({'name': user.first_name,
                             'surname': user.last_name, 'username': user.username, 'id': cont.id})
-        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors})
+        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors, 'num_visits' : node.num_visits})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
 
 def get_profile(request):
