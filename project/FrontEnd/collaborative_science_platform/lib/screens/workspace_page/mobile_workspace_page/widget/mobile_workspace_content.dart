@@ -2,11 +2,14 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+
 import '../../../../models/node.dart';
 import '../../../../models/user.dart';
 import '../../../../models/workspaces_page/entry.dart';
 import '../../../../models/workspaces_page/workspace.dart';
-import '../../../../providers/workspace_provider.dart';
+import '../../../../providers/auth.dart';
+import '../../../../utils/lorem_ipsum.dart';
 import '../../../../utils/responsive/responsive.dart';
 import '../../../../widgets/app_button.dart';
 import '../../web_workspace_page/widgets/add_reference_form.dart';
@@ -30,7 +33,6 @@ class MobileWorkspaceContent extends StatefulWidget {
 }
 
 class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
-  bool _isFirstTime = true;
   bool isLoading = false;
   bool error = false;
   String errorMessage = "";
@@ -48,29 +50,99 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
 
   @override
   void didChangeDependencies() {
-    if (_isFirstTime) {
-      getWorkspaceData();
-      _isFirstTime = false;
-    }
+    getWorkspaceData();
     super.didChangeDependencies();
   }
 
-  Future<void> getWorkspaceData() async {
-    try {
-      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
-      setState(() {
-        isLoading = true;
-      });
-      await workspaceProvider.getWorkspaceById(widget.workspaceId, "token");
-      workspaceData = workspaceProvider.workspace ?? {} as Workspace;
-    } catch (e) {
-      error = true;
-      errorMessage = e.toString();
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+  void getWorkspaceData() {
+    setState(() {
+      isLoading = true;
+    });
+    workspaceData = Workspace(
+      workspaceId: 0,
+      workspaceTitle: "workspaceTitle",
+      entries: <Entry>[
+        Entry(
+          content: getLongLoremIpsum(),
+          entryDate: DateTime.now(),
+          entryId: 1,
+          entryNumber: 1,
+          index: 1,
+          isEditable: false,
+          isFinalEntry: false,
+          isProofEntry: false,
+          isTheoremEntry: true,
+        ),
+        Entry(
+          content: getLongLoremIpsum(2),
+          entryDate: DateTime.now(),
+          entryId: 2,
+          entryNumber: 2,
+          index: 2,
+          isEditable: false,
+          isFinalEntry: false,
+          isProofEntry: true,
+          isTheoremEntry: false,
+        ),
+        Entry(
+          content: getLongLoremIpsum(3),
+          entryDate: DateTime.now(),
+          entryId: 2,
+          entryNumber: 2,
+          index: 2,
+          isEditable: false,
+          isFinalEntry: true,
+          isProofEntry: true,
+          isTheoremEntry: false,
+        ),
+      ],
+      status: WorkspaceStatus.workable,
+      numApprovals: 0,
+      contributors: <User>[
+        // Automatically add the user to the list of contributors
+        // It will be deleted once the providers are implemented
+        if (!widget.pending) Provider.of<Auth>(context).user as User,
+        User(
+          email: "dummy1@mail.com",
+          firstName: "dummy 1",
+          lastName: "jackson",
+        ),
+        User(
+          email: "dummy2@mail.com",
+          firstName: "dummy 2",
+          lastName: "jackson",
+        ),
+      ],
+      pendingContributors: <User>[
+        User(
+          email: "dummy3@mail.com",
+          firstName: "dummy 3",
+          lastName: "jackson",
+        ),
+      ],
+      references: <Node>[
+        Node(
+          contributors: <User>[
+            User(
+              email: "dummy1@mail.com",
+              firstName: "dummy 1",
+              lastName: "jackson",
+            ),
+            User(
+              email: "dummy2@mail.com",
+              firstName: "dummy 2",
+              lastName: "jackson",
+            ),
+          ],
+          id: 1,
+          nodeTitle: "Awesome Node Title",
+          publishDate: DateTime.now(),
+        ),
+      ],
+    );
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Widget addIcon(Function() onPressed) {
@@ -225,74 +297,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     );
   }
 
-  Widget mobileWorkspaceCardOptions() {
-    return widget.pending ? AppButton(
-      text: "Evaluate the Theorem",
-      height: 40.0,
-      icon: const Icon(
-          Icons.check,
-        color: Colors.white,
-      ),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AppAlertDialog(
-            text: "Do you accept or reject this theorem?",
-            actions: [
-              AppButton(
-                text: "Accept",
-                height: 40,
-                onTap: () {
-                  /* Accept the review */
-                  Navigator.of(context).pop();
-                },
-              ),
-              AppButton(
-                text: "Reject",
-                height: 40,
-                onTap: () {
-                  /* Reject the review */
-                  Navigator.of(context).pop();
-                  },
-              ),
-              AppButton(
-                text: "Cancel",
-                height: 40,
-                onTap: () { Navigator.of(context).pop(); },
-              ),
-            ],
-          ),
-        );
-      },
-    ) : AppButton(
-      text: "Send Theorem to Review",
-      height: 40.0,
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (context) => AppAlertDialog(
-            text: "Do you want to send it to review?",
-            actions: [
-              AppButton(
-                text: "Send",
-                height: 40,
-                onTap: () {
-                  /* Send to review */
-                  Navigator.of(context).pop();
-                },
-              ),
-              AppButton(
-                text: "Cancel",
-                height: 40,
-                onTap: () { Navigator.of(context).pop(); },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     print("Created ${widget.workspaceId}");
@@ -326,10 +330,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "References"),
             referenceList(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 8.0),
-              child: mobileWorkspaceCardOptions(),
-            ),
             const SizedBox(height: 20.0),
           ],
         ),
