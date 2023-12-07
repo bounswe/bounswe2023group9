@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
@@ -13,6 +13,7 @@ from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
 import random
+import datetime
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -660,22 +661,32 @@ def get_random_node_id(request):
         node_list.append(node_ids[index])
     return JsonResponse({'node_ids': node_list}, status=200)
 
+
+class IsContributor(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        return True
+
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsContributor))
 @api_view(['POST'])
 def send_collaboration_request(request):
-
+    if not request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace')).exists():
+        return Response({"message": "This contributor is not allowed to access this workspace."}, status=403)
     serializer = CollaborationRequestSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsContributor))
 @api_view(['PUT'])
-def update_request_status(request):
-    is_collab_req = True
+def update_collab_request_status(request):
     req = CollaborationRequest.objects.filter(pk=request.data.get('id'))
-    if not req:
-        is_collab_req = False
-        req = ReviewRequest.objects.filter(pk=request.data.get('id'))
     if not req:
         return Response({"message": "Request not found."}, status=404)
     req = req.first()
@@ -685,12 +696,10 @@ def update_request_status(request):
         return Response({"message": "Invalid status value."}, status=400)
 
     if status == "A":
-        if is_collab_req:
-            try:
-                req.receiver.workspaces.add(req.workspace)
-            except Exception as e:
-                return Response({"message": str(e)}, status=500)
-
+        try:
+            req.receiver.workspaces.add(req.workspace)
+        except Exception as e:
+            return Response({"message": str(e)}, status=500)
 
     req.status = status
     req.save()
@@ -698,12 +707,132 @@ def update_request_status(request):
     serializer = RequestSerializer(req)
     return Response(serializer.data, status=200)
 
+class IsReviewer(IsContributor):
+    def has_permission(self, request, view):
+        if not Reviewer.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        return True
+
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsContributor))
 @api_view(['POST'])
 def send_review_request(request):
+    try:
+        if not request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace')).exists():
+            return Response({"message": "This contributor is not allowed to access this workspace."}, status=403)
+        all_reviewers = list(Reviewer.objects.all())
+        reviewers = random.sample(all_reviewers, 2)
+        response_data = {'reviewer1': '', 'reviewer2': ''}
+    
+        data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
+        serializer = ReviewRequestSerializer(data=data)
 
-    serializer = ReviewRequestSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+        if serializer.is_valid():
+            serializer.save()
+            response_data['reviewer1'] = serializer.data
 
+        data = {'sender': request.data.get('sender'), 'receiver': reviewers[1], 'workspace': request.data.get('workspace')}
+        serializer = ReviewRequestSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            response_data['reviewer2'] = serializer.data
+        else:
+            return Response(serializer.errors, status=400)
+    except Exception as e:
+        return Response({"message": str(e)}, status=500)
+
+    return Response(response_data, status=201)
+
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsReviewer))
+@api_view(['PUT'])
+def update_review_request_status(request):
+    req = ReviewRequest.objects.filter(pk=request.data.get('id'))
+    if not req:
+        return Response({"message": "Request not found."}, status=404)
+    req = req.first()
+
+
+    if request.user.basicuser.id != req.receiver.id:
+        return Response({"message": "Unauthorized reviewer"}, status=400)
+
+
+    status = request.data.get('status')
+    comment = request.data.get('comment')
+    workspace = req.workspace
+
+    if status not in ["P", "A", "R"]:
+        return Response({"message": "Invalid status value."}, status=400)
+    if req.status != "P":
+        return Response({"message": "The request has already been approved or rejected."})
+    
+    serializer = None
+
+    if status == "A":
+        try:
+            workspace.num_approvals -= 1
+            workspace.save()
+
+            if workspace.num_approvals <= 0:
+                workspace.is_published = True
+                workspace.is_in_review = False
+                workspace.is_rejected = False
+
+
+                node = Node.objects.create(
+                    node_title=workspace.workspace_title, 
+                    publish_date=datetime.date.today(),
+                    is_valid=True,
+                    num_visits=0,
+                    removed_by_admin=False
+                )
+
+                node.contributors.set(workspace.contributor_set.all())
+
+                node.from_referenced_nodes.set(workspace.references.all())
+
+                node.semantic_tags.set(workspace.semantic_tags.all())
+
+                for entry in workspace.entries.all():
+                        if entry.is_proof_entry:
+                            proof = Proof.objects.create(
+                                proof_title="", 
+                                proof_content=entry.content,
+                                is_valid=True,
+                                is_disproof=False,
+                                publish_date=datetime.date.today(),
+                                removed_by_admin=False,
+                                node=node
+                            )
+                            node.proofs.add(proof)
+                        elif entry.is_theorem_entry:
+                            theorem = Theorem.objects.create(
+                                theorem_title="",  
+                                theorem_content=entry.content,
+                                publish_date=datetime.date.today()
+                            )
+                            node.theorem = theorem
+
+                for review_request in workspace.reviewrequest_set.all():
+                    node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
+                
+                serializer = NodeSerializer(data=node)
+                if serializer.is_valid():
+                    serializer.save()
+
+
+        except Exception as e:
+            return Response({"message": str(e)}, status=500)
+    elif status == "R":
+        workspace.is_rejected = True
+        workspace.is_in_review = False
+        workspace.is_published = False
+
+
+    req.status = status
+    req.comment = comment
+    req.save()
+
+    serializer = ReviewRequestSerializer(req)
+    return Response(serializer.data, status=200)
