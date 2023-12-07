@@ -28,3 +28,12 @@ Nisi vitae suscipit tellus mauris a diam maecenas. Fusce id velit ut tortor pret
 Leo vel orci porta non. Et malesuada fames ac turpis. Dictum at tempor commodo ullamcorper a lacus. Purus ut faucibus pulvinar elementum integer enim neque volutpat ac. Aliquam nulla facilisi cras fermentum. Auctor eu augue ut lectus arcu bibendum at varius vel. Pellentesque elit ullamcorper dignissim cras tincidunt lobortis. Justo laoreet sit amet cursus sit amet dictum. Nibh sit amet commodo nulla facilisi nullam vehicula ipsum a. Magna ac placerat vestibulum lectus mauris ultrices eros in cursus. Libero nunc consequat interdum varius sit. Tristique senectus et netus et malesuada fames ac turpis egestas. Tristique nulla aliquet enim tortor at auctor urna nunc.
 """;
 }
+
+String getMockLatex() {
+  return """\$\$(log_23 - 1) + n \\le \\sum_{i=1}^{n} \\log_2(X(u_i, w_i)) \\le (log_23 - 1)\\frac{n}{m} + n\$\$
+\$\$(log_23 - 1) + n \\le \\sum_{i=1}^{n} \\log_2(X(u_i, w_i)) \\le (\\frac{log_23 - 1}{m} + 1)n\$\$
+\$\$\\frac{log_23 - 1}{n} + 1 \\le \\frac{1}{n} \\sum_{i=1}^{n} \\log_2(X(u_i, w_i)) \\le \\frac{log_23 - 1}{m} + 1\$\$
+\$\$\\lim\\limits_{{n \\to \\infty}}  (\\frac{log_23 - 1}{n} + 1) \\le \\lim\\limits_{{n \\to \\infty}} \\frac{1}{n} \\sum_{i=1}^{n} \\log_2(X(u_i, w_i)) \\le  \\lim\\limits_{{n \\to \\infty}} \\frac{log_23 - 1}{m} + 1\$\$
+\$\$1 \\le  \\lim\\limits_{{n \\to \\infty}} \\frac{1}{n} \\sum_{i=1}^{n} \\log_2(X(u_i, w_i)) \\le \\frac{log_23 - 1}{m} + 1\$\$.
+""";
+}

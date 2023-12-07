@@ -160,6 +160,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               ),
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 EntriesListView(
                                   entries: widget.workspace!.entries,
@@ -168,6 +170,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   height: minHeight,
                                 ),
                                 Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     ContributorsListView(
                                       contributors: widget.workspace!.contributors,
@@ -202,9 +206,11 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyles.title2,
                                 )
-                              ]),
+                              ],
+                          ),
                         )
                     ],
-                  ));
+                  ),
+    );
   }
 }

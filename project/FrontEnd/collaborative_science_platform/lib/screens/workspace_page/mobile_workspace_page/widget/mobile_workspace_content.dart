@@ -17,7 +17,7 @@ import '../../web_workspace_page/widgets/entry_form.dart';
 import '../../web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'app_alert_dialog.dart';
 import 'contributor_card.dart';
-import 'entry_card.dart';
+import 'mobile_entry_card.dart';
 
 class MobileWorkspaceContent extends StatefulWidget {
   final int workspaceId;
@@ -63,7 +63,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       workspaceTitle: "workspaceTitle",
       entries: <Entry>[
         Entry(
-          content: getLongLoremIpsum(),
+          content: getMockLatex(),
           entryDate: DateTime.now(),
           entryId: 1,
           entryNumber: 1,
@@ -74,7 +74,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           isTheoremEntry: true,
         ),
         Entry(
-          content: getLongLoremIpsum(2),
+          content: getMockLatex(),
           entryDate: DateTime.now(),
           entryId: 2,
           entryNumber: 2,
@@ -85,7 +85,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           isTheoremEntry: false,
         ),
         Entry(
-          content: getLongLoremIpsum(3),
+          content: getMockLatex(),
           entryDate: DateTime.now(),
           entryId: 2,
           entryNumber: 2,
@@ -207,7 +207,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                   workspaceData.entries.removeAt(index);
                 });
               },
-              pending: widget.pending,
             ) : addIcon(() {
               showDialog(
                 context: context,

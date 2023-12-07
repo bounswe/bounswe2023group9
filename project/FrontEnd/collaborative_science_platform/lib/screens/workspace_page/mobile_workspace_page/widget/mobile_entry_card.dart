@@ -1,21 +1,23 @@
+import 'dart:convert';
+
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_tex/flutter_tex.dart';
 import '../../../../models/workspaces_page/entry.dart';
 import '../../../../utils/colors.dart';
+import 'entry_header.dart';
 
 
 class EntryCard extends StatefulWidget {
   final Entry entry;
   final void Function() onDelete;
-  final bool pending;
 
   const EntryCard({
     super.key,
     required this.entry,
     required this.onDelete,
-    required this.pending,
   });
 
   @override
@@ -26,11 +28,13 @@ class _EntryCardState extends State<EntryCard> {
   final entryController = TextEditingController();
   final entryFocusNode = FocusNode();
 
-  final double shrunkHeight = 120.0;
-  final double extendHeight = 450.0;
+  final double shrunkHeight = 200.0;
+  final double extendHeight = 540.0;
 
+  String buffer = "";
   bool extended = false;
-  bool readOnly = true;
+  bool editMode = false;
+  bool edited = false;
 
   @override
   void initState() {
@@ -45,67 +49,72 @@ class _EntryCardState extends State<EntryCard> {
     super.dispose();
   }
 
-  Widget entryHeader() {
+  Widget upperIconRow() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          widget.entry.isTheoremEntry ? "Theorem"
-          : widget.entry.isProofEntry ? "Proof"
-          : "",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16.0,
-            color: widget.entry.isTheoremEntry ? Colors.green.shade800
-              : widget.entry.isProofEntry ? Colors.yellow.shade800
-              : Colors.blue.shade800,
+        IconButton(
+          onPressed: () { // Preview Mode
+            setState(() {
+              editMode = false;
+            });
+          },
+          icon: Icon(
+            Icons.visibility,
+            color: (!editMode) ? Colors.indigo[600] : Colors.grey,
           ),
         ),
-        if (widget.entry.isFinalEntry) Text(
-          " (Final)",
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16.0,
-            color: Colors.red.shade800,
+        IconButton(
+          onPressed: () { // Edit Mode
+            setState(() {
+              if (!edited) {
+                buffer = entryController.text;
+              }
+              editMode = true;
+            });
+          },
+          icon: Icon(
+            Icons.edit,
+            color: (editMode) ? Colors.indigo[600] : Colors.grey,
+          ),
+        ),
+        const Expanded(child: SizedBox()),
+        if (editMode) IconButton(
+          onPressed: () {
+            // Save the changes
+            setState(() {
+              edited = false;
+              editMode = false;
+            });
+          },
+          icon: const Icon(
+            Icons.check,
+            color: Colors.green,
+          ),
+        ),
+        if (editMode) IconButton(
+          onPressed: () {
+            // Do not save the changes
+            setState(() {
+              entryController.text = buffer;
+              edited = false;
+              editMode = false;
+            });
+          },
+          icon: const Icon(
+            Icons.close,
+            color: Colors.red,
           ),
         ),
       ],
     );
   }
 
-  Widget iconRow(bool pending) {
-    return !pending ? Row(
+  Widget lowerIconRow() {
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        readOnly ? IconButton(
-          onPressed: () { // Make editable
-            setState(() {
-              readOnly = false;
-            });
-          },
-          icon: const Icon(Icons.edit),
-        ) : Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                // Save the changes
-                setState(() {
-                  readOnly = true;
-                });
-              },
-              icon: const Icon(Icons.check),
-            ),
-            IconButton(
-              onPressed: () {
-                // Do not save the changes
-                setState(() {
-                  readOnly = true;
-                });
-              },
-              icon: const Icon(Icons.close),
-            ),
-          ],
-        ),
         IconButton(
           onPressed: () {
             showDialog(
@@ -172,23 +181,6 @@ class _EntryCardState extends State<EntryCard> {
         ),
         const SizedBox(width: 10.0),
       ],
-    ) : Padding(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            widget.entry.publishDateFormatted,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16.0,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(width: 10.0),
-        ],
-      ),
     );
   }
 
@@ -196,19 +188,19 @@ class _EntryCardState extends State<EntryCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        upperIconRow(),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            readOnly: readOnly,
+          child: (editMode) ? TextField(
             controller: entryController,
             focusNode: entryFocusNode,
             cursorColor: Colors.grey.shade700,
             style: const TextStyle(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w400,
               fontSize: 16.0,
             ),
-            maxLines: 10,
-            onChanged: (text) { /* What will happen when the text changes? */ },
+            maxLines: 11,
+            onChanged: (text) { edited = true; },
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: AppColors.primaryColor),
@@ -219,23 +211,55 @@ class _EntryCardState extends State<EntryCard> {
                 borderRadius: BorderRadius.circular(4.0),
               ),
             ),
+          ) : SizedBox(
+            height: 300.0,
+            child: CardContainer(
+              backgroundColor: const Color.fromARGB(255, 180, 240, 210),
+              child: SingleChildScrollView(
+                physics: const ScrollPhysics(),
+                child: TeXView(
+                    renderingEngine: const TeXViewRenderingEngine.katex(),
+                    child: TeXViewDocument(
+                      utf8.decode(entryController.text.codeUnits),
+                    )
+                ),
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 10.0),
-        iconRow(widget.pending),
+        const SizedBox(height: 4.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(width: 6.0),
+            Text(
+              "name surname (email)",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 16.0,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4.0),
+        lowerIconRow(),
       ],
     );
   }
 
-  Widget headerOfContent() {
-    return Text(
-      widget.entry.content,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.w500,
-      ),
+  Widget headerOfContent() { // Print the first line
+    int index = entryController.text.indexOf('\n', 0);
+    String head = entryController.text.substring(0, (index != -1) ? index : entryController.text.length);
+    return TeXView(
+        renderingEngine: const TeXViewRenderingEngine.katex(),
+        child: TeXViewDocument(
+          utf8.decode(head.codeUnits),
+        )
     );
   }
 
@@ -256,10 +280,10 @@ class _EntryCardState extends State<EntryCard> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                entryHeader(),
+                EntryHeader(entry: widget.entry),
                 extended ? fullEntryContent() : headerOfContent(),
                 const Expanded(child: SizedBox()),
-                Row(
+                Row( // It is added to center the widget
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [

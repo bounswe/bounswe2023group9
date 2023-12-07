@@ -145,8 +145,13 @@ class _NodeDetailsState extends State<NodeDetails> {
                             child: TeXView(
                                 renderingEngine: const TeXViewRenderingEngine.katex(),
                                 child: TeXViewDocument(
-                                    NodeHelper.getNodeContentLatex(widget.node, "long"))))),
-                  )),
+                                    NodeHelper.getNodeContentLatex(widget.node, "long")
+                                )
+                            )
+                        )
+                    ),
+                  )
+              ),
             if (currentIndex == 1)
               //proofs
               Padding(
