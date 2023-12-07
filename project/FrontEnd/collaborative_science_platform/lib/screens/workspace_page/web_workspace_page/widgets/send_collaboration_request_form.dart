@@ -66,7 +66,7 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
     return SizedBox(
       height: (pageIndex == 0) ? 600 : (pageIndex == 1) ? 400 : 200,
       child: SingleChildScrollView(
-        primary: false,
+        primary: true,
         scrollDirection: Axis.vertical,
         child: (pageIndex == 0) ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
