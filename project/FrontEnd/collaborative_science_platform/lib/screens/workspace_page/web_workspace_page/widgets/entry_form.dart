@@ -30,7 +30,8 @@ class _EntryFormState extends State<EntryForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
         children: [
             const SizedBox(height: 10.0),
-            Expanded(
+          SizedBox(
+            width: double.infinity,
               child: SizedBox(
                 child: AppTextField(
                   controller: contentController,

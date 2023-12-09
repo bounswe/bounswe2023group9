@@ -86,6 +86,36 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+  void createNewWorkspace(String title) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.createWorkspace(title, auth.user!.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
+      setState(() {
+        workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
+      });
+    } on CreateWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = CreateWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -105,11 +135,13 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       mobile: MobileWorkspacePage(
         workspace: workspace,
         workspaces: workspaces,
+        createNewWorkspace: createNewWorkspace,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
         workspace: workspace,
         workspaces: workspaces,
+        createNewWorkspace: createNewWorkspace,
       ),
     );
   }

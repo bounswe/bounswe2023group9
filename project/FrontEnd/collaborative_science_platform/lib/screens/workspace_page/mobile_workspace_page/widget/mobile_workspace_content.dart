@@ -3,7 +3,6 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 import '../../../../models/node.dart';
 import '../../../../models/user.dart';
 import '../../../../models/workspaces_page/entry.dart';
@@ -20,12 +19,12 @@ import 'contributor_card.dart';
 import 'entry_card.dart';
 
 class MobileWorkspaceContent extends StatefulWidget {
-  final int workspaceId;
+  final Workspace workspace;
   final bool pending;
   const MobileWorkspaceContent({
     super.key,
-    required this.workspaceId,
     required this.pending,
+    required this.workspace,
   });
 
   @override
@@ -37,113 +36,113 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   bool error = false;
   String errorMessage = "";
 
-  Workspace workspaceData = Workspace(
-    workspaceId: 0,
-    workspaceTitle: "workspaceTitle",
-    entries: <Entry>[],
-    status: WorkspaceStatus.workable,
-    numApprovals: 0,
-    contributors: <User>[],
-    pendingContributors: <User>[],
-    references: <Node>[],
-  );
+  // Workspace workspaceData = Workspace(
+  //   workspaceId: 0,
+  //   workspaceTitle: "workspaceTitle",
+  //   entries: <Entry>[],
+  //   status: WorkspaceStatus.workable,
+  //   numApprovals: 0,
+  //   contributors: <User>[],
+  //   pendingContributors: <User>[],
+  //   references: <Node>[],
+  // );
 
   @override
   void didChangeDependencies() {
-    getWorkspaceData();
+    //getWorkspaceData();
     super.didChangeDependencies();
   }
 
-  void getWorkspaceData() {
-    setState(() {
-      isLoading = true;
-    });
-    workspaceData = Workspace(
-      workspaceId: 0,
-      workspaceTitle: "workspaceTitle",
-      entries: <Entry>[
-        Entry(
-          content: getLongLoremIpsum(),
-          entryDate: DateTime.now(),
-          entryId: 1,
-          entryNumber: 1,
-          index: 1,
-          isEditable: false,
-          isFinalEntry: false,
-          isProofEntry: false,
-          isTheoremEntry: true,
-        ),
-        Entry(
-          content: getLongLoremIpsum(2),
-          entryDate: DateTime.now(),
-          entryId: 2,
-          entryNumber: 2,
-          index: 2,
-          isEditable: false,
-          isFinalEntry: false,
-          isProofEntry: true,
-          isTheoremEntry: false,
-        ),
-        Entry(
-          content: getLongLoremIpsum(3),
-          entryDate: DateTime.now(),
-          entryId: 2,
-          entryNumber: 2,
-          index: 2,
-          isEditable: false,
-          isFinalEntry: true,
-          isProofEntry: true,
-          isTheoremEntry: false,
-        ),
-      ],
-      status: WorkspaceStatus.workable,
-      numApprovals: 0,
-      contributors: <User>[
-        // Automatically add the user to the list of contributors
-        // It will be deleted once the providers are implemented
-        if (!widget.pending) Provider.of<Auth>(context).user as User,
-        User(
-          email: "dummy1@mail.com",
-          firstName: "dummy 1",
-          lastName: "jackson",
-        ),
-        User(
-          email: "dummy2@mail.com",
-          firstName: "dummy 2",
-          lastName: "jackson",
-        ),
-      ],
-      pendingContributors: <User>[
-        User(
-          email: "dummy3@mail.com",
-          firstName: "dummy 3",
-          lastName: "jackson",
-        ),
-      ],
-      references: <Node>[
-        Node(
-          contributors: <User>[
-            User(
-              email: "dummy1@mail.com",
-              firstName: "dummy 1",
-              lastName: "jackson",
-            ),
-            User(
-              email: "dummy2@mail.com",
-              firstName: "dummy 2",
-              lastName: "jackson",
-            ),
-          ],
-          id: 1,
-          nodeTitle: "Awesome Node Title",
-          publishDate: DateTime.now(),
-        ),
-      ],
-    );
-    setState(() {
-      isLoading = false;
-    });
-  }
+  // void getWorkspaceData() {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   workspaceData = Workspace(
+  //     workspaceId: 0,
+  //     workspaceTitle: "workspaceTitle",
+  //     entries: <Entry>[
+  //       Entry(
+  //         content: getLongLoremIpsum(),
+  //         entryDate: DateTime.now(),
+  //         entryId: 1,
+  //         entryNumber: 1,
+  //         index: 1,
+  //         isEditable: false,
+  //         isFinalEntry: false,
+  //         isProofEntry: false,
+  //         isTheoremEntry: true,
+  //       ),
+  //       Entry(
+  //         content: getLongLoremIpsum(2),
+  //         entryDate: DateTime.now(),
+  //         entryId: 2,
+  //         entryNumber: 2,
+  //         index: 2,
+  //         isEditable: false,
+  //         isFinalEntry: false,
+  //         isProofEntry: true,
+  //         isTheoremEntry: false,
+  //       ),
+  //       Entry(
+  //         content: getLongLoremIpsum(3),
+  //         entryDate: DateTime.now(),
+  //         entryId: 2,
+  //         entryNumber: 2,
+  //         index: 2,
+  //         isEditable: false,
+  //         isFinalEntry: true,
+  //         isProofEntry: true,
+  //         isTheoremEntry: false,
+  //       ),
+  //     ],
+  //     status: WorkspaceStatus.workable,
+  //     numApprovals: 0,
+  //     contributors: <User>[
+  //       // Automatically add the user to the list of contributors
+  //       // It will be deleted once the providers are implemented
+  //       if (!widget.pending) Provider.of<Auth>(context).user as User,
+  //       User(
+  //         email: "dummy1@mail.com",
+  //         firstName: "dummy 1",
+  //         lastName: "jackson",
+  //       ),
+  //       User(
+  //         email: "dummy2@mail.com",
+  //         firstName: "dummy 2",
+  //         lastName: "jackson",
+  //       ),
+  //     ],
+  //     pendingContributors: <User>[
+  //       User(
+  //         email: "dummy3@mail.com",
+  //         firstName: "dummy 3",
+  //         lastName: "jackson",
+  //       ),
+  //     ],
+  //     references: <Node>[
+  //       Node(
+  //         contributors: <User>[
+  //           User(
+  //             email: "dummy1@mail.com",
+  //             firstName: "dummy 1",
+  //             lastName: "jackson",
+  //           ),
+  //           User(
+  //             email: "dummy2@mail.com",
+  //             firstName: "dummy 2",
+  //             lastName: "jackson",
+  //           ),
+  //         ],
+  //         id: 1,
+  //         nodeTitle: "Awesome Node Title",
+  //         publishDate: DateTime.now(),
+  //       ),
+  //     ],
+  //   );
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // }
 
   Widget addIcon(Function() onPressed) {
     return Center(
@@ -156,7 +155,9 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   }
 
   Widget firstAddition(String message, Function() onPressed) {
-    return ListView(
+    return SizedBox(
+      height: 300,
+      child: ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
@@ -171,11 +172,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
         ),
         addIcon(onPressed),
       ],
+      ),
     );
   }
 
   Widget entryList() {
-    int length = workspaceData.entries.length;
+    int length = widget.workspace.entries.length;
     Widget alertDialog = AppAlertDialog(
       text: 'New Entry',
       content: const EntryForm(newEntry: true),
@@ -191,86 +193,75 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       ],
     );
 
-    return workspaceData.entries.isNotEmpty
-      ? Padding(
-        padding: const EdgeInsets.only(bottom: 12.0),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(0.0),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: length + 1,
-          itemBuilder: (context, index) => (index < length)
-            ? EntryCard(
-              entry: workspaceData.entries[index],
-              onDelete: () {
-                setState(() {
-                  workspaceData.entries.removeAt(index);
-                });
-              },
-              pending: widget.pending,
-            ) : addIcon(() {
-              showDialog(
-                context: context,
-                builder: (context) => alertDialog
-              );
-            }),
-          ),
-        ) : firstAddition(
-          "Add Your First Entry!",
-          () {
-            showDialog(
-              context: context,
-              builder: (context) => alertDialog
-            );
-          },
-    );
+    return widget.workspace.entries.isNotEmpty
+        ? Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(0.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: length + 1,
+              itemBuilder: (context, index) => (index < length)
+                  ? EntryCard(
+                      entry: widget.workspace.entries[index],
+                      onDelete: () {
+                        setState(() {
+                          widget.workspace.entries.removeAt(index);
+                        });
+                      },
+                      pending: widget.pending,
+                    )
+                  : addIcon(() {
+                      showDialog(context: context, builder: (context) => alertDialog);
+                    }),
+            ),
+          )
+        : firstAddition(
+            "Add Your First Entry!",
+            () {
+              showDialog(context: context, builder: (context) => alertDialog);
+            },
+          );
   }
 
   Widget contributorList() {
-    int length = workspaceData.contributors.length;
-    Widget alertDialog =  const AppAlertDialog(
+    int length = widget.workspace.contributors.length;
+    Widget alertDialog = const AppAlertDialog(
       text: "Send Collaboration Request",
       content: SendCollaborationRequestForm(),
     );
 
-    return workspaceData.contributors.isNotEmpty
+    return widget.workspace.contributors.isNotEmpty
         ? Padding(
-          padding: const EdgeInsets.only(bottom: 12.0),
-          child: ListView.builder(
-            padding: const EdgeInsets.all(0.0),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: length + 1,
-            itemBuilder: (context, index) => (index < length)
-              ? ContributorCard(contributor: workspaceData.contributors[index])
-              : addIcon(() {
-                showDialog(
-                  context: context,
-                  builder: (context) => alertDialog
-                );
-              }
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(0.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: length + 1,
+              itemBuilder: (context, index) => (index < length)
+                  ? ContributorCard(contributor: widget.workspace.contributors[index])
+                  : addIcon(() {
+                      showDialog(context: context, builder: (context) => alertDialog);
+                    }),
             ),
-            ),
-          ) : firstAddition(
-          "Add The First Contributor!",
-          () {
-            showDialog(
-              context: context,
-              builder: (context) => alertDialog
-            );
-          },
-    );
+          )
+        : firstAddition(
+            "Add The First Contributor!",
+            () {
+              showDialog(context: context, builder: (context) => alertDialog);
+            },
+          );
   }
 
   Widget referenceList() {
-    int length = workspaceData.references.length;
-    Widget alertDialog = const AppAlertDialog
-      (text: "Add Reference",
+    int length = widget.workspace.references.length;
+    Widget alertDialog = const AppAlertDialog(
+      text: "Add Reference",
       content: AddReferenceForm(),
     );
-
-    return (workspaceData.references.isNotEmpty)
-        ? Padding(
+    return widget.workspace.references.isNotEmpty
+        ? (Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: ListView.builder(
             padding: const EdgeInsets.all(0.0),
@@ -278,7 +269,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: length + 1,
             itemBuilder: (context, index) => (index < length)
-              ? ReferenceCard(reference: workspaceData.references[index])
+                  ? ReferenceCard(reference: widget.workspace.references[index])
               : addIcon(() {
                 showDialog(
                   context: context,
@@ -286,26 +277,24 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               );
             }),
             ),
-          ) : firstAddition(
+          ))
+        : firstAddition(
           "Add Your First Reference!",
           () {
-            showDialog(
-                context: context,
-                builder: (context) => alertDialog
-            );
-          },
-    );
+              showDialog(context: context, builder: (context) => alertDialog);
+            },
+          );
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Created ${widget.workspaceId}");
     if (isLoading || error) {
       return Center(
-          child: isLoading ? const CircularProgressIndicator()
-              : error ? SelectableText(errorMessage)
-              : const SelectableText("Something went wrong!")
-      );
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : error
+                  ? SelectableText(errorMessage)
+                  : const SelectableText("Something went wrong!"));
     } else {
       return SizedBox(
         width: Responsive.getGenericPageWidth(context),

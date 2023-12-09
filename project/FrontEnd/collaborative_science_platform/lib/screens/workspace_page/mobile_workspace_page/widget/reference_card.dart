@@ -78,7 +78,7 @@ class ReferenceCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Expanded(child: SizedBox(width: 4.0)),
+                  //const Expanded(child: SizedBox(width: 4.0)),
                   IconButton(
                     onPressed: () { //remove reference
 

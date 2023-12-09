@@ -17,9 +17,16 @@ class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
   final bool isLoading;
+  final Function createNewWorkspace;
 
   const WebWorkspacePage(
-      {super.key, required this.workspace, required this.workspaces, required this.isLoading});
+      {
+    super.key,
+    required this.workspace,
+    required this.workspaces,
+    required this.isLoading,
+    required this.createNewWorkspace,
+  });
 
   @override
   State<WebWorkspacePage> createState() => _WebWorkspacePageState();
@@ -93,6 +100,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           hideSidebar: hideSideBar,
                           height: minHeight,
                           workspaces: widget.workspaces,
+                          createNewWorkspace: widget.createNewWorkspace,
                         ),
                       if (!showSidebar)
                         Container(

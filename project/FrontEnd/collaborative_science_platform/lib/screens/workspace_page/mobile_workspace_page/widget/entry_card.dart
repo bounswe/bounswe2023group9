@@ -161,7 +161,7 @@ class _EntryCardState extends State<EntryCard> {
           },
           icon: const Icon(Icons.stop),
         ),
-        const Expanded(child: SizedBox()),
+              //const Expanded(child: SizedBox()),
         Text(
           widget.entry.publishDateFormatted,
           style: const TextStyle(
@@ -258,7 +258,7 @@ class _EntryCardState extends State<EntryCard> {
               children: [
                 entryHeader(),
                 extended ? fullEntryContent() : headerOfContent(),
-                const Expanded(child: SizedBox()),
+                //const Expanded(child: SizedBox()),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
