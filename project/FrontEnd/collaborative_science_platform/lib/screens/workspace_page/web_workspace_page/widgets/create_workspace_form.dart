@@ -2,20 +2,19 @@ import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 
 class CreateWorkspaceForm extends StatefulWidget {
-  const CreateWorkspaceForm({super.key});
+  final titleController;
+  const CreateWorkspaceForm({super.key, required this.titleController});
 
   @override
   State<CreateWorkspaceForm> createState() => _CreateWorkspaceFormState();
 }
 
 class _CreateWorkspaceFormState extends State<CreateWorkspaceForm> {
-  final titleController = TextEditingController();
 
   final titleFocusNode = FocusNode();
 
   @override
   void dispose() {
-    titleController.dispose();
     titleFocusNode.dispose();
 
     super.dispose();
@@ -30,11 +29,11 @@ class _CreateWorkspaceFormState extends State<CreateWorkspaceForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             AppTextField(
-                controller: titleController,
-                focusNode: titleFocusNode,
-                hintText: 'Workspace Title',
-                obscureText: false,
-                height: 64,
+              controller: widget.titleController,
+              focusNode: titleFocusNode,
+              hintText: 'Workspace Title',
+              obscureText: false,
+              height: 64,
             ),
           ],
         ));

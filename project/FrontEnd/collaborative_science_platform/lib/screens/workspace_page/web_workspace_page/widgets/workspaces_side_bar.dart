@@ -15,19 +15,23 @@ class WorkspacesSideBar extends StatefulWidget {
   final Function? hideSidebar;
   final double height;
   final Workspaces? workspaces;
+  final Function createNewWorkspace;
 
-  const WorkspacesSideBar(
-      {super.key,
-      required this.controller,
-      this.hideSidebar,
-      required this.height,
-      this.workspaces});
+  const WorkspacesSideBar({
+    super.key,
+    required this.controller,
+    this.hideSidebar,
+    required this.height,
+    this.workspaces,
+    required this.createNewWorkspace,
+  });
 
   @override
   State<WorkspacesSideBar> createState() => _WorkspacesSideBarState();
 }
 
 class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
+  TextEditingController textController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -83,10 +87,17 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                     ),
                                     backgroundColor: Colors.white,
                                     surfaceTintColor: Colors.white,
-                                    content: const CreateWorkspaceForm(),
+                                    content: CreateWorkspaceForm(titleController: textController),
                                     actions: [
                                       AppButton(
-                                          text: "Create New Workspace", height: 50, onTap: () {})
+                                          text: "Create New Workspace",
+                                          height: 50,
+                                          onTap: () async {
+                                            await widget.createNewWorkspace(textController.text);
+                                            textController.text = "";
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.of(context).pop();
+                                          })
                                     ],
                                   ));
                         },
@@ -97,71 +108,71 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                   height: (widget.workspaces != null) ? widget.height * 0.9 : 40,
                   child: (widget.workspaces != null)
                       ? ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.all(8),
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(8),
                           itemCount: (widget.workspaces!.workspaces.length +
                               widget.workspaces!.pendingWorkspaces.length),
-                        itemBuilder: (BuildContext context, int index) {
+                          itemBuilder: (BuildContext context, int index) {
                             if (index < widget.workspaces!.workspaces.length) {
-                            return Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: CardContainer(
-                                onTap: () {
-                                  context.push(
-                                        "${WorkspacesPage.routeName}/${widget.workspaces!.workspaces[index].workspaceId}");
-                                },
-                                child: Text(
-                                    widget.workspaces!.workspaces[index].workspaceTitle,
-                                  style: TextStyles.title4,
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                            );
-                            } else if (index >= widget.workspaces!.workspaces.length) {
-                            return Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: CardContainer(
+                              return Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: CardContainer(
                                   onTap: () {
                                     context.push(
-                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
+                                        "${WorkspacesPage.routeName}/${widget.workspaces!.workspaces[index].workspaceId}");
                                   },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        widget
+                                  child: Text(
+                                    widget.workspaces!.workspaces[index].workspaceTitle,
+                                    style: TextStyles.title4,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                ),
+                              );
+                            } else if (index >= widget.workspaces!.workspaces.length) {
+                              return Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: CardContainer(
+                                    onTap: () {
+                                      context.push(
+                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          widget
                                               .workspaces!
-                                            .pendingWorkspaces[
+                                              .pendingWorkspaces[
                                                   index - widget.workspaces!.workspaces.length]
-                                            .workspaceTitle,
-                                        style: TextStyles.bodyBold,
-                                        textAlign: TextAlign.start,
-                                      ),
-                                      Column(children: [
-                                        IconButton(
-                                          icon: const Icon(CupertinoIcons.check_mark_circled,
-                                              color: AppColors.infoColor),
-                                          onPressed: () {
-                                            // function to accept collaboration request
-                                          },
+                                              .workspaceTitle,
+                                          style: TextStyles.bodyBold,
+                                          textAlign: TextAlign.start,
                                         ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            CupertinoIcons.clear_circled,
-                                            color: AppColors.warningColor,
+                                        Column(children: [
+                                          IconButton(
+                                            icon: const Icon(CupertinoIcons.check_mark_circled,
+                                                color: AppColors.infoColor),
+                                            onPressed: () {
+                                              // function to accept collaboration request
+                                            },
                                           ),
-                                          onPressed: () {
-                                            // function to reject collaboration request
-                                          },
-                                        ),
-                                      ])
-                                    ],
-                                  )),
-                            );
-                          } else {
-                            return const SizedBox();
-                          }
+                                          IconButton(
+                                            icon: const Icon(
+                                              CupertinoIcons.clear_circled,
+                                              color: AppColors.warningColor,
+                                            ),
+                                            onPressed: () {
+                                              // function to reject collaboration request
+                                            },
+                                          ),
+                                        ])
+                                      ],
+                                    )),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
                           })
                       : const CircularProgressIndicator(),
                 ),

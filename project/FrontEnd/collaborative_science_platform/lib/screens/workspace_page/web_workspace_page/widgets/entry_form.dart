@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 class EntryForm extends StatefulWidget {
   final int id;
   final bool newEntry;
-  const EntryForm({super.key, this.id = 0, this.newEntry = false});
+  final TextEditingController contentController;
+  const EntryForm({
+    super.key,
+    this.id = 0,
+    this.newEntry = false,
+    required this.contentController,
+  });
 
   @override
   State<EntryForm> createState() => _EntryFormState();
 }
 
 class _EntryFormState extends State<EntryForm> {
-  final contentController = TextEditingController();
-
   final contentFocusNode = FocusNode();
   @override
   void dispose() {
-    contentController.dispose();
     contentFocusNode.dispose();
     super.dispose();
   }
@@ -26,23 +29,24 @@ class _EntryFormState extends State<EntryForm> {
     return SizedBox(
       height: 300,
       child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-            const SizedBox(height: 10.0),
-            Expanded(
-              child: SizedBox(
-                child: AppTextField(
-                  controller: contentController,
-                  focusNode: contentFocusNode,
-                  hintText: "Content",
-                  obscureText: false,
-                  height: 200,
-                  maxLines: 10,
-                ),
+          const SizedBox(height: 10.0),
+          SizedBox(
+            width: double.infinity,
+            child: SizedBox(
+              child: AppTextField(
+                controller: widget.contentController,
+                focusNode: contentFocusNode,
+                hintText: "Content",
+                obscureText: false,
+                height: 200,
+                maxLines: 10,
               ),
-            )
-          ],
+            ),
+          )
+        ],
       ),
     );
   }
