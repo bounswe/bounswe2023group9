@@ -115,6 +115,95 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
+  void createNewEntry(String content) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.addEntry(content, widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on AddEntryException {
+      setState(() {
+        error = true;
+        errorMessage = AddEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void editEntry(String content, int entryId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.editEntry(content, entryId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void deleteEntry(int entryId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.deleteEntry(entryId, widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -136,12 +225,18 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         workspace: workspace,
         workspaces: workspaces,
         createNewWorkspace: createNewWorkspace,
+        createNewEntry: createNewEntry,
+        editEntry: editEntry,
+        deleteEntry: deleteEntry,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
         workspace: workspace,
         workspaces: workspaces,
         createNewWorkspace: createNewWorkspace,
+        createNewEntry: createNewEntry,
+        editEntry: editEntry,
+        deleteEntry: deleteEntry,
       ),
     );
   }

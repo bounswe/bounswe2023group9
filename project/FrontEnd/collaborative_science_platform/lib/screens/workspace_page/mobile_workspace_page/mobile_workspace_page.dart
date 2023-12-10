@@ -17,11 +17,17 @@ class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
   final Function createNewWorkspace;
+  final Function createNewEntry;
+  final Function editEntry;
+  final Function deleteEntry;
   const MobileWorkspacePage({
     super.key,
     required this.workspace,
     required this.workspaces,
     required this.createNewWorkspace,
+    required this.createNewEntry,
+    required this.editEntry,
+    required this.deleteEntry,
   });
 
   @override
@@ -43,7 +49,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
 
   int current = 1;
   int workspaceIndex = 0;
-
 
   Widget mobileAddNewWorkspaceIcon() {
     return CircleAvatar(
@@ -212,8 +217,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                 width: MediaQuery.of(context).size.width,
                 height: 110,
                 child: CarouselSlider(
-          carouselController: controller,
-          items: List.generate(
+                  carouselController: controller,
+                  items: List.generate(
                     widget.workspaces!.workspaces.length +
                         widget.workspaces!.pendingWorkspaces.length +
                         1,
@@ -229,43 +234,42 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                                     index - widget.workspaces!.workspaces.length - 1],
                                 true,
                               ),
-          ),
-          options: CarouselOptions(
-            scrollPhysics: const ScrollPhysics(),
-            height: 100,
-            autoPlay: false,
-            viewportFraction: 0.8,
-            enableInfiniteScroll: false,
-            initialPage: current,
-            enlargeCenterPage: true,
-            enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-            enlargeFactor: 0.3,
-            onPageChanged: (index, reason) {
-              // I added this conditional to reduce the number
-              // of build operation for the workspace.
-              // Going to slide 1 from slide 2 or vice versa does not affect the
-              // workspace content below. So it shouldn't be reloaded again.
-              // However, it doesn't work. One that solves this problem wins a chukulat.
-              if (index != 0 && current != 0) {
-                setState(() {
+                  ),
+                  options: CarouselOptions(
+                    scrollPhysics: const ScrollPhysics(),
+                    height: 100,
+                    autoPlay: false,
+                    viewportFraction: 0.8,
+                    enableInfiniteScroll: false,
+                    initialPage: current,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+                    enlargeFactor: 0.3,
+                    onPageChanged: (index, reason) {
+                      // I added this conditional to reduce the number
+                      // of build operation for the workspace.
+                      // Going to slide 1 from slide 2 or vice versa does not affect the
+                      // workspace content below. So it shouldn't be reloaded again.
+                      // However, it doesn't work. One that solves this problem wins a chukulat.
+                      if (index != 0 && current != 0) {
+                        setState(() {
                           workspaceIndex = index - 1;
-                });
-              }
-              setState(() {
-                current = index;
-              });
-            },
-          ),
+                        });
+                      }
+                      setState(() {
+                        current = index;
+                      });
+                    },
+                  ),
                 ),
-              
-              ), 
-        Text(
+              ),
+              Text(
                 "${current + 1}/${widget.workspaces!.workspaces.length + widget.workspaces!.pendingWorkspaces.length + 1}",
-          style: const TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ]
           : [
               SizedBox(
@@ -337,6 +341,9 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           pending: (workspaceIndex < widget.workspaces!.workspaces.length)
                               ? false
                               : true,
+                          createNewEntry: widget.createNewEntry,
+                          editEntry: widget.editEntry,
+                          deleteEntry: widget.deleteEntry,
                         )
                       : const SizedBox(
                           width: 100,

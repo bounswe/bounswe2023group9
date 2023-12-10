@@ -18,14 +18,19 @@ class WebWorkspacePage extends StatefulWidget {
   final Workspaces? workspaces;
   final bool isLoading;
   final Function createNewWorkspace;
+  final Function createNewEntry;
+  final Function editEntry;
+  final Function deleteEntry;
 
-  const WebWorkspacePage(
-      {
+  const WebWorkspacePage({
     super.key,
     required this.workspace,
     required this.workspaces,
     required this.isLoading,
     required this.createNewWorkspace,
+    required this.createNewEntry,
+    required this.editEntry,
+    required this.deleteEntry,
   });
 
   @override
@@ -173,6 +178,9 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   controller: controller2,
                                   showSidebar: showSidebar,
                                   height: minHeight,
+                                  createNewEntry: widget.createNewEntry,
+                                  editEntry: widget.editEntry,
+                                  deleteEntry: widget.deleteEntry,
                                 ),
                                 Column(
                                   children: [
