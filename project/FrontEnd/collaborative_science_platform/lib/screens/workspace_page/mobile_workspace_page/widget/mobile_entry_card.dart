@@ -186,11 +186,12 @@ class _EntryCardState extends State<EntryCard> {
 
   Widget fullEntryContent() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         upperIconRow(),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
           child: (editMode) ? TextField(
             controller: entryController,
             focusNode: entryFocusNode,
@@ -211,19 +212,13 @@ class _EntryCardState extends State<EntryCard> {
                 borderRadius: BorderRadius.circular(4.0),
               ),
             ),
-          ) : SizedBox(
-            height: 300.0,
-            child: CardContainer(
-              backgroundColor: const Color.fromARGB(255, 180, 240, 210),
-              child: SingleChildScrollView(
-                physics: const ScrollPhysics(),
-                child: TeXView(
-                    renderingEngine: const TeXViewRenderingEngine.katex(),
-                    child: TeXViewDocument(
-                      utf8.decode(entryController.text.codeUnits),
-                    )
-                ),
-              ),
+          ) : CardContainer(
+            backgroundColor: const Color.fromARGB(255, 180, 240, 210),
+            child: TeXView(
+                renderingEngine: const TeXViewRenderingEngine.katex(),
+                child: TeXViewDocument(
+                  utf8.decode(entryController.text.codeUnits),
+                )
             ),
           ),
         ),
@@ -267,41 +262,37 @@ class _EntryCardState extends State<EntryCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: extended ? extendHeight : shrunkHeight,
-        child: Card(
-          elevation: 4.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 0.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                EntryHeader(entry: widget.entry),
-                extended ? fullEntryContent() : headerOfContent(),
-                const Expanded(child: SizedBox()),
-                Row( // It is added to center the widget
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          extended = !extended;
-                        });
-                      },
-                      icon: extended
-                          ? const Icon(Icons.keyboard_arrow_up)
-                          : const Icon(Icons.keyboard_arrow_down),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+      child: Card(
+        elevation: 4.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 0.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              EntryHeader(entry: widget.entry),
+              extended ? fullEntryContent() : headerOfContent(),
+              Row( // It is added to center the widget
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        extended = !extended;
+                      });
+                    },
+                    icon: extended
+                        ? const Icon(Icons.keyboard_arrow_up)
+                        : const Icon(Icons.keyboard_arrow_down),
+                  ),
+                ],
+              ),
+            ],
+          )
         ),
       ),
     );
