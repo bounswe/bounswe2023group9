@@ -187,7 +187,10 @@ class _NodeDetailsState extends State<NodeDetails> {
               //Q/A
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: QuestionsView(questions: widget.node.questions),
+                child: QuestionsView(
+                  questions: widget.node.questions,
+                  nodeId: widget.node.nodeId,
+                ),
               ),
             if (currentIndex == 5)
               //contributors

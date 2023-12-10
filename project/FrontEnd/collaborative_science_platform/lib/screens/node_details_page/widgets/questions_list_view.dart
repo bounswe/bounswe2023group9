@@ -1,61 +1,42 @@
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/widgets/card_container.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/question_box.dart';
 import 'package:flutter/material.dart';
-
-import '../../../models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/ask_question_form.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 
 class QuestionsView extends StatelessWidget {
   final List<Question> questions;
-  const QuestionsView({super.key, required this.questions});
+  final int nodeId;
+
+  const QuestionsView({Key? key, required this.questions, required this.nodeId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: Responsive.desktopPageWidth,
-      decoration: BoxDecoration(color: Colors.grey[200]),
-      child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(8),
-          itemCount: questions.length,
-          itemBuilder: (BuildContext context, int index) {
-            if (Responsive.isDesktop(context)) {
-              return Padding(
-                padding: const EdgeInsets.all(5),
-                child: CardContainer(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SelectableText(
-                        "Q: ${questions[index].content}",
-                        style: TextStyles.title4black,
-                        textAlign: TextAlign.start,
-                      ),
-                      SelectableText(
-                        "asked by ${questions[index].asker} at ${questions[index].createdAt}",
-                        style: TextStyles.bodyGrey,
-                        textAlign: TextAlign.end,
-                      ),
-                      SelectableText(
-                        "A: ${questions[index].answer}",
-                        style: TextStyles.bodyBlack,
-                        textAlign: TextAlign.start,
-                      ),
-                      SelectableText(
-                        "answered by ${questions[index].answerer} at ${questions[index].answeredAt}",
-                        style: TextStyles.bodyGrey,
-                        textAlign: TextAlign.end,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              return const SizedBox();
-            }
-          }),
+    return SingleChildScrollView(
+      child: Container(
+        width: Responsive.desktopPageWidth,
+        height: 1000,
+        decoration: BoxDecoration(color: Colors.grey[200]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AskQuestionForm(nodeId: nodeId),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: questions.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return QuestionBox(
+                    question: "Q: ${questions[index].content}",
+                    askedBy: "asked by ${questions[index].asker} at ${questions[index].createdAt}",
+                    answer: "A: ${questions[index].answer}",
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,8 +1,11 @@
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/question_box.dart';
 import 'package:flutter/material.dart';
 
-// TODO: currently no API to get questions
 class QuestionActivity extends StatelessWidget {
-  const QuestionActivity({super.key});
+  final List<Question> questions;
+
+  const QuestionActivity({Key? key, required this.questions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,49 +13,12 @@ class QuestionActivity extends StatelessWidget {
       padding: const EdgeInsets.all(0),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
-        return Card(
-          elevation: 4.0,
-          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: InkWell(
-            // onTap: Navigate to the screen of the question/answer
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SelectableText(
-                    "question/answer $index",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                    ),
-                  ),
-                  const SizedBox(height: 8.0),
-                  const SizedBox(height: 8.0),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SelectableText(
-                        'some date',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+        return QuestionBox(
+          question: "Q: ${questions[index].content}",
+          askedBy: "asked by ${questions[index].asker} at ${questions[index].createdAt}",
+          answer: "A: ${questions[index].answer}",
         );
       },
     );
