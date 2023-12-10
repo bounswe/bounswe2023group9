@@ -20,6 +20,8 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function createNewEntry;
   final Function editEntry;
   final Function deleteEntry;
+  final Function addReference;
+  final Function deleteReference;
   const MobileWorkspacePage({
     super.key,
     required this.workspace,
@@ -28,6 +30,8 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.createNewEntry,
     required this.editEntry,
     required this.deleteEntry,
+    required this.addReference,
+    required this.deleteReference,
   });
 
   @override
@@ -344,6 +348,8 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           createNewEntry: widget.createNewEntry,
                           editEntry: widget.editEntry,
                           deleteEntry: widget.deleteEntry,
+                          addReference: widget.addReference,
+                          deleteReference: widget.deleteReference,
                         )
                       : const SizedBox(
                           width: 100,

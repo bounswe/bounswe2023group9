@@ -17,6 +17,8 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function createNewEntry;
   final Function editEntry;
   final Function deleteEntry;
+  final Function deleteReference;
+  final Function addReference;
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -24,6 +26,8 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.createNewEntry,
     required this.editEntry,
     required this.deleteEntry,
+    required this.addReference,
+    required this.deleteReference,
   });
 
   @override
@@ -159,9 +163,9 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
 
   Widget referenceList() {
     int length = widget.workspace.references.length;
-    Widget alertDialog = const AppAlertDialog(
+    Widget alertDialog = AppAlertDialog(
       text: "Add Reference",
-      content: AddReferenceForm(),
+      content: AddReferenceForm(onAdd: widget.addReference),
     );
     return widget.workspace.references.isNotEmpty
         ? (Padding(

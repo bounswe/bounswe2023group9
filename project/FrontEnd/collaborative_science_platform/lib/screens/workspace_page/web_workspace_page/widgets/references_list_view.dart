@@ -12,8 +12,16 @@ class ReferencesListView extends StatelessWidget {
   final List<Node> references;
   final ScrollController controller;
   final double height;
-  const ReferencesListView(
-      {super.key, required this.references, required this.controller, required this.height});
+  final Function addReference;
+  final Function deleteReference;
+  const ReferencesListView({
+    super.key,
+    required this.references,
+    required this.controller,
+    required this.height,
+    required this.addReference,
+    required this.deleteReference,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +45,10 @@ class ReferencesListView extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                      builder: (context) => const AppAlertDialog(
-                        text: "Add References",
-                        content: AddReferenceForm(),
-                      ),
+                    builder: (context) => AppAlertDialog(
+                      text: "Add References",
+                      content: AddReferenceForm(onAdd: addReference),
+                    ),
                   );
                 },
               ),
@@ -70,14 +78,17 @@ class ReferencesListView extends StatelessWidget {
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width / 8,
                                   child: Text(
-                                  references[index].nodeTitle,
-                                  style: TextStyles.bodyBold,
-                                  textAlign: TextAlign.start,
-                                ),
+                                    references[index].nodeTitle,
+                                    style: TextStyles.bodyBold,
+                                    textAlign: TextAlign.start,
+                                  ),
                                 ),
                                 IconButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       //remove reference
+                                      await deleteReference(references[index].id);
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context).pop();
                                     },
                                     icon: Icon(
                                       Icons.delete,

@@ -204,6 +204,66 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
+  
+  void addReference(int nodeId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.addReference(widget.workspaceId, nodeId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on AddReferenceException {
+      setState(() {
+        error = true;
+        errorMessage = AddReferenceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void deleteReference(int nodeId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.deleteReference(widget.workspaceId, nodeId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on DeleteReferenceException {
+      setState(() {
+        error = true;
+        errorMessage = DeleteReferenceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -228,6 +288,8 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         createNewEntry: createNewEntry,
         editEntry: editEntry,
         deleteEntry: deleteEntry,
+        addReference: addReference,
+        deleteReference: deleteReference,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -237,6 +299,8 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         createNewEntry: createNewEntry,
         editEntry: editEntry,
         deleteEntry: deleteEntry,
+        addReference: addReference,
+        deleteReference: deleteReference,
       ),
     );
   }

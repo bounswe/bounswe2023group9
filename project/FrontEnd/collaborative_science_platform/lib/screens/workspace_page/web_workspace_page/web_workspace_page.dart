@@ -21,6 +21,8 @@ class WebWorkspacePage extends StatefulWidget {
   final Function createNewEntry;
   final Function editEntry;
   final Function deleteEntry;
+  final Function addReference;
+  final Function deleteReference;
 
   const WebWorkspacePage({
     super.key,
@@ -31,6 +33,8 @@ class WebWorkspacePage extends StatefulWidget {
     required this.createNewEntry,
     required this.editEntry,
     required this.deleteEntry,
+    required this.addReference,
+    required this.deleteReference,
   });
 
   @override
@@ -194,6 +198,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       references: widget.workspace!.references,
                                       controller: controller4,
                                       height: minHeight / 2,
+                                      addReference: widget.addReference,
+                                      deleteReference: widget.deleteReference,
                                     ),
                                   ],
                                 )

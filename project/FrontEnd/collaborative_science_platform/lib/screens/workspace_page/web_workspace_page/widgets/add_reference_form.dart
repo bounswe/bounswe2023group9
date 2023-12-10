@@ -1,4 +1,8 @@
+import 'package:collaborative_science_platform/exceptions/workspace_exceptions.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
+import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -6,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddReferenceForm extends StatefulWidget {
-  const AddReferenceForm({super.key});
+  final Function onAdd;
+  const AddReferenceForm({super.key, required this.onAdd});
 
   @override
   State<AddReferenceForm> createState() => _AddReferenceFormState();
@@ -113,7 +118,8 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
-                                            nodeProvider.searchNodeResult[index].publishDateFormatted,
+                                            nodeProvider
+                                                .searchNodeResult[index].publishDateFormatted,
                                             style: TextStyles.bodyGrey,
                                             textAlign: TextAlign.start,
                                             maxLines: 1,
@@ -124,7 +130,9 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        //add reference
+                                        widget.onAdd(nodeProvider.searchNodeResult[index].id);
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
                                       },
                                       icon: Icon(
                                         Icons.add,

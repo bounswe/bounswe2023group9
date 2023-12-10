@@ -71,13 +71,7 @@ class _EntriesListViewState extends State<EntriesListView> {
                             height: 40,
                             onTap: () async {
                               /* Create Entry */
-                              setState(() {
-                                entryLoading = true;
-                              });
                               await widget.createNewEntry(contentController.text);
-                              setState(() {
-                                entryLoading = false;
-                              });
                               contentController.text = "";
                               // ignore: use_build_context_synchronously
                               Navigator.of(context).pop();
