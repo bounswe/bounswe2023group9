@@ -9,6 +9,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class WebWorkspacePage extends StatefulWidget {
   final Function deleteEntry;
   final Function addReference;
   final Function deleteReference;
+  final Function editTitle;
 
   const WebWorkspacePage({
     super.key,
@@ -35,6 +37,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.deleteEntry,
     required this.addReference,
     required this.deleteReference,
+    required this.editTitle,
   });
 
   @override
@@ -55,12 +58,18 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   bool showSidebar = true;
   double minHeight = 750;
 
+  bool titleReadOnly = true;
+  TextEditingController titleController = TextEditingController();
+  FocusNode titleFocusNode = FocusNode();
+
   @override
   void dispose() {
     controller1.dispose();
     controller2.dispose();
     controller3.dispose();
     controller4.dispose();
+    titleController.dispose();
+    titleFocusNode.dispose();
     super.dispose();
   }
 
@@ -161,8 +170,55 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               height: 100,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: titleReadOnly
+                                        ? [
+                                            Text(widget.workspace!.workspaceTitle,
+                                                style: TextStyles.title2),
+                                            if (widget.workspace!.status ==
+                                                WorkspaceStatus.workable)
+                                              IconButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      titleController.text =
+                                                          widget.workspace!.workspaceTitle;
+
+                                                      titleReadOnly = false;
+                                                    });
+                                                  },
+                                                  icon: const Icon(Icons.edit)),
+                                          ]
+                                        : [
+                                            SizedBox(
+                                              width: 300,
+                                              height: 80,
+                                              child: AppTextField(
+                                                  controller: titleController,
+                                                  focusNode: titleFocusNode,
+                                                  hintText: "",
+                                                  obscureText: false,
+                                                  height: 200),
+                                            ),
+                                            SizedBox(
+                                              width: 50,
+                                              height: 50,
+                                              child: IconButton(
+                                                  onPressed: () {
+                                                    widget.editTitle(titleController.text);
+                                                    widget.workspace!.workspaceTitle =
+                                                        titleController.text;
+                                                    setState(() {
+                                                      titleReadOnly = true;
+                                                    });
+                                                  },
+                                                  icon: const Icon(Icons.save)),
+                                            )
+                                          ],
+                                  ),
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width / 5,
                                     child: AppButton(

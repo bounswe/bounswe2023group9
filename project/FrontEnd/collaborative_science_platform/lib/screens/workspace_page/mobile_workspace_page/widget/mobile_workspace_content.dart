@@ -1,5 +1,7 @@
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import '../../../../models/workspaces_page/workspace.dart';
 import '../../../../utils/responsive/responsive.dart';
@@ -19,6 +21,7 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function deleteEntry;
   final Function deleteReference;
   final Function addReference;
+  final Function editTitle;
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -28,6 +31,7 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.deleteEntry,
     required this.addReference,
     required this.deleteReference,
+    required this.editTitle,
   });
 
   @override
@@ -39,6 +43,17 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   bool error = false;
   String errorMessage = "";
   bool entryLoading = false;
+
+  bool titleReadOnly = true;
+  TextEditingController titleController = TextEditingController();
+  FocusNode titleFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    titleFocusNode.dispose();
+    super.dispose();
+  }
 
   Widget addIcon(Function() onPressed) {
     return Center(
@@ -208,7 +223,52 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           padding: const EdgeInsets.all(0.0),
           // It needs to be nested scrollable in the future
           children: <Widget>[
-            const SizedBox(height: 10.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: titleReadOnly
+                  ? [
+                      Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
+                      if (widget.workspace!.status == WorkspaceStatus.workable)
+                        IconButton(
+                            onPressed: () {
+                              setState(() {
+                                titleController.text = widget.workspace.workspaceTitle;
+                                titleReadOnly = false;
+                              });
+                            },
+                            icon: const Icon(Icons.edit)),
+                    ]
+                  : [
+                      SizedBox(
+                        width: 300,
+                        height: 80,
+                        child: AppTextField(
+                            controller: titleController,
+                            focusNode: titleFocusNode,
+                            hintText: "",
+                            obscureText: false,
+                            height: 200),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: IconButton(
+                            onPressed: () {
+                              widget.editTitle(titleController.text);
+                              widget.workspace.workspaceTitle = titleController.text;
+                              setState(() {
+                                titleReadOnly = true;
+                              });
+                            },
+                            icon: const Icon(Icons.save)),
+                      )
+                    ],
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Divider(),
+            ),
             const SubSectionTitle(title: "Entries"),
             entryList(),
             const Padding(

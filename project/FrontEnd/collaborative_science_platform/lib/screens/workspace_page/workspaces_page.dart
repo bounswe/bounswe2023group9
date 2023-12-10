@@ -264,6 +264,36 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
+  void editWorkspaceTitle(String title) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await workspaceProvider.updateWorkspaceTitle(widget.workspaceId, auth.user!.token, title);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+        workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
+      });
+    } on WorkspacePermissionException {
+      setState(() {
+        error = true;
+        errorMessage = WorkspacePermissionException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -290,6 +320,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteEntry: deleteEntry,
         addReference: addReference,
         deleteReference: deleteReference,
+        editTitle: editWorkspaceTitle,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -301,6 +332,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteEntry: deleteEntry,
         addReference: addReference,
         deleteReference: deleteReference,
+        editTitle: editWorkspaceTitle,
       ),
     );
   }
