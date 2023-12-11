@@ -27,9 +27,7 @@ class QuestionsView extends StatelessWidget {
                 itemCount: questions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return QuestionBox(
-                    question: "Q: ${questions[index].content}",
-                    askedBy: "asked by ${questions[index].asker} at ${questions[index].createdAt}",
-                    answer: "A: ${questions[index].answer}",
+                    question: questions[index],
                   );
                 },
               ),

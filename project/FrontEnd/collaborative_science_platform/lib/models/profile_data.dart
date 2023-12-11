@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 
 class Node {
@@ -28,24 +29,33 @@ class ProfileData {
   String email;
   String aboutMe;
   List<Node> nodes;
-  List<int> askedQuestionIDs;
-  List<int> answeredQuestionIDs;
+  List<Question> askedQuestions;
+  List<Question> answeredQuestions;
   ProfileData(
       {this.aboutMe = "",
       this.email = "",
       this.name = "",
       this.surname = "",
       this.nodes = const [],
-      this.askedQuestionIDs = const [],
-      this.answeredQuestionIDs = const []});
+      this.askedQuestions = const [],
+      this.answeredQuestions = const []});
+
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
-    var list = jsonString['nodes'] as List;
-    List<Node> nodes = list.map((e) => Node.fromJson(e)).toList();
+    var nodeList = jsonString['nodes'] as List;
+    var askedList = jsonString['asked_questions'] as List;
+    var answeredList = jsonString['answered_questions'] as List;
+
+    List<Node> nodes = nodeList.map((e) => Node.fromJson(e)).toList();
+    List<Question> asked = askedList.map((e) => Question.fromJsonforProfilePage(e)).toList();
+    List<Question> answered = answeredList.map((e) => Question.fromJsonforProfilePage(e)).toList();
+
     return ProfileData(
       nodes: nodes,
       name: jsonString['name'],
       surname: jsonString['surname'],
       aboutMe: jsonString['bio'],
+      askedQuestions: asked,
+      answeredQuestions: answered,
     );
   }
 
@@ -70,8 +80,6 @@ class ProfileData {
           ],
         ),
       ],
-      askedQuestionIDs: [1, 2, 3, 4, 5],
-      answeredQuestionIDs: [1, 2, 3, 4, 5],
     );
   }
 }

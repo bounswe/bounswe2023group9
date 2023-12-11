@@ -20,7 +20,7 @@ void main() {
 
 void configureApp() {
   if (kIsWeb) {
-    setUrlStrategy(const PathUrlStrategy());
+    setUrlStrategy(PathUrlStrategy());
   }
 }
 
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: Constants.appName,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 85, 234, 145)),
+            colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 85, 234, 145)),
             useMaterial3: true,
           ),
         ),
