@@ -35,6 +35,6 @@ urlpatterns = [
     path('update_review_req/', update_review_request_status, name='update_review_req'),
     path('send_rev_req/', send_review_request, name='send_rev_req'),
     path('get_semantic_suggestion/', get_semantic_suggestion, name='get_semantic_suggestion'),
-
-
+    path('ask_question/', AskQuestion.as_view(), name='ask_question'),
+    path('answer_question/', AnswerQuestion.as_view(), name='answer_question'),
 ]

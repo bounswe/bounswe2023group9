@@ -742,3 +742,108 @@ class ReviewRequestAPITestCase(TestCase):
 
 
 
+
+class AnswerQuestionAPITest(TestCase):
+    def setUp(self):
+        
+        self.client = APIClient()
+        self.user_for_basic = User.objects.create_user(id=1, email= 'basic_user@example.com', username='basic_user@example.com', first_name='Basic User', last_name='Test1')
+        self.user_for_contributor1 = User.objects.create_user(id=2, email= 'cont1@example.com', username='cont1@example.com', first_name='Contributor User 2', last_name='Test2')
+        self.user_for_contributor2 = User.objects.create_user(id=3, email= 'cont2@example.com', username='cont2@example.com', first_name='Contributor User 3', last_name='Test3')
+
+        self.basic_user = BasicUser.objects.create(user=self.user_for_basic, bio="I am a basic user")
+        self.contributor1 = Contributor.objects.create(user=self.user_for_contributor1, bio="I am the first contributor")
+        self.contributor2 = Contributor.objects.create(user=self.user_for_contributor2, bio="I am the second contributor")
+
+        self.contributor1_token = Token.objects.create(user=self.user_for_contributor1)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor1_token.key}")
+
+        # Create a Node instance of Contributor1
+        self.node = Node.objects.create(
+            node_id=999999,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node.contributors.add(self.contributor1)
+        # Create a Question instance
+        self.question = Question.objects.create(
+            node=self.node,
+            asker=self.basic_user,
+            question_content='Sample question content?',
+        )
+        self.node2 = Node.objects.create(
+            node_id=9999999,
+            node_title="Test Node B",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node2.contributors.add(self.contributor2)
+        self.question2 = Question.objects.create(
+            node=self.node2,
+            asker=self.basic_user,
+            question_content='Sample question content?',
+        )
+    def test_answer_question_success(self):
+        # Define the payload
+        payload = {
+            'question_id': self.question.id,
+            'answer_content': 'Sample answer content.'
+        }
+        
+        url = reverse('answer_question')
+        response = self.client.post(url, payload, format='json')
+
+        # Assert that the response and question instance have been updated correctly
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_answer_strangernode_question(self):
+        # Define the payload
+        payload = {
+            'question_id': self.question2.id,
+            'answer_content': 'Sample answer content.'
+        }
+        url = reverse('answer_question')
+        response = self.client.post(url, payload, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class AskQuestionAPITest(TestCase):
+    def setUp(self):
+        
+        self.client = APIClient()
+        self.user_for_basic = User.objects.create_user(id=1, email= 'basic_user@example.com', username='basic_user@example.com', first_name='Basic User', last_name='Test1')
+        self.user_for_contributor1 = User.objects.create_user(id=2, email= 'cont1@example.com', username='cont1@example.com', first_name='Contributor User 2', last_name='Test2')
+
+        self.basic_user = BasicUser.objects.create(user=self.user_for_basic, bio="I am a basic user")
+        self.contributor1 = Contributor.objects.create(user=self.user_for_contributor1, bio="I am the first contributor")
+
+        self.basic_user_token = Token.objects.create(user=self.user_for_basic)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.basic_user_token.key}")
+
+        # Create a Node instance of Contributor1
+        self.node = Node.objects.create(
+            node_id=999999,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+        )
+        self.node.contributors.add(self.contributor1)
+        
+    def test_ask_question_success(self):
+        # Define the payload
+        payload = {
+            'node_id': self.node.node_id,
+            'question_content': 'Sample question content?'
+        }
+        url = reverse('ask_question')
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
