@@ -47,8 +47,6 @@ class _AnswerBoxState extends State<AnswerBox> {
 
   @override
   Widget build(BuildContext context) {
-    // Your UI code here
-    // Example: A text field and a button for answering
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
