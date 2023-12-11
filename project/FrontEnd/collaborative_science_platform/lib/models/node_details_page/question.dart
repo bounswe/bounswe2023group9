@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/models/user.dart';
 
 class Question {
+  int id;
   String content;
   String createdAt;
   User? asker;
@@ -9,6 +10,7 @@ class Question {
   String? answeredAt;
   int? nodeId;
   Question({
+    required this.id,
     required this.content,
     required this.createdAt,
     required this.asker,
@@ -19,6 +21,7 @@ class Question {
   });
   factory Question.fromJson(Map<String, dynamic> jsonString) {
     return Question(
+      id: jsonString['id'] ?? -1,
       content: jsonString['question_content'] ?? "",
       createdAt: jsonString['created_at'] ?? "",
       answer: jsonString['answer_content'] ?? "",
@@ -34,6 +37,7 @@ class Question {
 
   factory Question.fromJsonforProfilePage(Map<String, dynamic> jsonString) {
     return Question(
+      id: jsonString['id'] ?? -1,
       content: jsonString['question_content'] ?? "",
       createdAt: jsonString['ask_date'] ?? "",
       asker: jsonString.containsKey("asker_id")

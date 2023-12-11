@@ -184,6 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         // temp question list
                                         [
                                       Question(
+                                          id: 1,
                                           content: "How does Flutter work?",
                                           asker: User(
                                             firstName: "John Doe",
@@ -272,6 +273,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         // temp question list
                                         [
                                       Question(
+                                          id: 1,
                                           content: "How does Flutter work?",
                                           asker: User(
                                             firstName: "John Doe",
@@ -370,6 +372,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     // temp question list
                                     [
                                   Question(
+                                      id: 1,
                                       content: "How does Flutter work?",
                                       asker: User(
                                         firstName: "John Doe",

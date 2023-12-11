@@ -25,7 +25,7 @@ class _QuestionBoxState extends State<QuestionBox> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Q: ${widget.question}',
+              'Q: ${widget.question.content}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8.0),

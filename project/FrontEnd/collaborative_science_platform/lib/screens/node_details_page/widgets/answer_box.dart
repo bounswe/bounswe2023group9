@@ -1,4 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/question_exceptions.dart';
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +24,11 @@ class _AnswerBoxState extends State<AnswerBox> {
     try {
       if (answerController.text.isNotEmpty) {
         final questionAnswerProvider = Provider.of<QuestionAnswerProvider>(context, listen: false);
+        User user = Provider.of<Auth>(context, listen: false).user!;
         setState(() {
           isLoading = true;
         });
-        await questionAnswerProvider.postAnswer(answerController.text, widget.nodeId);
+        await questionAnswerProvider.postAnswer(answerController.text, widget.nodeId, user);
         answerController.clear();
       }
     } on PostAnswerError {

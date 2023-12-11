@@ -1,12 +1,16 @@
 import 'package:collaborative_science_platform/exceptions/question_exceptions.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AskQuestionForm extends StatefulWidget {
   final int nodeId;
-
-  const AskQuestionForm({Key? key, required this.nodeId}) : super(key: key);
+  final Function(List<Question>) onQuestionPosted;
+  const AskQuestionForm({Key? key, required this.nodeId, required this.onQuestionPosted})
+      : super(key: key);
 
   @override
   State<AskQuestionForm> createState() => _AskQuestionFormState();
@@ -22,11 +26,13 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
   void askQuestion() async {
     try {
       if (questionController.text.isNotEmpty) {
-        final questionProvider = Provider.of<QuestionAnswerProvider>(context);
+        final questionProvider = Provider.of<QuestionAnswerProvider>(context, listen: false);
+        User user = Provider.of<Auth>(context, listen: false).user!;
         setState(() {
           isLoading = true;
         });
-        await questionProvider.postQuestion(questionController.text, widget.nodeId);
+        await questionProvider.postQuestion(questionController.text, widget.nodeId, user);
+        widget.onQuestionPosted(questionProvider.questions);
         questionController.clear();
       }
     } on PostQuestionError {
@@ -67,6 +73,7 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
           },
           child: const Text('Submit Question'),
         ),
+        if (error) Text(errorMessage, style: const TextStyle(color: Colors.red)),
         const SizedBox(height: 16.0),
       ],
     );

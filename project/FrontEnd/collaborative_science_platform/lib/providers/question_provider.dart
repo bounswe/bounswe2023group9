@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:collaborative_science_platform/exceptions/question_exceptions.dart';
-import 'package:collaborative_science_platform/models/question.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,36 +13,36 @@ class QuestionAnswerProvider with ChangeNotifier {
     return [..._questions];
   }
 
-  Future<void> postQuestion(String questionText, int nodeId) async {
+  Future<void> postQuestion(String questionText, int nodeId, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/ask_question/");
     final Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json",
+      "Authorization": "Token ${user.token}",
     };
-    final Map<String, dynamic> postData = {
-      "question_text": questionText,
-      "node_id": nodeId,
-    };
+    final String body = json.encode({
+      'question_content': questionText,
+      'node_id': nodeId,
+    });
 
     try {
       final response = await http.post(
         url,
         headers: headers,
-        body: json.encode(postData),
+        body: body,
       );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      if (response.statusCode == 201) {
         _questions.add(Question(
-          questionID: data['question_id'],
-          askedBy: data['asked_by'],
-          questionContent: data['question_content'],
-          answer: data['answer_content'],
-          publishDate: data['created_at'],
-          respondedBy: data['responded_by'],
-        ));
+            id: json.decode(response.body)['id'],
+            answer: null,
+            content: questionText,
+            createdAt: DateTime.now().toString(),
+            asker: user,
+            answerer: null,
+            answeredAt: null,
+            nodeId: nodeId));
         notifyListeners();
-      } else if (response.statusCode == 400) {
+      } else if (response.statusCode == 401) {
         throw PostQuestionError();
       } else {
         throw Exception("Error posting question");
@@ -51,14 +52,15 @@ class QuestionAnswerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> postAnswer(String answerText, int questionId) async {
+  Future<void> postAnswer(String answerText, int questionId, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/answer_question/");
     final Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json",
+      "Authorization": "Token ${user.token}",
     };
     final Map<String, dynamic> postData = {
-      "answer_text": answerText,
+      "answer_content": answerText,
       "question_id": questionId,
     };
 
@@ -69,18 +71,14 @@ class QuestionAnswerProvider with ChangeNotifier {
         body: json.encode(postData),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         final data = json.decode(response.body);
-        _questions.add(Question(
-          questionID: data['question_id'],
-          askedBy: data['asked_by'],
-          questionContent: data['question_content'],
-          answer: data['answer_content'],
-          publishDate: data['created_at'],
-          respondedBy: data['responded_by'],
-        ));
+        Question answeredQuestions = _questions.firstWhere((element) => element.id == questionId);
+        answeredQuestions.answer = data['answer_content'];
+        answeredQuestions.answeredAt = data['answered_at'];
+        answeredQuestions.answerer = user;
         notifyListeners();
-      } else if (response.statusCode == 400) {
+      } else if (response.statusCode == 401) {
         throw PostQuestionError();
       } else {
         throw Exception("Error posting answer");
