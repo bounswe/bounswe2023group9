@@ -844,7 +844,7 @@ def update_review_request_status(request):
     serializer = ReviewRequestSerializer(req)
     return Response(serializer.data, status=200)
 
-  class AskQuestion(APIView):
+class AskQuestion(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     
