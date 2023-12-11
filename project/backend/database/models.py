@@ -236,7 +236,7 @@ class Question(models.Model):
     answerer = models.ForeignKey(Contributor, on_delete=models.PROTECT, null=True, blank=True, related_name="answered_questions")
     answer_content = models.TextField(max_length=600, null=True, blank=True)
     answered_at = models.DateTimeField(null=True, blank=True)
-
+    removed_by_admin = models.BooleanField(default=False)
     def answer(self, answer, answerer):
         if self.answer_content is None or self.answer_content == "":
             print("first if")
