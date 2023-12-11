@@ -106,6 +106,7 @@ class BasicUser(models.Model):
     )
     email_notification_preference = models.BooleanField(default=False)
     show_activity_preference = models.BooleanField(default=True)
+    semantic_tags = models.ManyToManyField(SemanticTag, blank=True, related_name='BasicUserSemanticTags')
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
