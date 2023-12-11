@@ -446,13 +446,16 @@ class NodeAPITestCase(TestCase):
 
     def test_get_valid(self):
         data = {"node_id": "1"}
+
+        num_visits_before = self.nodeA.num_visits
+
         response = self.client.get(self.node_url, data=data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["node_id"], self.nodeA.node_id)
         self.assertEqual(response.data["node_title"], self.nodeA.node_title)
         self.assertEqual(response.data["is_valid"], self.nodeA.is_valid)
-        self.assertEqual(response.data["num_visits"], self.nodeA.num_visits)
+        self.assertEqual(response.data["num_visits"], num_visits_before + 1)
 
     def test_get_invalid(self):
         data = {"node_id": "-1"}
@@ -511,6 +514,11 @@ class TheoremGETAPITestCase(TestCase):
             publish_date="2023-10-30",
         )
 
+    def tearDown(self):
+        Theorem.objects.all().delete()
+
+        print("All tests for the Theorem GET API are completed!")
+
     def test_get_theorem_from_id_valid(self):
         url = reverse('get_theorem')  # Replace 'get_theorem_from_id' with the actual URL name
         response = self.client.get(url, {'theorem_id': 0})
@@ -546,6 +554,13 @@ class ContributorGETAPITestCase(TestCase):
         self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
         self.url = reverse('get_cont')
 
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
+
+        print("All tests for the Contributor GET API are completed!")
+
     def test_get_contributor_from_id(self):
         response = self.client.get(self.url, {'id': 3})
 
@@ -570,6 +585,14 @@ class UserWorkspacesGETAPITestCase(TestCase):
         self.workspace = self.cont.create_workspace('test')
         self.url = reverse('get_user_workspaces')
 
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
+        Workspace.objects.all().delete()
+
+        print("All tests for the Users Workspace GET API are completed!")
+
     def test_get_workspaces_of_user(self):
         response = self.client.get(self.url, {'user_id': self.cont.id})
 
@@ -588,6 +611,14 @@ class WorkspaceGETAPITestCase(TestCase):
         self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
         self.workspace = self.cont.create_workspace('test')
         self.url = reverse('get_workspace')
+
+    def tearDown(self):
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
+        Workspace.objects.all().delete()
+
+        print("All tests for the Workspace GET API are completed!")
 
     def test_get_workspace_from_id(self):
         response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
@@ -617,8 +648,13 @@ class CollaborationRequestAPITestCase(TestCase):
         self.client = APIClient()
 
         self.workspace = Workspace.objects.create()
-        self.contributor_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
-        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        
+        self.receiver_user = User.objects.create(username="receiver")
+        self.sender_user = User.objects.create(username="sender")
+
+        self.contributor_receiver = Contributor.objects.create(user=self.receiver_user)
+        self.contributor_sender = Contributor.objects.create(user=self.sender_user)
+        self.contributor_sender.workspaces.add(self.workspace)
 
         self.request = CollaborationRequest.objects.create(workspace=self.workspace,receiver=self.contributor_receiver,sender=self.contributor_sender)
 
@@ -629,12 +665,21 @@ class CollaborationRequestAPITestCase(TestCase):
         }
 
     def test_send_collab_request(self):
+
+        self.contributor_token = Token.objects.create(user=self.sender_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor_token.key}")
+
+
         url = reverse('send_col_req')
         response = self.client.post(url, self.request_data, format='json')
         self.assertEqual(response.status_code, 201)
     
     def test_update_collab_request(self):
-        url = reverse('update_req')
+
+        self.contributor_token = Token.objects.create(user=self.receiver_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor_token.key}")
+
+        url = reverse('update_collab_req')
         response = self.client.put(url, {'id': self.request.id, 'status': 'A'}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['status'], 'A')
@@ -655,28 +700,75 @@ class ReviewRequestAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
 
-        self.workspace = Workspace.objects.create()
-        self.reviewer_receiver = Contributor.objects.create(user=User.objects.create(username="receiver"))
-        self.contributor_sender = Contributor.objects.create(user=User.objects.create(username="sender"))
+        self.workspace = Workspace.objects.create(num_approvals=2)
+        self.receiver1_user = User.objects.create(username="receiver")
+        self.reviewer1 = Reviewer.objects.create(user= self.receiver1_user)
+        self.receiver2_user = User.objects.create(username="receiver2")
+        self.reviewer2 = Reviewer.objects.create(user= self.receiver2_user)
 
-        self.request = ReviewRequest.objects.create(workspace=self.workspace,receiver=self.reviewer_receiver,sender=self.contributor_sender)
+        self.sender_user = User.objects.create(username="sender")
+        self.contributor_sender = Contributor.objects.create(user=self.sender_user)
+        self.contributor_sender.workspaces.add(self.workspace)
+
+        self.request = ReviewRequest.objects.create(workspace=self.workspace,receiver=self.reviewer1,sender=self.contributor_sender)
+        self.request2 = ReviewRequest.objects.create(workspace=self.workspace,receiver=self.reviewer2,sender=self.contributor_sender)
 
         self.request_data = {
             'sender': self.contributor_sender.id,
-            'receiver': self.reviewer_receiver.id,
             'workspace': self.workspace.workspace_id
         }
 
     def test_send_review_request(self):
+
+        self.contributor_token = Token.objects.create(user=self.sender_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.contributor_token.key}")
+
         url = reverse('send_rev_req')
         response = self.client.post(url, self.request_data, format='json')
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(len(response.data), 2)
     
     def test_update_review_request(self):
-        url = reverse('update_req')
-        response = self.client.put(url, {'id': self.request.id, 'status': 'R'}, format='json')
+
+        self.reviewer1_token = Token.objects.create(user=self.receiver1_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer1_token.key}")
+        
+        url = reverse('update_review_req')
+
+        initial_num_approvals = self.workspace.num_approvals
+        initial_node_len = len(Node.objects.all())
+
+        response = self.client.put(url, {'id': self.request.id, 'status': 'A', 'comment': 'OK'}, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['status'], 'R')
+        self.assertEqual(response.data['status'], 'A')
+        self.assertEqual(response.data['comment'], 'OK')
+
+        updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
+        self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
+
+        # Reviewer 2
+        self.reviewer2_token = Token.objects.create(user=self.receiver2_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer2_token.key}")
+        
+        url = reverse('update_review_req')
+
+        initial_num_approvals = updated_workspace.num_approvals
+
+        response = self.client.put(url, {'id': self.request2.id, 'status': 'A', 'comment': 'OK'}, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['status'], 'A')
+        self.assertEqual(response.data['comment'], 'OK')
+
+        updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
+        self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
+
+        self.assertEqual(updated_workspace.num_approvals, 0)
+
+        self.assertEqual(len(Node.objects.all()), initial_node_len + 1)
+
+
+
+
 
 
 class AnswerQuestionAPITest(TestCase):
@@ -725,6 +817,17 @@ class AnswerQuestionAPITest(TestCase):
             asker=self.basic_user,
             question_content='Sample question content?',
         )
+    
+    def tearDown(self):
+            Question.objects.all().delete()
+            Node.objects.all().delete()
+            User.objects.all().delete()
+            BasicUser.objects.all().delete()
+            Contributor.objects.all().delete()
+            Token.objects.all().delete()
+       
+            print("All tests for the Answer Question API are completed!")
+
     def test_answer_question_success(self):
         # Define the payload
         payload = {
@@ -773,7 +876,18 @@ class AskQuestionAPITest(TestCase):
             num_visits=0,
         )
         self.node.contributors.add(self.contributor1)
-        
+    
+    def tearDown(self):
+        Token.objects.all().delete()
+        Question.objects.all().delete()
+        Node.objects.all().delete()
+        Contributor.objects.all().delete()
+        BasicUser.objects.all().delete()
+        User.objects.all().delete()
+
+
+        print("All tests for the Ask Question API are completed!")
+
     def test_ask_question_success(self):
         # Define the payload
         payload = {
@@ -783,3 +897,87 @@ class AskQuestionAPITest(TestCase):
         url = reverse('ask_question')
         response = self.client.post(url, payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+class AdminFeatureAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.admin_user = User.objects.create(pk=1, username='admin')
+        self.admin = Admin.objects.create(user=self.admin_user)
+
+        self.admin_token = Token.objects.create(user=self.admin_user)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.admin_token.key}")
+
+        self.node = Node.objects.create(
+            node_id=1,
+            node_title="Test Node A",
+            theorem=None,
+            publish_date="2023-01-01",
+            is_valid=True,
+            num_visits=0,
+            removed_by_admin=False
+        )
+
+        self.user_for_basic = User.objects.create_user(id=2, email= 'basic_user@example.com', username='basic_user@example.com', first_name='Basic User', last_name='Test', is_active=False,)
+        self.user_for_contributor = User.objects.create_user(id=3, email= 'cont@example.com', username='cont@example.com', first_name='Contributor User', last_name='Test', is_active=False,)
+
+        self.basic_user = BasicUser.objects.create(user=self.user_for_basic, bio="I am a basic user")
+        self.contributor = Contributor.objects.create(user=self.user_for_contributor, bio="I am the contributor")
+
+
+        self.question = Question.objects.create(
+            node=self.node,
+            asker = self.basic_user,
+            question_content = "TEST QUESTION",
+            answerer = self.contributor,
+            answer_content = 'TEST ANSWER',
+            removed_by_admin = False,
+        )
+
+    def tearDown(self):
+        Question.objects.all().delete()
+        Node.objects.all().delete()
+        User.objects.all().delete()
+        BasicUser.objects.all().delete()
+        Contributor.objects.all().delete()
+        Token.objects.all().delete()
+        
+
+        print("All tests for the Admin Features API are completed!")
+
+    def test_update_node_status(self):
+        
+        url = reverse('update_content_status')
+        data = {'context': 'node', 'content_id': self.node.pk, 'hide': True}
+
+        response = self.client.put(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Node.objects.get(pk=response.data['node_id']).removed_by_admin, True)
+
+    def test_update_question_status(self):
+        
+        url = reverse('update_content_status')
+        data = {'context': 'question', 'content_id': self.question.pk, 'hide': True}
+
+        response = self.client.put(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK, response.json())
+        self.assertEqual(Question.objects.get(pk=self.question.id).removed_by_admin, True)
+
+    def test_update_user_status(self):
+
+        url = reverse('update_content_status')
+        data = {'context': 'user', 'content_id': self.basic_user.pk, 'hide': False}
+
+        response = self.client.put(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(BasicUser.objects.get(pk=self.basic_user.pk).user.is_active, False)
+
+    def test_no_context_given(self):
+        url = reverse('update_content_status')
+        data = {}
+
+        response = self.client.put(url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
