@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
@@ -759,5 +759,50 @@ class AnswerQuestion(APIView):
             return Response({"message": "Answer submitted successfully."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Question is not asked to logged Contributor or already answered."}, status=status.HTTP_400_BAD_REQUEST)
+
+class IsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False
+        if not Admin.objects.filter(pk=request.user.basicuser.pk).exists():
+            return False
+        return True
+
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsAdmin))
+@api_view(['PUT'])
+def update_content_status(request):
+
+    try:
+        context = request.data['context']
+        content_id = request.data['content_id']
+        hide = request.data['hide']
+
+        if context:
+            context = context.strip().lower()
+            if  context == 'node':
+                node = Node.objects.filter(pk=content_id)
+                if node.count() > 0:
+                    node = node.first()
+                    node.removed_by_admin = hide
+                    node.save()
+                    return Response(NodeSerializer(node).data, status=200)
+            elif context == 'question':
+                question = Question.objects.filter(pk=content_id)
+                if question.count() > 0:
+                    question = question.first()
+                    question.removed_by_admin = hide
+                    question.save()
+                    return Response(NodeViewQuestionSerializer(question).data, status=200)
+
+            elif context == 'user':
+                user = BasicUser.objects.filter(pk=content_id)
+                if user.count() > 0:
+                    user = user.first()
+                    user.user.is_active = hide
+                    user.save()
+                    return Response(BasicUserSerializer(user).data, status=200)
+    except Exception as e:
+        return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
