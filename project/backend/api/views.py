@@ -12,8 +12,8 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
-import random
-import datetime
+import random, json, datetime
+
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -338,11 +338,27 @@ def get_contributor_from_id(request):
             }
     return JsonResponse(data, status=200)
 
+def is_cont_workspace(request):
+    try:
+        workspace_id = int(request.GET.get("workspace_id"))
+    except:
+        workspace_id = int(request.POST.get("workspace_id"))
+    if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+        return False
+    if workspace_id is not None:
+        return request.user.basicuser.contributor.workspaces.filter(workspace_id=workspace_id).exists()
+    return True
+
+
 def get_workspaces(request):
-    id = int(request.GET.get("user_id"))
-    cont = Contributor.objects.filter(id=id)
-    if cont.count() == 0:
-        return JsonResponse({'message':'There is no contributor with this id.'},status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    # basic_user = BasicUser.objects.get(id=json.loads(res.content.decode())['basic_user_id'])
+    if not IsContributor().has_permission(request,get_workspaces):
+        return JsonResponse({'message':'User is not a Contributor'},status=403)
+    # id = int(request.GET.get("user_id"))
+    cont = Contributor.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
+    # if cont.count() == 0:
+    #     return JsonResponse({'message':'There is no contributor with this id.'},status=404)
     cont = cont[0]
     workspace_list = []
     for workspace in cont.workspaces.all():
@@ -366,7 +382,12 @@ def get_workspace_from_id(request):
     id = int(request.GET.get("workspace_id"))
     workspace = Workspace.objects.filter(workspace_id=id)
     if workspace.count() == 0:
-        return JsonResponse({'message':'There is no workspace with this id.'},status=404)
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, get_workspace_from_id):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     workspace = workspace[0]
     entries = []
     for entry in workspace.entries.all():
@@ -463,6 +484,15 @@ def delete_entry(request):
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
+
+
     workspace = Workspace.objects.get(workspace_id=workspace_id)
     if entry[0] not in workspace.entries.all():
         return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
@@ -470,10 +500,13 @@ def delete_entry(request):
     workspace.save()
     return JsonResponse({'message': 'Entry with this id has been deleted from this workspace successfully.'}, status=200)
 
+
+
 @csrf_exempt
 def edit_entry(request):
     entry_id = request.POST.get("entry_id")
     content = request.POST.get("content")
+    workspace_id = request.POST.get("workspace_id")
     if entry_id == None or entry_id == '':
         return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
     try:
@@ -485,26 +518,49 @@ def edit_entry(request):
     entry = Entry.objects.filter(entry_id=entry_id)
     if entry.count() == 0:
         return JsonResponse({'message': 'there is no entry with this id'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    print(res.data)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if entry[0] not in workspace.entries.all():
+        return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
+
     entry = Entry.objects.get(entry_id=entry_id)
     entry.content = content
     entry.save(update_fields=["content"])
     return JsonResponse({'message': 'entry content is updated successfully'}, status=200)
 @csrf_exempt
 def delete_workspace(request):
+    res = BasicUserDetailAPI.as_view()(request)
     workspace_id = request.POST.get("workspace_id")
-    contributor_id = request.POST.get("contributor_id")
-    if workspace_id == None or workspace_id == '':
-        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
-    if contributor_id == None or contributor_id == '':
-        return JsonResponse({'message': 'node_id field can not be empty'}, status=400)
+    # contributor_id = request.POST.get("contributor_id")
     try:
         workspace_id = int(workspace_id)
-        contributor_id = int(contributor_id)
+        # contributor_id = int(contributor_id)
     except:
-        return JsonResponse({'message': 'workspace_id and contributor_id fields have to be a integer'}, status=400)
+        return JsonResponse({'message': 'workspace_id  field have to be a integer'}, status=400)
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
+    contributor_id = request.user.basicuser.id
+    if contributor_id == None or contributor_id == '':
+        return JsonResponse({'message': 'contributor_id field can not be empty'}, status=400)
+
     contributor = Contributor.objects.filter(id=contributor_id)
     if contributor.count() == 0:
         return JsonResponse({'message': 'There is no contributor with this id.'}, status=404)
@@ -520,6 +576,8 @@ def delete_workspace(request):
 def delete_contributor(request):
     contributor_id = request.POST.get("contributor_id")
     workspace_id = request.POST.get("workspace_id")
+
+
     if workspace_id == None or workspace_id == '':
         return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
     if contributor_id == None or contributor_id == '':
@@ -535,6 +593,13 @@ def delete_contributor(request):
         return JsonResponse({'message': 'There is no contributor with this id.'}, status=404)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
     if workspace[0] not in contributor[0].workspaces.all():
         return JsonResponse({'message': 'there is no contributor with this id in this workspace.'}, status=404)
     contributor[0].workspaces.remove(workspace[0])
@@ -558,6 +623,13 @@ def delete_reference(request):
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
     if workspace[0].is_finalized == True:
         return JsonResponse({'message': ' workspace already finalized'}, status=400)
     workspace = workspace[0]
@@ -580,6 +652,13 @@ def finalize_workspace(request):
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
     if workspace[0].is_finalized == True:
         return JsonResponse({'message': ' workspace already finalized'}, status=400)
     workspace = workspace[0]
@@ -603,6 +682,13 @@ def add_entry(request):
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
     if workspace[0].is_finalized == True:
         return JsonResponse({'message': ' workspace already finalized'}, status=400)
     entry = Entry.objects.create(content=content,entry_index=0, entry_number=0) # TODO WILL BE PROVIDED IN THE FUTURE
@@ -624,13 +710,20 @@ def add_reference(request):
     except:
         return JsonResponse({'message': 'workspace_id and node_id fields have to be a integer'}, status=400)
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
-    if workspace[0].is_finalized == True:
-        return JsonResponse({'message': ' workspace already finalized'}, status=400)
-    node = Node.objects.filter(node_id=node_id)
     if workspace.count() == 0:
         return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    node = Node.objects.filter(node_id=node_id)
     if node.count() == 0:
         return JsonResponse({'message': 'There is no node with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+
+    if workspace[0].is_finalized == True:
+        return JsonResponse({'message': ' workspace already finalized'}, status=400)
     if node[0] in workspace[0].references.all():
         return JsonResponse({'message': 'this reference already exists in this workspace.'}, status=400)
     workspace[0].references.add(node[0])
@@ -639,16 +732,21 @@ def add_reference(request):
 @csrf_exempt
 def create_workspace(request):
     title = request.POST.get("workspace_title")
-    user_id = request.POST.get("user_id")
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+
+
+    # user_id = request.POST.get("user_id")
     if title == '' or title == None:
         return JsonResponse({'message': 'workspace_title field can not be empty'}, status=400)
-    if user_id == '' or user_id == None:
-        return JsonResponse({'message': 'user_id field can not be empty'}, status=400)
-    try:
-        creator = int(user_id)
-    except:
-        return JsonResponse({'message': 'user_id has to be a integer'}, status=400)
-    cont = Contributor.objects.filter(id=user_id)
+    # if user_id == '' or user_id == None:
+    #     return JsonResponse({'message': 'user_id field can not be empty'}, status=400)
+    # try:
+    #     creator = int(user_id)
+    # except:
+    #     return JsonResponse({'message': 'user_id has to be a integer'}, status=400)
+    cont = Contributor.objects.filter(id=request.user.basicuser.id)
     if cont.count() == 0:
         return JsonResponse({'message': 'there is no contributor with this user_id'}, status=400)
     workspace = Workspace.objects.create(workspace_title=title)
