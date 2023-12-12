@@ -23,13 +23,16 @@ class SemanticTag(models.Model):
     @property
     def related_nodes(self):
         parent_wids = get_parent_ids(self.wid)
+        for pw in parent_wids:
+            if not SemanticTag.objects.filter(wid=pw).exists():
+                parent_wids.remove(pw)
         sibling_wids = get_children_ids(parent_wids)
 
-        if self.wid in sibling_wids:
+        while self.wid in sibling_wids:
             sibling_wids.remove(self.wid)
 
         children_wids = get_children_ids([self.wid])
-        combined = sibling_wids + parent_wids + children_wids
+        combined = sibling_wids + children_wids + parent_wids
 
         return Node.objects.filter(semantic_tags__wid__in=combined)
 
