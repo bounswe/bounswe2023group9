@@ -11,7 +11,7 @@
 - **Front-end Team**: Zülal, Bengisu, Abdullah, Mehmet, Ömer Faruk, Leyla
 - **Back-end Team**: Ömer Şükrü, Ahmed Bera, Oğuz, Hakan, Arda, Ali Mert
 
-**Our objective for the following week**,
+**Our objective for the following week**, 
 In the backend, we will implement the annotations service and the email notifications. Also we will add the ORCID integration and update some API methods for workspaces.
 
 ## What was planned for the week? How did it go?
@@ -44,6 +44,7 @@ In the backend, we will implement the annotations service and the email notifica
 
 ## Planned vs. Actual
 - Issue [#581](https://github.com/bounswe/bounswe2023group9/issues/581) - Sending a review request requires the assignment of reviewers randomly. We did not talk about it explicitly and planned for this week. But since it is a part of the method, we implemented it.
+- Issue [#567](https://github.com/bounswe/bounswe2023group9/issues/567) - We did design and connect it to API's but not tested well and design carefully. We will merge it in next week.
 ## Your plans for the next week
 | Description | Issue | Assignee | Due | Estimated Duration |
 | --- | --- | --- | --- | --- |
