@@ -29,8 +29,8 @@ class _QuestionBoxState extends State<QuestionBox> {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8.0),
-            Text('Asked by: ${widget.question.asker} at ${widget.question.createdAt}'),
-            if (widget.question.answer != null)
+            Text('Asked by: ${widget.question.asker.email} at ${widget.question.createdAt}'),
+            if (widget.question.answer != null && widget.question.answer!.isNotEmpty)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -41,7 +41,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                   ),
                 ],
               ),
-            if (widget.question.answer == null)
+            if (widget.question.answer == null || widget.question.answer!.isEmpty)
               Column(
                 children: [
                   const SizedBox(height: 8.0),
@@ -58,7 +58,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                       ),
                     ),
                   ),
-                  if (isReplyVisible) AnswerBox(nodeId: widget.question.nodeId!),
+                  if (isReplyVisible) AnswerBox(questionId: widget.question.id),
                 ],
               ),
           ],

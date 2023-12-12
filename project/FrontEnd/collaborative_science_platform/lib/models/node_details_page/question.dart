@@ -4,7 +4,7 @@ class Question {
   int id;
   String content;
   String createdAt;
-  User? asker;
+  User asker;
   String? answer;
   User? answerer;
   String? answeredAt;
@@ -29,8 +29,7 @@ class Question {
       answerer: jsonString['answerer'] == null
           ? null
           : User.fromJsonforNodeDetailPage(jsonString['answerer']),
-      asker:
-          jsonString['asker'] == null ? null : User.fromJsonforNodeDetailPage(jsonString['asker']),
+      asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
       nodeId: jsonString['node_id'] ?? -1,
     );
   }
@@ -40,14 +39,12 @@ class Question {
       id: jsonString['id'] ?? -1,
       content: jsonString['question_content'] ?? "",
       createdAt: jsonString['ask_date'] ?? "",
-      asker: jsonString.containsKey("asker_id")
-          ? User(
-              id: jsonString['asker_id'],
-              email: jsonString['asker_mail'],
-              firstName: jsonString['asker_name'],
-              lastName: jsonString['asker_surname'],
-            )
-          : null,
+      asker: User(
+        id: jsonString['asker_id'],
+        email: jsonString['asker_mail'],
+        firstName: jsonString['asker_name'],
+        lastName: jsonString['asker_surname'],
+      ),
       answer: jsonString.containsKey("answer_content") ? jsonString["answer_content"] : "",
       answerer: jsonString.containsKey("answerer")
           ? User(

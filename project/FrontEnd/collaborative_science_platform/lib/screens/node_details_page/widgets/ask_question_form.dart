@@ -31,6 +31,7 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
         setState(() {
           isLoading = true;
         });
+        print(questionController.text);
         await questionProvider.postQuestion(questionController.text, widget.nodeId, user);
         widget.onQuestionPosted(questionProvider.questions);
         questionController.clear();
@@ -68,9 +69,7 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
         ),
         const SizedBox(height: 16.0),
         ElevatedButton(
-          onPressed: () {
-            askQuestion();
-          },
+          onPressed: isLoading ? null : askQuestion,
           child: const Text('Submit Question'),
         ),
         if (error) Text(errorMessage, style: const TextStyle(color: Colors.red)),

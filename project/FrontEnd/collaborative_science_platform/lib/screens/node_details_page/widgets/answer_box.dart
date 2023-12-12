@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AnswerBox extends StatefulWidget {
-  final int nodeId;
+  final int questionId;
 
-  const AnswerBox({Key? key, required this.nodeId}) : super(key: key);
+  const AnswerBox({Key? key, required this.questionId}) : super(key: key);
 
   @override
   State<AnswerBox> createState() => _AnswerBoxState();
@@ -28,7 +28,7 @@ class _AnswerBoxState extends State<AnswerBox> {
         setState(() {
           isLoading = true;
         });
-        await questionAnswerProvider.postAnswer(answerController.text, widget.nodeId, user);
+        await questionAnswerProvider.postAnswer(answerController.text, widget.questionId, user);
         answerController.clear();
       }
     } on PostAnswerError {

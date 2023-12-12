@@ -15,6 +15,8 @@ class QuestionAnswerProvider with ChangeNotifier {
 
   Future<void> postQuestion(String questionText, int nodeId, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/ask_question/");
+    print(url);
+
     final Map<String, String> headers = {
       "Accept": "application/json",
       "content-type": "application/json",
@@ -31,9 +33,11 @@ class QuestionAnswerProvider with ChangeNotifier {
         headers: headers,
         body: body,
       );
+      print(response.statusCode);
       if (response.statusCode == 201) {
         _questions.add(Question(
-            id: json.decode(response.body)['id'],
+            //id: json.decode(response.body)['id'],
+            id: 98,
             answer: null,
             content: questionText,
             createdAt: DateTime.now().toString(),
