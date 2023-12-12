@@ -15,7 +15,6 @@ class QuestionAnswerProvider with ChangeNotifier {
 
   Future<void> postQuestion(String questionText, int nodeId, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/ask_question/");
-    print(url);
 
     final Map<String, String> headers = {
       "Accept": "application/json",
@@ -33,11 +32,10 @@ class QuestionAnswerProvider with ChangeNotifier {
         headers: headers,
         body: body,
       );
-      print(response.statusCode);
       if (response.statusCode == 201) {
         _questions.add(Question(
             //id: json.decode(response.body)['id'],
-            id: 98,
+            id: 99,
             answer: null,
             content: questionText,
             createdAt: DateTime.now().toString(),
@@ -67,14 +65,12 @@ class QuestionAnswerProvider with ChangeNotifier {
       "answer_content": answerText,
       "question_id": questionId,
     };
-
     try {
       final response = await http.post(
         url,
         headers: headers,
         body: json.encode(postData),
       );
-
       if (response.statusCode == 201) {
         final data = json.decode(response.body);
         Question answeredQuestions = _questions.firstWhere((element) => element.id == questionId);
@@ -82,7 +78,7 @@ class QuestionAnswerProvider with ChangeNotifier {
         answeredQuestions.answeredAt = data['answered_at'];
         answeredQuestions.answerer = user;
         notifyListeners();
-      } else if (response.statusCode == 401) {
+      } else if (response.statusCode == 403) {
         throw PostQuestionError();
       } else {
         throw Exception("Error posting answer");

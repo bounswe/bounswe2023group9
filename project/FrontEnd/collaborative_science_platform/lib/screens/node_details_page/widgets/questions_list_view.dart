@@ -36,9 +36,9 @@ class _QuestionsViewState extends State<QuestionsView> {
           children: [
             AskQuestionForm(
               nodeId: widget.nodeId,
-              onQuestionPosted: (List<Question> newQuestions) {
+              onQuestionPosted: (Question newQuestion) {
                 setState(() {
-                  questions = newQuestions;
+                  questions.add(newQuestion);
                 });
               },
             ),

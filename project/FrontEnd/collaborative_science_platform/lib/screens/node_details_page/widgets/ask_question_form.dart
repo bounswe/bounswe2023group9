@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class AskQuestionForm extends StatefulWidget {
   final int nodeId;
-  final Function(List<Question>) onQuestionPosted;
+  final Function(Question) onQuestionPosted;
   const AskQuestionForm({Key? key, required this.nodeId, required this.onQuestionPosted})
       : super(key: key);
 
@@ -31,9 +31,8 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
         setState(() {
           isLoading = true;
         });
-        print(questionController.text);
         await questionProvider.postQuestion(questionController.text, widget.nodeId, user);
-        widget.onQuestionPosted(questionProvider.questions);
+        widget.onQuestionPosted(questionProvider.questions.last);
         questionController.clear();
       }
     } on PostQuestionError {
