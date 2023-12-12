@@ -23,6 +23,11 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function addReference;
   final Function deleteReference;
   final Function editTitle;
+  final Function updateRequest;
+  final Function sendCollaborationRequest;
+  final Function finalizeWorkspace;
+  final Function addSemanticTags;
+
   const MobileWorkspacePage({
     super.key,
     required this.workspace,
@@ -34,6 +39,10 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
+      required this.addSemanticTags,
+      required this.finalizeWorkspace,
+      required this.sendCollaborationRequest,
+      required this.updateRequest
   });
 
   @override
@@ -353,6 +362,11 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           addReference: widget.addReference,
                           deleteReference: widget.deleteReference,
                           editTitle: widget.editTitle,
+                          addSemanticTags: widget.addSemanticTags,
+                          finalizeWorkspace: widget.finalizeWorkspace,
+                          sendCollaborationRequest: widget.sendCollaborationRequest,
+                          updateRequest: widget.updateRequest,
+
                         )
                       : const SizedBox(
                           width: 100,

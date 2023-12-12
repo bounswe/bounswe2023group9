@@ -37,6 +37,7 @@ class UserProvider with ChangeNotifier {
                   name: author['name'],
                   surname: author['surname'],
                   email: author['username'],
+              id: author['id'],
                 )));
         notifyListeners();
       } else if (response.statusCode == 400) {

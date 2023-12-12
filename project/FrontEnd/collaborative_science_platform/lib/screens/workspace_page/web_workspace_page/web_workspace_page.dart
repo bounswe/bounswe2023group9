@@ -26,6 +26,12 @@ class WebWorkspacePage extends StatefulWidget {
   final Function deleteReference;
   final Function editTitle;
 
+  final Function updateRequest;
+  final Function sendCollaborationRequest;
+  final Function finalizeWorkspace;
+  final Function addSemanticTags;
+
+
   const WebWorkspacePage({
     super.key,
     required this.workspace,
@@ -38,6 +44,11 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
+    required this.addSemanticTags,
+    required this.finalizeWorkspace,
+    required this.sendCollaborationRequest,
+    required this.updateRequest,
+
   });
 
   @override
@@ -249,6 +260,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
                                       height: minHeight / 2,
+                                      sendCollaborationRequest: widget.sendCollaborationRequest,
+                                      updateRequest: widget.updateRequest,
                                     ),
                                     ReferencesListView(
                                       references: widget.workspace!.references,

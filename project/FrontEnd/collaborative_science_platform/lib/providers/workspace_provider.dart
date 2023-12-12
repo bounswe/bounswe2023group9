@@ -75,7 +75,7 @@ class WorkspaceProvider with ChangeNotifier {
     });
 
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       //print(await response.stream.bytesToString());
       notifyListeners();
     } else if (response.statusCode == 400) {
@@ -87,6 +87,30 @@ class WorkspaceProvider with ChangeNotifier {
 
   Future<void> updateRequest(int id, String status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_req");
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'id': "$id",
+      'status': status,
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw SendCollaborationRequestException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> updateCollaborationRequest(int id, String status, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/update_collab_req/");
 
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
