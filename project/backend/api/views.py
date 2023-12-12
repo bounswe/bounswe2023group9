@@ -1010,7 +1010,7 @@ class AskQuestion(APIView):
         question = Question.objects.create(node=node, asker=asker, question_content=question_content)
         question.save()
 
-        return Response({"message": "Question submitted successfully."}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Question submitted successfully.", "QuestionID": question.pk}, status=status.HTTP_201_CREATED)
 
 class AnswerQuestion(APIView):
     authentication_classes = (TokenAuthentication,)
