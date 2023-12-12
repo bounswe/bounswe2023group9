@@ -115,7 +115,6 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
-
   void createNewEntry(String content) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -445,6 +444,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
+
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,

@@ -25,10 +25,12 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReference;
   final Function deleteReference;
   final Function editTitle;
+
   final Function updateRequest;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
+
 
   const WebWorkspacePage({
     super.key,
@@ -46,6 +48,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
+
   });
 
   @override

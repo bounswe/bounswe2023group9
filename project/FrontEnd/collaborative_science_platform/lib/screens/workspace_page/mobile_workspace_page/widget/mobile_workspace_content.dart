@@ -26,6 +26,7 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
+
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -36,10 +37,12 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
+
     required this.addSemanticTags,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
+
   });
 
   @override
@@ -157,6 +160,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   Widget contributorList() {
     int length = widget.workspace.contributors.length;
     Widget alertDialog = AppAlertDialog(
+
       text: "Send Collaboration Request",
       content:
           SendCollaborationRequestForm(sendCollaborationRequest: widget.sendCollaborationRequest),

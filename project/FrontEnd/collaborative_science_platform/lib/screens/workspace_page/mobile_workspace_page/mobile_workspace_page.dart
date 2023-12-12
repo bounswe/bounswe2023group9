@@ -27,6 +27,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
+
   const MobileWorkspacePage({
     super.key,
     required this.workspace,
@@ -365,6 +366,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           finalizeWorkspace: widget.finalizeWorkspace,
                           sendCollaborationRequest: widget.sendCollaborationRequest,
                           updateRequest: widget.updateRequest,
+
                         )
                       : const SizedBox(
                           width: 100,
