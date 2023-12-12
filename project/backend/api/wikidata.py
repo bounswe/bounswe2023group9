@@ -15,14 +15,29 @@ def search_entity(keyword):
     dic = json.loads(my_json)
 
     results = []
-    for item in dic.get("search"):
-        block = {
-            "id": item.get("id"),
-            "label": item.get("display").get("label").get("value"),
-            "description": item.get("display").get("description").get("value")
-        }
+    res = dic.get("search")
+    if res is not None:
+        for item in res:
+            iid = item.get("id")
+            display = item.get("display")
+            if display is not None:
+                label = display.get("label")
+                if label is not None:
+                    label_value = label.get("value")
 
-        results.append(block)
+                description = display.get("description")
+                if description is not None:
+                    description_value = description.get("value")
+            
+            if iid is not None and label_value is not None and description_value is not None:
+            
+                block = {
+                    "id": iid,
+                    "label": label_value,
+                    "description": description_value
+                }
+
+                results.append(block)
 
     return results
 
@@ -53,8 +68,16 @@ def get_parent_ids(entity_id):
 
     idlist = []
 
-    for item in dic.get("results").get("bindings"):
-        idlist.append(item.get("itemId").get("value"))
+    res = dic.get("results")
+    if res is not None:
+        bindings = res.get("bindings")
+        if bindings is not None:
+            for item in bindings:
+                iid = item.get("itemId")
+                if iid is not None:
+                    val = iid.get("value")
+                    if val is not None:
+                        idlist.append(iid.get("value"))
 
     return idlist
 
@@ -87,6 +110,7 @@ def get_children_ids(entity_id_list):
                 ?item wdt:P279 wd:""" + id + """
             }
         """
+        body += block
 
     tail = """
             BIND(wikibase:decodeUri(REPLACE(STR(?item), ".*Q", "Q")) AS ?itemId)
@@ -107,7 +131,15 @@ def get_children_ids(entity_id_list):
 
     idlist = []
 
-    for item in dic.get("results").get("bindings"):
-        idlist.append(item.get("itemId").get("value"))
+    res = dic.get("results")
+    if res is not None:
+        bindings = res.get("bindings")
+        if bindings is not None:
+            for item in bindings:
+                iid = item.get("itemId")
+                if iid is not None:
+                    val = iid.get("value")
+                    if val is not None:
+                        idlist.append(iid.get("value"))
 
     return idlist
