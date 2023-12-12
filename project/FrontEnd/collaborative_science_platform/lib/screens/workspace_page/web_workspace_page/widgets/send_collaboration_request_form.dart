@@ -6,7 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SendCollaborationRequestForm extends StatefulWidget {
-  const SendCollaborationRequestForm({super.key});
+  final Function sendCollaborationRequest;
+  const SendCollaborationRequestForm({
+    super.key,
+    required this.sendCollaborationRequest,
+  });
 
   @override
   State<SendCollaborationRequestForm> createState() => _SendCollaborationRequestFormState();
@@ -114,6 +118,12 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
                                     IconButton(
                                       onPressed: () {
                                         // send collaboration request
+                                        widget.sendCollaborationRequest(
+                                            userProvider.searchUserResult[index].id,
+                                            "request title",
+                                            "request body"); // to be updated
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
                                       },
                                       icon: Icon(
                                         Icons.send,

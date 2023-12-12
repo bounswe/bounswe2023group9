@@ -16,12 +16,17 @@ class ContributorsListView extends StatelessWidget {
   final List<User> pendingContributors;
   final ScrollController controller;
   final double height;
-  const ContributorsListView(
-      {super.key,
-      required this.contributors,
-      required this.pendingContributors,
-      required this.controller,
-      required this.height});
+  final Function updateRequest;
+  final Function sendCollaborationRequest;
+  const ContributorsListView({
+    super.key,
+    required this.contributors,
+    required this.pendingContributors,
+    required this.controller,
+    required this.height,
+    required this.sendCollaborationRequest,
+    required this.updateRequest,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,27 +49,27 @@ class ContributorsListView extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index) {
                     if (index < contributors.length) {
                       return Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: CardContainer(
-                        onTap: () {
-                          final String email = contributors[index].email;
-                          final String encodedEmail = Uri.encodeComponent(email);
-                          context.push('${ProfilePage.routeName}/$encodedEmail');
-                        },
-                        child: Column(
-                          children: [
-                            Text(
-                              "${contributors[index].firstName} ${contributors[index].lastName}",
-                              style: TextStyles.bodyBold,
-                            ),
-                            Text(
-                              contributors[index].email,
-                              style: TextStyles.bodyGrey,
-                            )
-                          ],
+                        padding: const EdgeInsets.all(3),
+                        child: CardContainer(
+                          onTap: () {
+                            final String email = contributors[index].email;
+                            final String encodedEmail = Uri.encodeComponent(email);
+                            context.push('${ProfilePage.routeName}/$encodedEmail');
+                          },
+                          child: Column(
+                            children: [
+                              Text(
+                                "${contributors[index].firstName} ${contributors[index].lastName}",
+                                style: TextStyles.bodyBold,
+                              ),
+                              Text(
+                                contributors[index].email,
+                                style: TextStyles.bodyGrey,
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    );
+                      );
                     } else {
                       return Padding(
                         padding: const EdgeInsets.all(3),
@@ -101,6 +106,8 @@ class ContributorsListView extends StatelessWidget {
                                   ),
                                   onPressed: () {
                                     // function to delete collaboration request
+                                    //TODO - requests id's are absent for now.
+                                    //updateRequest();
                                   },
                                 ),
                               ])
@@ -109,7 +116,6 @@ class ContributorsListView extends StatelessWidget {
                         ),
                       );
                     }
-                    
                   }),
             ),
             SizedBox(
@@ -121,9 +127,10 @@ class ContributorsListView extends StatelessWidget {
                 onTap: () {
                   showDialog(
                     context: context,
-                    builder: (context) => const AppAlertDialog(
+                    builder: (context) => AppAlertDialog(
                       text: "Send Collaboration Request",
-                      content: SendCollaborationRequestForm(),
+                      content: SendCollaborationRequestForm(
+                          sendCollaborationRequest: sendCollaborationRequest),
                     ),
                   );
                 },
