@@ -2,13 +2,13 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
 
 class ContributorsListView extends StatelessWidget {
@@ -57,6 +57,8 @@ class ContributorsListView extends StatelessWidget {
                             context.push('${ProfilePage.routeName}/$encodedEmail');
                           },
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "${contributors[index].firstName} ${contributors[index].lastName}",
@@ -86,6 +88,8 @@ class ContributorsListView extends StatelessWidget {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width / 8,
                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       "${pendingContributors[index - contributors.length].firstName} ${pendingContributors[index - contributors.length].lastName}",
@@ -98,7 +102,7 @@ class ContributorsListView extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              Column(children: [
+                              if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) Column(children: [
                                 IconButton(
                                   icon: const Icon(
                                     CupertinoIcons.clear_circled,
@@ -121,7 +125,7 @@ class ContributorsListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
-                text: "Send Collaboration Request",
+                text: "Collaborate",
                 height: 40,
                 type: "outlined",
                 onTap: () {

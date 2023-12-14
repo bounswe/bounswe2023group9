@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
@@ -5,13 +6,11 @@ import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import '../../../../models/workspaces_page/workspace.dart';
 import '../../../../utils/responsive/responsive.dart';
-import '../../../../widgets/app_button.dart';
 import '../../web_workspace_page/widgets/add_reference_form.dart';
-import '../../web_workspace_page/widgets/entry_form.dart';
 import '../../web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'app_alert_dialog.dart';
 import 'contributor_card.dart';
-import 'entry_card.dart';
+import 'mobile_entry_card.dart';
 
 class MobileWorkspaceContent extends StatefulWidget {
   final Workspace workspace;
@@ -59,6 +58,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   TextEditingController titleController = TextEditingController();
   FocusNode titleFocusNode = FocusNode();
 
+  bool newEntryOpen = false;
+
   @override
   void dispose() {
     titleController.dispose();
@@ -100,33 +101,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
 
   Widget entryList() {
     int length = widget.workspace.entries.length;
-    TextEditingController contentController = TextEditingController();
-
-    Widget alertDialog = AppAlertDialog(
-      text: 'New Entry',
-      content: EntryForm(newEntry: true, contentController: contentController),
-      actions: [
-        AppButton(
-          isLoading: entryLoading,
-          text: "Create New Entry",
-          height: 40,
-          onTap: () async {
-            /* Create Entry */
-            setState(() {
-              entryLoading = true;
-            });
-            await widget.createNewEntry(contentController.text);
-            setState(() {
-              entryLoading = false;
-            });
-            contentController.text = "";
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-
     return widget.workspace.entries.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
@@ -135,58 +109,72 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: length + 1,
-              itemBuilder: (context, index) => (index < length)
-                  ? EntryCard(
-                      entry: widget.workspace.entries[index],
-                      onDelete: () async {
-                        await widget.deleteEntry(widget.workspace.entries[index].entryId);
-                      },
-                      pending: widget.pending,
-                      editEntry: widget.editEntry,
-                    )
-                  : addIcon(() {
-                      showDialog(context: context, builder: (context) => alertDialog);
-                    }),
+              itemBuilder: (context, index) {
+                return (index < length) ? MobileEntryCard(
+                  entry: widget.workspace.entries[index],
+                  onDelete: () async {
+                    await widget.deleteEntry(
+                        widget.workspace.entries[index].entryId);
+                  },
+                  editEntry: widget.editEntry,
+                ) : NewEntry(
+                  onCreate: widget.createNewEntry,
+                  backgroundColor: const Color.fromARGB(255, 220, 220, 240),
+                  isMobile: true,
+                );
+              },
             ),
-          )
-        : firstAddition(
-            "Add Your First Entry!",
-            () {
-              showDialog(context: context, builder: (context) => alertDialog);
-            },
-          );
+          ) : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Add Your First Entry!",
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
+              ),
+              NewEntry(
+                onCreate: widget.createNewEntry,
+                backgroundColor: const Color.fromARGB(255, 220, 220, 240),
+                isMobile: true,
+              ),
+      ],
+    );
   }
 
   Widget contributorList() {
     int length = widget.workspace.contributors.length;
-    Widget alertDialog = AppAlertDialog(
+    int pendingLength = widget.workspace.pendingContributors.length;
 
+    Widget alertDialog = AppAlertDialog(
       text: "Send Collaboration Request",
       content:
           SendCollaborationRequestForm(sendCollaborationRequest: widget.sendCollaborationRequest),
     );
 
-    return widget.workspace.contributors.isNotEmpty
-        ? Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(0.0),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: length + 1,
-              itemBuilder: (context, index) => (index < length)
-                  ? ContributorCard(contributor: widget.workspace.contributors[index])
-                  : addIcon(() {
-                      showDialog(context: context, builder: (context) => alertDialog);
-                    }),
-            ),
-          )
-        : firstAddition(
-            "Add The First Contributor!",
-            () {
-              showDialog(context: context, builder: (context) => alertDialog);
-            },
-          );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: length + pendingLength + 1,
+        itemBuilder: (context, index) => (index < length)
+          ? ContributorCard(
+            contributor: widget.workspace.contributors[index],
+            pending: false,
+        )
+          : (index < length + pendingLength) ? ContributorCard(
+            contributor: widget.workspace.pendingContributors[index-length],
+            pending: true,
+        ) : addIcon(() {
+            showDialog(context: context, builder: (context) => alertDialog);
+          }),
+        ),
+     );
   }
 
   Widget referenceList() {
@@ -307,7 +295,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "References"),
             referenceList(),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 100.0),
           ],
         ),
       );

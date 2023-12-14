@@ -14,6 +14,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
+import '../../../utils/responsive/responsive.dart';
+
 class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
@@ -233,7 +235,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width / 5,
                                     child: AppButton(
-                                      text: "Send Workspace to Review",
+                                      text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Send Review" : "Send",
                                       height: 45,
                                       onTap: () {},
                                       type: "primary",

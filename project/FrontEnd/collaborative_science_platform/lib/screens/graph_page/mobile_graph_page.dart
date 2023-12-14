@@ -135,29 +135,27 @@ class _MobileGraphPageState extends State<MobileGraphPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          child: Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              child: CarouselSlider(
-                carouselController: controller,
-                items: subpages,
-                options: CarouselOptions(
-                  scrollPhysics: const ScrollPhysics(),
-                  autoPlay: false,
-                  viewportFraction: 1.0,
-                  enableInfiniteScroll: false,
-                  initialPage: current,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-                  enlargeFactor: 0.3,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      current = index;
-                    });
-                  },
-                ),
+        Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: CarouselSlider(
+              carouselController: controller,
+              items: subpages,
+              options: CarouselOptions(
+                scrollPhysics: const ScrollPhysics(),
+                autoPlay: false,
+                viewportFraction: 1.0,
+                enableInfiniteScroll: false,
+                initialPage: current,
+                enlargeCenterPage: true,
+                enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+                enlargeFactor: 0.3,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    current = index;
+                  });
+                },
               ),
             ),
           ),
