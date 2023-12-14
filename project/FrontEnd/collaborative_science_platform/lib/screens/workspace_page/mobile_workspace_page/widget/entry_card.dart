@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tex/flutter_tex.dart';
 
 import '../../../../models/workspaces_page/entry.dart';
 import '../../../../utils/colors.dart';
@@ -27,11 +30,11 @@ class _EntryCardState extends State<EntryCard> {
   final entryController = TextEditingController();
   final entryFocusNode = FocusNode();
 
-  final double shrunkHeight = 120.0;
-  final double extendHeight = 450.0;
+  bool editMode = false;
+  bool edited = false;
+  String buffer = "";
 
-  bool extended = false;
-  bool readOnly = true;
+  bool readOnly = false;
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _EntryCardState extends State<EntryCard> {
   Widget entryHeader() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           widget.entry.isTheoremEntry
@@ -75,6 +79,140 @@ class _EntryCardState extends State<EntryCard> {
             ),
           ),
       ],
+    );
+  }
+
+  Widget upperIconRow() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  editMode = false;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Preview",
+                    style: TextStyle(
+                      color: (editMode) ? Colors.grey : Colors.indigo[600],
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(width: 6.0),
+                  Icon(
+                    Icons.visibility,
+                    color: (editMode) ? Colors.grey : Colors.indigo[600],
+                  )
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10.0),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (!edited) {
+                    buffer = entryController.text;
+                  }
+                  editMode = true;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Write",
+                    style: TextStyle(
+                      color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  const SizedBox(width: 6.0),
+                  Icon(
+                    Icons.edit,
+                    color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                  )
+                ],
+              ),
+            ),
+          ),
+          const Expanded(child: SizedBox()),
+          if (editMode) IconButton(
+            onPressed: () async {
+              await widget.editEntry(entryController.text, widget.entry.entryId);
+              setState(() {
+                editMode = false;
+                edited = false;
+              });
+            },
+            icon: const Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          ),
+          if (editMode) IconButton(
+            onPressed: () {
+              setState(() {
+                editMode = false;
+                edited = false;
+                entryController.text = buffer;
+              });
+            },
+            icon: const Icon(
+              Icons.close,
+              color: Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget lowerIconRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () {
+              widget.onDelete();
+              setState(() {
+
+              });
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
+          ),
+          const Expanded(child: SizedBox()),
+          Text(
+            widget.entry.publishDateFormatted,
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16.0,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -132,7 +270,7 @@ class _EntryCardState extends State<EntryCard> {
                             // delete the entry
                             widget.onDelete();
                             setState(() {
-                              extended = false;
+
                             });
                             Navigator.of(context).pop();
                           },
@@ -150,35 +288,6 @@ class _EntryCardState extends State<EntryCard> {
                 },
                 icon: const Icon(Icons.delete),
               ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AppAlertDialog(
-                      text: "Do you want to finalize the entry?",
-                      actions: [
-                        AppButton(
-                          text: "Yes",
-                          height: 40,
-                          onTap: () {
-                            /* Finalize the entry */
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        AppButton(
-                          text: "No",
-                          height: 40,
-                          onTap: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.stop),
-              ),
-              //const Expanded(child: SizedBox()),
               Text(
                 widget.entry.publishDateFormatted,
                 style: const TextStyle(
@@ -210,14 +319,15 @@ class _EntryCardState extends State<EntryCard> {
           );
   }
 
-  Widget fullEntryContent() {
+  Widget entryContent() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        upperIconRow(),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            readOnly: readOnly,
+          child: (editMode) ? TextField(
             controller: entryController,
             focusNode: entryFocusNode,
             cursorColor: Colors.grey.shade700,
@@ -226,7 +336,7 @@ class _EntryCardState extends State<EntryCard> {
               fontSize: 16.0,
             ),
             maxLines: 10,
-            onChanged: (text) {/* What will happen when the text changes? */},
+            onChanged: (text) { edited = true; },
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: AppColors.primaryColor),
@@ -237,23 +347,19 @@ class _EntryCardState extends State<EntryCard> {
                 borderRadius: BorderRadius.circular(4.0),
               ),
             ),
+          ) : Card(
+            color: const Color.fromARGB(255, 220, 240, 240),
+            child: TeXView(
+              renderingEngine: const TeXViewRenderingEngine.katex(),
+              child: TeXViewDocument(
+                utf8.decode(entryController.text.codeUnits),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 10.0),
-        iconRow(widget.pending),
+        lowerIconRow(),
       ],
-    );
-  }
-
-  Widget headerOfContent() {
-    return Text(
-      widget.entry.content,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: const TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.w500,
-      ),
     );
   }
 
@@ -261,40 +367,19 @@ class _EntryCardState extends State<EntryCard> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: SizedBox(
-        height: extended ? extendHeight : shrunkHeight,
-        child: Card(
-          elevation: 4.0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 0.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                entryHeader(),
-                extended ? fullEntryContent() : headerOfContent(),
-                //const Expanded(child: SizedBox()),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          extended = !extended;
-                        });
-                      },
-                      icon: extended
-                          ? const Icon(Icons.keyboard_arrow_up)
-                          : const Icon(Icons.keyboard_arrow_down),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+      child: Card(
+        elevation: 4.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 0.0),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              entryHeader(),
+              entryContent(),
+            ],
           ),
         ),
       ),

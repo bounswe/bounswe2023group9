@@ -236,47 +236,58 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           padding: const EdgeInsets.all(0.0),
           // It needs to be nested scrollable in the future
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: titleReadOnly
-                  ? [
-                      Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
-                      if (widget.workspace!.status == WorkspaceStatus.workable)
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                titleController.text = widget.workspace.workspaceTitle;
-                                titleReadOnly = false;
-                              });
-                            },
-                            icon: const Icon(Icons.edit)),
-                    ]
-                  : [
-                      SizedBox(
-                        width: 300,
-                        height: 80,
-                        child: AppTextField(
-                            controller: titleController,
-                            focusNode: titleFocusNode,
-                            hintText: "",
-                            obscureText: false,
-                            height: 200),
-                      ),
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: IconButton(
-                            onPressed: () {
-                              widget.editTitle(titleController.text);
-                              widget.workspace.workspaceTitle = titleController.text;
-                              setState(() {
-                                titleReadOnly = true;
-                              });
-                            },
-                            icon: const Icon(Icons.save)),
-                      )
-                    ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: titleReadOnly
+                    ? [
+                        SizedBox(
+                          width: Responsive.getGenericPageWidth(context)-100,
+                          child: Text(
+                              widget.workspace.workspaceTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.title2,
+                          ),
+                        ),
+                        if (widget.workspace.status == WorkspaceStatus.workable)
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  titleController.text = widget.workspace.workspaceTitle;
+                                  titleReadOnly = false;
+                                });
+                              },
+                              icon: const Icon(Icons.edit)),
+                      ]
+                    : [
+                        SizedBox(
+                          width: 300,
+                          height: 80,
+                          child: AppTextField(
+                              controller: titleController,
+                              focusNode: titleFocusNode,
+                              hintText: "",
+                              obscureText: false,
+                              height: 200),
+                        ),
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: IconButton(
+                              onPressed: () {
+                                widget.editTitle(titleController.text);
+                                widget.workspace.workspaceTitle = titleController.text;
+                                setState(() {
+                                  titleReadOnly = true;
+                                });
+                              },
+                              icon: const Icon(Icons.save)),
+                        )
+                      ],
+              ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
