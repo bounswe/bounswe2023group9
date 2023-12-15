@@ -7,7 +7,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'mobile_workspace_page/mobile_workspace_page.dart';
 
 class WorkspacesPage extends StatefulWidget {

@@ -4,10 +4,10 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 
-import '../../../../models/workspaces_page/entry.dart';
-import '../../../../utils/colors.dart';
-import '../../../../widgets/card_container.dart';
-import 'entry_header.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/widgets/card_container.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/entry_header.dart';
 
 class MobileEntryCard extends StatefulWidget {
   final Entry entry;
@@ -49,108 +49,119 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
 
   Widget upperIconRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                editMode = false;
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Preview",
-                  style: TextStyle(
-                    color: (editMode) ? Colors.grey : Colors.indigo[600],
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    editMode = false;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Preview",
+                      style: TextStyle(
+                        color: (editMode) ? Colors.grey : Colors.indigo[600],
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 4.0),
+                    Icon(
+                      Icons.visibility,
+                      color: (editMode) ? Colors.grey : Colors.indigo[600],
+                    )
+                  ],
                 ),
-                const SizedBox(width: 6.0),
-                Icon(
-                  Icons.visibility,
-                  color: (editMode) ? Colors.grey : Colors.indigo[600],
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 10.0),
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (!edited) {
-                  buffer = entryController.text;
-                }
-                editMode = true;
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Write",
-                  style: TextStyle(
-                    color: (!editMode) ? Colors.grey : Colors.indigo[600],
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                  ),
+            const SizedBox(width: 12.0),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (!edited) {
+                      buffer = entryController.text;
+                    }
+                    editMode = true;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Write",
+                      style: TextStyle(
+                        color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 4.0),
+                    Icon(
+                      Icons.edit,
+                      color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                    )
+                  ],
                 ),
-                const SizedBox(width: 6.0),
-                Icon(
-                  Icons.edit,
-                  color: (!editMode) ? Colors.grey : Colors.indigo[600],
-                )
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        const Expanded(child: SizedBox()),
-        if (editMode) IconButton(
-          onPressed: () async {
-            await widget.editEntry(entryController.text, widget.entry.entryId);
-            setState(() {
-              editMode = false;
-              edited = false;
-            });
-          },
-          icon: const Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        ),
-        if (editMode) IconButton(
-          onPressed: () {
-            setState(() {
-              editMode = false;
-              edited = false;
-              entryController.text = buffer;
-            });
-          },
-          icon: const Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
-        ),
+        (editMode) ? Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () async {
+                await widget.editEntry(entryController.text, widget.entry.entryId);
+                setState(() {
+                  editMode = false;
+                  edited = false;
+                });
+              },
+              icon: const Icon(
+                Icons.check,
+                color: Colors.green,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  editMode = false;
+                  edited = false;
+                  entryController.text = buffer;
+                });
+              },
+              icon: const Icon(
+                Icons.close,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ) : Container(),
       ],
     );
   }
 
   Widget lowerIconRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        if (widget.entry.isEditable) IconButton(
+        (widget.entry.isEditable) ? IconButton(
           onPressed: () {
             widget.onDelete();
             setState(() { });
@@ -159,8 +170,7 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
             Icons.delete,
             color: Colors.grey,
           ),
-        ),
-        const Expanded(child: SizedBox()),
+        ) : Container(),
         Text(
           widget.entry.publishDateFormatted,
           style: const TextStyle(
@@ -176,12 +186,12 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
-      child: CardContainer(
-        backgroundColor: widget.backgroundColor,
-        child: SingleChildScrollView(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        child: CardContainer(
+          backgroundColor: widget.backgroundColor,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            padding: const EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -213,39 +223,18 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
                   ) : Container(
                     constraints: BoxConstraints(
                       minHeight: 100.0, // Set the minimum height here
-                      maxHeight: (Responsive.isMobile(context)) ? double.infinity : 600,
+                      maxHeight: (Responsive.isMobile(context)) ? double.infinity : 400,
                     ),
-                    child: SingleChildScrollView(
-                      child: TeXView(
-                        renderingEngine: const TeXViewRenderingEngine.katex(),
-                        child: TeXViewDocument(
-                          utf8.decode(entryController.text.codeUnits),
-                        ),
+                    child: TeXView(
+                      loadingWidgetBuilder: (context) => const Center(child: CircularProgressIndicator()),
+                      renderingEngine: const TeXViewRenderingEngine.katex(),
+                      child: TeXViewDocument(
+                        utf8.decode(entryController.text.codeUnits),
                       ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "name surname (email)",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16.0,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
                 lowerIconRow(),
-                const SizedBox(height: 8.0),
               ],
             ),
           ),

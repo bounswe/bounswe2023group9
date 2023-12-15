@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 
-import '../../../../utils/colors.dart';
-import '../../../../utils/responsive/responsive.dart';
-import '../../../../widgets/app_button.dart';
-import '../../../../widgets/card_container.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/widgets/card_container.dart';
 
 class NewEntry extends StatefulWidget {
   final Function onCreate;

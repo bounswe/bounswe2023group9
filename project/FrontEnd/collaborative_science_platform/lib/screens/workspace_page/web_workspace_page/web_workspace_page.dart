@@ -14,7 +14,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
-import '../../../utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 
 class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
@@ -245,6 +245,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               ),
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 EntriesListView(
                                   entries: widget.workspace!.entries,

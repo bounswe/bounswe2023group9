@@ -4,10 +4,10 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
-import '../../../../models/workspaces_page/workspace.dart';
-import '../../../../utils/responsive/responsive.dart';
-import '../../web_workspace_page/widgets/add_reference_form.dart';
-import '../../web_workspace_page/widgets/send_collaboration_request_form.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/add_reference_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'app_alert_dialog.dart';
 import 'contributor_card.dart';
 import 'mobile_entry_card.dart';

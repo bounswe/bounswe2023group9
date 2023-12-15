@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../models/user.dart';
-import '../../../../utils/colors.dart';
-import '../../../profile_page/profile_page.dart';
+
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 
 
 class ContributorCard extends StatelessWidget {

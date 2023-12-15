@@ -10,8 +10,8 @@ import 'package:collaborative_science_platform/screens/workspace_page/workspaces
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../widgets/app_button.dart';
-import '../../home_page/widgets/home_page_appbar.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;

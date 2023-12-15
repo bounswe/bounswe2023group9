@@ -9,7 +9,7 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 
 class ContributorsListView extends StatelessWidget {
   final List<User> contributors;

@@ -6,9 +6,9 @@ import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
-import '../../mobile_workspace_page/widget/app_alert_dialog.dart';
-import '../../mobile_workspace_page/widget/entry_header.dart';
-import '../../mobile_workspace_page/widget/new_entry.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/entry_header.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 
 class EntriesListView extends StatefulWidget {
   final List<Entry> entries;
@@ -40,7 +40,7 @@ class _EntriesListViewState extends State<EntriesListView> {
   Widget build(BuildContext context) {
     int length = widget.entries.length;
     return Container(
-      height: widget.height,
+      // height: widget.height,
       width: widget.showSidebar
           ? MediaQuery.of(context).size.width / 2
           : MediaQuery.of(context).size.width * 0.7,
@@ -48,9 +48,10 @@ class _EntriesListViewState extends State<EntriesListView> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: (
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          ListView(
+            shrinkWrap: true,
+            //mainAxisAlignment: MainAxisAlignment.center,
+            //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
               "Entries",

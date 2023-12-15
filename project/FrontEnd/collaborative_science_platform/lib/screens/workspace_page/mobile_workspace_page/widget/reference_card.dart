@@ -2,7 +2,7 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../node_details_page/node_details_page.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 
 class ReferenceCard extends StatelessWidget {
   final Node reference;
