@@ -334,18 +334,21 @@ class _SignUpPageState extends State<SignUpPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Container(
+                                      Expanded(
+                                          child: Container(
                                         decoration: const BoxDecoration(
                                           border: Border(
                                             bottom: BorderSide(width: 1.5, color: Colors.grey),
                                           ),
                                         ),
+                                        padding: const EdgeInsets.only(
+                                            bottom: 8.0), // Adjust the value as needed
                                         child: const Text(
                                           'Collaborative Science Platform Privacy Policy',
                                           style: TextStyle(fontSize: 20.0),
                                         ),
-                                      ),
-                                    const SizedBox(height: 10.0),
+                                      )),
+                                      const SizedBox(height: 10.0),
                                     ],
                                   ),
                                 ),
@@ -353,7 +356,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 shadowColor: Colors.white,
                                 content: const PrivacyPolicyForm(),
                               ),
-                            ); 
+                            );
                           },
                           child: const Text(
                             "Accept privacy policy.",
