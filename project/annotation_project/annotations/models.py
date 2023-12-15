@@ -1,14 +1,27 @@
 from django.db import models
 
+class Source(models.Model):
+    uri = models.URLField(max_length=100, unique=True)
+
+class Selector(models.Model):
+    type = models.CharField(max_length=100, default='TextPositionSelector')
+    start = models.PositiveIntegerField()
+    end = models.PositiveIntegerField()
+    source = models.ForeignKey(Source)
+
+class Body(models.Model):
+    type = models.CharField(max_length=100, default='TextualBody')
+    value = models.TextField(max_length=400)
+    format = models.CharField(max_length=100, default='text/plain')
+    language = models.CharField(max_length=100, default='en')
+
+class Creator(models.Model):
+    name = models.CharField(max_length=100)
+    type = models.TextField(max_length=100, default='Person')
+
 class Annotation(models.Model):
-    context = models.CharField(max_length=100)
-    id = models.CharField(max_length=100, primary_key=True)
-    type = 'Annotation'
-    body = models.TextField(max_length=500)
-    target_source = models.URLField() #How should we decide?
-    target_selector_type = 'TextPositionSelector'
-    target_selector_start = models.PositiveIntegerField()
-    target_selector_end = models.PositiveIntegerField()
-
-        
-
+    type = models.CharField(max_length=100, default='Annotation')
+    body = models.ForeignKey(Body)
+    target = models.ForeignKey(Selector)
+    creator = models.ForeignKey(Creator)
+    created = models.DateTimeField(auto_now_add=True)
