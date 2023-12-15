@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:collaborative_science_platform/screens/auth_screens/widgets/privacy_policy_form.dart';
 
 class SignUpPage extends StatefulWidget {
   static const routeName = '/signup';
@@ -43,6 +44,8 @@ class _SignUpPageState extends State<SignUpPage> {
   bool weakPasswordError = false;
 
   String errorMessage = "";
+
+  bool isChecked = false;
 
   @override
   void dispose() {
@@ -93,7 +96,8 @@ class _SignUpPageState extends State<SignUpPage> {
             passwordController.text, confirmPasswordController.text) &&
         nameController.text.isNotEmpty &&
         surnameController.text.isNotEmpty &&
-        emailController.text.isNotEmpty) {
+        emailController.text.isNotEmpty &&
+        isChecked) {
       setState(() {
         buttonState = true;
       });
@@ -296,7 +300,73 @@ class _SignUpPageState extends State<SignUpPage> {
                         style: const TextStyle(color: AppColors.dangerColor),
                       ),
                     ),
-                  const SizedBox(height: 10.0),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: isChecked,
+                        activeColor: AppColors.primaryColor, // Set the checkbox color when checked
+                        checkColor: Colors.white, // Set the check mark color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2.0),
+                        ),
+                        side: MaterialStateBorderSide.resolveWith(
+                          (states) => const BorderSide(
+                            width: 1.2,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value!;
+                          });
+                          validateStrongPassword();
+                        },
+                      ),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: SizedBox(
+                                  width: 500,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(width: 1.5, color: Colors.grey),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Collaborative Science Platform Privacy Policy',
+                                          style: TextStyle(fontSize: 20.0),
+                                        ),
+                                      ),
+                                    const SizedBox(height: 10.0),
+                                    ],
+                                  ),
+                                ),
+                                backgroundColor: Colors.white,
+                                shadowColor: Colors.white,
+                                content: const PrivacyPolicyForm(),
+                              ),
+                            ); 
+                          },
+                          child: const Text(
+                            "Accept privacy policy.",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.hyperTextColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15.0),
                   AppButton(
                     onTap: () async {
                       if (await authenticate() && mounted) {
