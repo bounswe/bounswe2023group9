@@ -53,11 +53,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   final CarouselController controller = CarouselController();
   TextEditingController textController = TextEditingController();
 
-  // Workspaces workspacesData = Workspaces(
-  //   workspaces: <WorkspacesObject>[],
-  //   pendingWorkspaces: <WorkspacesObject>[],
-  // );
-
   bool isLoading = false;
   bool error = false;
   String errorMessage = "";
@@ -261,11 +256,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                     enlargeStrategy: CenterPageEnlargeStrategy.zoom,
                     enlargeFactor: 0.3,
                     onPageChanged: (index, reason) {
-                      // I added this conditional to reduce the number
-                      // of build operation for the workspace.
-                      // Going to slide 1 from slide 2 or vice versa does not affect the
-                      // workspace content below. So it shouldn't be reloaded again.
-                      // However, it doesn't work. One that solves this problem wins a chukulat.
                       if (index != 0 && current != 0) {
                         setState(() {
                           workspaceIndex = index - 1;
