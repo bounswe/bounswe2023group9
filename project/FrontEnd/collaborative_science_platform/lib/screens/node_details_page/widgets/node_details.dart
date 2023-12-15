@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_menu.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
@@ -62,6 +63,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [NodeDetailsMenu()],
+                  ),
                   Padding(
                       padding: Responsive.isDesktop(context)
                           ? const EdgeInsets.all(70.0)
