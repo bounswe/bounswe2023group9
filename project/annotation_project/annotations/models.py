@@ -7,7 +7,7 @@ class Selector(models.Model):
     type = models.CharField(max_length=100, default='TextPositionSelector')
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
-    source = models.ForeignKey(Source)
+    source = models.ForeignKey(Source, on_delete=models.CASCADE)
 
 class Body(models.Model):
     type = models.CharField(max_length=100, default='TextualBody')
@@ -21,7 +21,7 @@ class Creator(models.Model):
 
 class Annotation(models.Model):
     type = models.CharField(max_length=100, default='Annotation')
-    body = models.ForeignKey(Body)
-    target = models.ForeignKey(Selector)
-    creator = models.ForeignKey(Creator)
+    body = models.ForeignKey(Body, on_delete=models.CASCADE)
+    target = models.ForeignKey(Selector, on_delete=models.CASCADE)
+    creator = models.ForeignKey(Creator, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
