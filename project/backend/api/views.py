@@ -12,7 +12,10 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
+from django.core.mail import *
 import random, json, datetime
+
+from backend import settings
 
 
 # from nltk.corpus import wordnet as wn
@@ -989,6 +992,8 @@ def update_review_request_status(request):
     serializer = ReviewRequestSerializer(req)
     return Response(serializer.data, status=200)
 
+
+
 class AskQuestion(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -1043,6 +1048,20 @@ class IsAdmin(BasePermission):
         if not Admin.objects.filter(pk=request.user.basicuser.pk).exists():
             return False
         return True
+
+class send_notification(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdmin,)
+    def post(self, request):
+        receiver = request.data.get('receiver')
+        receiver = receiver.split(",")
+        subject = request.data.get('subject')
+        content = request.data.get('content')
+        send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
+        print(receiver)
+        return Response({"message": "Notification sent successfully."}, status=201)
+
+
 
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated, IsAdmin))
