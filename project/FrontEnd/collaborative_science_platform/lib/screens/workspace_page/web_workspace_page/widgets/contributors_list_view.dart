@@ -134,7 +134,8 @@ class ContributorsListView extends StatelessWidget {
                     builder: (context) => AppAlertDialog(
                       text: "Send Collaboration Request",
                       content: SendCollaborationRequestForm(
-                          sendCollaborationRequest: sendCollaborationRequest),
+                          sendCollaborationRequest: sendCollaborationRequest
+                      ),
                     ),
                   );
                 },

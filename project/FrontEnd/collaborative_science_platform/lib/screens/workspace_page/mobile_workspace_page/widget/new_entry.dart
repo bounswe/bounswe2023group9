@@ -44,92 +44,103 @@ class _NewEntryState extends State<NewEntry> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                editMode = false;
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Preview",
-                  style: TextStyle(
-                    color: (editMode) ? Colors.grey : Colors.indigo[600],
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                  ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    editMode = false;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Preview",
+                      style: TextStyle(
+                        color: (editMode) ? Colors.grey : Colors.indigo[600],
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Icon(
+                      Icons.visibility,
+                      color: (editMode) ? Colors.grey : Colors.indigo[600],
+                    )
+                  ],
                 ),
-                const SizedBox(width: 6.0),
-                Icon(
-                  Icons.visibility,
-                  color: (editMode) ? Colors.grey : Colors.indigo[600],
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-        const SizedBox(width: 10.0),
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                editMode = true;
-              });
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "Write",
-                  style: TextStyle(
-                    color: (!editMode) ? Colors.grey : Colors.indigo[600],
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w400,
-                  ),
+            const SizedBox(width: 10.0),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    editMode = true;
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Write",
+                      style: TextStyle(
+                        color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(width: 6.0),
+                    Icon(
+                      Icons.edit,
+                      color: (!editMode) ? Colors.grey : Colors.indigo[600],
+                    )
+                  ],
                 ),
-                const SizedBox(width: 6.0),
-                Icon(
-                  Icons.edit,
-                  color: (!editMode) ? Colors.grey : Colors.indigo[600],
-                )
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        const Expanded(child: SizedBox()),
-        IconButton(
-          onPressed: () async {
-            setState(() {
-              entryLoading = true;
-            });
-            await widget.onCreate(controller.text);
-            setState(() {
-              open = false;
-              entryLoading = false;
-            });
-          },
-          icon: const Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() {
-              open = false;
-            });
-          },
-          icon: const Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () async {
+                setState(() {
+                  entryLoading = true;
+                });
+                await widget.onCreate(controller.text);
+                setState(() {
+                  open = false;
+                  entryLoading = false;
+                });
+              },
+              icon: const Icon(
+                Icons.check,
+                color: Colors.green,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  open = false;
+                });
+              },
+              icon: const Icon(
+                Icons.close,
+                color: Colors.red,
+              ),
+            ),
+          ],
         ),
       ],
     );

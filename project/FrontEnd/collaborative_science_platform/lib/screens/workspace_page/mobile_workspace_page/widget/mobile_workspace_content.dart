@@ -5,7 +5,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
-import 'package:collaborative_science_platform/widgets/search_bar_extended.dart';
+import 'package:collaborative_science_platform/widgets/semantic_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -39,7 +39,6 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-
     required this.addSemanticTags,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
@@ -108,6 +107,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
       SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
     ];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
@@ -299,7 +299,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                   titleReadOnly = true;
                                 });
                               },
-                              icon: const Icon(Icons.save)),
+                              icon: const Icon(Icons.save),
+                          ),
                         )
                       ],
               ),
@@ -315,6 +316,10 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               child: Divider(),
             ),
             const SubSectionTitle(title: "Semantic Tags"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SemanticSearchBar(addSemanticTags: widget.addSemanticTags),
+            ),
             semanticTagList(),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),

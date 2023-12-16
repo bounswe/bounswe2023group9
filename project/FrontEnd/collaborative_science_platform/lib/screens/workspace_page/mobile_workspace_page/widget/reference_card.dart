@@ -33,10 +33,9 @@ class ReferenceCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(width: 4.0),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,22 +55,20 @@ class ReferenceCard extends StatelessWidget {
                     const SizedBox(height: 2.0),
                     SizedBox(
                       width: MediaQuery.of(context).size.width-100,
-                      child: Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: reference.contributors.length,
-                            itemBuilder: (context, index) => Text(
-                              "${reference.contributors[index].firstName} ${reference.contributors[index].lastName}",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0,
-                                color: Colors.grey,
-                              ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: reference.contributors.length,
+                          itemBuilder: (context, index) => Text(
+                            "${reference.contributors[index].firstName} ${reference.contributors[index].lastName}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16.0,
+                              color: Colors.grey,
                             ),
-                        ),
+                          ),
                       ),
                     ),
                     const SizedBox(height: 2.0),
@@ -88,7 +85,6 @@ class ReferenceCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Expanded(child: SizedBox(width: 4.0)),
                 IconButton(
                   onPressed: () { //remove reference
 

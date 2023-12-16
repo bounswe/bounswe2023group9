@@ -383,9 +383,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void addSemanticTags(
-    List<int> semanticTags,
-  ) async {
+  void addSemanticTags(List<int> semanticTags) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
