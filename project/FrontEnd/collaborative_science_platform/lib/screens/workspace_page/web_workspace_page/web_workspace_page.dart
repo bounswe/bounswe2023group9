@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspaces
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entries_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/references_list_view.dart';
@@ -32,6 +33,7 @@ class WebWorkspacePage extends StatefulWidget {
   final Function finalizeWorkspace;
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
+  final Function addReview;
 
   const WebWorkspacePage({
     super.key,
@@ -50,6 +52,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.sendCollaborationRequest,
     required this.updateRequest,
     required this.sendWorkspaceToReview,
+    required this.addReview,
   });
 
   @override
@@ -72,7 +75,10 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
 
   bool titleReadOnly = true;
   TextEditingController titleController = TextEditingController();
+  TextEditingController reviewController = TextEditingController();
+
   FocusNode titleFocusNode = FocusNode();
+  FocusNode reviewFocusNode = FocusNode();
 
   @override
   void dispose() {
@@ -82,6 +88,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
     controller4.dispose();
     titleController.dispose();
     titleFocusNode.dispose();
+    reviewController.dispose();
+    reviewFocusNode.dispose();
     super.dispose();
   }
 
@@ -266,6 +274,71 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                               WorkspaceStatus.finalized) {
                                             widget.sendWorkspaceToReview();
                                           }
+                                        },
+                                        type: "primary",
+                                      ),
+                                    ),
+                                  if (true)
+                                    /** adjust it to check if the user is reviewer of this workspace */
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width / 5,
+                                      child: AppButton(
+                                        isActive: widget.workspace!.status ==
+                                                WorkspaceStatus.workable ||
+                                            widget.workspace!.status == WorkspaceStatus.finalized,
+                                        text: (MediaQuery.of(context).size.width >
+                                                Responsive.desktopPageWidth)
+                                            ? "Review Workspace"
+                                            : "Review",
+                                        height: 45,
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AppAlertDialog(
+                                              text: "Review Workspace",
+                                              content: AppTextField(
+                                                controller: reviewController,
+                                                focusNode: reviewFocusNode,
+                                                hintText: "Your Review",
+                                                obscureText: false,
+                                                height: 200,
+                                                maxLines: 10,
+                                              ),
+                                              actions: [
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 5),
+                                                  child: AppButton(
+                                                    text: "Approve Workspace",
+                                                    height: 40,
+                                                    onTap: () {
+                                                      /** Approve workspace*/
+                                                      widget.addReview(
+                                                          widget.workspace!.workspaceId,
+                                                          RequestStatus.approved,
+                                                          reviewController.text);
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 5),
+                                                  child: AppButton(
+                                                    text: "Reject Workspace",
+                                                    height: 40,
+                                                    type: "outlined",
+                                                    onTap: () {
+                                                      /** Reject workspace*/
+                                                      widget.addReview(
+                                                          widget.workspace!.workspaceId,
+                                                          RequestStatus.rejected,
+                                                          reviewController.text);
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
                                         },
                                         type: "primary",
                                       ),

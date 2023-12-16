@@ -28,6 +28,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function finalizeWorkspace;
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
+  final Function addReview;
 
   const MobileWorkspacePage({
     super.key,
@@ -45,6 +46,7 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.sendCollaborationRequest,
     required this.updateRequest,
     required this.sendWorkspaceToReview,
+    required this.addReview,
   });
 
   @override
@@ -298,6 +300,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           sendCollaborationRequest: widget.sendCollaborationRequest,
                           updateRequest: widget.updateRequest,
                           sendWorkspaceToReview: widget.sendWorkspaceToReview,
+                          addReview: widget.addReview,
                         )
                       : const SizedBox(
                           width: 100,
