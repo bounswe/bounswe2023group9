@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:collaborative_science_platform/widgets/semantic_search_bar.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
+  final Function sendWorkspaceToReview;
 
   const MobileWorkspaceContent({
     super.key,
@@ -43,7 +45,7 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
-
+    required this.sendWorkspaceToReview,
   });
 
   @override
@@ -103,7 +105,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
 
   Widget semanticTagList() {
     List<SemanticTag> tags = <SemanticTag>[
-      SemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1", description: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
+      SemanticTag(
+          id: "1",
+          label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1",
+          description:
+              "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
       SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
       SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
     ];
@@ -119,7 +125,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           return SemanticTagCard(
             tag: tags[index],
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
-            onDelete: () { /* delete the semantic tag */ },
+            onDelete: () {/* delete the semantic tag */},
           );
         },
       ),
@@ -137,21 +143,23 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: length + 1,
               itemBuilder: (context, index) {
-                return (index < length) ? MobileEntryCard(
-                  entry: widget.workspace.entries[index],
-                  onDelete: () async {
-                    await widget.deleteEntry(
-                        widget.workspace.entries[index].entryId);
-                  },
-                  editEntry: widget.editEntry,
-                ) : NewEntry(
-                  onCreate: widget.createNewEntry,
-                  backgroundColor: const Color.fromARGB(255, 220, 220, 240),
-                  isMobile: true,
-                );
+                return (index < length)
+                    ? MobileEntryCard(
+                        entry: widget.workspace.entries[index],
+                        onDelete: () async {
+                          await widget.deleteEntry(widget.workspace.entries[index].entryId);
+                        },
+                        editEntry: widget.editEntry,
+                      )
+                    : NewEntry(
+                        onCreate: widget.createNewEntry,
+                        backgroundColor: const Color.fromARGB(255, 220, 220, 240),
+                        isMobile: true,
+                      );
               },
             ),
-          ) : Column(
+          )
+        : Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -168,8 +176,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                 isMobile: true,
               ),
-      ],
-    );
+            ],
+          );
   }
 
   Widget contributorList() {
@@ -190,18 +198,20 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: length + pendingLength + 1,
         itemBuilder: (context, index) => (index < length)
-          ? ContributorCard(
-            contributor: widget.workspace.contributors[index],
-            pending: false,
-        )
-          : (index < length + pendingLength) ? ContributorCard(
-            contributor: widget.workspace.pendingContributors[index-length],
-            pending: true,
-        ) : addIcon(() {
-            showDialog(context: context, builder: (context) => alertDialog);
-          }),
-        ),
-     );
+            ? ContributorCard(
+                contributor: widget.workspace.contributors[index],
+                pending: false,
+              )
+            : (index < length + pendingLength)
+                ? ContributorCard(
+                    contributor: widget.workspace.pendingContributors[index - length],
+                    pending: true,
+                  )
+                : addIcon(() {
+                    showDialog(context: context, builder: (context) => alertDialog);
+                  }),
+      ),
+    );
   }
 
   Widget referenceList() {
@@ -259,12 +269,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 children: titleReadOnly
                     ? [
                         SizedBox(
-                          width: Responsive.getGenericPageWidth(context)-100,
+                          width: Responsive.getGenericPageWidth(context) - 150,
                           child: Text(
-                              widget.workspace.workspaceTitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyles.title2,
+                            widget.workspace.workspaceTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyles.title2,
                           ),
                         ),
                         if (widget.workspace.status == WorkspaceStatus.workable)
@@ -276,6 +286,84 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                 });
                               },
                               icon: const Icon(Icons.edit)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                          child: IconButton(
+                            icon: widget.pending
+                                ? const Icon(Icons.approval)
+                                : (widget.workspace.status == WorkspaceStatus.workable
+                                    ? const Icon(Icons.lock)
+                                    : const Icon(Icons.send)),
+                            onPressed: widget.pending
+                                ? () {
+                                    // accept or reject the review
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AppAlertDialog(
+                                        text: "Do you accept the work?",
+                                        actions: [
+                                          AppButton(
+                                            text: "Accept",
+                                            height: 40,
+                                            onTap: () {
+                                              /* Send to review */
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                          AppButton(
+                                            text: "Reject",
+                                            height: 40,
+                                            onTap: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                : () {
+                                    // send to review
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AppAlertDialog(
+                                        text: widget.workspace.status == WorkspaceStatus.workable
+                                            ? "Do you want to finalize the workspace?"
+                                            : "Do you want to send it to review?",
+                                        actions: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 5),
+                                            child: AppButton(
+                                              text: "Yes",
+                                              height: 40,
+                                              onTap: () {
+                                                if (widget.workspace.status ==
+                                                    WorkspaceStatus.workable) {
+                                                  widget.finalizeWorkspace();
+                                                  Navigator.of(context).pop();
+                                                } else {
+                                                  /* Send to review */
+                                                  widget.sendWorkspaceToReview();
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 5),
+                                            child: AppButton(
+                                              text: "No",
+                                              height: 40,
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                          ),
+                        ),
                       ]
                     : [
                         SizedBox(
@@ -292,14 +380,14 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           width: 50,
                           height: 50,
                           child: IconButton(
-                              onPressed: () {
-                                widget.editTitle(titleController.text);
-                                widget.workspace.workspaceTitle = titleController.text;
-                                setState(() {
-                                  titleReadOnly = true;
-                                });
-                              },
-                              icon: const Icon(Icons.save),
+                            onPressed: () {
+                              widget.editTitle(titleController.text);
+                              widget.workspace.workspaceTitle = titleController.text;
+                              setState(() {
+                                titleReadOnly = true;
+                              });
+                            },
+                            icon: const Icon(Icons.save),
                           ),
                         )
                       ],

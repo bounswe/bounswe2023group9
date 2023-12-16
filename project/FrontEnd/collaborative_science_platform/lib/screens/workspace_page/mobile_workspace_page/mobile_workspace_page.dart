@@ -27,6 +27,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
+  final Function sendWorkspaceToReview;
 
   const MobileWorkspacePage({
     super.key,
@@ -39,10 +40,11 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-      required this.addSemanticTags,
-      required this.finalizeWorkspace,
-      required this.sendCollaborationRequest,
-      required this.updateRequest
+    required this.addSemanticTags,
+    required this.finalizeWorkspace,
+    required this.sendCollaborationRequest,
+    required this.updateRequest,
+    required this.sendWorkspaceToReview,
   });
 
   @override
@@ -144,67 +146,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                      child: IconButton(
-                        icon: pending
-                            ? const Icon(Icons.keyboard_arrow_right)
-                            : const Icon(Icons.send),
-                        onPressed: pending
-                            ? () {
-                                // accept or reject the review
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AppAlertDialog(
-                                    text: "Do you accept the work?",
-                                    actions: [
-                                      AppButton(
-                                        text: "Accept",
-                                        height: 40,
-                                        onTap: () {
-                                          /* Send to review */
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      AppButton(
-                                        text: "Reject",
-                                        height: 40,
-                                        onTap: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                            : () {
-                                // send to review
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AppAlertDialog(
-                                    text: "Do you want to send it to review?",
-                                    actions: [
-                                      AppButton(
-                                        text: "Yes",
-                                        height: 40,
-                                        onTap: () {
-                                          /* Send to review */
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      AppButton(
-                                        text: "No",
-                                        height: 40,
-                                        onTap: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
                       ),
                     ),
                   ],
@@ -356,7 +297,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           finalizeWorkspace: widget.finalizeWorkspace,
                           sendCollaborationRequest: widget.sendCollaborationRequest,
                           updateRequest: widget.updateRequest,
-
+                          sendWorkspaceToReview: widget.sendWorkspaceToReview,
                         )
                       : const SizedBox(
                           width: 100,

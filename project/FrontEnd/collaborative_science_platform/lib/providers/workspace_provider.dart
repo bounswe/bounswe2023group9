@@ -277,6 +277,29 @@ class WorkspaceProvider with ChangeNotifier {
       throw Exception("Something has happened");
     }
   }
+  Future<void> sendWorkspaceToReview(int workspaceId, int userId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/send_rev_req/");
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+      'sender': "$userId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw FinalizeWorkspaceException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
 
   Future<void> deleteReference(int workspaceId, int nodeId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/delete_reference/");

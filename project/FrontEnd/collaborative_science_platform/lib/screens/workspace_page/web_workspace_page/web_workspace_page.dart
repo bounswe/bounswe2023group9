@@ -16,7 +16,6 @@ import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
   final Workspaces? workspaces;
@@ -32,7 +31,7 @@ class WebWorkspacePage extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
-
+  final Function sendWorkspaceToReview;
 
   const WebWorkspacePage({
     super.key,
@@ -50,6 +49,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
+    required this.sendWorkspaceToReview,
   });
 
   @override
@@ -231,15 +231,45 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             )
                                           ],
                                   ),
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width / 5,
-                                    child: AppButton(
-                                      text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Send Review" : "Send",
-                                      height: 45,
-                                      onTap: () {},
-                                      type: "primary",
+                                  if (widget.workspace!.status == WorkspaceStatus.workable ||
+                                      widget.workspace!.status == WorkspaceStatus.finalized ||
+                                      widget.workspace!.status == WorkspaceStatus.inReview)
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width / 5,
+                                      child: AppButton(
+                                        isActive: widget.workspace!.status ==
+                                                WorkspaceStatus.workable ||
+                                            widget.workspace!.status == WorkspaceStatus.finalized,
+                                        text: widget.workspace!.status == WorkspaceStatus.workable
+                                            ? ((MediaQuery.of(context).size.width >
+                                                    Responsive.desktopPageWidth)
+                                                ? "Finalize Workspace"
+                                                : "Finalize")
+                                            : widget.workspace!.status == WorkspaceStatus.finalized
+                                                ? ((MediaQuery.of(context).size.width >
+                                                        Responsive.desktopPageWidth)
+                                                    ? "Send to Review"
+                                                    : "Send")
+                                                : ((MediaQuery.of(context).size.width >
+                                                        Responsive.desktopPageWidth)
+                                                    ? "In Review"
+                                                    : "In Review"),
+                                        height: 45,
+                                        onTap: () {
+                                          /* finalize workspace*/
+                                          if (widget.workspace!.status ==
+                                              WorkspaceStatus.workable) {
+                                            widget.finalizeWorkspace();
+                                          }
+                                          /*send workspace to review */
+                                          else if (widget.workspace!.status ==
+                                              WorkspaceStatus.finalized) {
+                                            widget.sendWorkspaceToReview();
+                                          }
+                                        },
+                                        type: "primary",
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -260,10 +290,21 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SemanticTagListView(
-                                      tags: <SemanticTag> [
-                                          SemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1", description: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
-                                          SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
-                                          SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
+                                      tags: <SemanticTag>[
+                                        SemanticTag(
+                                            id: "1",
+                                            label:
+                                                "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1",
+                                            description:
+                                                "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
+                                        SemanticTag(
+                                            id: "2",
+                                            label: "Label 2",
+                                            description: "Description 2"),
+                                        SemanticTag(
+                                            id: "2",
+                                            label: "Label 3",
+                                            description: "Description 3"),
                                       ],
                                       addSemanticTags: widget.addSemanticTags,
                                       height: minHeight / 2,

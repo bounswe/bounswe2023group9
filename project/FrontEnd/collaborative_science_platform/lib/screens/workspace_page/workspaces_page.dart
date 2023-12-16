@@ -305,6 +305,41 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         isLoading = true;
       });
       await workspaceProvider.finalizeWorkspace(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on FinalizeWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = FinalizeWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void sendWorkspaceToReview() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.sendWorkspaceToReview(
+          widget.workspaceId, auth.basicUser!.basicUserId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
     } on FinalizeWorkspaceException {
       setState(() {
         error = true;
@@ -442,7 +477,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
-
+        sendWorkspaceToReview: sendWorkspaceToReview,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -459,6 +494,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
+        sendWorkspaceToReview: sendWorkspaceToReview,
       ),
     );
   }
