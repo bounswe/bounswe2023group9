@@ -20,7 +20,7 @@ class MobileEntryCard extends StatefulWidget {
     required this.entry,
     required this.onDelete,
     required this.editEntry,
-    this.backgroundColor = const Color.fromARGB(255, 230, 255, 230),
+    this.backgroundColor = const Color.fromARGB(255, 220, 235, 220),
   });
 
   @override

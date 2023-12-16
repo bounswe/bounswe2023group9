@@ -1,8 +1,11 @@
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
+import 'package:collaborative_science_platform/widgets/search_bar_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -95,6 +98,30 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           ),
           addIcon(onPressed),
         ],
+      ),
+    );
+  }
+
+  Widget semanticTagList() {
+    List<SemanticTag> tags = <SemanticTag>[
+      SemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1", description: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
+      SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
+      SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        itemCount: tags.length,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return SemanticTagCard(
+            tag: tags[index],
+            backgroundColor: const Color.fromARGB(255, 220, 235, 220),
+            onDelete: () { /* delete the semantic tag */ },
+          );
+        },
       ),
     );
   }
@@ -283,6 +310,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "Entries"),
             entryList(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Divider(),
+            ),
+            const SubSectionTitle(title: "Semantic Tags"),
+            semanticTagList(),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
