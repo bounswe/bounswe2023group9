@@ -4,10 +4,10 @@ from django.http import JsonResponse
 from .models import *
 
 
-def serialize_annotation(annotation, host):
+def serialize_annotation(annotation, scheme, host):
     return {
         '@context': 'http://www.w3.org/ns/anno.jsonld',
-        'id': f'http://{host}/annotation{annotation.id}',
+        'id': f'{scheme}://{host}/annotation{annotation.id}',
         'type': annotation.type,
         'body': {
             'type': annotation.body.type,
@@ -49,7 +49,7 @@ def matched_annotations_get_view(request):
             return JsonResponse({'message': 'No annotation found!'}, status=404)
 
         matched_data = [
-            serialize_annotation(annotation, request.get_host()) for annotation in matched_annotations
+            serialize_annotation(annotation, request.scheme, request.get_host()) for annotation in matched_annotations
         ]
 
         return JsonResponse(matched_data, status=200, safe=False)
@@ -63,6 +63,6 @@ def get_annotation_by_id(request, annotation_id):
 
         if not annotation:
             return JsonResponse({'message': 'No annotation found!'}, status=404)
-        return JsonResponse(data = serialize_annotation(annotation, request.get_host()), status=200)
+        return JsonResponse(data = serialize_annotation(annotation, request.scheme, request.get_host()), status=200)
     except Exception as e:
         return JsonResponse({'message': str(e)}, status=500)
