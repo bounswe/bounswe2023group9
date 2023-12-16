@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyForm extends StatefulWidget {
@@ -65,9 +64,7 @@ class _PrivacyPolicyForm extends State<PrivacyPolicyForm> {
           If you have any questions or concerns about this Privacy Policy, please contact us at some-mail@science.com.tr
           By using Science Platform, you agree to the terms outlined in this Privacy Policy. Please review this policy regularly for updates.
           '''),
-
       ),
     );
   }
 }
-
