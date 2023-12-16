@@ -1,9 +1,13 @@
+import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_search_bar.dart';
+import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 
 class SendCollaborationRequestForm extends StatefulWidget {
   final Function sendCollaborationRequest;
@@ -17,15 +21,26 @@ class SendCollaborationRequestForm extends StatefulWidget {
 }
 
 class _SendCollaborationRequestFormState extends State<SendCollaborationRequestForm> {
+  final messageTitleController = TextEditingController();
+  final messageTitleFocusNode = FocusNode();
+  final messageBodyController = TextEditingController();
+  final messageBodyFocusNode = FocusNode();
   final searchBarFocusNode = FocusNode();
   bool isLoading = false;
   bool firstSearch = false;
 
+  ProfileData user = ProfileData();
   bool error = false;
   String errorMessage = "";
+  int page = 0;
+  bool sendingRequest = false;
 
   @override
   void dispose() {
+    messageTitleController.dispose();
+    messageTitleFocusNode.dispose();
+    messageBodyController.dispose();
+    messageBodyFocusNode.dispose();
     searchBarFocusNode.dispose();
     super.dispose();
   }
@@ -55,12 +70,13 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+
     return SizedBox(
       height: 600,
       child: SingleChildScrollView(
         primary: false,
         scrollDirection: Axis.vertical,
-        child: Column(
+        child: (page == 0) ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -117,17 +133,14 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        // send collaboration request
-                                        widget.sendCollaborationRequest(
-                                            userProvider.searchUserResult[index].id,
-                                            "request title",
-                                            "request body"); // to be updated
-                                        // ignore: use_build_context_synchronously
-                                        Navigator.of(context).pop();
+                                        user = userProvider.searchUserResult[index];
+                                        setState(() {
+                                          page = 1;
+                                        });
                                       },
-                                      icon: Icon(
-                                        Icons.send,
-                                        color: Colors.grey[600],
+                                      icon: const Icon(
+                                        Icons.keyboard_arrow_right,
+                                        color: Colors.grey,
                                       ),
                                     ),
                                   ],
@@ -136,6 +149,101 @@ class _SendCollaborationRequestFormState extends State<SendCollaborationRequestF
                             );
                           }),
                     ),
+            ),
+          ],
+        ) : (page == 1) ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      page = 0;
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  "To ${user.name} ${user.surname}",
+                  style: TextStyles.title4,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                )
+              ],
+            ),
+            AppTextField(
+              controller: messageTitleController,
+              focusNode: messageTitleFocusNode,
+              hintText: "Subject",
+              obscureText: false,
+              maxLines: 1,
+              height: 60.0,
+            ),
+            const SizedBox(height: 10.0),
+            AppTextField(
+              controller: messageBodyController,
+              focusNode: messageBodyFocusNode,
+              hintText: "Write an expressive message!",
+              obscureText: false,
+              maxLines: 10,
+              height: 300.0,
+            ),
+            AppButton(
+              text: "Send",
+              height: 50.0,
+              type: "outlined",
+              isLoading: sendingRequest,
+              onTap: () async {
+                setState(() {
+                  sendingRequest = true;
+                });
+                await widget.sendCollaborationRequest(user.id, messageTitleController.text, messageBodyController.text);
+                setState(() {
+                  page = 2;
+                  sendingRequest = false;
+                });
+              },
+            ),
+          ],
+        ) : Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "The collaboration request has been sent to ${user.name} ${user.surname} successfully.",
+              style: TextStyles.bodyBlack,
+            ),
+            const SizedBox(height: 10.0),
+            Text(
+              messageTitleController.text,
+              maxLines: 1,
+              style: const TextStyle(
+                color: AppColors.primaryDarkColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            Text(
+              messageBodyController.text,
+              style: TextStyles.title4,
+            ),
+            const SizedBox(height: 10.0),
+            AppButton(
+              text: "Close",
+              height: 40.0,
+              type: "secondary",
+              onTap: () {
+                Navigator.of(context).pop();
+              },
             ),
           ],
         ),

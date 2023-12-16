@@ -6,13 +6,16 @@ import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entries_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/references_list_view.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/semantic_tag_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'package:flutter/material.dart';
+
 
 class WebWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
@@ -25,7 +28,6 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReference;
   final Function deleteReference;
   final Function editTitle;
-
   final Function updateRequest;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
@@ -48,7 +50,6 @@ class WebWorkspacePage extends StatefulWidget {
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
-
   });
 
   @override
@@ -233,7 +234,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   SizedBox(
                                     width: MediaQuery.of(context).size.width / 5,
                                     child: AppButton(
-                                      text: "Send Workspace to Review",
+                                      text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Send Review" : "Send",
                                       height: 45,
                                       onTap: () {},
                                       type: "primary",
@@ -243,6 +244,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                               ),
                             ),
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 EntriesListView(
                                   entries: widget.workspace!.entries,
@@ -254,7 +256,19 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   deleteEntry: widget.deleteEntry,
                                 ),
                                 Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
+                                    SemanticTagListView(
+                                      tags: <SemanticTag> [
+                                          SemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1", description: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
+                                          SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
+                                          SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
+                                      ],
+                                      addSemanticTags: widget.addSemanticTags,
+                                      height: minHeight / 2,
+                                      deleteSemanticTag: () {},
+                                    ),
                                     ContributorsListView(
                                       contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,

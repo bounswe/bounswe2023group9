@@ -72,16 +72,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                     Column(
                       children: [
                         SelectableText.rich(
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                       ],
                     ),
@@ -152,16 +146,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                                     NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                       ],
                     )),

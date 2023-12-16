@@ -7,7 +7,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'mobile_workspace_page/mobile_workspace_page.dart';
 
 class WorkspacesPage extends StatefulWidget {
@@ -383,9 +383,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void addSemanticTags(
-    List<int> semanticTags,
-  ) async {
+  void addSemanticTags(List<int> semanticTags) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
