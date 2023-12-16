@@ -211,7 +211,7 @@ class NodeViewQuestionSerializer(serializers.ModelSerializer):
   answerer = NodeViewBasicUserSerializer()
   class Meta:
     model = Question
-    fields = ['question_content', 'created_at', 'asker', 'answer_content', 'answerer', 'answered_at']
+    fields = ['id', 'question_content', 'created_at', 'asker', 'answer_content', 'answerer', 'answered_at']
 
 # Serializer for Node References
 class NodeViewReferenceSerializer(serializers.ModelSerializer):
