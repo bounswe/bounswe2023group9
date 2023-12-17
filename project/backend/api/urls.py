@@ -38,4 +38,9 @@ urlpatterns = [
     path('ask_question/', AskQuestion.as_view(), name='ask_question'),
     path('answer_question/', AnswerQuestion.as_view(), name='answer_question'),
     path('update_content_status/', update_content_status, name='update_content_status'),
+    path('set_workspace_theorem/', set_workspace_theorem, name='set_workspace_theorem'),
+    path('set_workspace_proof/', set_workspace_proof, name='set_workspace_proof'),
+    path('remove_workspace_theorem/', remove_workspace_theorem, name='remove_workspace_theorem'),
+    path('remove_workspace_proof/', remove_workspace_proof, name='remove_workspace_proof'),
+    path('change_workspace_title/', change_workspace_title, name='change_workspace_title'),
 ]
