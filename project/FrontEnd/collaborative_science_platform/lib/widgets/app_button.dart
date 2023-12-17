@@ -34,9 +34,11 @@ class AppButton extends StatelessWidget {
                           ? AppColors.secondaryColor
                           : (type == "danger"
                               ? AppColors.dangerColor
-                              : (type == "safe"
-                                  ? Colors.grey[600] // const Color.fromARGB(255, 111, 221, 112)
-                                  : Colors.grey[600]))))
+                              : (type == "grey"
+                                  ? Colors.grey[600]
+                                  : (type == "safe"
+                                      ? Color.fromARGB(255, 141, 208, 141)
+                                      : Colors.grey[600])))))
                   : Colors.grey[600],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
