@@ -1057,10 +1057,11 @@ class send_notification(APIView):
         receiver = receiver.split(",")
         subject = request.data.get('subject')
         content = request.data.get('content')
-        send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
-        print(receiver)
+        try:
+            send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
+        except:
+            return Response({"message": "A mistake occured while sending notification."}, status=400)
         return Response({"message": "Notification sent successfully."}, status=201)
-
 
 
 @authentication_classes((TokenAuthentication,))
