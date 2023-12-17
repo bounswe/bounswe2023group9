@@ -11,7 +11,12 @@ import 'package:provider/provider.dart';
 class SearchBarExtended extends StatefulWidget {
   final Function semanticSearch;
   final Function exactSearch;
-  const SearchBarExtended({super.key, required this.semanticSearch, required this.exactSearch});
+
+  const SearchBarExtended({
+    super.key,
+    required this.semanticSearch,
+    required this.exactSearch,
+  });
 
   @override
   State<SearchBarExtended> createState() => _SearchBarExtendedState();

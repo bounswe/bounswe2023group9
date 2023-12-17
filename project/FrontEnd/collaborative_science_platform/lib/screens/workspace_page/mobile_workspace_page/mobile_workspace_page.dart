@@ -10,8 +10,8 @@ import 'package:collaborative_science_platform/screens/workspace_page/workspaces
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../widgets/app_button.dart';
-import '../../home_page/widgets/home_page_appbar.dart';
+import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 
 class MobileWorkspacePage extends StatefulWidget {
   final Workspace? workspace;
@@ -52,11 +52,6 @@ class MobileWorkspacePage extends StatefulWidget {
 class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   final CarouselController controller = CarouselController();
   TextEditingController textController = TextEditingController();
-
-  // Workspaces workspacesData = Workspaces(
-  //   workspaces: <WorkspacesObject>[],
-  //   pendingWorkspaces: <WorkspacesObject>[],
-  // );
 
   bool isLoading = false;
   bool error = false;
@@ -261,11 +256,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                     enlargeStrategy: CenterPageEnlargeStrategy.zoom,
                     enlargeFactor: 0.3,
                     onPageChanged: (index, reason) {
-                      // I added this conditional to reduce the number
-                      // of build operation for the workspace.
-                      // Going to slide 1 from slide 2 or vice versa does not affect the
-                      // workspace content below. So it shouldn't be reloaded again.
-                      // However, it doesn't work. One that solves this problem wins a chukulat.
                       if (index != 0 && current != 0) {
                         setState(() {
                           workspaceIndex = index - 1;

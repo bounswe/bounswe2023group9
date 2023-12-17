@@ -74,16 +74,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SelectableText.rich(
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -179,16 +173,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                                     NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                       ],
                     )),

@@ -71,28 +71,26 @@ class GraphPageNodeCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              node.contributors
-                                  .map((user) =>
-                                      "${user.firstName} ${user.lastName} (${user.email})")
-                                  .join("\n"),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14.0,
-                                color: Colors.black54,
-                              ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: node.contributors.length,
+                          itemBuilder: (context, index) => Text(
+                            "${node.contributors[index].firstName} ${node.contributors[index].lastName} (${node.contributors[index].email})",
+                            maxLines: 1,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14.0,
+                              color: Colors.black54,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            SelectableText(
-                              getDurationFromNow(node.publishDate!),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                          ),
+                        ),
+                        SelectableText(
+                          getDurationFromNow(node.publishDate!),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     )
