@@ -53,11 +53,19 @@ class BasicUserDetailAPI(APIView):
 
   def get(self, request, *args, **kwargs):
     user = BasicUser.objects.get(user_id=request.user.id)
+    user_type = 'basic_user'
+    if  Contributor.objects.filter(user_id=request.user.id).exists():
+        user_type = 'contributor'
+    if  Reviewer.objects.filter(user_id=request.user.id).exists():
+        user_type = 'reviewer'
+    if Admin.objects.filter(user_id=request.user.id).exists():
+       user_type = 'admin'
 
     return JsonResponse({'basic_user_id':user.id,
                          'bio':user.bio,
                          'email_notification_preference': user.email_notification_preference,
-                         'show_activity_preference':user.show_activity_preference},status=200)
+                         'show_activity_preference':user.show_activity_preference,
+                         'user_type':user_type},status=200)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
