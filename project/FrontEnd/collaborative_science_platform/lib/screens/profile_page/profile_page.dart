@@ -105,6 +105,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
+    var asked = profileData.askedQuestions.where((element) => element.isAnswered).toList();
+    var answered = profileData.answeredQuestions.where((element) => element.isAnswered).toList();
+    var questionList = asked + answered;
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
@@ -180,28 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: CardContainer(
                                   child: SizedBox(
                                     height: 400,
-                                    child: QuestionActivity(questions:
-                                        // temp question list
-                                        [
-                                      Question(
-                                          id: 1,
-                                          content: "How does Flutter work?",
-                                          asker: User(
-                                            firstName: "John Doe",
-                                            email: "as",
-                                            lastName: "1",
-                                          ),
-                                          createdAt: DateTime.now().toString(),
-                                          answer:
-                                              "Flutter works by using the Dart programming language...",
-                                          answerer: User(
-                                            firstName: "John Doe",
-                                            email: "as",
-                                            lastName: "1",
-                                          ),
-                                          answeredAt: DateTime.now().toString(),
-                                          nodeId: 100),
-                                    ]),
+                                    child: QuestionActivity(questions: questionList),
                                   ),
                                 ),
                               ),
@@ -269,28 +251,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: CardContainer(
                                   child: SizedBox(
                                     height: 400,
-                                    child: QuestionActivity(questions:
-                                        // temp question list
-                                        [
-                                      Question(
-                                          id: 1,
-                                          content: "How does Flutter work?",
-                                          asker: User(
-                                            firstName: "John Doe",
-                                            email: "as",
-                                            lastName: "1",
-                                          ),
-                                          createdAt: DateTime.now().toString(),
-                                          answer:
-                                              "Flutter works by using the Dart programming language...",
-                                          answerer: User(
-                                            firstName: "John Doe",
-                                            email: "as",
-                                            lastName: "1",
-                                          ),
-                                          answeredAt: DateTime.now().toString(),
-                                          nodeId: 100),
-                                    ]),
+                                    child: QuestionActivity(questions: questionList),
                                   ),
                                 ),
                               ),
@@ -368,28 +329,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: CardContainer(
                               child: SizedBox(
                                 height: 400,
-                                child: QuestionActivity(questions:
-                                    // temp question list
-                                    [
-                                  Question(
-                                      id: 1,
-                                      content: "How does Flutter work?",
-                                      asker: User(
-                                        firstName: "John Doe",
-                                        email: "as",
-                                        lastName: "1",
-                                      ),
-                                      createdAt: DateTime.now().toString(),
-                                      answer:
-                                          "Flutter works by using the Dart programming language...",
-                                      answerer: User(
-                                        firstName: "John Doe",
-                                        email: "as",
-                                        lastName: "1",
-                                      ),
-                                      answeredAt: DateTime.now().toString(),
-                                      nodeId: 100),
-                                ]),
+                                child: QuestionActivity(questions: questionList),
                               ),
                             ),
                           ),

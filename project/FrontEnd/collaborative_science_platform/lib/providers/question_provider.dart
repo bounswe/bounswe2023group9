@@ -34,15 +34,15 @@ class QuestionAnswerProvider with ChangeNotifier {
       );
       if (response.statusCode == 201) {
         _questions.add(Question(
-            //id: json.decode(response.body)['id'],
-            id: 99,
+            id: json.decode(response.body)['QuestionID'],
             answer: null,
             content: questionText,
             createdAt: DateTime.now().toString(),
             asker: user,
             answerer: null,
             answeredAt: null,
-            nodeId: nodeId));
+            nodeId: nodeId,
+            isAnswered: false));
         notifyListeners();
       } else if (response.statusCode == 401) {
         throw PostQuestionError();
@@ -74,6 +74,7 @@ class QuestionAnswerProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         final data = json.decode(response.body);
         Question answeredQuestions = _questions.firstWhere((element) => element.id == questionId);
+        answeredQuestions.isAnswered = true;
         answeredQuestions.answer = data['answer_content'];
         answeredQuestions.answeredAt = data['answered_at'];
         answeredQuestions.answerer = user;

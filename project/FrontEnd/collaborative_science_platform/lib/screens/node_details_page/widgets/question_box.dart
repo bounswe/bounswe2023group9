@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class QuestionBox extends StatefulWidget {
   final Question question;
+  final bool canAnswer;
 
-  const QuestionBox({super.key, required this.question});
+  const QuestionBox({super.key, required this.question, required this.canAnswer});
 
   @override
   State<QuestionBox> createState() => _QuestionBoxState();
@@ -30,7 +31,7 @@ class _QuestionBoxState extends State<QuestionBox> {
             ),
             const SizedBox(height: 8.0),
             Text('Asked by: ${widget.question.asker.email} at ${widget.question.createdAt}'),
-            if (widget.question.answer != null && widget.question.answer!.isNotEmpty)
+            if (widget.question.isAnswered)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -41,7 +42,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                   ),
                 ],
               ),
-            if (widget.question.answer == null || widget.question.answer!.isEmpty)
+            if (widget.question.isAnswered == false && widget.canAnswer)
               Column(
                 children: [
                   const SizedBox(height: 8.0),

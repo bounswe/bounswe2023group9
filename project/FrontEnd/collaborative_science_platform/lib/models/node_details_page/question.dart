@@ -9,16 +9,17 @@ class Question {
   User? answerer;
   String? answeredAt;
   int? nodeId;
-  Question({
-    required this.id,
-    required this.content,
-    required this.createdAt,
-    required this.asker,
-    required this.answer,
-    required this.answerer,
-    required this.answeredAt,
-    required this.nodeId,
-  });
+  bool isAnswered;
+  Question(
+      {required this.id,
+      required this.content,
+      required this.createdAt,
+      required this.asker,
+      required this.answer,
+      required this.answerer,
+      required this.answeredAt,
+      required this.nodeId,
+      required this.isAnswered});
   factory Question.fromJson(Map<String, dynamic> jsonString) {
     return Question(
       id: jsonString['id'] ?? -1,
@@ -31,6 +32,7 @@ class Question {
           : User.fromJsonforNodeDetailPage(jsonString['answerer']),
       asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
       nodeId: jsonString['node_id'] ?? -1,
+      isAnswered: jsonString['answer_content'] != null,
     );
   }
 
@@ -56,6 +58,7 @@ class Question {
           : null,
       answeredAt: jsonString.containsKey("answer_date") ? jsonString["answer_date"] as String : "",
       nodeId: jsonString['node_id'] ?? -1,
+      isAnswered: jsonString['is_answered'] == 1,
     );
   }
 }

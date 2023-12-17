@@ -7,7 +7,15 @@ import 'package:collaborative_science_platform/utils/responsive/responsive.dart'
 class QuestionsView extends StatefulWidget {
   final int nodeId;
   final List<Question> questions;
-  const QuestionsView({Key? key, required this.nodeId, required this.questions}) : super(key: key);
+  final bool canAnswer;
+  final bool canAsk;
+  const QuestionsView(
+      {Key? key,
+      required this.nodeId,
+      required this.questions,
+      required this.canAnswer,
+      required this.canAsk})
+      : super(key: key);
 
   @override
   State<QuestionsView> createState() => _QuestionsViewState();
@@ -34,14 +42,15 @@ class _QuestionsViewState extends State<QuestionsView> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AskQuestionForm(
-              nodeId: widget.nodeId,
-              onQuestionPosted: (Question newQuestion) {
-                setState(() {
-                  questions.add(newQuestion);
-                });
-              },
-            ),
+            if (widget.canAsk)
+              AskQuestionForm(
+                nodeId: widget.nodeId,
+                onQuestionPosted: (Question newQuestion) {
+                  setState(() {
+                    questions.add(newQuestion);
+                  });
+                },
+              ),
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -49,6 +58,7 @@ class _QuestionsViewState extends State<QuestionsView> {
                 itemBuilder: (BuildContext context, int index) {
                   return QuestionBox(
                     question: questions[index],
+                    canAnswer: widget.canAnswer,
                   );
                 },
               ),

@@ -27,13 +27,16 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
     try {
       if (questionController.text.isNotEmpty) {
         final questionProvider = Provider.of<QuestionAnswerProvider>(context, listen: false);
-        User user = Provider.of<Auth>(context, listen: false).user!;
-        setState(() {
-          isLoading = true;
-        });
-        await questionProvider.postQuestion(questionController.text, widget.nodeId, user);
-        widget.onQuestionPosted(questionProvider.questions.last);
-        questionController.clear();
+        Auth authProvider = Provider.of<Auth>(context, listen: false);
+        if (authProvider.isSignedIn) {
+          setState(() {
+            isLoading = true;
+          });
+          await questionProvider.postQuestion(
+              questionController.text, widget.nodeId, authProvider.user!);
+          widget.onQuestionPosted(questionProvider.questions.last);
+          questionController.clear();
+        }
       }
     } on PostQuestionError {
       setState(() {

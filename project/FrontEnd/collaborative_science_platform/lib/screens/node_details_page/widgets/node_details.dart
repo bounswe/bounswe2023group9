@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
@@ -33,10 +35,36 @@ class NodeDetails extends StatefulWidget {
 
 class _NodeDetailsState extends State<NodeDetails> {
   int currentIndex = 0;
+  bool canAnswerQuestions = false;
+  bool canAskQuestions = false;
+
+  @override
+  void initState() {
+    super.initState();
+    canAnswer();
+  }
+
+  @override
+  void didUpdateWidget(covariant NodeDetails oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.node != widget.node) {
+      canAnswer();
+    }
+  }
 
   void updateIndex(int index) {
     setState(() {
       currentIndex = index;
+    });
+  }
+
+  void canAnswer() async {
+    Auth authProvider = Provider.of<Auth>(context, listen: false);
+    setState(() {
+      canAnswerQuestions = authProvider.isSignedIn
+          ? widget.node.contributors.any((contributor) => contributor.id == authProvider.user!.id)
+          : false;
+      canAskQuestions = authProvider.isSignedIn;
     });
   }
 
@@ -190,6 +218,8 @@ class _NodeDetailsState extends State<NodeDetails> {
                 child: QuestionsView(
                   questions: widget.node.questions,
                   nodeId: widget.node.nodeId,
+                  canAnswer: canAnswerQuestions,
+                  canAsk: canAskQuestions,
                 ),
               ),
             if (currentIndex == 5)
