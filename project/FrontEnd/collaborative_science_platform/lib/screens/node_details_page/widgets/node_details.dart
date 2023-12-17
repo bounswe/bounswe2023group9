@@ -61,9 +61,10 @@ class _NodeDetailsState extends State<NodeDetails> {
   void canAnswer() async {
     Auth authProvider = Provider.of<Auth>(context, listen: false);
     setState(() {
-      canAnswerQuestions = authProvider.isSignedIn
-          ? widget.node.contributors.any((contributor) => contributor.id == authProvider.user!.id)
-          : false;
+      canAnswerQuestions = authProvider.isSignedIn &&
+          authProvider.basicUser != null &&
+          widget.node.contributors
+              .any((contributor) => contributor.id == authProvider.basicUser!.basicUserId);
       canAskQuestions = authProvider.isSignedIn;
     });
   }

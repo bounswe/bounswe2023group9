@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 
 class AnswerBox extends StatefulWidget {
   final int questionId;
-
-  const AnswerBox({Key? key, required this.questionId}) : super(key: key);
+  final Function() onQuestionAnswered;
+  const AnswerBox({Key? key, required this.questionId, required this.onQuestionAnswered})
+      : super(key: key);
 
   @override
   State<AnswerBox> createState() => _AnswerBoxState();
@@ -29,6 +30,7 @@ class _AnswerBoxState extends State<AnswerBox> {
           isLoading = true;
         });
         await questionAnswerProvider.postAnswer(answerController.text, widget.questionId, user);
+        widget.onQuestionAnswered();
         answerController.clear();
       }
     } on PostAnswerError {

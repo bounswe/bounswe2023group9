@@ -1,6 +1,5 @@
 import 'package:collaborative_science_platform/exceptions/question_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
-import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
 import 'package:flutter/material.dart';

@@ -59,7 +59,11 @@ class _QuestionBoxState extends State<QuestionBox> {
                       ),
                     ),
                   ),
-                  if (isReplyVisible) AnswerBox(questionId: widget.question.id),
+                  if (isReplyVisible)
+                    AnswerBox(
+                      questionId: widget.question.id,
+                      onQuestionAnswered: () => setState(() {}),
+                    ),
                 ],
               ),
           ],
