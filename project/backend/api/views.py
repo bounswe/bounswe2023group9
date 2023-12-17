@@ -1125,7 +1125,7 @@ def promote_contributor(request):
 @api_view(['DELETE'])
 def demote_reviewer(request):
     try:
-        reviewer = Reviewer.objects.filter(id=request.data.get('reviewer_id'))
+        reviewer = Reviewer.objects.filter(id=request.GET.get('reviewer_id'))
         if reviewer.count():
             reviewer = reviewer.first()
             reviewer.delete(keep_parents=True)
