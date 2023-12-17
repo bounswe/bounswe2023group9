@@ -1181,37 +1181,39 @@ def update_review_request_status(request):
                     node.from_referenced_nodes.set(workspace.references.all())
 
                     node.semantic_tags.set(workspace.semantic_tags.all())
-                    entry = workspace.proof_entry
-                    proof = Proof.objects.create(
-                        proof_title="",
-                        proof_content=entry.content,
-                        is_valid=True,
-                        is_disproof=False,
-                        publish_date=datetime.date.today(),
-                        removed_by_admin=False,
-                        node=node
-                    )
-                    node.proofs.add(proof)
-                    entry = workspace.theorem_entry
-                    theorem = Theorem.objects.create(
-                        theorem_title="",
-                        theorem_content=entry.content,
-                        publish_date=datetime.date.today()
-                    )
-                    node.theorem = theorem
+                    for entry in workspace.entries.all():
+                        if entry.is_proof_entry:
+                            proof = Proof.objects.create(
+                                proof_title="",
+                                proof_content=entry.content,
+                                is_valid=True,
+                                is_disproof=False,
+                                publish_date=datetime.date.today(),
+                                removed_by_admin=False,
+                                node=node
+                            )
+                            node.proofs.add(proof)
+                        elif entry.is_theorem_entry:
+                            theorem = Theorem.objects.create(
+                                theorem_title="",
+                                theorem_content=entry.content,
+                                publish_date=datetime.date.today()
+                            )
+                            node.theorem = theorem
                 else:
                     node = workspace.node
-                    entry = workspace.proof_entry
-                    proof = Proof.objects.create(
-                        proof_title="",
-                        proof_content=entry.content,
-                        is_valid=True,
-                        is_disproof=False,
-                        publish_date=datetime.date.today(),
-                        removed_by_admin=False,
-                        node=node
-                    )
-                    node.proofs.add(proof)
+                    for entry in workspace.entries.all():
+                        if entry.is_proof_entry:
+                            proof = Proof.objects.create(
+                                proof_title="",
+                                proof_content=entry.content,
+                                is_valid=True,
+                                is_disproof=False,
+                                publish_date=datetime.date.today(),
+                                removed_by_admin=False,
+                                node=node
+                            )
+                            node.proofs.add(proof)
                     for cont in workspace.contributor_set.all():
                         if cont not in node.contributors:
                             node.contributors.add(cont)
