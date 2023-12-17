@@ -33,6 +33,7 @@ class NodeDetails extends StatefulWidget {
 
 class _NodeDetailsState extends State<NodeDetails> {
   int currentIndex = 0;
+  bool isHidden = false;
 
   void updateIndex(int index) {
     setState(() {
@@ -54,22 +55,23 @@ class _NodeDetailsState extends State<NodeDetails> {
         primary: false,
         scrollDirection: Axis.vertical,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: CardContainer(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: Responsive.isDesktop(context)
-                          ? const EdgeInsets.all(70.0)
-                          : const EdgeInsets.all(10.0),
-                      child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
-                          textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Column(
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: Responsive.isDesktop(context)
+                            ? const EdgeInsets.all(70.0)
+                            : const EdgeInsets.all(10.0),
+                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                            textAlign: TextAlign.center, style: TextStyles.title2)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SelectableText.rich(
                           TextSpan(children: <TextSpan>[
@@ -83,12 +85,37 @@ class _NodeDetailsState extends State<NodeDetails> {
                             )
                           ]),
                         ),
-                      ],
-                    ),
-                    Column(
-                      children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            isHidden
+                                ? SizedBox(
+                                    width: 110,
+                                    child: AppButton(
+                                        text: "Show",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "safe",
+                                        onTap: () {}),
+                                  )
+                                : SizedBox(
+                                    width: 110,
+                                    child: AppButton(
+                                        text: "Hide",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye_slash,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "danger",
+                                        onTap: () {}),
+                                  ),
+                            const SizedBox(width: 10),
                             SizedBox(
                               width: 110,
                               child: AppButton(
@@ -123,9 +150,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                         )
                       ],
                     ),
-                  ]),
-                ],
-              )),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
