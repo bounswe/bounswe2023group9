@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
         ChangeNotifierProvider<WorkspaceProvider>(create: (context) => WorkspaceProvider()),
+        ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
       ],
       //    child: MaterialApp(
       //      debugShowCheckedModeBanner: false,
