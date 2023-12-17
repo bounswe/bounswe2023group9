@@ -119,20 +119,22 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                             if (!Responsive.isMobile(context))
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
-                                child: Text(
-                                  widget.text,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: widget.isSelected
-                                        ? FontWeight.w700
-                                        : isHovering
-                                            ? FontWeight.w600
-                                            : FontWeight.w500,
-                                    color: widget.isSelected
-                                        ? Colors.indigo[600]
-                                        : isHovering
-                                            ? Colors.indigo[200]
-                                            : Colors.grey[700],
+                                child: SelectionContainer.disabled(
+                                  child: Text(
+                                    widget.text,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: widget.isSelected
+                                          ? FontWeight.w700
+                                          : isHovering
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                      color: widget.isSelected
+                                          ? Colors.indigo[600]
+                                          : isHovering
+                                              ? Colors.indigo[200]
+                                              : Colors.grey[700],
+                                    ),
                                   ),
                                 ),
                               ),
