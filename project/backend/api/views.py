@@ -53,11 +53,19 @@ class BasicUserDetailAPI(APIView):
 
   def get(self, request, *args, **kwargs):
     user = BasicUser.objects.get(user_id=request.user.id)
+    user_type = 'basic_user'
+    if  Contributor.objects.filter(user_id=request.user.id).exists():
+        user_type = 'contributor'
+    if  Reviewer.objects.filter(user_id=request.user.id).exists():
+        user_type = 'reviewer'
+    if Admin.objects.filter(user_id=request.user.id).exists():
+       user_type = 'admin'
 
     return JsonResponse({'basic_user_id':user.id,
                          'bio':user.bio,
                          'email_notification_preference': user.email_notification_preference,
-                         'show_activity_preference':user.show_activity_preference},status=200)
+                         'show_activity_preference':user.show_activity_preference,
+                         'user_type':user_type},status=200)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -337,12 +345,21 @@ def get_profile(request):
             authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
         node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
 
+    user_type = 'basic_user'
+    if  Contributor.objects.filter(id=basic_user.id).exists():
+        user_type = 'contributor'
+    if  Reviewer.objects.filter(id=basic_user.id).exists():
+        user_type = 'reviewer'
+    if Admin.objects.filter(id=basic_user.id).exists():
+       user_type = 'admin'
+
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
                          'bio':basic_user.bio,
                          'nodes': node_infos,
                          'asked_questions':asked_questions,
-                         'answered_questions':answered_questions},status=200)
+                         'answered_questions':answered_questions,
+                         'user_type': user_type},status=200)
 
 def get_proof_from_id(request):
     id = int(request.GET.get("proof_id"))
@@ -1361,5 +1378,64 @@ def update_content_status(request):
                     return Response(BasicUserSerializer(user).data, status=200)
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsAdmin))
+@api_view(['POST'])
+def promote_contributor(request):
+    try:
+        cont_id = request.data.get("cont_id")
+        cont = Contributor.objects.filter(id=cont_id)
+        if cont.count():
+            cont = cont.first()
+            if Reviewer.objects.filter(id=cont_id).exists():
+                return Response("Already exists!", status=409)
+            reviewer = Reviewer(contributor_ptr_id=cont.id)
+            reviewer.__dict__.update(cont.__dict__)
+            reviewer.save()
+            return Response(ReviewerSerializer(reviewer).data, status=201)
+            
+        return Response("Contributor does not exist!", status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response(str(e), status=500)
+            
 
+@authentication_classes((TokenAuthentication,))
+@permission_classes((IsAuthenticated, IsAdmin))
+@api_view(['DELETE'])
+def demote_reviewer(request):
+    try:
+        reviewer = Reviewer.objects.filter(id=request.query_params.get('reviewer_id'))
+        if reviewer.count():
+            reviewer = reviewer.first()
+            reviewer.delete(keep_parents=True)
 
+            return Response("Reviewer demoted to Contributor successfully", status=status.HTTP_204_NO_CONTENT)
+            
+        return Response("Reviewer does not exist!", status=status.HTTP_404_NOT_FOUND)    
+    except Exception as e:
+        return Response(str(e), status=500)
+
+class AddUserSemanticTag(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        sm_tag_id = request.data.get('sm_tag_id')
+        if not sm_tag_id:
+            return Response({"error": "Semantic Tag ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = BasicUser.objects.get(pk=request.user.basicuser.pk)
+        except:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            sm_tag = SemanticTag.objects.get(pk=sm_tag_id)
+        except:
+            return Response({"error": "Semantic Tag not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if user.semantic_tags.filter(pk=sm_tag_id).exists():
+            return Response({"error": "User already has this Semantic Tag."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.semantic_tags.add(sm_tag)
+        return Response({"message": "Semantic Tag successfully added to user."}, status=status.HTTP_201_CREATED)
+    

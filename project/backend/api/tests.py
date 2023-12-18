@@ -365,6 +365,8 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['asked_questions'][0]['answerer_id'], 1)
         self.assertEqual(response.json()['asked_questions'][0]['answerer_mail'], 'test@example.com')
 
+        self.assertEqual(response.json()['user_type'], 'contributor')
+
 class ProofGETAPITestCase(TestCase):
     def setUp(self):
         # Create a sample Proof instance for testing
@@ -952,12 +954,12 @@ class AdminFeatureAPITest(TestCase):
     def test_update_user_status(self):
 
         url = reverse('update_content_status')
-        data = {'context': 'user', 'content_id': self.basic_user.pk, 'hide': False}
+        data = {'context': 'user', 'content_id': self.basic_user.id, 'hide': False}
 
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(BasicUser.objects.get(pk=self.basic_user.pk).user.is_active, False)
+        self.assertEqual(BasicUser.objects.get(pk=self.basic_user.id).user.is_active, False)
 
     def test_no_context_given(self):
         url = reverse('update_content_status')
@@ -966,3 +968,48 @@ class AdminFeatureAPITest(TestCase):
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+    def test_user_conversion(self):
+        url = reverse('promote_contributor')
+        data = {'cont_id': self.contributor.id}
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.assertEqual(len(Reviewer.objects.filter(id=self.contributor.id)), 1)
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 409)
+
+
+        url = reverse('demote_reviewer')
+
+        response = self.client.delete(f'{url}?reviewer_id={self.contributor.id}')
+        self.assertEqual(response.status_code, 204, response.data)
+        self.assertEqual(len(Reviewer.objects.filter(id=self.contributor.id)), 0)
+
+        response = self.client.delete(f'{url}?reviewer_id={self.contributor.id}')
+        self.assertEqual(response.status_code, 404)
+
+class AddUserSemanticTagTestCase(TestCase):
+    def setUp(self):  
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.basic_user = BasicUser.objects.create(user=self.user, bio='Hello')
+        
+        self.basic_user_token = Token.objects.create(user=self.user)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.basic_user_token.key}")
+
+        self.sm_tag = SemanticTag.objects.create(
+            wid="QXXX",
+            label="Test SM Tag"
+        )
+    def test_add_user_semantic_tag(self):
+        url = reverse('add_user_semantic_tag')
+        payload = {
+            'sm_tag_id': self.sm_tag.pk,
+        }
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
