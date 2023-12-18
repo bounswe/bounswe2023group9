@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/exceptions/profile_page_exceptions.dart';
+import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -22,7 +23,7 @@ import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
-  final String email;
+  final String email; //visited page's email
 
   const ProfilePage({super.key, required this.email});
 
@@ -33,15 +34,17 @@ class ProfilePage extends StatefulWidget {
 // TODO: add optional parameter to ProfilePage to get others profileData
 class _ProfilePageState extends State<ProfilePage> {
   ProfileData profileData = ProfileData();
+  BasicUser basicUser = BasicUser();
+  //User user = User();
   int noWorks = 0;
   bool error = false;
   String errorMessage = "";
   bool isLoading = false;
+  bool isAuthLoading = false;
 
   bool _isFirstTime = true;
 
   bool isBanned = false;
-  String userType = "admin"; //visitor's user type
   bool isValidUser = false; //visited user's type is contributor or reviewer
   bool isReviewer = false;
 
@@ -57,6 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void didChangeDependencies() {
     if (_isFirstTime) {
       try {
+        getAuthUser();
         getUserData();
       } catch (e) {
         setState(() {
@@ -68,6 +72,8 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     super.didChangeDependencies();
   }
+
+  //Visited User's Data
 
   void getUserData() async {
     try {
@@ -107,6 +113,25 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void getAuthUser() async {
+    try {
+      final auth = Provider.of<Auth>(context);
+      basicUser = (auth.basicUser ?? {} as BasicUser);
+      isAuthLoading = true;
+      // user = (auth.user ?? {} as User);
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+      rethrow;
+    } finally {
+      setState(() {
+        isAuthLoading = false;
+      });
+    }
+  }
+
   void handleButtonIsBanned() {
     setState(() {
       isBanned = !isBanned; // Toggle the state for example purposes
@@ -123,10 +148,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
     if (user == null) {
-      // guest can see profile pages
+      // TODO guest can see profile pages
     } else if (user.email == profileData.email) {
-      // own profile page, should be editible
-      return (isBanned && userType != "admin")
+      // TODO own profile page, should be editible
+      return (isBanned && basicUser.userType != "admin")
           ? const ErrorPage()
           : PageWithAppBar(
               appBar: const HomePageAppBar(),
@@ -135,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 mobile: SingleChildScrollView(
                   child: SizedBox(
                     width: Responsive.getGenericPageWidth(context),
-                    child: isLoading
+                    child: isLoading && isAuthLoading
                         ? Container(
                             decoration: const BoxDecoration(color: Colors.white),
                             child: const Center(
@@ -159,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       isBanned: isBanned,
                                       isReviewer: isReviewer,
                                       isValidUser: isValidUser,
-                                      userType: userType,
+                                      userType: basicUser.userType,
                                       onTap: handleButtonIsBanned,
                                       onTapReviewerButton: handleButtonIsReviewer),
                                   Padding(
@@ -243,7 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       isBanned: isBanned,
                                       isReviewer: isReviewer,
                                       isValidUser: isValidUser,
-                                      userType: userType,
+                                      userType: basicUser.userType,
                                       onTap: handleButtonIsBanned,
                                       onTapReviewerButton: handleButtonIsReviewer),
                                   const Padding(
@@ -294,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // others profile page, will be same both on desktop and mobile
-    return (isBanned && userType != "admin")
+    return (isBanned && basicUser.userType != "admin")
         ? const ErrorPage()
         : PageWithAppBar(
             appBar: const HomePageAppBar(),
@@ -302,7 +327,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: SingleChildScrollView(
               child: SizedBox(
                 width: Responsive.getGenericPageWidth(context),
-                child: isLoading
+                child: isLoading && isAuthLoading
                     ? Container(
                         decoration: const BoxDecoration(color: Colors.white),
                         padding: const EdgeInsets.only(top: 20),
@@ -328,7 +353,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   isBanned: isBanned,
                                   isReviewer: isReviewer,
                                   isValidUser: isValidUser,
-                                  userType: userType,
+                                  userType: basicUser.userType,
                                   onTap: handleButtonIsBanned,
                                   onTapReviewerButton: handleButtonIsReviewer),
                               Padding(

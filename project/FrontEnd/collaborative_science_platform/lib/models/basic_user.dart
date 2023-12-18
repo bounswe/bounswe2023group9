@@ -6,11 +6,11 @@ class BasicUser {
   String userType;
 
   BasicUser({
-    required this.basicUserId,
-    required this.bio,
-    required this.emailNotificationPreference,
-    required this.showActivity,
-    required this.userType,
+    this.basicUserId = 0,
+    this.bio = "",
+    this.emailNotificationPreference = true,
+    this.showActivity = true,
+    this.userType = "",
   });
   factory BasicUser.fromJson(Map<String, dynamic> jsonString) {
     return BasicUser(
