@@ -185,6 +185,7 @@ class ReviewRequest(Request):
     """
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.
     comment   = models.CharField(max_length=400, null=True, default=None)
+    response = models.CharField(max_length=1, choices=Request.request_status_choices, default="P")
 
 class CollaborationRequest(Request):
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.

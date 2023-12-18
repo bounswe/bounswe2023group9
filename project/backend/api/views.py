@@ -127,6 +127,7 @@ class WorkspacePostAPIView(APIView):
 
 
 def search(request):
+
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
@@ -162,7 +163,6 @@ def search(request):
     if search_type == 'most_read':
         all = Node.objects.order_by('-num_visits')[:50]
         for node in all:
-            print(node.num_visits)
             nodes.append(node.node_id)
 
     if search_type == 'trending':
@@ -567,8 +567,11 @@ def change_workspace_title(request):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
     if not is_cont_workspace(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = workspace[0]
     if workspace.is_finalized:
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    if workspace.node != None:
+        return JsonResponse({'message': 'The title of this workspace can not be changed (created from existing publication)'}, status=403)
     workspace.workspace_title = title
     workspace.save()
     return JsonResponse({'message': 'Workspace title changed successfully'}, status=200)
@@ -1145,106 +1148,124 @@ def update_review_request_status(request):
     if request.user.basicuser.id != req.receiver.id:
         return Response({"message": "Unauthorized reviewer"}, status=400)
 
+    if req.status == "R":
+        return Response({"message": "The request has already been rejected."}, status=400)
 
-    status = request.data.get('status')
-    comment = request.data.get('comment')
-    workspace = req.workspace
+    if req.status == 'A':
+        response = request.data.get('response')
+        if response not in ["P", "A", "R"]:
+            return Response({"message": "Invalid response value."}, status=400)
+        if req.response != "P":
+            return Response({"message": "The review has already been approved or rejected."}, status=400)
+        workspace = req.workspace
+        if response == 'A':
+            try:
+                workspace.num_approvals += 1
+                workspace.save()
 
-    if status not in ["P", "A", "R"]:
-        return Response({"message": "Invalid status value."}, status=400)
-    if req.status != "P":
-        return Response({"message": "The request has already been approved or rejected."})
-    
-    serializer = None
+                if workspace.num_approvals >= 2:
+                    workspace.is_published = True
+                    workspace.is_in_review = False
+                    workspace.is_rejected = False
 
-    if status == "A":
-        try:
-            workspace.num_approvals -= 1
-            workspace.save()
+                    if workspace.node == None:
+                        node = Node.objects.create(
+                            node_title=workspace.workspace_title,
+                            publish_date=datetime.date.today(),
+                            is_valid=True,
+                            num_visits=0,
+                            removed_by_admin=False
+                        )
 
-            if workspace.num_approvals <= 0:
-                workspace.is_published = True
-                workspace.is_in_review = False
-                workspace.is_rejected = False
+                        node.contributors.set(workspace.contributor_set.all())
 
-                if workspace.node == None:
-                    node = Node.objects.create(
-                        node_title=workspace.workspace_title,
-                        publish_date=datetime.date.today(),
-                        is_valid=True,
-                        num_visits=0,
-                        removed_by_admin=False
-                    )
+                        node.from_referenced_nodes.set(workspace.references.all())
 
-                    node.contributors.set(workspace.contributor_set.all())
+                        node.semantic_tags.set(workspace.semantic_tags.all())
+                        for entry in workspace.entries.all():
+                            if entry.is_proof_entry:
+                                new_id = Proof.objects.order_by('-proof_id')[0].proof_id + 1 # TODO THIS PART MUST BE CHANGED.
+                                proof = Proof.objects.create(
+                                    proof_id = new_id,
+                                    proof_title="",
+                                    proof_content=entry.content,
+                                    is_valid=True,
+                                    is_disproof=False,
+                                    publish_date=datetime.date.today(),
+                                    removed_by_admin=False,
+                                    node=node,
+                                )
+                                proof.contributors.set(workspace.contributor_set.all())
+                                node.proofs.add(proof)
+                            elif entry.is_theorem_entry:
+                                theorem = Theorem.objects.create(
+                                    theorem_title="",
+                                    theorem_content=entry.content,
+                                    publish_date=datetime.date.today()
+                                )
+                                theorem.contributors.set(workspace.contributor_set.all())
+                                node.theorem = theorem
+                    else:
+                        node = workspace.node
+                        for entry in workspace.entries.all():
+                            if entry.is_proof_entry:
+                                new_id = Proof.objects.order_by('-proof_id')[0].proof_id + 1  # TODO THIS PART MUST BE CHANGED.
+                                proof = Proof.objects.create(
+                                    proof_id=new_id,
+                                    proof_title="",
+                                    proof_content=entry.content,
+                                    is_valid=True,
+                                    is_disproof=False,
+                                    publish_date=datetime.date.today(),
+                                    removed_by_admin=False,
+                                    node=node
+                                )
+                                proof.contributors.set(workspace.contributor_set.all())
+                                node.proofs.add(proof)
+                        for cont in workspace.contributor_set.all():
+                            if cont not in node.contributors.all():
+                                node.contributors.add(cont)
+                        for ref in workspace.references.all():
+                            if ref not in node.from_referenced_nodes.all():
+                                node.from_referenced_nodes.add(ref)
+                        for tag in workspace.semantic_tags.all():
+                            if tag not in node.semantic_tags.all():
+                                node.semantic_tags.add(tag)
+                    for review_request in workspace.reviewrequest_set.all():
+                        node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
 
-                    node.from_referenced_nodes.set(workspace.references.all())
-
-                    node.semantic_tags.set(workspace.semantic_tags.all())
-                    for entry in workspace.entries.all():
-                        if entry.is_proof_entry:
-                            proof = Proof.objects.create(
-                                proof_title="",
-                                proof_content=entry.content,
-                                is_valid=True,
-                                is_disproof=False,
-                                publish_date=datetime.date.today(),
-                                removed_by_admin=False,
-                                node=node,
-                            )
-                            proof.contributors.set(workspace.contributor_set.all())
-                            node.proofs.add(proof)
-                        elif entry.is_theorem_entry:
-                            theorem = Theorem.objects.create(
-                                theorem_title="",
-                                theorem_content=entry.content,
-                                publish_date=datetime.date.today()
-                            )
-                            theorem.contributors.set(workspace.contributor_set.all())
-                            node.theorem = theorem
-                else:
-                    node = workspace.node
-                    for entry in workspace.entries.all():
-                        if entry.is_proof_entry:
-                            proof = Proof.objects.create(
-                                proof_title="",
-                                proof_content=entry.content,
-                                is_valid=True,
-                                is_disproof=False,
-                                publish_date=datetime.date.today(),
-                                removed_by_admin=False,
-                                node=node
-                            )
-                            proof.contributors.set(workspace.contributor_set.all())
-                            node.proofs.add(proof)
-                    for cont in workspace.contributor_set.all():
-                        if cont not in node.contributors:
-                            node.contributors.add(cont)
-                    for ref in workspace.references.all():
-                        if ref not in node.from_referenced_nodes:
-                            node.from_referenced_nodes.add(ref)
-                    for tag in workspace.semantic_tags.all():
-                        if tag not in node.semantic_tags:
-                            node.semantic_tags.add(tag)
-                for review_request in workspace.reviewrequest_set.all():
-                    node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
-                
-                serializer = NodeSerializer(data=node)
-                if serializer.is_valid():
-                    serializer.save()
-
-
-        except Exception as e:
-            return Response({"message": str(e)}, status=500)
-    elif status == "R":
-        workspace.is_rejected = True
-        workspace.is_in_review = False
-        workspace.is_published = False
+                    serializer = NodeSerializer(data=node)
+                    if serializer.is_valid():
+                        serializer.save()
 
 
-    req.status = status
-    req.comment = comment
-    req.save()
+            except Exception as e:
+                return Response({"message": str(e)}, status=500)
+        elif response == 'R':
+            workspace.is_rejected = True
+            workspace.is_in_review = False
+            workspace.is_published = False
+        comment = request.data.get('comment')
+        req.comment = comment
+        req.response = response
+        req.save()
+
+
+    else:
+        status = request.data.get('status')
+
+        workspace = req.workspace
+
+        if status not in ["P", "A", "R"]:
+            return Response({"message": "Invalid status value."}, status=400)
+        if req.status != "P":
+            return Response({"message": "The request has already been approved or rejected."}, status=400)
+        if status == 'A':
+            reviewer = Reviewer.objects.get(pk=request.user.basicuser.pk)
+            reviewer.review_workspaces.add(req.workspace)
+        serializer = None
+        req.status = status
+        req.save()
 
     serializer = ReviewRequestSerializer(req)
     return Response(serializer.data, status=200)
