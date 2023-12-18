@@ -1190,8 +1190,9 @@ def update_review_request_status(request):
                                 is_disproof=False,
                                 publish_date=datetime.date.today(),
                                 removed_by_admin=False,
-                                node=node
+                                node=node,
                             )
+                            proof.contributors.set(workspace.contributor_set.all())
                             node.proofs.add(proof)
                         elif entry.is_theorem_entry:
                             theorem = Theorem.objects.create(
@@ -1199,6 +1200,7 @@ def update_review_request_status(request):
                                 theorem_content=entry.content,
                                 publish_date=datetime.date.today()
                             )
+                            theorem.contributors.set(workspace.contributor_set.all())
                             node.theorem = theorem
                 else:
                     node = workspace.node
@@ -1213,6 +1215,7 @@ def update_review_request_status(request):
                                 removed_by_admin=False,
                                 node=node
                             )
+                            proof.contributors.set(workspace.contributor_set.all())
                             node.proofs.add(proof)
                     for cont in workspace.contributor_set.all():
                         if cont not in node.contributors:
