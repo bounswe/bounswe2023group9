@@ -114,21 +114,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void getAuthUser() async {
-    try {
-      final auth = Provider.of<Auth>(context);
-      basicUser = (auth.basicUser ?? {} as BasicUser);
-      isAuthLoading = true;
-      // user = (auth.user ?? {} as User);
-    } catch (e) {
-      setState(() {
-        error = true;
-        errorMessage = "Something went wrong!";
-      });
-      rethrow;
-    } finally {
-      setState(() {
-        isAuthLoading = false;
-      });
+    final User? user = Provider.of<Auth>(context).user;
+    if (user != null) {
+      try {
+        final auth = Provider.of<Auth>(context);
+        basicUser = (auth.basicUser ?? {} as BasicUser);
+        isAuthLoading = true;
+        // user = (auth.user ?? {} as User);
+      } catch (e) {
+        setState(() {
+          error = true;
+          errorMessage = "Something went wrong!";
+        });
+        rethrow;
+      } finally {
+        setState(() {
+          isAuthLoading = false;
+        });
+      }
     }
   }
 
@@ -148,12 +151,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
     if (user == null) {
-      // TODO guest can see profile pages
+      // guest can see profile pages
     } else if (user.email == profileData.email) {
-      // TODO own profile page, should be editible
-      return (isBanned && basicUser.userType != "admin")
-          ? const ErrorPage()
-          : PageWithAppBar(
+      // profile page, should be editible
+      return (!isBanned || basicUser.userType == "admin")
+          ? PageWithAppBar(
               appBar: const HomePageAppBar(),
               pageColor: Colors.grey.shade200,
               child: Responsive(
@@ -315,13 +317,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-            );
+            )
+          : const ErrorPage();
     }
 
     // others profile page, will be same both on desktop and mobile
-    return (isBanned && basicUser.userType != "admin")
-        ? const ErrorPage()
-        : PageWithAppBar(
+    return (!isBanned || basicUser.userType == "admin")
+        ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
             child: SingleChildScrollView(
@@ -399,6 +401,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
               ),
             ),
-          );
+          )
+        : const ErrorPage();
   }
 }
