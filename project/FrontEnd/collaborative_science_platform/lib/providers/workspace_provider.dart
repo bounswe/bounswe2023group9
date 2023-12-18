@@ -133,6 +133,30 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> createWorkspacefromNode(int nodeId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/create_workspace/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'node_id': "$nodeId",
+      'workspace_title': " ",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw CreateWorkspaceException();
+    } else if (response.statusCode == 403) {
+      throw WorkspacePermissionException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
   Future<void> createWorkspace(String title, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/workspace_post/");
     var request = http.MultipartRequest('POST', url);

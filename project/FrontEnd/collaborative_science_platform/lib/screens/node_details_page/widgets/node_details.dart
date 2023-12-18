@@ -22,10 +22,12 @@ import 'dart:convert';
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
+  final Function createNewWorkspacefromNode;
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
+    required this.createNewWorkspacefromNode,
   });
 
   @override
@@ -63,9 +65,11 @@ class _NodeDetailsState extends State<NodeDetails> {
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: [NodeDetailsMenu()],
+                    children: [
+                      NodeDetailsMenu(createNewWorkspacefromNode: widget.createNewWorkspacefromNode)
+                    ],
                   ),
                   Padding(
                       padding: Responsive.isDesktop(context)

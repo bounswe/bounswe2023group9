@@ -4,18 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NodeDetailsMenu extends StatelessWidget {
-  const NodeDetailsMenu({super.key});
+  final Function createNewWorkspacefromNode;
+  const NodeDetailsMenu({super.key, required this.createNewWorkspacefromNode});
 
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<Auth>(context);
-    return auth.isSignedIn ? AuthenticatedNodeDetailsMenu() : const SizedBox();
+    return auth.isSignedIn
+        ? AuthenticatedNodeDetailsMenu(
+            createNewWorkspacefromNode: createNewWorkspacefromNode,
+          )
+        : const SizedBox();
   }
 }
 
 class AuthenticatedNodeDetailsMenu extends StatelessWidget {
+  final Function createNewWorkspacefromNode;
   final GlobalKey<PopupMenuButtonState<dynamic>> _popupNodeMenu = GlobalKey<PopupMenuButtonState>();
-  AuthenticatedNodeDetailsMenu({super.key});
+  AuthenticatedNodeDetailsMenu({super.key, required this.createNewWorkspacefromNode});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +33,7 @@ class AuthenticatedNodeDetailsMenu extends StatelessWidget {
         switch (result) {
           case 'create':
             // Create new node TODO
-
+            await createNewWorkspacefromNode();
             break;
           default:
         }

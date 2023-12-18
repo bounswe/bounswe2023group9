@@ -1,6 +1,9 @@
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
+import 'package:collaborative_science_platform/exceptions/workspace_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
+import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details.dart';
@@ -70,6 +73,32 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     }
   }
 
+  void createNewWorkspacefromNode() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.createWorkspacefromNode(widget.nodeID, auth.user!.token);
+    } on CreateWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = CreateWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageWithAppBar(
@@ -90,10 +119,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                   textAlign: TextAlign.center,
                 )
               : Responsive.isDesktop(context)
-                  ? WebNodeDetails(node: node)
+                  ? WebNodeDetails(
+                      node: node, createNewWorkspacefromNode: createNewWorkspacefromNode)
                   : NodeDetails(
                       node: node,
                       controller: controller2,
+                      createNewWorkspacefromNode: createNewWorkspacefromNode,
                     ),
     );
   }
@@ -101,8 +132,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
 class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
+  final Function createNewWorkspacefromNode;
 
-  const WebNodeDetails({super.key, required this.node});
+  const WebNodeDetails({super.key, required this.node, required this.createNewWorkspacefromNode});
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -178,6 +210,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
             child: NodeDetails(
               node: widget.node,
               controller: controller2,
+              createNewWorkspacefromNode: widget.createNewWorkspacefromNode,
             ),
           ),
           const SizedBox(width: 12),
