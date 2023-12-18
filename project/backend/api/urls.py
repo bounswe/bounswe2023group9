@@ -38,5 +38,8 @@ urlpatterns = [
     path('ask_question/', AskQuestion.as_view(), name='ask_question'),
     path('answer_question/', AnswerQuestion.as_view(), name='answer_question'),
     path('update_content_status/', update_content_status, name='update_content_status'),
+    path('promote_contributor/', promote_contributor, name='promote_contributor'),
+    path('demote_reviewer/', demote_reviewer, name='demote_reviewer'),
     path('add_user_semantic_tag/', AddUserSemanticTag.as_view(), name='add_user_semantic_tag'),
+
 ]
