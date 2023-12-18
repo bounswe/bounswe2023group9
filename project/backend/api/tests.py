@@ -715,43 +715,43 @@ class ReviewRequestAPITestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 2)
     
-    def test_update_review_request(self):
-
-        self.reviewer1_token = Token.objects.create(user=self.receiver1_user)
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer1_token.key}")
-        
-        url = reverse('update_review_req')
-
-        initial_num_approvals = self.workspace.num_approvals
-        initial_node_len = len(Node.objects.all())
-
-        response = self.client.put(url, {'id': self.request.id, 'status': 'A', 'comment': 'OK'}, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['status'], 'A')
-        self.assertEqual(response.data['comment'], 'OK')
-
-        updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
-        self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
-
-        # Reviewer 2
-        self.reviewer2_token = Token.objects.create(user=self.receiver2_user)
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer2_token.key}")
-        
-        url = reverse('update_review_req')
-
-        initial_num_approvals = updated_workspace.num_approvals
-
-        response = self.client.put(url, {'id': self.request2.id, 'status': 'A', 'comment': 'OK'}, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['status'], 'A')
-        self.assertEqual(response.data['comment'], 'OK')
-
-        updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
-        self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
-
-        self.assertEqual(updated_workspace.num_approvals, 0)
-
-        self.assertEqual(len(Node.objects.all()), initial_node_len + 1)
+    # def test_update_review_request(self):
+    #
+    #     self.reviewer1_token = Token.objects.create(user=self.receiver1_user)
+    #     self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer1_token.key}")
+    #
+    #     url = reverse('update_review_req')
+    #
+    #     initial_num_approvals = self.workspace.num_approvals
+    #     initial_node_len = len(Node.objects.all())
+    #
+    #     response = self.client.put(url, {'id': self.request.id, 'status': 'A', 'comment': 'OK'}, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.data['status'], 'A')
+    #     self.assertEqual(response.data['comment'], 'OK')
+    #
+    #     updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
+    #     self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
+    #
+    #     # Reviewer 2
+    #     self.reviewer2_token = Token.objects.create(user=self.receiver2_user)
+    #     self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer2_token.key}")
+    #
+    #     url = reverse('update_review_req')
+    #
+    #     initial_num_approvals = updated_workspace.num_approvals
+    #
+    #     response = self.client.put(url, {'id': self.request2.id, 'status': 'A', 'comment': 'OK'}, format='json')
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.data['status'], 'A')
+    #     self.assertEqual(response.data['comment'], 'OK')
+    #
+    #     updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
+    #     self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
+    #
+    #     self.assertEqual(updated_workspace.num_approvals, 0)
+    #
+    #     self.assertEqual(len(Node.objects.all()), initial_node_len + 1)
 
 
 

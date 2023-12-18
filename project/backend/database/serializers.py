@@ -191,12 +191,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class NodeViewProofSerializer(serializers.ModelSerializer):
   class Meta:
     model = Proof
-    fields = ['proof_content', 'publish_date']
+    fields = ['proof_content', 'publish_date','contributors']
 
 class NodeViewTheoremSerializer(serializers.ModelSerializer):
   class Meta:
     model = Theorem
-    fields = ['theorem_content', 'publish_date']
+    fields = ['theorem_content', 'publish_date','contributors']
 
 class NodeViewBasicUserSerializer(serializers.ModelSerializer):
   first_name = serializers.CharField(source='user.first_name', read_only=True)

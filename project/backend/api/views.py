@@ -135,6 +135,7 @@ class WorkspacePostAPIView(APIView):
 
 
 def search(request):
+
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
@@ -170,7 +171,6 @@ def search(request):
     if search_type == 'most_read':
         all = Node.objects.order_by('-num_visits')[:50]
         for node in all:
-            print(node.num_visits)
             nodes.append(node.node_id)
 
     if search_type == 'trending':
@@ -439,8 +439,29 @@ def get_workspaces(request):
                                    'workspace_title': workspace.workspace_title,
                                    'pending': True,
                             'request_id':request_id})
+    pending_review = []
+    review_workspace_list = []
+    if Reviewer.objects.filter(pk=request.user.basicuser.pk).exists():
+        reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
+        for workspace in reviwer.review_workspaces.all():
+            review_workspace_list.append({'workspace_id': workspace.workspace_id,
+                                   'workspace_title': workspace.workspace_title,
+                                   'pending': False})
 
-    return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending}, status=200)
+        for req in ReviewRequest.objects.filter(receiver=cont):
+            workspace = req.workspace
+            request_id = req.id
+            if req.status == 'P':
+                pending_review.append({'workspace_id': workspace.workspace_id,
+                                'workspace_title': workspace.workspace_title,
+                                'pending': True,
+                                'request_id': request_id})
+
+    return JsonResponse({'workspaces':workspace_list,'pending_workspaces':pending,
+                         'review_workspaces':review_workspace_list,'pending_review_workspaces':pending_review}, status=200)
+
+
+
 
 def get_workspace_from_id(request):
     id = int(request.GET.get("workspace_id"))
@@ -450,9 +471,22 @@ def get_workspace_from_id(request):
     res = BasicUserDetailAPI.as_view()(request)
     if not IsContributor().has_permission(request, get_workspace_from_id):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
-    if not is_cont_workspace(request):
-        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
+    flag = True
     workspace = workspace[0]
+    if reviewer.exists():
+        if workspace in reviewer[0].review_workspaces.all():
+            cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
+            requests = ReviewRequest.objects.filter(workspace=workspace)
+            for request in requests:
+                if request.receiver == cont:
+                    request_id = request.id
+            flag = False
+    if flag:
+        request_id = ''
+
+    if flag and not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     entries = []
     for entry in workspace.entries.all():
         entries.append({'entry_id':entry.entry_id,
@@ -506,6 +540,10 @@ def get_workspace_from_id(request):
         status = 'in_review'
     elif workspace.is_finalized:
         status = 'finalized'
+    if workspace.node == None:
+        node_id = ''
+    else:
+        node_id = workspace.node.node_id
     return JsonResponse({'workspace_id': workspace.workspace_id,
                          'workspace_title':workspace.workspace_title,
                          'workspace_entries': entries,
@@ -516,6 +554,8 @@ def get_workspace_from_id(request):
                          'pending_contributors':pending,
                         'references':references,
                          'created_at':workspace.created_at,
+                         'from_node_id' :  node_id,
+                         'request_id' : request_id,
                          }, status=200)
 
 def get_semantic_suggestion(request):
@@ -524,6 +564,184 @@ def get_semantic_suggestion(request):
     if len(result) == 0:
         return JsonResponse({'message': 'There are no nodes with this semantic tag.'}, status=404)
     return JsonResponse({'suggestions': result}, status=200)
+
+
+@csrf_exempt
+def change_workspace_title(request):
+    workspace_id = request.POST.get("workspace_id")
+    title = request.POST.get("title")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = workspace[0]
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    if workspace.node != None:
+        return JsonResponse({'message': 'The title of this workspace can not be changed (created from existing publication)'}, status=403)
+    workspace.workspace_title = title
+    workspace.save()
+    return JsonResponse({'message': 'Workspace title changed successfully'}, status=200)
+
+@csrf_exempt
+def set_workspace_proof(request):
+    entry_id = request.POST.get("entry_id")
+    workspace_id = request.POST.get("workspace_id")
+    if entry_id == None or entry_id == '':
+        return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
+    try:
+        entry_id = int(entry_id)
+    except:
+        return JsonResponse({'message': 'entry_id field has to be a integer'}, status=400)
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    entry = Entry.objects.filter(entry_id=entry_id)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if entry[0] not in workspace.entries.all():
+        return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    entry = entry[0]
+    if entry.is_theorem_entry:
+        return JsonResponse({'message': 'This Entry is already a theorem entry.'}, status=400)
+    if workspace.proof_entry != None:
+        workspace.proof_entry.is_proof_entry = False
+    workspace.proof_entry = entry
+    entry.is_proof_entry = True
+    entry.save()
+    workspace.save()
+    return JsonResponse({'message': 'Proof entry is successfully set.'}, status=200)
+
+
+
+
+
+
+@csrf_exempt
+def remove_workspace_proof(request):
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if workspace.node != None:
+        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    if workspace.proof_entry != None:
+        workspace.proof_entry.is_proof_entry = False
+    workspace.proof_entry = None
+    workspace.save()
+    return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
+
+
+@csrf_exempt
+def set_workspace_theorem(request):
+    entry_id = request.POST.get("entry_id")
+    workspace_id = request.POST.get("workspace_id")
+    if entry_id == None or entry_id == '':
+        return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
+    try:
+        entry_id = int(entry_id)
+    except:
+        return JsonResponse({'message': 'entry_id field has to be a integer'}, status=400)
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    entry = Entry.objects.filter(entry_id=entry_id)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if entry[0] not in workspace.entries.all():
+        return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    entry = entry[0]
+    if entry.is_proof_entry:
+        return JsonResponse({'message': 'This Entry is already a proof entry.'}, status=400)
+    if workspace.node != None:
+        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
+    if workspace.theorem_entry != None:
+        workspace.theorem_entry.is_theorem_entry = False
+    workspace.theorem_entry = entry
+    entry.is_theorem_entry = True
+    entry.save()
+    workspace.save()
+    return JsonResponse({'message': 'Theorem entry is successfully set.'}, status=200)
+
+@csrf_exempt
+def remove_workspace_theorem(request):
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    if workspace.node != None:
+        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
+    if workspace.theorem_entry != None:
+        workspace.theorem_entry.is_theorem_entry = False
+    workspace.theorem_entry = None
+    workspace.save()
+    return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
 
 
 @csrf_exempt
@@ -584,17 +802,22 @@ def edit_entry(request):
         return JsonResponse({'message': 'there is no entry with this id'}, status=404)
 
     res = BasicUserDetailAPI.as_view()(request)
-    print(res.data)
     if not IsContributor().has_permission(request, delete_entry):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
     if not is_cont_workspace(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
 
     workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if entry[0] not in workspace.entries.all():
         return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
 
     entry = Entry.objects.get(entry_id=entry_id)
+    if entry.is_editable == False:
+        return JsonResponse({'message': 'This Entry is not editable'}, status=403)
+    if entry.is_final_entry == False:
+        return JsonResponse({'message': 'This Entry is not editable'}, status=403)
     entry.content = content
     entry.save(update_fields=["content"])
     return JsonResponse({'message': 'entry content is updated successfully'}, status=200)
@@ -796,6 +1019,7 @@ def add_reference(request):
 @csrf_exempt
 def create_workspace(request):
     title = request.POST.get("workspace_title")
+    node_id = request.POST.get("node_id")
     res = BasicUserDetailAPI.as_view()(request)
     if not IsContributor().has_permission(request, delete_entry):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
@@ -813,7 +1037,22 @@ def create_workspace(request):
     cont = Contributor.objects.filter(id=request.user.basicuser.id)
     if cont.count() == 0:
         return JsonResponse({'message': 'there is no contributor with this user_id'}, status=400)
-    workspace = Workspace.objects.create(workspace_title=title)
+    if node_id == None:
+        workspace = Workspace.objects.create(workspace_title=title)
+    else:
+        node = Node.objects.filter(node_id=node_id)
+        if not node.exists():
+            return JsonResponse({'message': 'there is no node with this node_id'}, status=400)
+        node = node[0]
+        theorem_entry = Entry.objects.create(content=node.theorem.theorem_content,is_theorem_entry=True,is_editable=False,is_final_entry=True)
+        theorem_entry.save()
+        workspace = Workspace.objects.create(node=node, workspace_title=node.node_title,theorem_entry=theorem_entry,theorem_posted=True)
+        workspace.entries.add(theorem_entry)
+        title=node.node_title
+        for ref in node.from_referenced_nodes.all():
+            workspace.references.add(ref)
+        for tag in node.semantic_tags.all():
+            workspace.semantic_tags.add(tag)
     workspace.save()
     cont[0].workspaces.add(workspace)
     return JsonResponse({'message': 'Workspace with title ' + title + ' has been added successfully' ,
@@ -926,82 +1165,124 @@ def update_review_request_status(request):
     if request.user.basicuser.id != req.receiver.id:
         return Response({"message": "Unauthorized reviewer"}, status=400)
 
+    if req.status == "R":
+        return Response({"message": "The request has already been rejected."}, status=400)
 
-    status = request.data.get('status')
-    comment = request.data.get('comment')
-    workspace = req.workspace
+    if req.status == 'A':
+        response = request.data.get('response')
+        if response not in ["P", "A", "R"]:
+            return Response({"message": "Invalid response value."}, status=400)
+        if req.response != "P":
+            return Response({"message": "The review has already been approved or rejected."}, status=400)
+        workspace = req.workspace
+        if response == 'A':
+            try:
+                workspace.num_approvals += 1
+                workspace.save()
 
-    if status not in ["P", "A", "R"]:
-        return Response({"message": "Invalid status value."}, status=400)
-    if req.status != "P":
-        return Response({"message": "The request has already been approved or rejected."})
-    
-    serializer = None
+                if workspace.num_approvals >= 2:
+                    workspace.is_published = True
+                    workspace.is_in_review = False
+                    workspace.is_rejected = False
 
-    if status == "A":
-        try:
-            workspace.num_approvals -= 1
-            workspace.save()
+                    if workspace.node == None:
+                        node = Node.objects.create(
+                            node_title=workspace.workspace_title,
+                            publish_date=datetime.date.today(),
+                            is_valid=True,
+                            num_visits=0,
+                            removed_by_admin=False
+                        )
 
-            if workspace.num_approvals <= 0:
-                workspace.is_published = True
-                workspace.is_in_review = False
-                workspace.is_rejected = False
+                        node.contributors.set(workspace.contributor_set.all())
+
+                        node.from_referenced_nodes.set(workspace.references.all())
+
+                        node.semantic_tags.set(workspace.semantic_tags.all())
+                        for entry in workspace.entries.all():
+                            if entry.is_proof_entry:
+                                new_id = Proof.objects.order_by('-proof_id')[0].proof_id + 1 # TODO THIS PART MUST BE CHANGED.
+                                proof = Proof.objects.create(
+                                    proof_id = new_id,
+                                    proof_title="",
+                                    proof_content=entry.content,
+                                    is_valid=True,
+                                    is_disproof=False,
+                                    publish_date=datetime.date.today(),
+                                    removed_by_admin=False,
+                                    node=node,
+                                )
+                                proof.contributors.set(workspace.contributor_set.all())
+                                node.proofs.add(proof)
+                            elif entry.is_theorem_entry:
+                                theorem = Theorem.objects.create(
+                                    theorem_title="",
+                                    theorem_content=entry.content,
+                                    publish_date=datetime.date.today()
+                                )
+                                theorem.contributors.set(workspace.contributor_set.all())
+                                node.theorem = theorem
+                    else:
+                        node = workspace.node
+                        for entry in workspace.entries.all():
+                            if entry.is_proof_entry:
+                                new_id = Proof.objects.order_by('-proof_id')[0].proof_id + 1  # TODO THIS PART MUST BE CHANGED.
+                                proof = Proof.objects.create(
+                                    proof_id=new_id,
+                                    proof_title="",
+                                    proof_content=entry.content,
+                                    is_valid=True,
+                                    is_disproof=False,
+                                    publish_date=datetime.date.today(),
+                                    removed_by_admin=False,
+                                    node=node
+                                )
+                                proof.contributors.set(workspace.contributor_set.all())
+                                node.proofs.add(proof)
+                        for cont in workspace.contributor_set.all():
+                            if cont not in node.contributors.all():
+                                node.contributors.add(cont)
+                        for ref in workspace.references.all():
+                            if ref not in node.from_referenced_nodes.all():
+                                node.from_referenced_nodes.add(ref)
+                        for tag in workspace.semantic_tags.all():
+                            if tag not in node.semantic_tags.all():
+                                node.semantic_tags.add(tag)
+                    for review_request in workspace.reviewrequest_set.all():
+                        node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
+
+                    serializer = NodeSerializer(data=node)
+                    if serializer.is_valid():
+                        serializer.save()
 
 
-                node = Node.objects.create(
-                    node_title=workspace.workspace_title, 
-                    publish_date=datetime.date.today(),
-                    is_valid=True,
-                    num_visits=0,
-                    removed_by_admin=False
-                )
-
-                node.contributors.set(workspace.contributor_set.all())
-
-                node.from_referenced_nodes.set(workspace.references.all())
-
-                node.semantic_tags.set(workspace.semantic_tags.all())
-
-                for entry in workspace.entries.all():
-                        if entry.is_proof_entry:
-                            proof = Proof.objects.create(
-                                proof_title="", 
-                                proof_content=entry.content,
-                                is_valid=True,
-                                is_disproof=False,
-                                publish_date=datetime.date.today(),
-                                removed_by_admin=False,
-                                node=node
-                            )
-                            node.proofs.add(proof)
-                        elif entry.is_theorem_entry:
-                            theorem = Theorem.objects.create(
-                                theorem_title="",  
-                                theorem_content=entry.content,
-                                publish_date=datetime.date.today()
-                            )
-                            node.theorem = theorem
-
-                for review_request in workspace.reviewrequest_set.all():
-                    node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
-                
-                serializer = NodeSerializer(data=node)
-                if serializer.is_valid():
-                    serializer.save()
+            except Exception as e:
+                return Response({"message": str(e)}, status=500)
+        elif response == 'R':
+            workspace.is_rejected = True
+            workspace.is_in_review = False
+            workspace.is_published = False
+        comment = request.data.get('comment')
+        req.comment = comment
+        req.response = response
+        req.save()
 
 
-        except Exception as e:
-            return Response({"message": str(e)}, status=500)
-    elif status == "R":
-        workspace.is_rejected = True
-        workspace.is_in_review = False
-        workspace.is_published = False
+    else:
+        status = request.data.get('status')
 
+        workspace = req.workspace
 
-    req.status = status
-    req.comment = comment
-    req.save()
+        if status not in ["P", "A", "R"]:
+            return Response({"message": "Invalid status value."}, status=400)
+        if req.status != "P":
+            return Response({"message": "The request has already been approved or rejected."}, status=400)
+        if status == 'A':
+            reviewer = Reviewer.objects.get(pk=request.user.basicuser.pk)
+            reviewer.review_workspaces.add(req.workspace)
+        serializer = None
+        req.status = status
+        req.save()
 
     serializer = ReviewRequestSerializer(req)
     return Response(serializer.data, status=200)
