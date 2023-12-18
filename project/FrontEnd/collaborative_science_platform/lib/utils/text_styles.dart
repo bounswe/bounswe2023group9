@@ -49,7 +49,7 @@ class TextStyles {
   );
 
   static const TextStyle bodyBlack = TextStyle(
-    fontSize: 16,
+    fontSize: 10,
   );
   static const TextStyle bodyGrey = TextStyle(
     fontSize: 10,
