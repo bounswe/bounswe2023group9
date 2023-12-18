@@ -28,7 +28,7 @@ class AnnotationGetTest(TestCase):
 
         response = response.json()
         self.assertEqual(response['@context'], 'http://www.w3.org/ns/anno.jsonld')
-        self.assertTrue(response['id'].endswith(f'annotation{self.annotation.id}'))
+        self.assertEqual(response['id'],f'http://13.51.55.11:8001/annotations/annotation/{self.annotation.id}')
         self.assertEqual(response['type'], self.annotation.type)
         self.assertEqual(response['body'], {
             'type': self.annotation.body.type,

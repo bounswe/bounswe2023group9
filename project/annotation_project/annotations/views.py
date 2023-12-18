@@ -1,13 +1,13 @@
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import *
 
-
-def serialize_annotation(annotation, scheme, host):
+def serialize_annotation(annotation):
     return {
         '@context': 'http://www.w3.org/ns/anno.jsonld',
-        'id': f'{scheme}://{host}/annotation{annotation.id}',
+        'id': f'http://13.51.55.11:8001/annotations/annotation/{annotation.id}',
         'type': annotation.type,
         'body': {
             'type': annotation.body.type,
@@ -25,7 +25,7 @@ def serialize_annotation(annotation, scheme, host):
             },
         },
         'creator': {
-            'id': f'http://13.51.205.39/profile/{annotation.creator.name}',
+            'id': annotation.creator.name,
             'type': annotation.creator.type,
         },
         'created': annotation.created,
@@ -49,7 +49,7 @@ def matched_annotations_get_view(request):
             return JsonResponse({'message': 'No annotation found!'}, status=404)
 
         matched_data = [
-            serialize_annotation(annotation, request.scheme, request.get_host()) for annotation in matched_annotations
+            serialize_annotation(annotation) for annotation in matched_annotations
         ]
 
         return JsonResponse(matched_data, status=200, safe=False)
@@ -63,6 +63,112 @@ def get_annotation_by_id(request, annotation_id):
 
         if not annotation:
             return JsonResponse({'message': 'No annotation found!'}, status=404)
-        return JsonResponse(data = serialize_annotation(annotation, request.scheme, request.get_host()), status=200)
+        return JsonResponse(data = serialize_annotation(annotation), status=200)
     except Exception as e:
         return JsonResponse({'message': str(e)}, status=500)
+    
+@csrf_exempt
+def create_annotation(request):
+    print(request.POST.get('body'))
+    try:
+        body = json.loads(request.POST.get('body'))
+        if not body:
+            return JsonResponse({'message': 'Body must be given!'}, status=400)
+        
+        value = body.get('value')
+        print(value)
+        if not value:
+            return JsonResponse({'message': 'Body value must be given!'}, status=400)
+        
+        body_type = body.get('type')
+        body_format = body.get('format')
+        body_language = body.get('language')
+
+        target = json.loads(request.POST.get('target'))
+        if not target:
+            return JsonResponse({'message': 'Target must be given!'}, status=400)
+        
+        target_id = target.get('id')
+        if not target_id:
+            return JsonResponse({'message': 'Target id must be given!'}, status=400)
+        
+        selector = target.get('selector')
+        if not selector:
+            return JsonResponse({'message': 'Target selector must be given!'}, status=400)
+        
+        selector_type = selector.get('type')
+        selector_start = selector.get('start')
+        if not selector_start:
+            return JsonResponse({'message': 'Selector start must be given!'}, status=400)
+
+        selector_end = selector.get('end')
+        if not selector_end:
+            return JsonResponse({'message': 'Selector end must be given!'}, status=400)
+        
+        creator = json.loads(request.POST.get('creator'))
+        if not creator:
+            return JsonResponse({'message': 'Creator must be given!'}, status=400)
+        
+        creator_id = creator.get('id')
+        if not creator_id:
+            return JsonResponse({'message': 'Creator id must be given!'}, status=400)
+        
+        creator_type = creator.get('type')
+
+        body_object = Body.objects.create(
+            value=value
+        )
+
+        if body_type:
+            body_object.type = body_type
+
+        if body_format:
+            body_object.format = body_format
+
+        if body_language:
+            body_object.language = body_language
+        
+        body_object.save()
+        
+        source_object, created = Source.objects.get_or_create(
+            uri=target_id
+        )
+
+        selector_object = Selector.objects.create(
+            start=selector_start,
+            end=selector_end,
+            source=source_object
+        )
+
+        if selector_type:
+            selector_object.type = selector_type
+        
+        selector_object.save()
+
+        creator_object = Creator.objects.create(
+            name=creator_id
+        )
+
+        if creator_type:
+            creator_object.type = creator_type
+        
+        creator_object.save()
+
+        annotation_type = request.POST.get('type')
+        annotation_object = Annotation.objects.create(
+            body=body_object,
+            target=selector_object,
+            creator=creator_object
+        )
+
+        if annotation_type:
+            annotation_object.type = annotation_type
+        
+        annotation_object.save()
+        
+        return JsonResponse(data = serialize_annotation(annotation_object), status=200)
+    except Exception as e:
+        print(str(e))
+        if "duplicate key value violates unique constraint" in str(e):
+            return JsonResponse({'message': 'Annotation already exists!'}, status=400)
+        return JsonResponse({'message': "Internal server error"}, status=500)
