@@ -982,12 +982,11 @@ class AdminFeatureAPITest(TestCase):
 
 
         url = reverse('demote_reviewer')
-        data = {'reviewer_id': self.contributor.id}
 
-        response = self.client.delete(url, data, format='json')
+        response = self.client.delete(f'{url}?reviewer_id={self.contributor.id}')
         self.assertEqual(response.status_code, 204, response.data)
         self.assertEqual(len(Reviewer.objects.filter(id=self.contributor.id)), 0)
 
-        response = self.client.delete(url, data, format='json')
+        response = self.client.delete(f'{url}?reviewer_id={self.contributor.id}')
         self.assertEqual(response.status_code, 404)
 
