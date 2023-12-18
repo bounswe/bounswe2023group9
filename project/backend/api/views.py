@@ -1089,4 +1089,27 @@ def update_content_status(request):
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class AddUserSemanticTag(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
+    def post(self, request):
+        sm_tag_id = request.data.get('sm_tag_id')
+        if not sm_tag_id:
+            return Response({"error": "Semantic Tag ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = BasicUser.objects.get(pk=request.user.basicuser.pk)
+        except:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            sm_tag = SemanticTag.objects.get(pk=sm_tag_id)
+        except:
+            return Response({"error": "Semantic Tag not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if user.semantic_tags.filter(pk=sm_tag_id).exists():
+            return Response({"error": "User already has this Semantic Tag."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.semantic_tags.add(sm_tag)
+        return Response({"message": "Semantic Tag successfully added to user."}, status=status.HTTP_201_CREATED)
+    
+    
