@@ -24,6 +24,7 @@ class Node {
 }
 
 class ProfileData {
+  int id;
   String name;
   String surname;
   String email;
@@ -32,7 +33,8 @@ class ProfileData {
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
   ProfileData(
-      {this.aboutMe = "",
+      {this.id = 0,
+      this.aboutMe = "",
       this.email = "",
       this.name = "",
       this.surname = "",

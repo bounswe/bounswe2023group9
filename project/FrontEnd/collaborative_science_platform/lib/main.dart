@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<WorkspaceProvider>(create: (context) => WorkspaceProvider()),
         ChangeNotifierProvider<QuestionAnswerProvider>(
             create: (context) => QuestionAnswerProvider()),
+        ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
       ],
       child: Portal(
         child: MaterialApp.router(

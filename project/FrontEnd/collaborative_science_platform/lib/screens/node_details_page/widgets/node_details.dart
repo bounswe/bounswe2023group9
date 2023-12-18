@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
@@ -52,6 +53,8 @@ class _NodeDetailsState extends State<NodeDetails> {
     }
   }
 
+  bool showAnnotations = false;
+
   void updateIndex(int index) {
     setState(() {
       currentIndex = index;
@@ -95,22 +98,16 @@ class _NodeDetailsState extends State<NodeDetails> {
                       padding: Responsive.isDesktop(context)
                           ? const EdgeInsets.all(70.0)
                           : const EdgeInsets.all(10.0),
-                      child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                      child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
                           textAlign: TextAlign.center, style: TextStyles.title2)),
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Column(
                       children: [
                         SelectableText.rich(
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                       ],
                     ),
@@ -173,24 +170,39 @@ class _NodeDetailsState extends State<NodeDetails> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                                width: 180,
+                                child: AppButton(
+                                    text: showAnnotations ? "Show Text" : "Show Annotations",
+                                    height: 40,
+                                    onTap: () {
+                                      setState(() {
+                                        showAnnotations = !showAnnotations;
+                                      });
+                                    })),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: TeXView(
-                                renderingEngine: const TeXViewRenderingEngine.katex(),
-                                child: TeXViewDocument(
-                                    NodeHelper.getNodeContentLatex(widget.node, "long")))),
+                            child: showAnnotations
+                                ? AnnotationText(
+                                    NodeHelper.getNodeContentLatex(widget.node, "long"),
+                                    annotationType: AnnotationType.theorem,
+                                  )
+                                : TeXView(
+                                    renderingEngine: const TeXViewRenderingEngine.katex(),
+                                    child: TeXViewDocument(
+                                        NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
-                          TextSpan(children: <TextSpan>[
-                            const TextSpan(
-                              text: "published on ",
-                              style: TextStyles.bodyGrey,
-                            ),
-                            TextSpan(
-                              text: widget.node.publishDateFormatted,
-                              style: TextStyles.bodyBlack,
-                            )
-                          ]),
+                          TextSpan(
+                            text: widget.node.publishDateFormatted,
+                            style: TextStyles.bodyBlack,
+                          ),
                         ),
                       ],
                     )),

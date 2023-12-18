@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 class CardContainer extends StatelessWidget {
   final Widget child;
   final Function? onTap;
-  const CardContainer({super.key, required this.child, this.onTap});
+  final Color? backgroundColor;
+
+  const CardContainer({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     if (onTap == null) {
       return Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor ?? Colors.white,
           borderRadius: BorderRadius.circular(5),
           boxShadow: [
             BoxShadow(
@@ -34,7 +41,7 @@ class CardContainer extends StatelessWidget {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: backgroundColor ?? Colors.white,
               borderRadius: BorderRadius.circular(5),
               boxShadow: [
                 BoxShadow(

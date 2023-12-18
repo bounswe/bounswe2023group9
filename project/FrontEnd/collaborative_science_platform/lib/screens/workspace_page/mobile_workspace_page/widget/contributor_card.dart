@@ -1,15 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../models/user.dart';
-import '../../../profile_page/profile_page.dart';
+
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 
 
 class ContributorCard extends StatelessWidget {
   final User contributor;
+  final bool pending;
 
   const ContributorCard({
     super.key,
     required this.contributor,
+    required this.pending,
   });
 
   @override
@@ -34,29 +39,46 @@ class ContributorCard extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    "${contributor.firstName} ${contributor.lastName}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18.0,
-                    ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${contributor.firstName} ${contributor.lastName}",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0),
+                      Text(
+                        contributor.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16.0,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2.0),
-                  Text(
-                    contributor.email,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16.0,
-                      color: Colors.grey,
+                  if (pending) IconButton(
+                    icon: const Icon(
+                      CupertinoIcons.clear_circled,
+                      color: AppColors.warningColor,
                     ),
+                    onPressed: () {
+                      // function to delete collaboration request
+                      //TODO - requests id's are absent for now.
+                      //updateRequest();
+                    },
                   ),
                 ],
               ),

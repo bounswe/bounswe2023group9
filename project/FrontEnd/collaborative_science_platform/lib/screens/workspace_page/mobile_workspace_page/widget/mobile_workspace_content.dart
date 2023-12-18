@@ -1,17 +1,19 @@
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
+import 'package:collaborative_science_platform/widgets/semantic_search_bar.dart';
 import 'package:flutter/material.dart';
-import '../../../../models/workspaces_page/workspace.dart';
-import '../../../../utils/responsive/responsive.dart';
-import '../../../../widgets/app_button.dart';
-import '../../web_workspace_page/widgets/add_reference_form.dart';
-import '../../web_workspace_page/widgets/entry_form.dart';
-import '../../web_workspace_page/widgets/send_collaboration_request_form.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/add_reference_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'app_alert_dialog.dart';
 import 'contributor_card.dart';
-import 'entry_card.dart';
+import 'mobile_entry_card.dart';
 
 class MobileWorkspaceContent extends StatefulWidget {
   final Workspace workspace;
@@ -22,6 +24,11 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function deleteReference;
   final Function addReference;
   final Function editTitle;
+  final Function updateRequest;
+  final Function sendCollaborationRequest;
+  final Function finalizeWorkspace;
+  final Function addSemanticTags;
+
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -32,6 +39,11 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
+    required this.addSemanticTags,
+    required this.finalizeWorkspace,
+    required this.sendCollaborationRequest,
+    required this.updateRequest,
+
   });
 
   @override
@@ -47,6 +59,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   bool titleReadOnly = true;
   TextEditingController titleController = TextEditingController();
   FocusNode titleFocusNode = FocusNode();
+
+  bool newEntryOpen = false;
 
   @override
   void dispose() {
@@ -87,35 +101,33 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     );
   }
 
+  Widget semanticTagList() {
+    List<SemanticTag> tags = <SemanticTag>[
+      SemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1", description: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
+      SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
+      SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        itemCount: tags.length,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return SemanticTagCard(
+            tag: tags[index],
+            backgroundColor: const Color.fromARGB(255, 220, 235, 220),
+            onDelete: () { /* delete the semantic tag */ },
+          );
+        },
+      ),
+    );
+  }
+
   Widget entryList() {
     int length = widget.workspace.entries.length;
-    TextEditingController contentController = TextEditingController();
-
-    Widget alertDialog = AppAlertDialog(
-      text: 'New Entry',
-      content: EntryForm(newEntry: true, contentController: contentController),
-      actions: [
-        AppButton(
-          isLoading: entryLoading,
-          text: "Create New Entry",
-          height: 40,
-          onTap: () async {
-            /* Create Entry */
-            setState(() {
-              entryLoading = true;
-            });
-            await widget.createNewEntry(contentController.text);
-            setState(() {
-              entryLoading = false;
-            });
-            contentController.text = "";
-            // ignore: use_build_context_synchronously
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-
     return widget.workspace.entries.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
@@ -124,56 +136,72 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: length + 1,
-              itemBuilder: (context, index) => (index < length)
-                  ? EntryCard(
-                      entry: widget.workspace.entries[index],
-                      onDelete: () async {
-                        await widget.deleteEntry(widget.workspace.entries[index].entryId);
-                      },
-                      pending: widget.pending,
-                      editEntry: widget.editEntry,
-                    )
-                  : addIcon(() {
-                      showDialog(context: context, builder: (context) => alertDialog);
-                    }),
+              itemBuilder: (context, index) {
+                return (index < length) ? MobileEntryCard(
+                  entry: widget.workspace.entries[index],
+                  onDelete: () async {
+                    await widget.deleteEntry(
+                        widget.workspace.entries[index].entryId);
+                  },
+                  editEntry: widget.editEntry,
+                ) : NewEntry(
+                  onCreate: widget.createNewEntry,
+                  backgroundColor: const Color.fromARGB(255, 220, 220, 240),
+                  isMobile: true,
+                );
+              },
             ),
-          )
-        : firstAddition(
-            "Add Your First Entry!",
-            () {
-              showDialog(context: context, builder: (context) => alertDialog);
-            },
-          );
+          ) : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Add Your First Entry!",
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                ),
+              ),
+              NewEntry(
+                onCreate: widget.createNewEntry,
+                backgroundColor: const Color.fromARGB(255, 220, 220, 240),
+                isMobile: true,
+              ),
+      ],
+    );
   }
 
   Widget contributorList() {
     int length = widget.workspace.contributors.length;
-    Widget alertDialog = const AppAlertDialog(
+    int pendingLength = widget.workspace.pendingContributors.length;
+
+    Widget alertDialog = AppAlertDialog(
       text: "Send Collaboration Request",
-      content: SendCollaborationRequestForm(),
+      content:
+          SendCollaborationRequestForm(sendCollaborationRequest: widget.sendCollaborationRequest),
     );
 
-    return widget.workspace.contributors.isNotEmpty
-        ? Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(0.0),
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: length + 1,
-              itemBuilder: (context, index) => (index < length)
-                  ? ContributorCard(contributor: widget.workspace.contributors[index])
-                  : addIcon(() {
-                      showDialog(context: context, builder: (context) => alertDialog);
-                    }),
-            ),
-          )
-        : firstAddition(
-            "Add The First Contributor!",
-            () {
-              showDialog(context: context, builder: (context) => alertDialog);
-            },
-          );
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(0.0),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: length + pendingLength + 1,
+        itemBuilder: (context, index) => (index < length)
+          ? ContributorCard(
+            contributor: widget.workspace.contributors[index],
+            pending: false,
+        )
+          : (index < length + pendingLength) ? ContributorCard(
+            contributor: widget.workspace.pendingContributors[index-length],
+            pending: true,
+        ) : addIcon(() {
+            showDialog(context: context, builder: (context) => alertDialog);
+          }),
+        ),
+     );
   }
 
   Widget referenceList() {
@@ -223,47 +251,59 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
           padding: const EdgeInsets.all(0.0),
           // It needs to be nested scrollable in the future
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: titleReadOnly
-                  ? [
-                      Text(widget.workspace!.workspaceTitle, style: TextStyles.title2),
-                      if (widget.workspace!.status == WorkspaceStatus.workable)
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                titleController.text = widget.workspace.workspaceTitle;
-                                titleReadOnly = false;
-                              });
-                            },
-                            icon: const Icon(Icons.edit)),
-                    ]
-                  : [
-                      SizedBox(
-                        width: 300,
-                        height: 80,
-                        child: AppTextField(
-                            controller: titleController,
-                            focusNode: titleFocusNode,
-                            hintText: "",
-                            obscureText: false,
-                            height: 200),
-                      ),
-                      SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: IconButton(
-                            onPressed: () {
-                              widget.editTitle(titleController.text);
-                              widget.workspace.workspaceTitle = titleController.text;
-                              setState(() {
-                                titleReadOnly = true;
-                              });
-                            },
-                            icon: const Icon(Icons.save)),
-                      )
-                    ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: titleReadOnly
+                    ? [
+                        SizedBox(
+                          width: Responsive.getGenericPageWidth(context)-100,
+                          child: Text(
+                              widget.workspace.workspaceTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.title2,
+                          ),
+                        ),
+                        if (widget.workspace.status == WorkspaceStatus.workable)
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  titleController.text = widget.workspace.workspaceTitle;
+                                  titleReadOnly = false;
+                                });
+                              },
+                              icon: const Icon(Icons.edit)),
+                      ]
+                    : [
+                        SizedBox(
+                          width: 300,
+                          height: 80,
+                          child: AppTextField(
+                              controller: titleController,
+                              focusNode: titleFocusNode,
+                              hintText: "",
+                              obscureText: false,
+                              height: 200),
+                        ),
+                        SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: IconButton(
+                              onPressed: () {
+                                widget.editTitle(titleController.text);
+                                widget.workspace.workspaceTitle = titleController.text;
+                                setState(() {
+                                  titleReadOnly = true;
+                                });
+                              },
+                              icon: const Icon(Icons.save),
+                          ),
+                        )
+                      ],
+              ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
@@ -271,6 +311,16 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "Entries"),
             entryList(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Divider(),
+            ),
+            const SubSectionTitle(title: "Semantic Tags"),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SemanticSearchBar(addSemanticTags: widget.addSemanticTags),
+            ),
+            semanticTagList(),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
@@ -283,7 +333,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             const SubSectionTitle(title: "References"),
             referenceList(),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 100.0),
           ],
         ),
       );
