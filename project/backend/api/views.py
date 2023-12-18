@@ -300,7 +300,9 @@ def get_profile(request):
     nodes = []
     asked_questions = []
     answered_questions = []
+    orcid = None
     if cont.count() != 0:
+        orcid  = cont[0].orcid
         user_nodes = Node.objects.filter(contributors=cont[0].id)
         for node in user_nodes:
             nodes.append(node.node_id)
@@ -347,6 +349,7 @@ def get_profile(request):
 
     return JsonResponse({'name':user.first_name,
                          'surname':user.last_name,
+                         'orcid': orcid,
                          'bio':basic_user.bio,
                          'nodes': node_infos,
                          'asked_questions':asked_questions,

@@ -118,7 +118,7 @@ class BasicUser(models.Model):
 
 class Contributor(BasicUser):
     workspaces = models.ManyToManyField(Workspace, blank=True)
-
+    orcid = models.TextField(unique=True, null=True, blank=True)
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
