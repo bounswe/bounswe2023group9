@@ -194,6 +194,9 @@ class Theorem(models.Model):
     theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
+    contributors = models.ManyToManyField(Contributor, related_name='TheoremContributors')
+
+
 
 
 class Annotation(models.Model):
@@ -230,7 +233,7 @@ class Proof(models.Model):
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
     removed_by_admin = models.BooleanField(default=False)
-
+    contributors = models.ManyToManyField(Contributor, related_name='ProofContributors')
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
 
