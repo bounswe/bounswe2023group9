@@ -966,3 +966,26 @@ class AdminFeatureAPITest(TestCase):
         response = self.client.put(url, data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+class AddUserSemanticTagTestCase(TestCase):
+    def setUp(self):  
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.basic_user = BasicUser.objects.create(user=self.user, bio='Hello')
+        
+        self.basic_user_token = Token.objects.create(user=self.user)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.basic_user_token.key}")
+
+        self.sm_tag = SemanticTag.objects.create(
+            wid="QXXX",
+            label="Test SM Tag"
+        )
+    def test_add_user_semantic_tag(self):
+        url = reverse('add_user_semantic_tag')
+        payload = {
+            'sm_tag_id': self.sm_tag.pk,
+        }
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
