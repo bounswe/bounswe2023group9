@@ -969,6 +969,7 @@ class AdminFeatureAPITest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+
     def test_user_conversion(self):
         url = reverse('promote_contributor')
         data = {'cont_id': self.contributor.id}
@@ -990,3 +991,25 @@ class AdminFeatureAPITest(TestCase):
         response = self.client.delete(f'{url}?reviewer_id={self.contributor.id}')
         self.assertEqual(response.status_code, 404)
 
+class AddUserSemanticTagTestCase(TestCase):
+    def setUp(self):  
+        self.client = APIClient()
+        self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
+                                        last_name='Test')
+        self.basic_user = BasicUser.objects.create(user=self.user, bio='Hello')
+        
+        self.basic_user_token = Token.objects.create(user=self.user)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.basic_user_token.key}")
+
+        self.sm_tag = SemanticTag.objects.create(
+            wid="QXXX",
+            label="Test SM Tag"
+        )
+    def test_add_user_semantic_tag(self):
+        url = reverse('add_user_semantic_tag')
+        payload = {
+            'sm_tag_id': self.sm_tag.pk,
+        }
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
