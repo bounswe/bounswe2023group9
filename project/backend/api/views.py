@@ -536,7 +536,8 @@ def get_workspace_from_id(request):
     for req in ReviewRequest.objects.filter(workspace=workspace):
         if req.status =='A' and req.response != 'P':
             comments.append({'comment':req.comment,
-                             'reviewer':req.receiver.user.username})
+                             'reviewer':req.receiver.user.username,
+                             'response':req.response})
 
     status = 'workable'
     if workspace.is_published:
