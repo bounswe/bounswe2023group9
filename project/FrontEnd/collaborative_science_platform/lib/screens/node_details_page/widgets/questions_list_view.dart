@@ -34,6 +34,10 @@ class _QuestionsViewState extends State<QuestionsView> {
 
   @override
   Widget build(BuildContext context) {
+    List<Question> filteredQuestions = questions.where((question) {
+      return question.isAnswered || widget.canAnswer;
+    }).toList();
+
     return SingleChildScrollView(
       child: Container(
         width: Responsive.desktopPageWidth,
@@ -54,10 +58,10 @@ class _QuestionsViewState extends State<QuestionsView> {
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: questions.length,
+                itemCount: filteredQuestions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return QuestionBox(
-                    question: questions[index],
+                    question: filteredQuestions[index],
                     canAnswer: widget.canAnswer,
                   );
                 },
