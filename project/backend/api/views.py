@@ -531,6 +531,14 @@ def get_workspace_from_id(request):
                            'node_title':ref.node_title,
                            'contributors':authors,
                            'publish_date':ref.publish_date})
+    comments = []
+
+    for req in ReviewRequest.objects.filter(workspace=workspace):
+        if req.status =='A' and req.response != 'P':
+            comments.append({'comment':req.comment,
+                             'reviewer':req.receiver.user.username,
+                             'response':req.response})
+
     status = 'workable'
     if workspace.is_published:
         status = 'published'
@@ -556,6 +564,7 @@ def get_workspace_from_id(request):
                          'created_at':workspace.created_at,
                          'from_node_id' :  node_id,
                          'request_id' : request_id,
+                         'comments':comments
                          }, status=200)
 
 def get_semantic_suggestion(request):
