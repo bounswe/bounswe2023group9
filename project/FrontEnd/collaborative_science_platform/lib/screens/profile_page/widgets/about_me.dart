@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -5,28 +6,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AboutMe extends StatefulWidget {
-  final String email;
-  final String name;
-  final String surname;
+  final ProfileData profileData;
   final int noWorks;
-  final String aboutMe;
-  final bool isBanned;
-  final bool isReviewer;
   final String userType;
-  final bool isValidUser; //Contributor or reviewer
   final Function() onTap;
   final Function() onTapReviewerButton;
   const AboutMe(
       {super.key,
-      required this.email,
-      required this.name,
-      required this.surname,
+      required this.profileData,
       required this.noWorks,
-      required this.aboutMe,
-      required this.isBanned,
-      required this.isReviewer,
       required this.userType,
-      required this.isValidUser,
       required this.onTap,
       required this.onTapReviewerButton});
 
@@ -49,7 +38,7 @@ class _AboutMeState extends State<AboutMe> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SelectableText(
-                  "${widget.name} ${widget.surname}",
+                  "${widget.profileData.name} ${widget.profileData.surname}",
                   style: const TextStyle(
                     color: AppColors.primaryDarkColor,
                     fontWeight: FontWeight.bold,
@@ -61,8 +50,10 @@ class _AboutMeState extends State<AboutMe> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Visibility(
-                      visible: ((widget.userType == "admin" ? true : false) && widget.isValidUser),
-                      child: widget.isReviewer
+                      visible: ((widget.userType == "admin" ? true : false) &&
+                          (widget.profileData.userType == "reviewer" ||
+                              widget.profileData.userType == "contributor")),
+                      child: widget.profileData.userType == "reviewer"
                           ? SizedBox(
                               width: 220,
                               child: AppButton(
@@ -95,7 +86,7 @@ class _AboutMeState extends State<AboutMe> {
                     const SizedBox(height: 10.0),
                     Visibility(
                       visible: (widget.userType == "admin" ? true : false),
-                      child: widget.isBanned
+                      child: widget.profileData.isBanned
                           ? SizedBox(
                               width: 220,
                               child: AppButton(
@@ -139,7 +130,7 @@ class _AboutMeState extends State<AboutMe> {
                       ? MediaQuery.of(context).size.width * 0.9
                       : MediaQuery.of(context).size.width * 0.5,
                   child: SelectableText(
-                    widget.aboutMe,
+                    widget.profileData.aboutMe,
                     style: const TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 20,
@@ -162,7 +153,7 @@ class _AboutMeState extends State<AboutMe> {
                   width: 10,
                 ),
                 SelectableText(
-                  "${widget.email}",
+                  widget.profileData.email,
                   style: const TextStyle(
                     fontSize: 20,
                   ),

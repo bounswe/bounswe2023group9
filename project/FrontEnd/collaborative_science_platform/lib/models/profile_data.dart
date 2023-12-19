@@ -32,6 +32,8 @@ class ProfileData {
   List<Node> nodes;
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
+  String userType;
+  bool isBanned;
   ProfileData(
       {this.id = 0,
       this.aboutMe = "",
@@ -40,7 +42,9 @@ class ProfileData {
       this.surname = "",
       this.nodes = const [],
       this.askedQuestions = const [],
-      this.answeredQuestions = const []});
+      this.answeredQuestions = const [],
+      this.userType = "",
+      this.isBanned = false});
 
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
     var nodeList = jsonString['nodes'] as List;
@@ -58,6 +62,8 @@ class ProfileData {
       aboutMe: jsonString['bio'],
       askedQuestions: asked,
       answeredQuestions: answered,
+      userType: jsonString['user_type'],
+      isBanned: jsonString['is_banned'],
     );
   }
 

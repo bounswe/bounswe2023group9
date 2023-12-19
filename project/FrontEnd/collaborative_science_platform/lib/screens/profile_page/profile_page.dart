@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/profile_page_exception
 import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/admin_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/error_page/error_page.dart';
@@ -31,22 +32,16 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-// TODO: add optional parameter to ProfilePage to get others profileData
 class _ProfilePageState extends State<ProfilePage> {
   ProfileData profileData = ProfileData();
   BasicUser basicUser = BasicUser();
   int noWorks = 0;
   bool error = false;
   String errorMessage = "";
+
   bool isLoading = false;
   bool isAuthLoading = false;
-
   bool _isFirstTime = true;
-
-  bool isBanned = false;
-  bool isValidUser = false; //visited user's type is contributor or reviewer
-  bool isReviewer = false;
-
   int currentIndex = 0;
 
   void updateIndex(int index) {
@@ -132,16 +127,73 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void changeProfileStatus() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      await adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
+      error = false;
+      var message = "Profile status updated.";
+      print(message);
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
   void handleButtonIsBanned() {
     setState(() {
-      isBanned = !isBanned; // Toggle the state for example purposes
+      changeProfileStatus();
     });
   }
 
+  void promoteUser() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      await adminProvider.promoteUser(admin, profileData.id);
+      error = false;
+      var message = "User is promoted to reviewer.";
+      print(message);
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
+  void demoteUser() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      await adminProvider.demoteUser(admin, profileData.id);
+      error = false;
+      var message = "User is demoted to contributor.";
+      print(message);
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
   void handleButtonIsReviewer() {
-    setState(() {
-      isReviewer = !isReviewer; // Toggle the state for example purposes
-    });
+    if (profileData.userType == "contributor") {
+      setState(() {
+        promoteUser();
+      });
+    } else if (profileData.userType == "reviewer") {
+      setState(() {
+        demoteUser();
+      });
+    }
   }
 
   @override
@@ -154,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
       // own profile page, should be editible
-      return (!isBanned || basicUser.userType == "admin")
+      return (!profileData.isBanned || basicUser.userType == "admin")
           ? PageWithAppBar(
               appBar: const HomePageAppBar(),
               pageColor: Colors.grey.shade200,
@@ -178,14 +230,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                    aboutMe: profileData.aboutMe,
-                                    email: profileData.email,
-                                    name: profileData.name,
-                                    surname: profileData.surname,
+                                    profileData: profileData,
                                     noWorks: noWorks,
-                                    isBanned: isBanned,
-                                    isReviewer: isReviewer,
-                                    isValidUser: isValidUser,
                                     userType: basicUser.userType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
@@ -264,14 +310,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                    aboutMe: profileData.aboutMe,
-                                    email: profileData.email,
-                                    name: profileData.name,
-                                    surname: profileData.surname,
+                                    profileData: profileData,
                                     noWorks: noWorks,
-                                    isBanned: isBanned,
-                                    isReviewer: isReviewer,
-                                    isValidUser: isValidUser,
                                     userType: basicUser.userType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
@@ -326,7 +366,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // others profile page, will be same both on desktop and mobile
-    return (!isBanned || basicUser.userType == "admin")
+    return (!profileData.isBanned || basicUser.userType == "admin")
         ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
@@ -351,14 +391,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               AboutMe(
-                                  aboutMe: profileData.aboutMe,
-                                  email: profileData.email,
-                                  name: profileData.name,
-                                  surname: profileData.surname,
+                                  profileData: profileData,
                                   noWorks: noWorks,
-                                  isBanned: isBanned,
-                                  isReviewer: isReviewer,
-                                  isValidUser: isValidUser,
                                   userType: basicUser.userType,
                                   onTap: handleButtonIsBanned,
                                   onTapReviewerButton: handleButtonIsReviewer),

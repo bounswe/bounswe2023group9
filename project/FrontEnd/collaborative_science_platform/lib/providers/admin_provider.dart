@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AdminProvider with ChangeNotifier {
-  Future<int> banUser(User? user, User? admin, bool isBanned) async {
+  Future<int> banUser(User? admin, int userId, bool isBanned) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
@@ -15,7 +15,7 @@ class AdminProvider with ChangeNotifier {
     };
     final String body = json.encode({
       'context': "user",
-      'content_id': user!.id,
+      'content_id': userId,
       'hide': isBanned,
     });
     try {
@@ -78,46 +78,34 @@ class AdminProvider with ChangeNotifier {
     }
   }
 
-  Future<void> promoteUser(User? user, User? admin) async {
+  Future<void> promoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-
+    final String body = json.encode({'cont_id': userId});
     try {
-      final response = await http.post(
-        Uri.parse("${Constants.apiUrl}/promote_contributor/"),
-        headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'cont_id': user!.id.toString(), //The basic user id of the contributor
-          },
-        ),
-      );
+      final response = await http.post(Uri.parse("${Constants.apiUrl}/promote_contributor/"),
+          headers: header, body: body);
       print(response.statusCode);
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> demoteUser(User? user, User? admin) async {
+  Future<void> demoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-
+    final String body = json.encode({'cont_id': userId});
     try {
       final response = await http.delete(
-        Uri.parse("${Constants.apiUrl}/demote_reviewer/?${user!.id.toString()}"),
-        headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'reviewer_id': user.id.toString(), //The basic user id of the reviewer
-          },
-        ),
-      );
+          Uri.parse("${Constants.apiUrl}/demote_reviewer/?${userId.toString()}"),
+          headers: header,
+          body: body);
       print(response.statusCode);
     } catch (e) {
       rethrow;
