@@ -7,11 +7,15 @@ import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+enum UserType { guest, basicUser, contributor, reviewer, admin }
+
 class Auth with ChangeNotifier {
   User? user;
   BasicUser? basicUser;
-  //User? user =
-  //    User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer", token: "token");
+  UserType userType = UserType.guest;
+  //User? user = User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer");
+
+
 
   bool get isSignedIn {
     return user != null && user!.token.isNotEmpty;
@@ -116,6 +120,7 @@ class Auth with ChangeNotifier {
 
   void logout() {
     user = null;
+    userType = UserType.guest;
     notifyListeners();
   }
 }

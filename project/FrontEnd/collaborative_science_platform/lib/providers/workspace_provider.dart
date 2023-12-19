@@ -85,8 +85,17 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateRequest(int id, String status, String token) async {
+  Future<void> updateRequest(int id, RequestStatus status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_req");
+
+    String requestStatus = "";
+    if (status == RequestStatus.approved) {
+      requestStatus = "A";
+    } else if (status == RequestStatus.rejected) {
+      requestStatus = "R";
+    } else {
+      requestStatus = "P";
+    }
 
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -95,7 +104,7 @@ class WorkspaceProvider with ChangeNotifier {
     });
     request.fields.addAll({
       'id': "$id",
-      'status': status,
+      'status': requestStatus,
     });
 
     http.StreamedResponse response = await request.send();
@@ -109,8 +118,16 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateCollaborationRequest(int id, String status, String token) async {
+  Future<void> updateCollaborationRequest(int id, RequestStatus status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_collab_req/");
+    String requestStatus = "";
+    if (status == RequestStatus.approved) {
+      requestStatus = "A";
+    } else if (status == RequestStatus.rejected) {
+      requestStatus = "R";
+    } else {
+      requestStatus = "P";
+    }
 
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -119,7 +136,7 @@ class WorkspaceProvider with ChangeNotifier {
     });
     request.fields.addAll({
       'id': "$id",
-      'status': status,
+      'status': requestStatus,
     });
 
     http.StreamedResponse response = await request.send();
@@ -302,6 +319,30 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> sendWorkspaceToReview(int workspaceId, int userId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/send_rev_req/");
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+      'sender': "$userId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw FinalizeWorkspaceException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
   Future<void> deleteReference(int workspaceId, int nodeId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/delete_reference/");
 
@@ -360,6 +401,40 @@ class WorkspaceProvider with ChangeNotifier {
     request.fields.addAll({
       'workspace_id': "$workspaceId",
       'entry_id': "$entryId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw DeleteEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> addReview(int id, RequestStatus status, String comment, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/update_review_req/");
+
+    String requestStatus = "";
+    if (status == RequestStatus.approved) {
+      requestStatus = "A";
+    } else if (status == RequestStatus.rejected) {
+      requestStatus = "R";
+    } else {
+      requestStatus = "P";
+    }
+
+    var request = http.MultipartRequest('PUT', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'id': "$id",
+      'status': requestStatus,
+      'comment': comment,
     });
 
     http.StreamedResponse response = await request.send();
