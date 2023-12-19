@@ -184,8 +184,7 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                             isHidden: isHidden,
                             userType: basicUser.userType,
                             onTap: handleButton,
-                            createNewWorkspacefromNode: createNewWorkspacefromNode)
-                          ),
+                            createNewWorkspacefromNode: createNewWorkspacefromNode),
           )
         : const ErrorPage();
   }
