@@ -128,12 +128,8 @@ class WorkspacePostAPIView(APIView):
             serializer.errors, status=400
         )
 
-class send_notification(APIView):
-    def post(self, request):
-        receiver = request.data.get('receiver')
+def send_notification(receiver,subject,content):
         receiver = receiver.split(",")
-        subject = request.data.get('subject')
-        content = request.data.get('content')
         try:
             send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
         except:
@@ -842,6 +838,12 @@ class IsContributor(BasePermission):
 def send_collaboration_request(request):
     if not request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace')).exists():
         return Response({"message": "This contributor is not allowed to access this workspace."}, status=403)
+    receiver = BasicUser.objects.filter(id=request.data.get('receiver'))[0]
+    if receiver.email_notification_preference:
+        subject = 'Incoming collaboration request'
+        content = 'You have received a collaboration request!'
+        receiver = receiver.user
+        send_notification(receiver, subject, content)
     serializer = CollaborationRequestSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -890,11 +892,14 @@ def send_review_request(request):
         reviewers = random.sample(all_reviewers, 2)
         response_data = {'reviewer1': '', 'reviewer2': ''}
     
-        data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
-        receiver = BasicUser.objects.get(id=reviewers[0].id)[0]
+        data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id ,'workspace': request.data.get('workspace')}
+
+        receiver = BasicUser.objects.filter(id=reviewers[0].id)[0]
         if receiver.email_notification_preference:
-            data = {'subject':'Incoming review request', 'content':'You have received a review request!','receiver':receiver.user}
-            send_notification.post(send_notification.self,data)
+            subject = 'Incoming review request'
+            content = 'You have received a review request!'
+            receiver = receiver.user
+            send_notification(receiver,subject,content)
         serializer = ReviewRequestSerializer(data=data)
 
         if serializer.is_valid():
