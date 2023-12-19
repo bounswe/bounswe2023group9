@@ -14,7 +14,6 @@ import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/screens/error_page/error_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
@@ -25,14 +24,12 @@ import 'package:provider/provider.dart';
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
-  final bool isHidden;
   final String userType;
   final Function() onTap;
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
-    required this.isHidden,
     required this.userType,
     required this.onTap,
   });
@@ -122,7 +119,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                           children: [
                             Visibility(
                               visible: widget.userType == "admin" ? true : false,
-                              child: widget.isHidden
+                              child: widget.node.isHidden
                                   ? SizedBox(
                                       width: 110,
                                       child: AppButton(

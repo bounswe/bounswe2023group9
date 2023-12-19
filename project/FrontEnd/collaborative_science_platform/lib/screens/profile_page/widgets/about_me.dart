@@ -13,7 +13,7 @@ class AboutMe extends StatefulWidget {
   final bool isBanned;
   final bool isReviewer;
   final String userType;
-  final bool isValidUser;
+  final bool isValidUser; //Contributor or reviewer
   final Function() onTap;
   final Function() onTapReviewerButton;
   const AboutMe(

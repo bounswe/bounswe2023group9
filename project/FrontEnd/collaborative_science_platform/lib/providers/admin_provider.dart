@@ -13,18 +13,16 @@ class AdminProvider with ChangeNotifier {
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-
+    final String body = json.encode({
+      'context': "user",
+      'content_id': user!.id,
+      'hide': isBanned,
+    });
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "user",
-            'content_id': user!.id.toString(),
-            'hide': isBanned.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
       return response.statusCode;
@@ -39,18 +37,16 @@ class AdminProvider with ChangeNotifier {
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-
+    final String body = json.encode({
+      'context': "node",
+      'content_id': node.nodeId,
+      'hide': isHidden,
+    });
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "node",
-            'content_id': node.nodeId.toString(),
-            'hide': isHidden.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
     } catch (e) {
@@ -64,18 +60,16 @@ class AdminProvider with ChangeNotifier {
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-
+    final String body = json.encode({
+      'context': "question",
+      'content_id': question.id,
+      'hide': isHidden,
+    });
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "question",
-            'content_id': "-1", // TODO question!.id.toString().
-            'hide': isHidden.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
       return response.statusCode;

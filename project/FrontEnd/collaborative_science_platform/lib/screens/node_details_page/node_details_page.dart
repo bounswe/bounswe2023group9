@@ -33,7 +33,6 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   NodeDetailed node = NodeDetailed();
   BasicUser basicUser = BasicUser();
 
-  bool isHidden = false;
   bool isAuthLoading = false;
 
   bool error = false;
@@ -105,9 +104,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
   void changeNodeStatus() async {
     try {
-      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      await adminProvider.hideNode(user, node, isHidden);
+      await adminProvider.hideNode(admin, node, !node.isHidden);
       error = false;
       message = "Node status updated.";
       print(message);
@@ -122,14 +121,13 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
   void handleButton() {
     setState(() {
-      isHidden = !isHidden; // Toggle the state for example purposes
+      changeNodeStatus();
     });
-    // changeNodeStatus();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (!isHidden || basicUser.userType == "admin")
+    return (!node.isHidden || basicUser.userType == "admin")
         ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
@@ -148,11 +146,13 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                         textAlign: TextAlign.center,
                       )
                     : Responsive.isDesktop(context)
-                        ? WebNodeDetails(node: node)
+                        ? WebNodeDetails(
+                            node: node,
+                            handleButton: handleButton,
+                          )
                         : NodeDetails(
                             node: node,
                             controller: controller2,
-                            isHidden: isHidden,
                             userType: basicUser.userType,
                             onTap: handleButton,
                           ),
@@ -163,8 +163,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
 class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
+  final Function() handleButton;
 
-  const WebNodeDetails({super.key, required this.node});
+  const WebNodeDetails({super.key, required this.node, required this.handleButton});
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -179,9 +180,9 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
   bool error = false;
   bool isLoading = false;
   bool isAuthLoading = false;
-  bool isHidden = false;
 
   String errorMessage = "";
+  String message = "";
 
   @override
   void didChangeDependencies() {
@@ -252,15 +253,27 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
     super.initState();
   }
 
-  void handleButton() {
-    setState(() {
-      isHidden = !isHidden; // Toggle the state for example purposes
-    });
+  void changeNodeStatus() async {
+    try {
+      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      print(widget.node.isHidden.toString());
+      await adminProvider.hideNode(user, widget.node, widget.node.isHidden);
+      error = false;
+      message = "Node status updated.";
+      print(message);
+    } catch (e) {
+      setState(() {
+        error = true;
+        message = "Something went wrong!";
+        print(message);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return (!isHidden || basicUser.userType == "admin")
+    return (!widget.node.isHidden || basicUser.userType == "admin")
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
@@ -276,9 +289,8 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                   child: NodeDetails(
                     node: widget.node,
                     controller: controller2,
-                    isHidden: isHidden,
                     userType: basicUser.userType,
-                    onTap: handleButton,
+                    onTap: widget.handleButton,
                   ),
                 ),
                 const SizedBox(width: 12),
