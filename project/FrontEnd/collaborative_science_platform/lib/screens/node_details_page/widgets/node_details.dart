@@ -14,6 +14,7 @@ import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/screens/error_page/error_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
@@ -24,10 +25,16 @@ import 'package:provider/provider.dart';
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
+  final bool isHidden;
+  final String userType;
+  final Function() onTap;
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
+    required this.isHidden,
+    required this.userType,
+    required this.onTap,
   });
 
   @override
@@ -86,22 +93,23 @@ class _NodeDetailsState extends State<NodeDetails> {
         primary: false,
         scrollDirection: Axis.vertical,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: CardContainer(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: Responsive.isDesktop(context)
-                          ? const EdgeInsets.all(70.0)
-                          : const EdgeInsets.all(10.0),
-                      child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
-                          textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Column(
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: Responsive.isDesktop(context)
+                            ? const EdgeInsets.all(70.0)
+                            : const EdgeInsets.all(10.0),
+                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                            textAlign: TextAlign.center, style: TextStyles.title2)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SelectableText.rich(
                           TextSpan(
@@ -109,12 +117,42 @@ class _NodeDetailsState extends State<NodeDetails> {
                             style: TextStyles.bodyBlack,
                           ),
                         ),
-                      ],
-                    ),
-                    Column(
-                      children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            Visibility(
+                              visible: widget.userType == "admin" ? true : false,
+                              child: widget.isHidden
+                                  ? SizedBox(
+                                      width: 110,
+                                      child: AppButton(
+                                        text: "Show",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "grey",
+                                        onTap: widget.onTap,
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      width: 110,
+                                      child: AppButton(
+                                        text: "Hide",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye_slash,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "danger",
+                                        onTap: widget.onTap,
+                                      ),
+                                    ),
+                            ),
+                            const SizedBox(width: 10),
                             SizedBox(
                               width: 110,
                               child: AppButton(
@@ -149,9 +187,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                         )
                       ],
                     ),
-                  ]),
-                ],
-              )),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

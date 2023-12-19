@@ -3,12 +3,14 @@ class BasicUser {
   String bio;
   bool emailNotificationPreference;
   bool showActivity;
+  String userType;
 
   BasicUser({
-    required this.basicUserId,
-    required this.bio,
-    required this.emailNotificationPreference,
-    required this.showActivity,
+    this.basicUserId = 0,
+    this.bio = "",
+    this.emailNotificationPreference = true,
+    this.showActivity = true,
+    this.userType = "",
   });
   factory BasicUser.fromJson(Map<String, dynamic> jsonString) {
     return BasicUser(
@@ -16,7 +18,7 @@ class BasicUser {
       bio: jsonString["bio"],
       emailNotificationPreference: jsonString["email_notification_preference"],
       showActivity: jsonString["show_activity_preference"],
+      userType: jsonString["user_type"],
     );
   }
-
 }
