@@ -2,7 +2,7 @@ import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 
 class CreateWorkspaceForm extends StatefulWidget {
-  final titleController;
+  final TextEditingController titleController;
   const CreateWorkspaceForm({super.key, required this.titleController});
 
   @override

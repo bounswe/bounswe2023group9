@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -55,7 +56,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text("My Workspaces", style: TextStyles.title3secondary),
+                    const Text("Workspaces", style: TextStyles.title4secondary),
                     AppBarButton(
                       onPressed: () {
                         widget.hideSidebar!();
@@ -70,7 +71,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                   child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       child: AppButton(
-                        text: "Create New Workspace",
+                        text: (MediaQuery.of(context).size.width < Responsive.desktopPageWidth) ? "New" : "New Workspace",
                         height: 40,
                         onTap: () {
                           showDialog(
@@ -137,7 +138,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                       context.push(
                                           "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
                                     },
-                                    child: Row(
+                                    child: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
                                         Text(
@@ -147,6 +148,8 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                   index - widget.workspaces!.workspaces.length]
                                               .workspaceTitle,
                                           style: TextStyles.bodyBold,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           textAlign: TextAlign.start,
                                         ),
                                         Column(children: [
@@ -168,7 +171,42 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                           ),
                                         ])
                                       ],
-                                    )),
+                                    ) : Column(
+                                      children: [
+                                        Text(
+                                          widget
+                                              .workspaces!
+                                              .pendingWorkspaces[
+                                          index - widget.workspaces!.workspaces.length]
+                                              .workspaceTitle,
+                                          style: TextStyles.bodyBold,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.start,
+                                        ),
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(CupertinoIcons.check_mark_circled,
+                                                  color: AppColors.infoColor),
+                                              onPressed: () {
+                                                // function to accept collaboration request
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                CupertinoIcons.clear_circled,
+                                                color: AppColors.warningColor,
+                                              ),
+                                              onPressed: () {
+                                                // function to reject collaboration request
+                                              },
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                ),
                               );
                             } else {
                               return const SizedBox();

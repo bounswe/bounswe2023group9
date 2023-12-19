@@ -29,8 +29,16 @@ class AppButton extends StatelessWidget {
           ? ElevatedButton.styleFrom(
               backgroundColor: isActive
                   ? (type == "primary"
-                      ? AppColors.primaryColor
-                      : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
+                      ? const Color.fromRGBO(8, 155, 171, 1)
+                      : (type == "secondary"
+                          ? AppColors.secondaryColor
+                          : (type == "danger"
+                              ? AppColors.dangerColor
+                              : (type == "grey"
+                                  ? Colors.grey[600]
+                                  : (type == "safe"
+                                      ? Color.fromARGB(255, 141, 208, 141)
+                                      : Colors.grey[600])))))
                   : Colors.grey[600],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
