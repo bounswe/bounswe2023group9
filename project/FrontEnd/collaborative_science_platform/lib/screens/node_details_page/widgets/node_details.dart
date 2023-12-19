@@ -1,5 +1,7 @@
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
@@ -18,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
@@ -40,10 +43,39 @@ class NodeDetails extends StatefulWidget {
 
 class _NodeDetailsState extends State<NodeDetails> {
   int currentIndex = 0;
+  bool canAnswerQuestions = false;
+  bool canAskQuestions = false;
+
+  @override
+  void initState() {
+    super.initState();
+    canAnswer();
+  }
+
+  @override
+  void didUpdateWidget(covariant NodeDetails oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.node != widget.node) {
+      canAnswer();
+    }
+  }
+
+  bool showAnnotations = false;
 
   void updateIndex(int index) {
     setState(() {
       currentIndex = index;
+    });
+  }
+
+  void canAnswer() async {
+    Auth authProvider = Provider.of<Auth>(context, listen: false);
+    setState(() {
+      canAnswerQuestions = authProvider.isSignedIn &&
+          authProvider.basicUser != null &&
+          widget.node.contributors
+              .any((contributor) => contributor.id == authProvider.basicUser!.basicUserId);
+      canAskQuestions = authProvider.isSignedIn;
     });
   }
 
@@ -66,6 +98,7 @@ class _NodeDetailsState extends State<NodeDetails> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: CardContainer(
+<<<<<<< HEAD
                 child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -78,6 +111,19 @@ class _NodeDetailsState extends State<NodeDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
+=======
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                      padding: Responsive.isDesktop(context)
+                          ? const EdgeInsets.all(70.0)
+                          : const EdgeInsets.all(10.0),
+                      child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                          textAlign: TextAlign.center, style: TextStyles.title2)),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Column(
+>>>>>>> 9adec56d31f6df25629a21d43e29179780a01543
                       children: [
                         SelectableText.rich(
                           TextSpan(
@@ -176,12 +222,33 @@ class _NodeDetailsState extends State<NodeDetails> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                                width: 180,
+                                child: AppButton(
+                                    text: showAnnotations ? "Show Text" : "Show Annotations",
+                                    height: 40,
+                                    onTap: () {
+                                      setState(() {
+                                        showAnnotations = !showAnnotations;
+                                      });
+                                    })),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: TeXView(
-                                renderingEngine: const TeXViewRenderingEngine.katex(),
-                                child: TeXViewDocument(
-                                    NodeHelper.getNodeContentLatex(widget.node, "long")))),
+                            child: showAnnotations
+                                ? AnnotationText(
+                                    NodeHelper.getNodeContentLatex(widget.node, "long"),
+                                    annotationType: AnnotationType.theorem,
+                                  )
+                                : TeXView(
+                                    renderingEngine: const TeXViewRenderingEngine.katex(),
+                                    child: TeXViewDocument(
+                                        NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
                           TextSpan(
@@ -213,7 +280,12 @@ class _NodeDetailsState extends State<NodeDetails> {
               //Q/A
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: QuestionsView(questions: widget.node.questions),
+                child: QuestionsView(
+                  questions: widget.node.questions,
+                  nodeId: widget.node.nodeId,
+                  canAnswer: canAnswerQuestions,
+                  canAsk: canAskQuestions,
+                ),
               ),
             if (currentIndex == 5)
               //contributors

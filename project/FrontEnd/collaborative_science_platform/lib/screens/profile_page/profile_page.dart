@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/profile_page_exceptions.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -150,6 +151,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final User? user = Provider.of<Auth>(context).user;
+    var asked = profileData.askedQuestions.where((element) => element.isAnswered).toList();
+    var answered = profileData.answeredQuestions.where((element) => element.isAnswered).toList();
+    var questionList = asked + answered;
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
@@ -229,12 +233,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     ),
                                   if (currentIndex == 1)
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(),
+                                          child: QuestionActivity(questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -303,12 +308,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ),
                                     ),
                                   if (currentIndex == 1)
-                                    const Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(),
+                                          child: QuestionActivity(questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -388,12 +394,45 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                               if (currentIndex == 1)
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                   child: CardContainer(
                                     child: SizedBox(
                                       height: 400,
-                                      child: QuestionActivity(),
+                                      child: QuestionActivity(questions: questionList),
+                                    ),
+                                  ),
+                                ),
+                              if (currentIndex == 0)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                  child: CardContainer(
+                                    child: ListView.builder(
+                                      padding: const EdgeInsets.all(0),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      itemCount: profileData.nodes.length,
+                                      itemBuilder: (context, index) {
+                                        return ProfileNodeCard(
+                                          profileNode: profileData.nodes.elementAt(index),
+                                          onTap: () {
+                                            context.push(
+                                                '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              if (currentIndex == 1)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                                  child: CardContainer(
+                                    child: SizedBox(
+                                      height: 400,
+                                      child: QuestionActivity(questions: questionList),
                                     ),
                                   ),
                                 ),

@@ -1,6 +1,8 @@
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
+import 'package:collaborative_science_platform/providers/question_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
@@ -35,42 +37,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
         ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
         ChangeNotifierProvider<WorkspaceProvider>(create: (context) => WorkspaceProvider()),
+        ChangeNotifierProvider<QuestionAnswerProvider>(
+            create: (context) => QuestionAnswerProvider()),
+        ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
       ],
-      //    child: MaterialApp(
-      //      debugShowCheckedModeBanner: false,
-      //      title: Constants.appName,
-      //      routes: {
-      //        '/': (context) => const HomePage(),
-      //        LoginPage.routeName: (context) => const LoginPage(),
-      //        SignUpPage.routeName: (context) => const SignUpPage(),
-      //        WorkspacesPage.routeName: (context) => const WorkspacesPage(),
-//
-      //        ///ProfilePage.routeName: (context) => const ProfilePage(),
-      //        GraphPage.routeName: (context) => const GraphPage(),
-      //        NotificationPage.routeName: (context) => const NotificationPage(),
-      //        AccountSettingsPage.routeName: (context) => const AccountSettingsPage(),
-      //        PleaseLoginPage2.routeName: (context) => const PleaseLoginPage2(),
-      //        NodeDetailsPage.routeName: (context) {
-      //          final int nodeId = ModalRoute.of(context)!.settings.arguments as int;
-      //          return NodeDetailsPage(nodeID: nodeId);
-      //        },
-      //        ProfilePage.routeName: (context) {
-      //          final String email = ModalRoute.of(context)!.settings.arguments as String ?? "";
-      //          return ProfilePage(email: email);
-      //        },
-      //      },
-      //      navigatorKey: ScreenNavigation.navigatorKey,
-      //      theme: ThemeData(
-      //        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
-      //        useMaterial3: true,
-      //      ),
       child: Portal(
         child: MaterialApp.router(
           routerConfig: router,
           debugShowCheckedModeBanner: false,
           title: Constants.appName,
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 85, 234, 145)),
+            colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 85, 234, 145)),
             useMaterial3: true,
           ),
         ),
