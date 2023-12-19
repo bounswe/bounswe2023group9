@@ -117,7 +117,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                         padding: Responsive.isDesktop(context)
                             ? const EdgeInsets.all(70.0)
                             : const EdgeInsets.all(10.0),
-                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                        child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
                             textAlign: TextAlign.center, style: TextStyles.title2)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
