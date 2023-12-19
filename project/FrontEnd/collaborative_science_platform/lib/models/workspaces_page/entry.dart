@@ -34,9 +34,9 @@ class Entry {
         isProofEntry: jsonString['is_proof_entry'],
         isTheoremEntry: jsonString['is_theorem_entry'],
         entryDate: DateTime.parse(jsonString['entry_date']),
-        entryId: jsonString['entry_id'] ?? 0,
-        entryNumber: jsonString['entry_number'] ?? 0,
-        index: jsonString['entry_index'] ?? 0,
+        entryId: jsonString['entry_id'] ?? -1,
+        entryNumber: jsonString['entry_number'] ?? -1,
+        index: jsonString['entry_index'] ?? -1,
         content: jsonString['content']);
   }
 }
