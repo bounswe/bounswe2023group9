@@ -17,6 +17,8 @@ import random, json, datetime
 
 from backend import settings
 
+from project.backend.database.models import BasicUser
+
 
 # from nltk.corpus import wordnet as wn
 # import nltk
@@ -127,7 +129,17 @@ class WorkspacePostAPIView(APIView):
             serializer.errors, status=400
         )
 
-
+class send_notification(APIView):
+    def post(self, request):
+        receiver = request.data.get('receiver')
+        receiver = receiver.split(",")
+        subject = request.data.get('subject')
+        content = request.data.get('content')
+        try:
+            send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
+        except:
+            return Response({"message": "A mistake occured while sending notification."}, status=400)
+        return Response({"message": "Notification sent successfully."}, status=201)
 
 def search(request):
     search = request.GET.get("query")
@@ -880,6 +892,10 @@ def send_review_request(request):
         response_data = {'reviewer1': '', 'reviewer2': ''}
     
         data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
+        receiver = BasicUser.objects.get(id=reviewers[0].id)[0]
+        if receiver.email_notification_preference:
+            data = {'subject':'Incoming review request', 'content':'You have received a review request!','receiver':receiver.user}
+            send_notification.post(send_notification.self,data)
         serializer = ReviewRequestSerializer(data=data)
 
         if serializer.is_valid():
@@ -1048,21 +1064,6 @@ class IsAdmin(BasePermission):
         if not Admin.objects.filter(pk=request.user.basicuser.pk).exists():
             return False
         return True
-
-class send_notification(APIView):
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAdmin,)
-    def post(self, request):
-        receiver = request.data.get('receiver')
-        receiver = receiver.split(",")
-        subject = request.data.get('subject')
-        content = request.data.get('content')
-        try:
-            send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
-        except:
-            return Response({"message": "A mistake occured while sending notification."}, status=400)
-        return Response({"message": "Notification sent successfully."}, status=201)
-
 
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated, IsAdmin))
