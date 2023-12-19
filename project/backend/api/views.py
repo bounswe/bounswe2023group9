@@ -1410,8 +1410,9 @@ def update_content_status(request):
                     return Response(NodeViewQuestionSerializer(question).data, status=200)
 
             elif context == 'user':
-                user = BasicUser.objects.filter(pk=content_id)
+                user = User.objects.filter(username=content_id)
                 if user.count() > 0:
+                    user = BasicUser.objects.filter(user=user.first())
                     user = user.first()
                     user.user.is_active = hide
                     user.save()
