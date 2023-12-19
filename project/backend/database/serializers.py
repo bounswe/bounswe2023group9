@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
+from database.models import Contributor
 # from django.contrib.auth.password_validation import validate_password
 
 from .models import *
@@ -94,10 +95,10 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False)
     email_notification_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
     show_activity_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
-
+    orcid = serializers.CharField(required=False, allow_null=True, default=None)
     class Meta:
       model = BasicUser
-      fields = ('bio', 'email_notification_preference', 'show_activity_preference')
+      fields = ('bio', 'email_notification_preference', 'show_activity_preference', 'orcid')
     
     def update(self, instance, validated_data):
       change = False
@@ -115,6 +116,18 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
         if validated_data['show_activity_preference'] is not None:
           instance.show_activity_preference = validated_data['show_activity_preference']
           change = True
+
+      if 'orcid' in validated_data:
+        if validated_data['orcid'] is not None:
+          cont =  Contributor.objects.filter(user_id=instance.user.id)
+          if cont.count() != 0 and cont[0].orcid == None:
+            contributor_serializer = ContributorSerializer(cont[0], data={'orcid': validated_data['orcid']}, partial=True)
+            if contributor_serializer.is_valid():
+              contributor_serializer.save()
+              change = True
+              cont[0].save()
+          instance.save()
+          return cont[0]
 
       if change:
         instance.save()
@@ -137,7 +150,7 @@ class BasicUserSerializer(serializers.ModelSerializer):
 class ContributorSerializer(serializers.ModelSerializer):
   class Meta:
     model = Contributor
-    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces","orcid"]
     
 # Serializer to get Reviewer details
 class ReviewerSerializer(serializers.ModelSerializer):

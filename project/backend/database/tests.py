@@ -590,7 +590,7 @@ class ContributorSerializerTestCase(TestCase):
 
         serializer = ContributorSerializer(contributor)
         expected_fields = set(
-            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces", "orcid"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
