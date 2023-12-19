@@ -302,7 +302,7 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> editEntry(String content, int entryId, String token) async {
+  Future<void> editEntry(String content, int entryId, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/edit_entry/");
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -311,9 +311,9 @@ class WorkspaceProvider with ChangeNotifier {
     });
     request.fields.addAll({
       "entry_id": "$entryId",
+      'workspace_id': "$workspaceId",
       'content': content,
     });
-
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());

@@ -153,7 +153,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.editEntry(content, entryId, auth.user!.token);
+      await workspaceProvider.editEntry(content, entryId, widget.workspaceId, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);

@@ -55,7 +55,7 @@ class ReferencesListView extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: (height * 2) / 3,
+              height: (height * 3) / 5,
               child: ListView.builder(
                   controller: controller,
                   scrollDirection: Axis.vertical,
