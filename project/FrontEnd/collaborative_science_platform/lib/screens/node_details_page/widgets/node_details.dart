@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_menu.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
@@ -25,16 +26,21 @@ import 'package:provider/provider.dart';
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
+  final Function createNewWorkspacefromNode;
   final bool isHidden;
   final String userType;
   final Function() onTap;
+
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
+    required this.createNewWorkspacefromNode,
+
     required this.isHidden,
     required this.userType,
     required this.onTap,
+
   });
 
   @override
@@ -101,15 +107,22 @@ class _NodeDetailsState extends State<NodeDetails> {
                 child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      NodeDetailsMenu(createNewWorkspacefromNode: widget.createNewWorkspacefromNode)
+                    ],
+                  ),
                     Padding(
                         padding: Responsive.isDesktop(context)
                             ? const EdgeInsets.all(70.0)
                             : const EdgeInsets.all(10.0),
-                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                        child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
                             textAlign: TextAlign.center, style: TextStyles.title2)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
+
                       children: [
                         SelectableText.rich(
                           TextSpan(

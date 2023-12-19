@@ -1,4 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
+import 'package:collaborative_science_platform/exceptions/workspace_exceptions.dart';
+import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/user.dart';
@@ -81,6 +83,33 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     }
   }
 
+
+  void createNewWorkspacefromNode() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.createWorkspacefromNode(widget.nodeID, auth.user!.token);
+    } on CreateWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = CreateWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void getAuthUser() async {
     final User? user = Provider.of<Auth>(context).user;
     if (user != null) {
@@ -148,14 +177,14 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                         textAlign: TextAlign.center,
                       )
                     : Responsive.isDesktop(context)
-                        ? WebNodeDetails(node: node)
+                        ? WebNodeDetails(node: node, createNewWorkspacefromNode: createNewWorkspacefromNode)
                         : NodeDetails(
                             node: node,
                             controller: controller2,
                             isHidden: isHidden,
                             userType: basicUser.userType,
                             onTap: handleButton,
-                          ),
+                            createNewWorkspacefromNode: createNewWorkspacefromNode),
           )
         : const ErrorPage();
   }
@@ -163,8 +192,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
 class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
+  final Function createNewWorkspacefromNode;
 
-  const WebNodeDetails({super.key, required this.node});
+  const WebNodeDetails({super.key, required this.node, required this.createNewWorkspacefromNode});
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -279,6 +309,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                     isHidden: isHidden,
                     userType: basicUser.userType,
                     onTap: handleButton,
+                    createNewWorkspacefromNode: widget.createNewWorkspacefromNode,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -290,6 +321,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                   ),
                 ),
               ],
+
             ),
           )
         : const ErrorPage();
