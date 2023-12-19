@@ -446,7 +446,7 @@ def get_workspaces(request):
     pending_review = []
     review_workspace_list = []
     if Reviewer.objects.filter(pk=request.user.basicuser.pk).exists():
-        reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
+        reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])[0]
         for workspace in reviwer.review_workspaces.all():
             for req in  ReviewRequest.objects.filter(workspace=workspace):
                 if req.status == 'A' and req.response == 'P':
