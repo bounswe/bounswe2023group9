@@ -366,6 +366,7 @@ class ProfileGETAPITestCase(TestCase):
         self.assertEqual(response.json()['asked_questions'][0]['answerer_mail'], 'test@example.com')
 
         self.assertEqual(response.json()['user_type'], 'contributor')
+        self.assertEqual(response.json()['is_banned'], False)
 
 class ProofGETAPITestCase(TestCase):
     def setUp(self):
