@@ -448,9 +448,12 @@ def get_workspaces(request):
     if Reviewer.objects.filter(pk=request.user.basicuser.pk).exists():
         reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
         for workspace in reviwer.review_workspaces.all():
-            review_workspace_list.append({'workspace_id': workspace.workspace_id,
-                                   'workspace_title': workspace.workspace_title,
-                                   'pending': False})
+            for req in  ReviewRequest.objects.filter(workspace=workspace):
+                if req.status == 'A' and req.response == 'P':
+                    review_workspace_list.append({'workspace_id': workspace.workspace_id,
+                                           'workspace_title': workspace.workspace_title,
+                                           'pending': False,
+                                                  'request_id':req.id})
 
         for req in ReviewRequest.objects.filter(receiver=cont):
             workspace = req.workspace
@@ -493,15 +496,27 @@ def get_workspace_from_id(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     entries = []
     for entry in workspace.entries.all():
-        entries.append({'entry_id':entry.entry_id,
-                        'entry_date':entry.entry_date,
-                        'content':entry.content,
-                        'entry_index':entry.entry_index,
-                        'is_theorem_entry':entry.is_theorem_entry,
-                        'is_final_entry':entry.is_final_entry,
-                        'is_proof_entry':entry.is_proof_entry,
-                        'is_editable':entry.is_editable,
-                        'entry_number':entry.entry_number,})
+        if not flag:
+            if entry.is_proof_entry or entry.is_theorem_entry:
+                entries.append({'entry_id': entry.entry_id,
+                                'entry_date': entry.entry_date,
+                                'content': entry.content,
+                                'entry_index': entry.entry_index,
+                                'is_theorem_entry': entry.is_theorem_entry,
+                                'is_final_entry': entry.is_final_entry,
+                                'is_proof_entry': entry.is_proof_entry,
+                                'is_editable': entry.is_editable,
+                                'entry_number': entry.entry_number, })
+        else:
+            entries.append({'entry_id':entry.entry_id,
+                            'entry_date':entry.entry_date,
+                            'content':entry.content,
+                            'entry_index':entry.entry_index,
+                            'is_theorem_entry':entry.is_theorem_entry,
+                            'is_final_entry':entry.is_final_entry,
+                            'is_proof_entry':entry.is_proof_entry,
+                            'is_editable':entry.is_editable,
+                            'entry_number':entry.entry_number,})
     semantic_tags = []
     for tag in workspace.semantic_tags.all():
         semantic_tags.append({'wid':tag.wid,
@@ -961,6 +976,7 @@ def finalize_workspace(request):
 
     if workspace[0].is_finalized == True:
         return JsonResponse({'message': ' workspace already finalized'}, status=400)
+
     workspace = workspace[0]
     workspace.is_finalized = True
     workspace.is_in_review = False
@@ -1148,7 +1164,14 @@ def send_review_request(request):
             if rv not in reviewers:
                 reviewers.append(rv)
         response_data = {'reviewer1': '', 'reviewer2': ''}
-    
+        workspace = request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace'))[0]
+        if workspace.is_in_review:
+            return Response({"message": "This workspace is already under review."}, status=403)
+        if workspace.is_published:
+            return Response({"message": "This workspace is already published."}, status=403)
+        workspace.is_in_review = True
+        workspace.is_rejected = False
+        workspace.save()
         data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
         serializer = ReviewRequestSerializer(data=data)
 
