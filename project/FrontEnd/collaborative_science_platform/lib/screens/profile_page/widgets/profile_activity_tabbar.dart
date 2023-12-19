@@ -29,7 +29,7 @@ class _ProfileActivityTabBar extends State<ProfileActivityTabBar> {
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
+        const Center(
           child: Text(
             "Activities",
             style: TextStyles.bodyBlack,

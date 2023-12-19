@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/add_reference_form.dart';
+import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -39,7 +40,7 @@ class ReferencesListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
-                text: "Add References",
+                text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Add References" : "Add",
                 height: 40,
                 type: "outlined",
                 onTap: () {
@@ -83,7 +84,7 @@ class ReferencesListView extends StatelessWidget {
                                     textAlign: TextAlign.start,
                                   ),
                                 ),
-                                IconButton(
+                                if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) IconButton(
                                     onPressed: () async {
                                       //remove reference
                                       await deleteReference(references[index].id);
@@ -93,7 +94,8 @@ class ReferencesListView extends StatelessWidget {
                                     icon: Icon(
                                       Icons.delete,
                                       color: Colors.grey[600],
-                                    ))
+                                    ),
+                                )
                               ],
                             ),
                             Text(

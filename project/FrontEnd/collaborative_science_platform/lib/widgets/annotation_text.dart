@@ -1,45 +1,171 @@
 import 'dart:ui';
 
+import 'package:collaborative_science_platform/models/annotation.dart';
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_tex/flutter_tex.dart';
+import 'package:provider/provider.dart';
 
-class AnnotationText extends StatelessWidget {
+class AnnotationText extends StatefulWidget {
   final String text;
+  final AnnotationType annotationType;
   final TextStyle? style;
   final TextAlign? textAlign;
   final int? maxLines;
 
-  const AnnotationText(this.text, {super.key, this.style, this.textAlign, this.maxLines});
+  const AnnotationText(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.annotationType = AnnotationType.theorem,
+  });
+
+  @override
+  State<AnnotationText> createState() => _AnnotationTextState();
+}
+
+class _AnnotationTextState extends State<AnnotationText> {
+  bool _initState = true;
+  bool isLoading = true;
+  bool error = false;
+  List<Annotation> annotations = [];
+  List<int> annotationIndices = [];
+  List<TextSpan> textSpans = [];
+
+  @override
+  void didChangeDependencies() {
+    if (_initState) {
+      getAnnotations();
+      _initState = false;
+    }
+    super.didChangeDependencies();
+  }
+
+  void getAnnotations() async {
+    try {
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      final annotationProvider = Provider.of<AnnotationProvider>(context);
+      await annotationProvider.getAnnotations(widget.annotationType);
+      annotations = annotationProvider.annotations;
+      for (var element in annotations) {
+        annotationIndices.add(element.startOffset);
+        annotationIndices.add(element.endOffset);
+      }
+      int textLeftCounter = 0;
+      int textRightCounter = 0;
+      int annotationCounter = 0;
+      while (
+          textRightCounter < widget.text.length && annotationCounter < annotationIndices.length) {
+        if (textRightCounter == annotationIndices[annotationCounter]) {
+          if (textLeftCounter != textRightCounter) {
+            textSpans.add(TextSpan(
+              text: widget.text.substring(textLeftCounter, textRightCounter),
+              style: widget.style,
+            ));
+          }
+          textSpans.add(TextSpan(
+            text: widget.text.substring(textRightCounter, annotationIndices[annotationCounter + 1]),
+            style: TextStyle(backgroundColor: Colors.yellow.withOpacity(0.3)),
+          ));
+          textLeftCounter = annotationIndices[annotationCounter + 1];
+          textRightCounter = annotationIndices[annotationCounter + 1];
+          annotationCounter += 2;
+        }
+        textRightCounter++;
+      }
+      if (annotationCounter == annotationIndices.length) {
+        textSpans.add(TextSpan(
+          text: widget.text.substring(textLeftCounter, widget.text.length),
+          style: widget.style,
+        ));
+      } else if (textLeftCounter != textRightCounter) {
+        textSpans.add(TextSpan(
+          text: widget.text.substring(textLeftCounter, textRightCounter),
+          style: widget.style,
+        ));
+      }
+      if (annotationCounter == 0) {
+        textSpans.add(TextSpan(
+          text: widget.text,
+          style: widget.style,
+        ));
+      }
+    } catch (e) {
+      setState(() {
+        error = true;
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SelectableText(
-      text,
-      style: style,
-      maxLines: maxLines,
-      showCursor: true,
-      textAlign: textAlign,
-      contextMenuBuilder: (context, editableTextState) {
-        String selectedText = editableTextState.textEditingValue.selection.textInside(text);
-        return _MyContextMenu(
-          anchor: editableTextState.contextMenuAnchors.primaryAnchor,
-          selectedText: selectedText.trim(),
-          children: AdaptiveTextSelectionToolbar.getAdaptiveButtons(
-            context,
-            editableTextState.contextMenuButtonItems,
-          ).toList(),
-        );
-      },
-    );
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : error
+            ? const Text(
+                "An error occured while initiating explanations! Please try again later.",
+                style: TextStyle(color: AppColors.dangerColor),
+              )
+            : SelectableText.rich(
+                TextSpan(
+                  children: textSpans,
+                ),
+                contextMenuBuilder: (context, editableTextState) {
+                  var selectedIndices = editableTextState.textEditingValue.selection;
+                  String selectedText =
+                      editableTextState.textEditingValue.selection.textInside(widget.text);
+                  for (var element in annotations) {
+                    if (element.startOffset <= selectedIndices.baseOffset &&
+                        element.endOffset >= selectedIndices.extentOffset) {
+                      return _MyContextMenu(
+                        anchor: editableTextState.contextMenuAnchors.primaryAnchor,
+                        selectedText: widget.text.substring(element.startOffset, element.endOffset),
+                        annotation: element,
+                        children: AdaptiveTextSelectionToolbar.getAdaptiveButtons(
+                          context,
+                          editableTextState.contextMenuButtonItems,
+                        ).toList(),
+                      );
+                    }
+                  }
+                  return _MyContextMenu(
+                    anchor: editableTextState.contextMenuAnchors.primaryAnchor,
+                    selectedText: selectedText.trim(),
+                    startOffset: selectedIndices.baseOffset,
+                    endOffset: selectedIndices.extentOffset,
+                    children: AdaptiveTextSelectionToolbar.getAdaptiveButtons(
+                      context,
+                      editableTextState.contextMenuButtonItems,
+                    ).toList(),
+                  );
+                },
+              );
   }
 }
 
 class _MyContextMenu extends StatelessWidget {
+  final Annotation? annotation;
+  final int? startOffset;
+  final int? endOffset;
   const _MyContextMenu({
     required this.anchor,
     required this.children,
     required this.selectedText,
+    this.annotation,
+    this.startOffset,
+    this.endOffset,
   });
 
   final Offset anchor;
@@ -63,10 +189,18 @@ class _MyContextMenu extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //...children,
-
-                AddAnnotationButton(text: selectedText),
+                AddAnnotationButton(
+                    text: selectedText,
+                    startOffset: startOffset,
+                    endOffset: endOffset,
+                    annotation: annotation),
                 const SizedBox(height: 2),
-                ShowAnnotationButton(text: selectedText),
+                annotation != null
+                    ? ShowAnnotationButton(
+                        text: selectedText,
+                        annotation: annotation!,
+                      )
+                    : const SizedBox(),
               ],
             ),
           ),
@@ -78,18 +212,21 @@ class _MyContextMenu extends StatelessWidget {
 
 class ShowAnnotationButton extends StatelessWidget {
   final String text;
-  const ShowAnnotationButton({super.key, required this.text});
+  final Annotation annotation;
+  const ShowAnnotationButton({super.key, required this.text, required this.annotation});
 
   @override
   Widget build(BuildContext context) {
     return Responsive(
-        mobile: MobileShowAnnotationButton(text), desktop: DesktopShowAnnotationButton(text));
+        mobile: MobileShowAnnotationButton(text, annotation),
+        desktop: DesktopShowAnnotationButton(text, annotation));
   }
 }
 
 class MobileShowAnnotationButton extends StatefulWidget {
   final String text;
-  const MobileShowAnnotationButton(this.text, {super.key});
+  final Annotation annotation;
+  const MobileShowAnnotationButton(this.text, this.annotation, {super.key});
 
   @override
   State<MobileShowAnnotationButton> createState() => _MobileShowAnnotationButtonState();
@@ -128,14 +265,14 @@ class _MobileShowAnnotationButtonState extends State<MobileShowAnnotationButton>
                   style: const TextStyle(
                       color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                 ),
-                content: const SizedBox(
+                content: SizedBox(
                   height: 200,
                   width: 400,
                   child: Column(
                     children: [
                       SelectableText(
-                        "Automaton is a relatively self-operating machine.",
-                        style: TextStyle(color: Colors.white),
+                        widget.annotation.annotationContent,
+                        style: const TextStyle(color: Colors.white),
                         maxLines: 5,
                       )
                     ],
@@ -153,7 +290,8 @@ class _MobileShowAnnotationButtonState extends State<MobileShowAnnotationButton>
 
 class DesktopShowAnnotationButton extends StatefulWidget {
   final String text;
-  const DesktopShowAnnotationButton(this.text, {super.key});
+  final Annotation annotation;
+  const DesktopShowAnnotationButton(this.text, this.annotation, {super.key});
 
   @override
   State<DesktopShowAnnotationButton> createState() => _DesktopShowAnnotationButtonState();
@@ -220,13 +358,27 @@ class _DesktopShowAnnotationButtonState extends State<DesktopShowAnnotationButto
                   children: [
                     Row(
                       children: [
-                        Text(widget.text,
-                            style: const TextStyle(fontSize: 16, color: Colors.white)),
+                        // Text(widget.text,
+                        //     style: const TextStyle(fontSize: 16, color: Colors.white)),
+                        Container(
+                            height: 70,
+                            constraints: const BoxConstraints(maxWidth: 100),
+                            child: TeXView(
+                                child: TeXViewDocument(widget.text,
+                                    style: TeXViewStyle(
+                                        contentColor: Colors.white,
+                                        fontStyle: TeXViewFontStyle(fontSize: 12))))),
                       ],
                     ),
                     const SizedBox(height: 3),
-                    const SelectableText("Automaton is a relatively self-operating machine.",
-                        style: TextStyle(fontSize: 12, color: Colors.white)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SelectableText(widget.annotation.annotationContent,
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(fontSize: 12, color: Colors.white))
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -241,7 +393,14 @@ class _DesktopShowAnnotationButtonState extends State<DesktopShowAnnotationButto
 
 class AddAnnotationButton extends StatefulWidget {
   final String text;
-  const AddAnnotationButton({super.key, required this.text});
+  final int? startOffset;
+  final int? endOffset;
+  final Annotation? annotation;
+  const AddAnnotationButton(
+      {super.key, required this.text, this.annotation, this.startOffset, this.endOffset})
+      : assert(annotation == null ||
+            (startOffset == null && endOffset == null) ||
+            (startOffset != null && endOffset != null));
 
   @override
   State<AddAnnotationButton> createState() => _AddAnnotationButtonState();
@@ -250,11 +409,56 @@ class AddAnnotationButton extends StatefulWidget {
 class _AddAnnotationButtonState extends State<AddAnnotationButton> {
   bool isHovering = false;
   bool isPortalOpen = false;
+  bool isSaving = false;
+  bool change = false;
   final TextEditingController _textEditingController = TextEditingController();
 
-  void _submit() {
-    print(_textEditingController.text);
-    ContextMenuController.removeAny();
+  @override
+  void initState() {
+    if (widget.annotation != null) {
+      change = true;
+      _textEditingController.text = widget.annotation!.annotationContent;
+    }
+    super.initState();
+  }
+
+  _submit(BuildContext context) async {
+    var scaffoldMessenger = ScaffoldMessenger.of(context);
+    var provider = Provider.of<AnnotationProvider>(context, listen: false);
+    var navigator = Navigator.of(context);
+    if (mounted) {
+      setState(() {
+        isSaving = true;
+      });
+    }
+    try {
+      if (change) {
+        await provider.updateAnnotation(widget.annotation!, _textEditingController.text);
+      } else {
+        Annotation annotation = Annotation(
+          annotationContent: _textEditingController.text,
+          startOffset: widget.startOffset!,
+          endOffset: widget.endOffset!,
+          annotationAuthor: "test",
+        );
+        await provider.addAnnotation(annotation);
+      }
+    } catch (e) {
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text("Something went wrong!"),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+        });
+      }
+      navigator.pop();
+    }
+
+    //ContextMenuController.removeAny();
   }
 
   @override
@@ -273,49 +477,56 @@ class _AddAnnotationButtonState extends State<AddAnnotationButton> {
         onTap: () => showDialog(
           context: context,
           builder: (BuildContext context) {
-            return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: AlertDialog(
-                backgroundColor: Colors.grey[800]!.withOpacity(0.7),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-                elevation: 20,
-                title: Text(
-                  widget.text,
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-                content: SizedBox(
-                    height: 200,
-                    width: 400,
-                    child: Column(children: [
-                      TextField(
-                        controller: _textEditingController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-                          labelText: 'Annotation',
-                          labelStyle: TextStyle(color: Colors.grey[500]),
+            return isSaving
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: AlertDialog(
+                      backgroundColor: Colors.grey[800]!.withOpacity(0.7),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6.0),
+                      ),
+                      elevation: 20,
+                      title: TeXView(
+                          child: TeXViewDocument(
+                        widget.text,
+                        style: TeXViewStyle(
+                          contentColor: Colors.white,
+                          fontStyle: TeXViewFontStyle(fontSize: 14),
                         ),
-                        maxLines: 5,
-                      )
-                    ])),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      _submit();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Save', style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            );
+                      )),
+                      content: SizedBox(
+                          height: 200,
+                          width: 400,
+                          child: Column(children: [
+                            TextField(
+                              controller: _textEditingController,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                                labelText: 'Annotation',
+                                labelStyle: TextStyle(color: Colors.grey[500]),
+                              ),
+                              maxLines: 5,
+                            )
+                          ])),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () async {
+                            await _submit(context);
+                          },
+                          child: const Text('Save', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
+                    ),
+                  );
           },
         ),
-        child: AnnotationButtonItem(isHovering: isHovering, text: "Add Annotation"),
+        child: AnnotationButtonItem(
+            isHovering: isHovering, text: change ? "Change Annotation" : "Add Annotation"),
       ),
     );
   }
