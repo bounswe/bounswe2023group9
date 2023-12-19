@@ -69,49 +69,50 @@ def get_annotation_by_id(request, annotation_id):
     
 @csrf_exempt
 def create_annotation(request):
-    print(request.POST.get('body'))
     try:
-        body = json.loads(request.POST.get('body'))
+        body = request.POST.get('body')
         if not body:
-            return JsonResponse({'message': 'Body must be given!'}, status=400)
+            return JsonResponse({'message': 'body must be given!'}, status=400)
+        body = json.loads(body)
         
         value = body.get('value')
-        print(value)
         if not value:
-            return JsonResponse({'message': 'Body value must be given!'}, status=400)
+            return JsonResponse({'message': 'body value must be given!'}, status=400)
         
         body_type = body.get('type')
         body_format = body.get('format')
         body_language = body.get('language')
 
-        target = json.loads(request.POST.get('target'))
+        target = request.POST.get('target')
         if not target:
-            return JsonResponse({'message': 'Target must be given!'}, status=400)
+            return JsonResponse({'message': 'target must be given!'}, status=400)
+        target = json.loads(target)
         
         target_id = target.get('id')
         if not target_id:
-            return JsonResponse({'message': 'Target id must be given!'}, status=400)
+            return JsonResponse({'message': 'target id must be given!'}, status=400)
         
         selector = target.get('selector')
         if not selector:
-            return JsonResponse({'message': 'Target selector must be given!'}, status=400)
+            return JsonResponse({'message': 'target selector must be given!'}, status=400)
         
         selector_type = selector.get('type')
         selector_start = selector.get('start')
         if not selector_start:
-            return JsonResponse({'message': 'Selector start must be given!'}, status=400)
+            return JsonResponse({'message': 'selector start must be given!'}, status=400)
 
         selector_end = selector.get('end')
         if not selector_end:
-            return JsonResponse({'message': 'Selector end must be given!'}, status=400)
+            return JsonResponse({'message': 'selector end must be given!'}, status=400)
         
-        creator = json.loads(request.POST.get('creator'))
+        creator = request.POST.get('creator')
         if not creator:
-            return JsonResponse({'message': 'Creator must be given!'}, status=400)
+            return JsonResponse({'message': 'creator must be given!'}, status=400)
+        creator = json.loads(creator)
         
         creator_id = creator.get('id')
         if not creator_id:
-            return JsonResponse({'message': 'Creator id must be given!'}, status=400)
+            return JsonResponse({'message': 'creator id must be given!'}, status=400)
         
         creator_type = creator.get('type')
 
@@ -168,7 +169,6 @@ def create_annotation(request):
         
         return JsonResponse(data = serialize_annotation(annotation_object), status=200)
     except Exception as e:
-        print(str(e))
         if "duplicate key value violates unique constraint" in str(e):
             return JsonResponse({'message': 'Annotation already exists!'}, status=400)
         return JsonResponse({'message': "Internal server error"}, status=500)
