@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, BasicUser
 from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse
 from rest_framework import generics, status
@@ -17,7 +17,6 @@ import random, json, datetime
 
 from backend import settings
 
-from project.backend.database.models import BasicUser
 
 
 # from nltk.corpus import wordnet as wn
