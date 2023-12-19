@@ -53,7 +53,7 @@ class _AboutMeState extends State<AboutMe> {
                       visible: ((widget.userType == "admin" ? true : false) &&
                           (widget.profileData.userType == "reviewer" ||
                               widget.profileData.userType == "contributor")),
-                      child: widget.profileData.userType == "reviewer"
+                      child: widget.profileData.userType == "contributor"
                           ? SizedBox(
                               width: 220,
                               child: AppButton(
