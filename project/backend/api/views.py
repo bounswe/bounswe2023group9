@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, BasePermission
 from database.serializers import *
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.models import User, BasicUser
+from django.contrib.auth.models import User
 from rest_framework.authentication import TokenAuthentication
 from django.http import JsonResponse
 from rest_framework import generics, status
