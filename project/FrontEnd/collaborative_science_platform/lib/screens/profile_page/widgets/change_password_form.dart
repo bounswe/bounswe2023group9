@@ -1,6 +1,5 @@
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/settings_provider.dart';
-import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
@@ -28,7 +27,7 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
   final newPassFocusNode = FocusNode();
   final double x = 300;
 
-bool buttonState = false;
+  bool buttonState = false;
   String errorMessage = "";
   bool error = false;
 
@@ -67,8 +66,7 @@ bool buttonState = false;
   }
 
   void controllerCheck() {
-    if (newPassController.text.isNotEmpty &&
-        oldPassController.text.isNotEmpty) {
+    if (newPassController.text.isNotEmpty && oldPassController.text.isNotEmpty) {
       setState(() {
         buttonState = true;
       });
@@ -111,16 +109,19 @@ bool buttonState = false;
             ],
           ),
           const SizedBox(height: 20.0),
-         
           AppButton(
-                    onTap: () => oldPassController.text.isNotEmpty && newPassController.text.isNotEmpty ? changePass() : {},
-                    text: "Save",
-                    height: 50,
-                    isActive: buttonState,
-                  //  isLoading: isLoading,
-                  ),
+            onTap: () => oldPassController.text.isNotEmpty && newPassController.text.isNotEmpty
+                ? changePass()
+                : {},
+            text: "Save",
+            height: 50,
+            isActive: buttonState,
+          ),
           const SizedBox(height: 10.0),
-          Text(errorMessage, style: const TextStyle(fontSize: 16.0),),
+          Text(
+            errorMessage,
+            style: const TextStyle(fontSize: 16.0),
+          ),
         ],
       ),
     );

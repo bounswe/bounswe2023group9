@@ -1,5 +1,7 @@
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
@@ -12,19 +14,27 @@ import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/screens/error_page/error_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
 
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
+  final bool isHidden;
+  final String userType;
+  final Function() onTap;
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
+    required this.isHidden,
+    required this.userType,
+    required this.onTap,
   });
 
   @override
@@ -33,10 +43,39 @@ class NodeDetails extends StatefulWidget {
 
 class _NodeDetailsState extends State<NodeDetails> {
   int currentIndex = 0;
+  bool canAnswerQuestions = false;
+  bool canAskQuestions = false;
+
+  @override
+  void initState() {
+    super.initState();
+    canAnswer();
+  }
+
+  @override
+  void didUpdateWidget(covariant NodeDetails oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.node != widget.node) {
+      canAnswer();
+    }
+  }
+
+  bool showAnnotations = false;
 
   void updateIndex(int index) {
     setState(() {
       currentIndex = index;
+    });
+  }
+
+  void canAnswer() async {
+    Auth authProvider = Provider.of<Auth>(context, listen: false);
+    setState(() {
+      canAnswerQuestions = authProvider.isSignedIn &&
+          authProvider.basicUser != null &&
+          widget.node.contributors
+              .any((contributor) => contributor.id == authProvider.basicUser!.basicUserId);
+      canAskQuestions = authProvider.isSignedIn;
     });
   }
 
@@ -54,22 +93,23 @@ class _NodeDetailsState extends State<NodeDetails> {
         primary: false,
         scrollDirection: Axis.vertical,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          // mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: CardContainer(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: Responsive.isDesktop(context)
-                          ? const EdgeInsets.all(70.0)
-                          : const EdgeInsets.all(10.0),
-                      child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
-                          textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Column(
+                child: Column(
+                  //mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: Responsive.isDesktop(context)
+                            ? const EdgeInsets.all(70.0)
+                            : const EdgeInsets.all(10.0),
+                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                            textAlign: TextAlign.center, style: TextStyles.title2)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SelectableText.rich(
                           TextSpan(
@@ -77,12 +117,42 @@ class _NodeDetailsState extends State<NodeDetails> {
                             style: TextStyles.bodyBlack,
                           ),
                         ),
-                      ],
-                    ),
-                    Column(
-                      children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            Visibility(
+                              visible: widget.userType == "admin" ? true : false,
+                              child: widget.isHidden
+                                  ? SizedBox(
+                                      width: 110,
+                                      child: AppButton(
+                                        text: "Show",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "grey",
+                                        onTap: widget.onTap,
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      width: 110,
+                                      child: AppButton(
+                                        text: "Hide",
+                                        height: 40,
+                                        icon: const Icon(
+                                          CupertinoIcons.eye_slash,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                        type: "danger",
+                                        onTap: widget.onTap,
+                                      ),
+                                    ),
+                            ),
+                            const SizedBox(width: 10),
                             SizedBox(
                               width: 110,
                               child: AppButton(
@@ -117,9 +187,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                         )
                       ],
                     ),
-                  ]),
-                ],
-              )),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -138,12 +208,33 @@ class _NodeDetailsState extends State<NodeDetails> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                                width: 180,
+                                child: AppButton(
+                                    text: showAnnotations ? "Show Text" : "Show Annotations",
+                                    height: 40,
+                                    onTap: () {
+                                      setState(() {
+                                        showAnnotations = !showAnnotations;
+                                      });
+                                    })),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
                         Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                            child: TeXView(
-                                renderingEngine: const TeXViewRenderingEngine.katex(),
-                                child: TeXViewDocument(
-                                    NodeHelper.getNodeContentLatex(widget.node, "long")))),
+                            child: showAnnotations
+                                ? AnnotationText(
+                                    NodeHelper.getNodeContentLatex(widget.node, "long"),
+                                    annotationType: AnnotationType.theorem,
+                                  )
+                                : TeXView(
+                                    renderingEngine: const TeXViewRenderingEngine.katex(),
+                                    child: TeXViewDocument(
+                                        NodeHelper.getNodeContentLatex(widget.node, "long")))),
                         SelectableText.rich(
                           textAlign: TextAlign.start,
                           TextSpan(
@@ -175,7 +266,12 @@ class _NodeDetailsState extends State<NodeDetails> {
               //Q/A
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: QuestionsView(questions: widget.node.questions),
+                child: QuestionsView(
+                  questions: widget.node.questions,
+                  nodeId: widget.node.nodeId,
+                  canAnswer: canAnswerQuestions,
+                  canAsk: canAskQuestions,
+                ),
               ),
             if (currentIndex == 5)
               //contributors

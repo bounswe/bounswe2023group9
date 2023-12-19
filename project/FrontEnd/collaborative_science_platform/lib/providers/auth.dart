@@ -15,6 +15,8 @@ class Auth with ChangeNotifier {
   UserType userType = UserType.guest;
   //User? user = User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer");
 
+
+
   bool get isSignedIn {
     return user != null && user!.token.isNotEmpty;
   }
