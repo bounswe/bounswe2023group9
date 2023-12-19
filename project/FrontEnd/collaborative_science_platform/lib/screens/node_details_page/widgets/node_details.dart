@@ -98,7 +98,6 @@ class _NodeDetailsState extends State<NodeDetails> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: CardContainer(
-<<<<<<< HEAD
                 child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -111,19 +110,6 @@ class _NodeDetailsState extends State<NodeDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
-=======
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                      padding: Responsive.isDesktop(context)
-                          ? const EdgeInsets.all(70.0)
-                          : const EdgeInsets.all(10.0),
-                      child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
-                          textAlign: TextAlign.center, style: TextStyles.title2)),
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Column(
->>>>>>> 9adec56d31f6df25629a21d43e29179780a01543
                       children: [
                         SelectableText.rich(
                           TextSpan(

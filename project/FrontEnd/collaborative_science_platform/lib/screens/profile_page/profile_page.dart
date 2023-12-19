@@ -1,6 +1,5 @@
 import 'package:collaborative_science_platform/exceptions/profile_page_exceptions.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
-import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -24,7 +23,7 @@ import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
-  final String email; //visited page's email
+  final String email;
 
   const ProfilePage({super.key, required this.email});
 
@@ -36,7 +35,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   ProfileData profileData = ProfileData();
   BasicUser basicUser = BasicUser();
-  //User user = User();
   int noWorks = 0;
   bool error = false;
   String errorMessage = "";
@@ -73,8 +71,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     super.didChangeDependencies();
   }
-
-  //Visited User's Data
 
   void getUserData() async {
     try {
@@ -157,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (user == null) {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
-      // profile page, should be editible
+      // own profile page, should be editible
       return (!isBanned || basicUser.userType == "admin")
           ? PageWithAppBar(
               appBar: const HomePageAppBar(),
@@ -182,17 +178,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                      aboutMe: profileData.aboutMe,
-                                      email: profileData.email,
-                                      name: profileData.name,
-                                      surname: profileData.surname,
-                                      noWorks: noWorks,
-                                      isBanned: isBanned,
-                                      isReviewer: isReviewer,
-                                      isValidUser: isValidUser,
-                                      userType: basicUser.userType,
-                                      onTap: handleButtonIsBanned,
-                                      onTapReviewerButton: handleButtonIsReviewer),
+                                    aboutMe: profileData.aboutMe,
+                                    email: profileData.email,
+                                    name: profileData.name,
+                                    surname: profileData.surname,
+                                    noWorks: noWorks,
+                                    isBanned: isBanned,
+                                    isReviewer: isReviewer,
+                                    isValidUser: isValidUser,
+                                    userType: basicUser.userType,
+                                    onTap: handleButtonIsBanned,
+                                    onTapReviewerButton: handleButtonIsReviewer,
+                                  ),
                                   Padding(
                                     padding:
                                         const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -267,17 +264,18 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                      aboutMe: profileData.aboutMe,
-                                      email: profileData.email,
-                                      name: profileData.name,
-                                      surname: profileData.surname,
-                                      noWorks: noWorks,
-                                      isBanned: isBanned,
-                                      isReviewer: isReviewer,
-                                      isValidUser: isValidUser,
-                                      userType: basicUser.userType,
-                                      onTap: handleButtonIsBanned,
-                                      onTapReviewerButton: handleButtonIsReviewer),
+                                    aboutMe: profileData.aboutMe,
+                                    email: profileData.email,
+                                    name: profileData.name,
+                                    surname: profileData.surname,
+                                    noWorks: noWorks,
+                                    isBanned: isBanned,
+                                    isReviewer: isReviewer,
+                                    isValidUser: isValidUser,
+                                    userType: basicUser.userType,
+                                    onTap: handleButtonIsBanned,
+                                    onTapReviewerButton: handleButtonIsReviewer,
+                                  ),
                                   const Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                                     child: DesktopEditProfileButton(),
@@ -370,39 +368,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   callback: updateIndex,
                                 ),
                               ),
-                              if (currentIndex == 0)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                  child: CardContainer(
-                                    child: ListView.builder(
-                                      padding: const EdgeInsets.all(0),
-                                      physics:
-                                          const NeverScrollableScrollPhysics(), // Prevents a conflict with SingleChildScrollView
-                                      scrollDirection: Axis.vertical,
-                                      shrinkWrap: true,
-                                      itemCount: profileData.nodes.length,
-                                      itemBuilder: (context, index) {
-                                        return ProfileNodeCard(
-                                          profileNode: profileData.nodes.elementAt(index),
-                                          onTap: () {
-                                            context.push(
-                                                '${NodeDetailsPage.routeName}/${profileData.nodes.elementAt(index).id}');
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              if (currentIndex == 1)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                                  child: CardContainer(
-                                    child: SizedBox(
-                                      height: 400,
-                                      child: QuestionActivity(questions: questionList),
-                                    ),
-                                  ),
-                                ),
                               if (currentIndex == 0)
                                 Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
