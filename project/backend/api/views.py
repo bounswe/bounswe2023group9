@@ -359,7 +359,8 @@ def get_profile(request):
                          'nodes': node_infos,
                          'asked_questions':asked_questions,
                          'answered_questions':answered_questions,
-                         'user_type': user_type},status=200)
+                         'user_type': user_type,
+                         'is_banned': not user.is_active},status=200)
 
 def get_proof_from_id(request):
     id = int(request.GET.get("proof_id"))
@@ -1138,7 +1139,11 @@ def send_review_request(request):
         if not request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace')).exists():
             return Response({"message": "This contributor is not allowed to access this workspace."}, status=403)
         all_reviewers = list(Reviewer.objects.all())
-        reviewers = random.sample(all_reviewers, 2)
+        reviewers = []
+        while len(reviewers) < 2 and len(all_reviewers) >= 2:
+            rv = random.choice(all_reviewers)
+            if rv not in reviewers:
+                reviewers.append(rv)
         response_data = {'reviewer1': '', 'reviewer2': ''}
     
         data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
