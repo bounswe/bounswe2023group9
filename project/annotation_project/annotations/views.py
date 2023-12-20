@@ -33,15 +33,14 @@ def serialize_annotation(annotation):
 
 
 def matched_annotations_get_view(request):
-    source_uri = request.GET.get('source')
-    creator_name = request.GET.get('creator')
-
+    source_uris = request.GET.getlist('source')
+    creator_names = request.GET.getlist('creator')
     filtering_conditions = {}
 
-    if source_uri:
-        filtering_conditions['target__source__uri__iexact'] = source_uri
-    if creator_name:
-        filtering_conditions['creator__name__iexact'] = creator_name
+    if len(source_uris) > 0:
+        filtering_conditions['target__source__uri__in'] = source_uris
+    if len(creator_names) > 0:
+        filtering_conditions['creator__name__in'] = creator_names
     try:
         matched_annotations = Annotation.objects.filter(**filtering_conditions)
 

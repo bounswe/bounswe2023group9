@@ -17,6 +17,17 @@ class AnnotationGetTest(TestCase):
             creator=creator,
             created=datetime.now(),
         )
+
+        source2 = Source.objects.create(uri='http://example.com/source2')
+        body2 = Body.objects.create(value='Annotation Test Conten2t')
+        creator2 = Creator.objects.create(name='testcreator2@example.com')
+        selector2 = Selector.objects.create(start=0, end=5, source=source2)
+        self.annotation2 = Annotation.objects.create(
+            body=body2,
+            target=selector2,
+            creator=creator2,
+            created=datetime.now(),
+        )
     
     def tearDown(self):
         Annotation.objects.all().delete()
@@ -25,6 +36,45 @@ class AnnotationGetTest(TestCase):
         Body.objects.all().delete()
         Source.objects.all().delete()
         print("All Annotation Get API Tests Completed")
+
+    #TODO: update matched annotations test
+        
+    def test_get_matched_annotations(self):
+        client = Client()
+    
+        url = reverse('get_annotation')
+        data = {
+            'creator': [
+                'testcreator@example.com',
+                'testcreator2@example.com']
+        }
+        response = client.get(url, data, format='json')
+
+        self.assertEqual(response.status_code, 200, response.json())
+        
+        response = response.json()
+        self.assertEqual(len(response), 2)
+        response = response[1]
+        self.assertEqual(response['@context'], 'http://www.w3.org/ns/anno.jsonld')
+        self.assertEqual(response['id'],f'http://13.51.55.11:8001/annotations/annotation/{self.annotation2.id}')
+        self.assertEqual(response['type'], self.annotation2.type)
+        self.assertEqual(response['body'], {
+            'type': self.annotation2.body.type,
+            'format': self.annotation2.body.format,
+            'language': self.annotation2.body.language,
+            'value': self.annotation2.body.value,
+        })
+        self.assertEqual(response['target'], {
+            'id': self.annotation2.target.source.uri,
+            'type': 'text',
+            'selector': {
+                'type': self.annotation2.target.type,
+                'start': self.annotation2.target.start,
+                'end': self.annotation2.target.end,
+            }
+            })
+        self.assertTrue(response['creator']['id'], self.annotation2.creator.name)
+        self.assertIn('created', response)
 
     def test_get_annotation_by_id(self):
         #Test the annotation response format
