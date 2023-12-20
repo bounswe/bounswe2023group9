@@ -31,7 +31,7 @@ def serialize_annotation(annotation):
         'created': annotation.created,
     }
 
-
+@csrf_exempt
 def matched_annotations_get_view(request):
     source_uris = request.GET.getlist('source')
     creator_names = request.GET.getlist('creator')
@@ -55,7 +55,7 @@ def matched_annotations_get_view(request):
     except Exception as e:
         return JsonResponse({'message': str(e)}, status=500)
 
-
+@csrf_exempt
 def get_annotation_by_id(request, annotation_id):
     try:
         annotation = Annotation.objects.get(id=annotation_id)

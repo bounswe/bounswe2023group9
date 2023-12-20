@@ -9,7 +9,7 @@ class AnnotationGetTest(TestCase):
     def setUp(self):
         source = Source.objects.create(uri='http://example.com/source1')
         body = Body.objects.create(value='Annotation Test Content')
-        creator = Creator.objects.create(name='testcreator@example.com')
+        creator = Creator.objects.create(name='http://13.51.205.39/profile/testcreator@example.com')
         selector = Selector.objects.create(start=0, end=5, source=source)
         self.annotation = Annotation.objects.create(
             body=body,
@@ -19,8 +19,8 @@ class AnnotationGetTest(TestCase):
         )
 
         source2 = Source.objects.create(uri='http://example.com/source2')
-        body2 = Body.objects.create(value='Annotation Test Conten2t')
-        creator2 = Creator.objects.create(name='testcreator2@example.com')
+        body2 = Body.objects.create(value='Annotation Test Content2')
+        creator2 = Creator.objects.create(name='http://13.51.205.39/profile/testcreator2@example.com')
         selector2 = Selector.objects.create(start=0, end=5, source=source2)
         self.annotation2 = Annotation.objects.create(
             body=body2,
@@ -43,18 +43,34 @@ class AnnotationGetTest(TestCase):
         client = Client()
     
         url = reverse('get_annotation')
-        data = {
+        multicreator_data = {
             'creator': [
-                'testcreator@example.com',
-                'testcreator2@example.com']
+                'http://13.51.205.39/profile/testcreator@example.com',
+                'http://13.51.205.39/profile/testcreator2@example.com']
         }
-        response = client.get(url, data, format='json')
+        multisource_data = {
+            'source' : [
+                'http://example.com/source1',
+                'http://example.com/source2'
+            ]
+        }
 
+        data = {
+            'source' : 'http://example.com/source2',
+            'creator': 'http://13.51.205.39/profile/testcreator2@example.com'
+        }
+
+        response = client.get(url, multicreator_data, format='json')
         self.assertEqual(response.status_code, 200, response.json())
-        
-        response = response.json()
-        self.assertEqual(len(response), 2)
-        response = response[1]
+        self.assertEqual(len(response.json()), 2)
+
+        response = client.get(url, multisource_data, format='json')
+        self.assertEqual(response.status_code, 200, response.json())
+        self.assertEqual(len(response.json()), 2)
+
+        response = client.get(url, data, format='json')
+        self.assertEqual(response.status_code, 200, response.json())
+        response = response.json()[0]
         self.assertEqual(response['@context'], 'http://www.w3.org/ns/anno.jsonld')
         self.assertEqual(response['id'],f'http://13.51.55.11:8001/annotations/annotation/{self.annotation2.id}')
         self.assertEqual(response['type'], self.annotation2.type)
