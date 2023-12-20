@@ -196,8 +196,8 @@ class AnnotationPostTest(TestCase):
         response = self.client.post(self.url, data=self.body_missing_creator, headers=self.headers)
         self.assertEqual(response.status_code, 400, "Missing creator field test failed. expected 400, got " + str(response.status_code))
 
-        response = self.client.post(self.url, data=self.body, headers=self.headers, content_type='application/json')
-        self.assertEqual(response.status_code, 200, "Successful create annotation test failed. expected 200, got " + str(response.status_code))
+        response = self.client.post(self.url, data=self.body)
+        self.assertEqual(response.status_code, 201, "Successful create annotation test failed. expected 201, got " + str(response.status_code))
 
         records = Annotation.objects.filter(id=response.json()['id'])
         self.assertEqual(len(records), 1, "Successful create annotation test (database insertion) failed. expected 1 row, got " + str(len(records)))

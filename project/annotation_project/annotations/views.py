@@ -1,6 +1,9 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods, etag
+from django.views.decorators.vary import vary_on_headers
 import json
+import hashlib
 
 from .models import *
 
@@ -32,6 +35,8 @@ def serialize_annotation(annotation):
     }
 
 @csrf_exempt
+@require_http_methods(['GET', 'HEAD'])
+@vary_on_headers('Accept')
 def matched_annotations_get_view(request):
     source_uris = request.GET.getlist('source')
     creator_names = request.GET.getlist('creator')
@@ -43,28 +48,43 @@ def matched_annotations_get_view(request):
         filtering_conditions['creator__name__in'] = creator_names
     try:
         matched_annotations = Annotation.objects.filter(**filtering_conditions)
+        response = JsonResponse({'message': 'No annotation found!'}, status=404)
+        if len(matched_annotations) > 0:
+            matched_data = [
+                serialize_annotation(annotation) for annotation in matched_annotations
+            ]
+            response =  JsonResponse(matched_data, status=200, safe=False)
+            response['ETag'] = '"_{}"'.format(hashlib.md5(response.content).hexdigest())
 
-        if len(matched_annotations) == 0:
-            return JsonResponse({'message': 'No annotation found!'}, status=404)
-
-        matched_data = [
-            serialize_annotation(annotation) for annotation in matched_annotations
-        ]
-
-        return JsonResponse(matched_data, status=200, safe=False)
     except Exception as e:
-        return JsonResponse({'message': str(e)}, status=500)
+        response = JsonResponse({'message': str(e)}, status=500)
+    finally:
+        response.headers['Content-Type'] = 'application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"'
+        response.headers['Link'] = '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
+        response['Allow'] = 'GET,OPTIONS,HEAD'
+        response['Vary'] = 'Accept'
+        return response
 
 @csrf_exempt
+@require_http_methods(['GET', 'HEAD'])
+@vary_on_headers('Accept')
 def get_annotation_by_id(request, annotation_id):
     try:
         annotation = Annotation.objects.get(id=annotation_id)
+        response = JsonResponse({'message': 'No annotation found!'}, status=404)
+        if annotation:
+            response_data = serialize_annotation(annotation)
+            response = JsonResponse(response_data, status=200)
+            response['ETag'] = '"_{}"'.format(hashlib.md5(response.content).hexdigest())
 
-        if not annotation:
-            return JsonResponse({'message': 'No annotation found!'}, status=404)
-        return JsonResponse(data = serialize_annotation(annotation), status=200)
     except Exception as e:
-        return JsonResponse({'message': str(e)}, status=500)
+        response = JsonResponse({'message': str(e)}, status=500)
+    finally:
+        response.headers['Content-Type'] = 'application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"'
+        response.headers['Link'] = '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
+        response['Allow'] = 'GET,OPTIONS,HEAD'
+        response['Vary'] = 'Accept'
+        return response
     
 @csrf_exempt
 def create_annotation(request):
@@ -166,7 +186,7 @@ def create_annotation(request):
         
         annotation_object.save()
         
-        return JsonResponse(data = serialize_annotation(annotation_object), status=200)
+        return JsonResponse(data = serialize_annotation(annotation_object), status=201)
     except Exception as e:
         if "duplicate key value violates unique constraint" in str(e):
             return JsonResponse({'message': 'Annotation already exists!'}, status=400)
