@@ -355,7 +355,8 @@ def get_profile(request):
     if Admin.objects.filter(id=basic_user.id).exists():
        user_type = 'admin'
 
-    return JsonResponse({'name':user.first_name,
+    return JsonResponse({'id': user.id,
+                         'name':user.first_name,
                          'surname':user.last_name,
                          'orcid': orcid,
                          'bio':basic_user.bio,

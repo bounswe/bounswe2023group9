@@ -329,6 +329,7 @@ class ProfileGETAPITestCase(TestCase):
         data = {'mail':'test@example.com'}
         response = self.client.get(self.get_profile_url, data, format="json")
         self.assertEqual(response.status_code,200)
+        self.assertEqual(response.json()['id'], 1)
         self.assertEqual(response.json()['name'],'User')
         self.assertEqual(response.json()['surname'], 'Test')
         self.assertEqual(response.json()['bio'], 'Hello')
