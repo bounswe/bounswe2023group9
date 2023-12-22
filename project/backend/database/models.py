@@ -95,6 +95,7 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     created_at = models.DateTimeField(auto_now_add=True)
     theorem_entry = models.ForeignKey('Entry',null=True,blank=True,on_delete=models.CASCADE,related_name='workspace_theorem')
     proof_entry = models.ForeignKey('Entry',null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_proof')
+    disproof_entry = models.ForeignKey('Entry', null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_disproof')
     # theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
     # final_entry = models.ForeignKey(Entry,null=True, on_
     # delete=models.CASCADE,related_name='FinalEntry')

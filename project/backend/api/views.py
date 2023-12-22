@@ -727,6 +727,91 @@ def remove_workspace_proof(request):
     return JsonResponse({'message': 'Proof entry is successfully removed.'}, status=200)
 
 
+
+
+@csrf_exempt
+def set_workspace_disproof(request):
+    entry_id = request.POST.get("entry_id")
+    workspace_id = request.POST.get("workspace_id")
+    if entry_id == None or entry_id == '':
+        return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
+    try:
+        entry_id = int(entry_id)
+    except:
+        return JsonResponse({'message': 'entry_id field has to be a integer'}, status=400)
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    entry = Entry.objects.filter(entry_id=entry_id)
+    if entry.count() == 0:
+        return JsonResponse({'message': 'There is no entry with this id.'}, status=404)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if entry[0] not in workspace.entries.all():
+        return JsonResponse({'message': 'There is no entry with this id in this workspace.'}, status=404)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    entry = entry[0]
+    if entry.is_theorem_entry:
+        return JsonResponse({'message': 'This Entry is already a theorem entry.'}, status=400)
+    if entry.is_proof_entry:
+        return JsonResponse({'message': 'This Entry is already a proof entry.'}, status=400)
+    if workspace.disproof_entry != None:
+        workspace.disproof_entry.is_disproof_entry = False
+    workspace.disproof_entry = entry
+    entry.is_disproof_entry = True
+    entry.save()
+    workspace.save()
+    return JsonResponse({'message': 'Disproof entry is successfully set.'}, status=200)
+
+
+
+
+
+
+@csrf_exempt
+def remove_workspace_disproof(request):
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = Workspace.objects.get(workspace_id=workspace_id)
+    if workspace.node != None:
+        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
+    if workspace.is_finalized:
+        return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
+    if workspace.disproof_entry != None:
+        workspace.disproof_entry.is_disproof_entry = False
+    workspace.disproof_entry = None
+    workspace.save()
+    return JsonResponse({'message': 'Disproof entry is successfully removed.'}, status=200)
+
+
+
+
+
+
 @csrf_exempt
 def set_workspace_theorem(request):
     entry_id = request.POST.get("entry_id")
