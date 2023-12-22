@@ -204,7 +204,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 class NodeViewProofSerializer(serializers.ModelSerializer):
   class Meta:
     model = Proof
-    fields = ['proof_content', 'publish_date','contributors']
+    fields = ['proof_content', 'publish_date','contributors','is_disproof']
 
 class NodeViewTheoremSerializer(serializers.ModelSerializer):
   class Meta:
