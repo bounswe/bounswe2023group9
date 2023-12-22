@@ -479,9 +479,14 @@ def get_workspace_from_id(request):
     if not IsContributor().has_permission(request, get_workspace_from_id):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
     reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
+    cont = Contributor.objects.get(pk=request.user.basicuser)
     flag = True
     workspace = workspace[0]
     if reviewer.exists():
+        for req in ReviewRequest.objects.filter(receiver=cont):
+            if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
+                flag = False
+                request_id = req.id
         if workspace in reviewer[0].review_workspaces.all():
             cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
             requests = ReviewRequest.objects.filter(workspace=workspace)
