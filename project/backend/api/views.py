@@ -1103,15 +1103,6 @@ def get_random_node_id(request):
         node_list.append(node_ids[index])
     return JsonResponse({'node_ids': node_list}, status=200)
 
-
-class IsContributor(BasePermission):
-    def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
-            return False
-        return True
-
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated, IsContributor))
 @api_view(['POST'])
