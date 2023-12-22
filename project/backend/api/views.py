@@ -135,7 +135,11 @@ class WorkspacePostAPIView(APIView):
 
 
 def search(request):
-
+    res = BasicUserDetailAPI.as_view()(request)
+    admin = Admin.objects.filter(pk=request.user.basicuser)
+    is_admin = False
+    if admin.exists():
+        is_admin = True
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
@@ -166,12 +170,14 @@ def search(request):
     if search_type == 'latest':
         all = Node.objects.order_by('-publish_date')[:50]
         for node in all:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
 
     if search_type == 'most_read':
         all = Node.objects.order_by('-num_visits')[:50]
         for node in all:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
 
     if search_type == 'trending':
         all = Node.objects.order_by('-publish_date')[:250]
@@ -183,7 +189,8 @@ def search(request):
         sort.reverse()
         sort = sort[:50]
         for elem in sort:
-            nodes.append(elem[0])
+            if not Node.objects.get(node_id=elem[0]).removed_by_admin or is_admin:
+                nodes.append(elem[0])
 
 
     if search_type == 'for_you':
@@ -195,9 +202,11 @@ def search(request):
             nodes_q = tag.nodes
             related_nodes_q = tag.related_nodes
             for node in nodes_q:
-                non_rel_nodes.append(node.node_id)
+                if not node.removed_by_admin or is_admin:
+                    non_rel_nodes.append(node.node_id)
             for rel_node in related_nodes_q:
-                rel_nodes.append(rel_node.node_id)
+                if not rel_node.removed_by_admin or is_admin:
+                    rel_nodes.append(rel_node.node_id)
         random.shuffle(non_rel_nodes)
         random.shuffle(rel_nodes)
         nodes = non_rel_nodes + rel_nodes
@@ -213,13 +222,15 @@ def search(request):
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
-                        nodes.append(node.node_id)
+                        if not node.removed_by_admin or is_admin:
+                            nodes.append(node.node_id)
 
             for e in res_surname:
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
-                        nodes.append(node.node_id)
+                        if not node.removed_by_admin or is_admin:
+                            nodes.append(node.node_id)
 
     contributors = []
     if search_type == 'node' or search_type == 'all':
@@ -227,7 +238,8 @@ def search(request):
         for el in search_elements:
             res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
-                nodes.append(e.node_id)
+                if not e.removed_by_admin or is_admin:
+                    nodes.append(e.node_id)
 
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
         search_elements = search.split()
@@ -250,9 +262,11 @@ def search(request):
         nodes_q = tag.nodes
         related_nodes_q = tag.related_nodes
         for node in nodes_q:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
         for rel_node in related_nodes_q:
-            nodes.append(rel_node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(rel_node.node_id)
 
     if search_type == 'random':
         count = Node.objects.count()
@@ -267,8 +281,9 @@ def search(request):
             if ran not in prev:
                 prev.append(ran)
                 random_node = Node.objects.all()[ran]
-                nodes.append(random_node.node_id)
-                i += 1
+                if not random_node.removed_by_admin or is_admin:
+                    nodes.append(random_node.node_id)
+                    i += 1
     contributors = list(set(contributors))
     if not (search_type == 'latest' or search_type == 'most_read' or search_type == 'for_you'  or search_type == 'trending'):
         nodes = list(set(nodes))
@@ -286,7 +301,7 @@ def search(request):
             user = User.objects.get(id=cont.user_id)
             authors.append({'name': user.first_name,
                             'surname': user.last_name, 'username': user.username, 'id': cont.id})
-        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors, 'num_visits' : node.num_visits})
+        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors, 'num_visits' : node.num_visits,'removed_by_admin':node.removed_by_admin})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
 
 def get_profile(request):
