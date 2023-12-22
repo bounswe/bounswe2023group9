@@ -132,7 +132,18 @@ class WorkspacePostAPIView(APIView):
             serializer.errors, status=400
         )
 
+class SemanticTagAPIView(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsContributorAndWorkspace)
 
+    def post(self, request):
+        serializer = SemanticTagSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(
+            serializer.errors, status=400
+        )
 
 def search(request):
 

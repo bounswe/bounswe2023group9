@@ -46,4 +46,6 @@ urlpatterns = [
     path('promote_contributor/', promote_contributor, name='promote_contributor'),
     path('demote_reviewer/', demote_reviewer, name='demote_reviewer'),
     path('add_user_semantic_tag/', AddUserSemanticTag.as_view(), name='add_user_semantic_tag'),
+    path('add_semantic_tag/', SemanticTagAPIView.as_view(), name='add_semantic_tag'),
+
 ]
