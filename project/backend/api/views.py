@@ -625,6 +625,7 @@ def change_workspace_title(request):
 def set_workspace_proof(request):
     entry_id = request.POST.get("entry_id")
     workspace_id = request.POST.get("workspace_id")
+    is_disproof = request.POST.get("is_disproof")
     if entry_id == None or entry_id == '':
         return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
     try:
@@ -660,6 +661,8 @@ def set_workspace_proof(request):
         workspace.proof_entry.is_proof_entry = False
     workspace.proof_entry = entry
     entry.is_proof_entry = True
+    if is_disproof:
+        entry.is_disproof_entry= True
     entry.save()
     workspace.save()
     return JsonResponse({'message': 'Proof entry is successfully set.'}, status=200)
@@ -693,9 +696,11 @@ def remove_workspace_proof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.proof_entry != None:
         workspace.proof_entry.is_proof_entry = False
+        workspace.proof_entry.is_disproof_entry = False
+        workspace.proof_entry.save()
     workspace.proof_entry = None
     workspace.save()
-    return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
+    return JsonResponse({'message': 'Proof entry is successfully removed.'}, status=200)
 
 
 @csrf_exempt
@@ -1247,7 +1252,7 @@ def update_review_request_status(request):
                                     proof_title="",
                                     proof_content=entry.content,
                                     is_valid=True,
-                                    is_disproof=False,
+                                    is_disproof= entry.is_disproof_entry,
                                     publish_date=datetime.date.today(),
                                     removed_by_admin=False,
                                     node=node,
