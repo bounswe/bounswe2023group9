@@ -145,6 +145,42 @@ class SemanticTagAPIView(APIView):
             serializer.errors, status=400
         )
 
+def is_workspace_contributor(request):
+    workspace_id = request.data.get('workspace_id')
+    if not request.user.is_authenticated:
+        return False
+    if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
+        return False
+    if workspace_id is not None:
+        return request.user.basicuser.contributor.workspaces.filter(workspace_id=workspace_id).exists()
+    return True
+
+@api_view(['PUT'])
+def remove_workspace_tag(request):
+    workspace_id = request.data.get("workspace_id")
+    tag_id = request.data.get("tag_id")
+
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id  field has to be an integer'}, status=400)
+    
+    if tag_id == None or tag_id == '':
+        return JsonResponse({'message': 'tag_id field can not be empty'}, status=400)
+    try:
+        tag_id = int(tag_id)
+    except:
+        return JsonResponse({'message': 'tag_id  field has to be an integer'}, status=400)
+
+    if is_workspace_contributor(request):
+        workspace = Workspace.objects.get(workspace_id=workspace_id)
+        workspace.semantic_tags.remove(tag_id)
+        return JsonResponse({'message': 'Tag is successfully removed from workspace.'}, status=200)
+    else:
+        return JsonResponse({'message': "You don't have permission to do this!"}, status=403)
+
 def search(request):
 
     search = request.GET.get("query")
