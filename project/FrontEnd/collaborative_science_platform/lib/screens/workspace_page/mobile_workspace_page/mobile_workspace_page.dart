@@ -3,11 +3,15 @@ import 'package:collaborative_science_platform/models/workspaces_page/workspace.
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
+import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_content.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -56,6 +60,7 @@ class MobileWorkspacePage extends StatefulWidget {
 class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   final CarouselController controller = CarouselController();
   TextEditingController textController = TextEditingController();
+  ScrollController controller1 = ScrollController();
 
   bool isLoading = false;
   bool error = false;
@@ -63,6 +68,9 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
 
   int current = 1;
   int workspaceIndex = 0;
+
+  bool showSidebar = false;
+  
 
   Widget mobileAddNewWorkspaceIcon() {
     return CircleAvatar(
@@ -229,6 +237,19 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
     );
   }
 
+
+  @override
+  void dispose() {
+    controller1.dispose();
+    super.dispose();
+  }
+
+  hideSideBar() {
+    setState(() {
+      showSidebar = false;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     if (isLoading || error) {
@@ -251,12 +272,42 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
           child: ListView(
             physics: const ScrollPhysics(),
             padding: const EdgeInsets.only(top: 10.0),
-            children: [
-              slidingWorkspaceList(),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.0),
-                child: Divider(),
-              ),
+            children: showSidebar
+                ? [
+                    WorkspacesSideBar(
+                      controller: controller1,
+                      hideSidebar: hideSideBar,
+                      height: MediaQuery.of(context).size.height,
+                      workspaces: widget.workspaces,
+                      createNewWorkspace: widget.createNewWorkspace,
+                    ),
+                  ]
+                : [
+                    // slidingWorkspaceList(),
+                    // const Padding(
+                    //   padding: EdgeInsets.symmetric(horizontal: 12.0),
+                    //   child: Divider(),
+                    // ),
+                    Row(mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: AppBarButton(
+                          onPressed: () {
+                            setState(() {
+                              showSidebar = true;
+                            });
+                          },
+                          icon: Icons.menu,
+                          text: "hide workspaces",
+                        ),
+                      ),
+                      const Text(
+                        "Workspaces",
+                        style: TextStyles.bodyGrey,
+                      )
+                    ]),
+                    
               (widget.workspaces != null && widget.workspace == null)
                   ? ((widget.workspaces!.workspaces.length +
                               widget.workspaces!.pendingWorkspaces.length !=

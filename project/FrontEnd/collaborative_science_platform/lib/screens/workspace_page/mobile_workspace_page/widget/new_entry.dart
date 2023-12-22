@@ -12,12 +12,14 @@ class NewEntry extends StatefulWidget {
   final Function onCreate;
   final Color backgroundColor;
   final bool isMobile;
+  final bool finalized;
 
   const NewEntry({
     super.key,
     required this.onCreate,
     required this.backgroundColor,
     required this.isMobile,
+    required this.finalized,
   });
 
   @override
@@ -147,93 +149,107 @@ class _NewEntryState extends State<NewEntry> {
   }
 
   Widget button() {
-    return (widget.isMobile) ? Center(
-      child: IconButton(
-        iconSize: 40.0,
-        onPressed: () {
-          setState(() {
-            open = true;
-            editMode = true;
-          });
-        },
-        icon: const Icon(Icons.add),
-      ),
-    ) : Center(
-      child: SizedBox(
-        width: 300.0,
-        child: AppButton(
-          text: "New Entry",
-          height: 40,
-          type: "outlined",
-          onTap: () {
-            setState(() {
-              open = true;
-              editMode = true;
-            });
-          },
-        ),
-      ),
-    );
+    return (widget.isMobile)
+        ? Center(
+            child: IconButton(
+              iconSize: 40.0,
+              onPressed: widget.finalized
+                  ? () {}
+                  : () {
+                      setState(() {
+                        open = true;
+                        editMode = true;
+                      });
+                    },
+              icon: Icon(
+                Icons.add,
+                color: widget.finalized ? Colors.grey[200] : Colors.grey[800],
+              ),
+            ),
+          )
+        : Center(
+            child: SizedBox(
+              width: 300.0,
+              child: AppButton(
+                isActive: !widget.finalized,
+                text: "New Entry",
+                height: 40,
+                type: "outlined",
+                onTap: () {
+                  setState(() {
+                    open = true;
+                    editMode = true;
+                  });
+                },
+              ),
+            ),
+          );
   }
 
   @override
   Widget build(BuildContext context) {
-    return entryLoading ? const Center(child: CircularProgressIndicator())
-      : !open ? button()
-      : Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: CardContainer(
-          backgroundColor: widget.backgroundColor,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Proof or Theorem
-                  upperIconRow(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: (editMode) ? TextField(
-                      controller: controller,
-                      focusNode: focusNode,
-                      cursorColor: Colors.grey.shade700,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16.0,
-                      ),
-                      maxLines: 10,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: AppColors.primaryColor),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: AppColors.secondaryDarkColor),
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                      ),
-                    ) : Container(
-                      constraints: BoxConstraints(
-                        minHeight: 100.0, // Set the minimum height here
-                        maxHeight: (Responsive.isMobile(context)) ? double.infinity : 600,
-                      ),
-                      child: SingleChildScrollView(
-                        child: TeXView(
-                          renderingEngine: const TeXViewRenderingEngine.katex(),
-                          child: TeXViewDocument(
-                            utf8.decode(controller.text.codeUnits),
+    return entryLoading
+        ? const Center(child: CircularProgressIndicator())
+        : !open
+            ? button()
+            : Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: CardContainer(
+                  backgroundColor: widget.backgroundColor,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Proof or Theorem
+                          upperIconRow(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: (editMode)
+                                ? TextField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    cursorColor: Colors.grey.shade700,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16.0,
+                                    ),
+                                    maxLines: 10,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(color: AppColors.primaryColor),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide:
+                                            const BorderSide(color: AppColors.secondaryDarkColor),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                    ),
+                                  )
+                                : Container(
+                                    constraints: BoxConstraints(
+                                      minHeight: 100.0, // Set the minimum height here
+                                      maxHeight:
+                                          (Responsive.isMobile(context)) ? double.infinity : 600,
+                                    ),
+                                    child: SingleChildScrollView(
+                                      child: TeXView(
+                                        renderingEngine: const TeXViewRenderingEngine.katex(),
+                                        child: TeXViewDocument(
+                                          utf8.decode(controller.text.codeUnits),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+                ),
+              );
   }
 }

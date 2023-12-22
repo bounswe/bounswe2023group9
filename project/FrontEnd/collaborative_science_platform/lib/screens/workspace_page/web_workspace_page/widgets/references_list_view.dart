@@ -15,6 +15,7 @@ class ReferencesListView extends StatelessWidget {
   final double height;
   final Function addReference;
   final Function deleteReference;
+  final bool finalized;
   const ReferencesListView({
     super.key,
     required this.references,
@@ -22,6 +23,7 @@ class ReferencesListView extends StatelessWidget {
     required this.height,
     required this.addReference,
     required this.deleteReference,
+    required this.finalized,
   });
 
   @override
@@ -40,7 +42,10 @@ class ReferencesListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
-                text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Add References" : "Add",
+                isActive: !finalized,
+                text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth)
+                    ? "Add References"
+                    : "Add",
                 height: 40,
                 type: "outlined",
                 onTap: () {
@@ -84,7 +89,9 @@ class ReferencesListView extends StatelessWidget {
                                     textAlign: TextAlign.start,
                                   ),
                                 ),
-                                if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) IconButton(
+                                if (!finalized &&
+                                    MediaQuery.of(context).size.width > Responsive.desktopPageWidth)
+                                  IconButton(
                                     onPressed: () async {
                                       //remove reference
                                       await deleteReference(references[index].id);
@@ -95,7 +102,7 @@ class ReferencesListView extends StatelessWidget {
                                       Icons.delete,
                                       color: Colors.grey[600],
                                     ),
-                                )
+                                  )
                               ],
                             ),
                             Text(

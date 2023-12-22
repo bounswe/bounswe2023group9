@@ -328,7 +328,7 @@ class WorkspaceProvider with ChangeNotifier {
       "content-type": "application/json",
     });
     request.fields.addAll({
-      'workspace_id': "$workspaceId",
+      'workspace': "$workspaceId",
       'sender': "$userId",
     });
 

@@ -14,6 +14,7 @@ class MobileEntryCard extends StatefulWidget {
   final void Function() onDelete;
   final Function editEntry;
   final Color backgroundColor;
+  final bool finalized;
 
   const MobileEntryCard({
     super.key,
@@ -21,6 +22,7 @@ class MobileEntryCard extends StatefulWidget {
     required this.onDelete,
     required this.editEntry,
     this.backgroundColor = const Color.fromARGB(255, 220, 235, 220),
+    required this.finalized,
   });
 
   @override
@@ -40,6 +42,7 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
     super.initState();
     entryController.text = widget.entry.content;
   }
+
   @override
   void dispose() {
     entryController.dispose();
@@ -120,38 +123,40 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
             ),
           ],
         ),
-        (editMode) ? Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconButton(
-              onPressed: () async {
-                await widget.editEntry(entryController.text, widget.entry.entryId);
-                setState(() {
-                  editMode = false;
-                  edited = false;
-                });
-              },
-              icon: const Icon(
-                Icons.check,
-                color: Colors.green,
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  editMode = false;
-                  edited = false;
-                  entryController.text = buffer;
-                });
-              },
-              icon: const Icon(
-                Icons.close,
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ) : Container(),
+        (editMode)
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () async {
+                      await widget.editEntry(entryController.text, widget.entry.entryId);
+                      setState(() {
+                        editMode = false;
+                        edited = false;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        editMode = false;
+                        edited = false;
+                        entryController.text = buffer;
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              )
+            : Container(),
       ],
     );
   }
@@ -161,16 +166,18 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (widget.entry.isEditable) ? IconButton(
-          onPressed: () {
-            widget.onDelete();
-            setState(() { });
-          },
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.grey,
-          ),
-        ) : Container(),
+        (widget.entry.isEditable)
+            ? IconButton(
+                onPressed: () {
+                  widget.onDelete();
+                  setState(() {});
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.grey,
+                ),
+              )
+            : Container(),
         Text(
           widget.entry.publishDateFormatted,
           style: const TextStyle(
@@ -197,43 +204,49 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 EntryHeader(entry: widget.entry),
-                if (widget.entry.isEditable) upperIconRow(),
+                if (!widget.finalized && widget.entry.isEditable) upperIconRow(),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: (editMode) ? TextField(
-                    controller: entryController,
-                    focusNode: entryFocusNode,
-                    cursorColor: Colors.grey.shade700,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16.0,
-                    ),
-                    maxLines: 10,
-                    onChanged: (text) { edited = true; },
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.primaryColor),
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.secondaryDarkColor),
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                    ),
-                  ) : Container(
-                    constraints: BoxConstraints(
-                      minHeight: 100.0, // Set the minimum height here
-                      maxHeight: (Responsive.isMobile(context)) ? double.infinity : 400,
-                    ),
-                    child: TeXView(
-                      loadingWidgetBuilder: (context) => const Center(child: CircularProgressIndicator()),
-                      renderingEngine: const TeXViewRenderingEngine.katex(),
-                      child: TeXViewDocument(
-                        utf8.decode(entryController.text.codeUnits),
-                      ),
-                    ),
-                  ),
+                  child: (editMode)
+                      ? TextField(
+                          controller: entryController,
+                          focusNode: entryFocusNode,
+                          cursorColor: Colors.grey.shade700,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16.0,
+                          ),
+                          maxLines: 10,
+                          onChanged: (text) {
+                            edited = true;
+                          },
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: AppColors.primaryColor),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: AppColors.secondaryDarkColor),
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          constraints: BoxConstraints(
+                            minHeight: 100.0, // Set the minimum height here
+                            maxHeight: (Responsive.isMobile(context)) ? double.infinity : 400,
+                          ),
+                          child: TeXView(
+                            loadingWidgetBuilder: (context) =>
+                                const Center(child: CircularProgressIndicator()),
+                            renderingEngine: const TeXViewRenderingEngine.katex(),
+                            child: TeXViewDocument(
+                              utf8.decode(entryController.text.codeUnits),
+                            ),
+                          ),
+                        ),
                 ),
+                if (!widget.finalized)
                 lowerIconRow(),
               ],
             ),

@@ -448,7 +448,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
   }
 
 
-void addReview(int id, RequestStatus status, String comment) async {
+  void addReview(int id, RequestStatus status, String comment) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);

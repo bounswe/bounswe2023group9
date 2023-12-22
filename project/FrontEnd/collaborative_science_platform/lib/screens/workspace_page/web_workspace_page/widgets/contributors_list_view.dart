@@ -18,6 +18,7 @@ class ContributorsListView extends StatelessWidget {
   final double height;
   final Function updateRequest;
   final Function sendCollaborationRequest;
+  final bool finalized;
   const ContributorsListView({
     super.key,
     required this.contributors,
@@ -26,6 +27,7 @@ class ContributorsListView extends StatelessWidget {
     required this.height,
     required this.sendCollaborationRequest,
     required this.updateRequest,
+    required this.finalized,
   });
 
   @override
@@ -102,19 +104,20 @@ class ContributorsListView extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) Column(children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    CupertinoIcons.clear_circled,
-                                    color: AppColors.warningColor,
+                              if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth)
+                                Column(children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      CupertinoIcons.clear_circled,
+                                      color: AppColors.warningColor,
+                                    ),
+                                    onPressed: () {
+                                      // function to delete collaboration request
+                                      //TODO - requests id's are absent for now.
+                                      //updateRequest();
+                                    },
                                   ),
-                                  onPressed: () {
-                                    // function to delete collaboration request
-                                    //TODO - requests id's are absent for now.
-                                    //updateRequest();
-                                  },
-                                ),
-                              ])
+                                ])
                             ],
                           ),
                         ),
@@ -125,6 +128,7 @@ class ContributorsListView extends StatelessWidget {
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
               child: AppButton(
+                isActive: !finalized,
                 text: "Collaborate",
                 height: 40,
                 type: "outlined",
@@ -134,8 +138,7 @@ class ContributorsListView extends StatelessWidget {
                     builder: (context) => AppAlertDialog(
                       text: "Send Collaboration Request",
                       content: SendCollaborationRequestForm(
-                          sendCollaborationRequest: sendCollaborationRequest
-                      ),
+                          sendCollaborationRequest: sendCollaborationRequest),
                     ),
                   );
                 },
