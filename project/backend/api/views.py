@@ -136,10 +136,13 @@ class WorkspacePostAPIView(APIView):
 
 def search(request):
     res = BasicUserDetailAPI.as_view()(request)
-    admin = Admin.objects.filter(pk=request.user.basicuser)
-    is_admin = False
-    if admin.exists():
-        is_admin = True
+    try:
+        admin = Admin.objects.filter(pk=request.user.basicuser)
+        is_admin = False
+        if admin.exists():
+            is_admin = True
+    except:
+        is_admin = False
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
