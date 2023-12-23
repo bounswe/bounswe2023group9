@@ -68,6 +68,26 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
       return workspace
 
+class SemanticTagSerializer(serializers.ModelSerializer):
+    wid = serializers.CharField(required=True)
+    label = serializers.CharField(required=True)
+
+    class Meta:
+        model = SemanticTag
+        fields = "__all__"
+
+    def create(self, validated_data):
+      wid = validated_data.get('wid', None)
+      label = validated_data.get('label', None)
+      workspace_id = self.context['request'].data.get('workspace_id', None)
+
+      tag = SemanticTag.objects.create(wid=wid, label=label)
+
+      if workspace_id is not None:
+        workspace = Workspace.objects.get(workspace_id=workspace_id)
+        workspace.semantic_tags.add(tag)
+
+      return tag
 
 # Serializer to change password
 class ChangePasswordSerializer(serializers.ModelSerializer):

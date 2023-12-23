@@ -10,6 +10,169 @@ import datetime
 
 # Create your tests here for each class or API call.
 
+class SemanticTagAPITestCase(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url_add = reverse("add_semantic_tag")
+        self.url_remove = reverse("remove_workspace_tag")
+
+        self.wid = "Q486598"
+        self.label1 = "Test Semantic Tag Label 1"
+        self.label2 = "Test Semantic Tag Label 2"
+        self.label3 = "Test Semantic Tag Label 3"
+        self.user_for_contributor = User.objects.create_user(id=2, email= 'cont1@example.com', username='cont1@example.com', first_name='Contributor User 2', last_name='Test2')
+        self.user_for_contributor2 = User.objects.create_user(id=3, email= 'cont2@example.com', username='cont2@example.com', first_name='Contributor User 3', last_name='Test3')
+        self.contributor = Contributor.objects.create(user=self.user_for_contributor, bio="I am the contributor")
+        self.contributor2 = Contributor.objects.create(user=self.user_for_contributor2, bio="I am the second contributor")
+
+        self.contributor_token = Token.objects.create(user=self.user_for_contributor)
+        self.contributor2_token = Token.objects.create(user=self.user_for_contributor2)
+
+        self.workspace = Workspace.objects.create()
+        self.contributor.workspaces.add(self.workspace)
+
+    def tearDown(self):
+        Workspace.objects.all().delete()
+        Contributor.objects.all().delete()
+        BasicUser.objects.all().delete()
+        User.objects.all().delete()
+        SemanticTag.objects.all().delete()
+        print("All tests for the Semantic Tag API are completed!")
+    
+    def test_add_semantic_tag(self):
+        data_complete = {
+            "wid": self.wid,
+            "label": self.label2,
+            "workspace_id": self.workspace.workspace_id
+        }
+        response = self.client.post(self.url_add, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor).key[0:-1]}")
+        response = self.client.post(self.url_add, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data["detail"], "Invalid token.")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor2).key}")
+        response = self.client.post(self.url_add, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data["detail"], "You do not have permission to perform this action.")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor).key}")
+
+        data_missing_wid = {
+            "label": self.label1,
+            "workspace_id": self.workspace.workspace_id
+        }
+
+        response = self.client.post(self.url_add, data_missing_wid, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["wid"][0], "This field is required.")
+
+        data_missing_label = {
+            "wid": self.wid,
+            "workspace_id": self.workspace.workspace_id
+        }
+
+        response = self.client.post(self.url_add, data_missing_label, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["label"][0], "This field is required.")
+
+        data_missing_workspace_id = {
+            "wid": self.wid,
+            "label": self.label1
+        }
+
+        response = self.client.post(self.url_add, data_missing_workspace_id, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        tags = SemanticTag.objects.filter(wid=self.wid, label=self.label1)
+        self.assertEqual(tags.count(), 1)
+        self.assertEqual(tags[0].wid, self.wid)
+        self.assertEqual(tags[0].wid, response.data["wid"])
+        self.assertEqual(tags[0].label, self.label1)
+        self.assertEqual(tags[0].label, response.data["label"])
+
+        data_complete = {
+            "wid": self.wid,
+            "label": self.label2,
+            "workspace_id": str(self.workspace.workspace_id)
+        }
+
+        SemanticTag.objects.all().delete()
+
+        response = self.client.post(self.url_add, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        tags = SemanticTag.objects.filter(wid=self.wid, label=self.label2)
+        self.assertEqual(tags.count(), 1)
+        self.assertEqual(tags[0].wid, self.wid)
+        self.assertEqual(tags[0].wid, response.data["wid"])
+        self.assertEqual(tags[0].label, self.label2)
+        self.assertEqual(tags[0].label, response.data["label"])
+
+        tags = self.workspace.semantic_tags.all()
+        self.assertEqual(tags.count(), 1)
+        tag = tags[0]
+        self.assertEqual(tag.wid, self.wid)
+        self.assertEqual(tag.wid, response.data["wid"])
+        self.assertEqual(tag.label, self.label2)
+        self.assertEqual(tag.label, response.data["label"])
+
+    def test_remove_workspace_tag(self):
+        tag = SemanticTag.objects.create(wid=self.wid, label=self.label3)
+        self.workspace.semantic_tags.add(tag)
+
+        data_complete = {
+            "workspace_id": self.workspace.workspace_id,
+            "tag_id": tag.id
+        }
+        response = self.client.put(self.url_remove, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        content = json.loads(response.content)
+        self.assertEqual(content["message"], "You don't have permission to do this!")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor).key[0:-1]}")
+        response = self.client.put(self.url_remove, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        content = json.loads(response.content)
+        self.assertEqual(content["detail"], "Invalid token.")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor2).key}")
+        response = self.client.put(self.url_remove, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        content = json.loads(response.content)
+        self.assertEqual(content["message"], "You don't have permission to do this!")
+
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {Token.objects.get(user=self.user_for_contributor).key}")
+        data_missing_workspace_id = {
+            "tag_id": tag.id
+        }
+        response = self.client.put(self.url_remove, data_missing_workspace_id, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        content = json.loads(response.content)
+        self.assertEqual(content["message"], "workspace_id field can not be empty")
+
+        data_missing_tag_id = {
+            "workspace_id": self.workspace.workspace_id
+        }
+        response = self.client.put(self.url_remove, data_missing_tag_id, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        content = json.loads(response.content)
+        self.assertEqual(content["message"], "tag_id field can not be empty")
+
+        data_complete = {
+            "workspace_id": self.workspace.workspace_id,
+            "tag_id": tag.id
+        }
+        response = self.client.put(self.url_remove, data_complete, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = json.loads(response.content)
+        self.assertEqual(content["message"], "Tag is successfully removed from workspace.")
+
+        tags = self.workspace.semantic_tags.filter(wid=self.wid, label=self.label3)
+        self.assertEqual(tags.count(), 0)
+
+
 class WorkspacePOSTAPITestCase(TestCase):
     def setUp(self):
         self.client = APIClient()
