@@ -123,6 +123,15 @@ class AnnotationGetTest(TestCase):
         self.assertTrue(response['creator']['id'], self.annotation.creator.name)
         self.assertIn('created', response)
 
+    def test_delete_annotation(self):
+        client = Client()
+
+        url = reverse('get_annotation_by_id', args=[self.annotation.id])
+
+        response = client.delete(url)
+        self.assertEqual(response.status_code, 204)
+
+
 class AnnotationPostTest(TestCase):
     def setUp(self):
         self.client = Client()
