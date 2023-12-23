@@ -13,21 +13,23 @@ class AnnotationProvider with ChangeNotifier {
 
   Future<void> getAnnotations(
       String annotationSourceLocation, List<String> annotationAuthors) async {
-    Uri url = Uri.parse("${Constants.annotationUrl}/annotations/get_annotation");
-    Map<String, String> queryParams = {
-      'source': annotationSourceLocation,
-    };
+    String baseUrl = "${Constants.annotationUrl}/annotations/get_annotation";
 
     // API can match multiple authors
     // WARNING: not sure exactly how to give it as a list
-    if (annotationAuthors.isNotEmpty) {
-      queryParams['creator'] = annotationAuthors.join(',');
+    // Therefore, constructing query parameters manually
+    List<String> queryParams = ['source=$annotationSourceLocation'];
+
+    // Append each author as a separate 'creator' parameter as in Postman
+    for (String author in annotationAuthors) {
+      queryParams.add('creator=${Uri.encodeQueryComponent(author)}');
     }
 
-    url = url.replace(queryParameters: queryParams);
+    // Join all query parameters with '&' and append to the base URL
+    String finalUrl = '$baseUrl?${queryParams.join('&')}';
 
     try {
-      var response = await http.get(url);
+      var response = await http.get(Uri.parse(finalUrl));
       if (response.statusCode == 200) {
         List<dynamic> annotationsJson = jsonDecode(response.body);
 
