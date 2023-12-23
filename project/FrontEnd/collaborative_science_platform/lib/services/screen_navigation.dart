@@ -1,7 +1,6 @@
 import 'package:collaborative_science_platform/screens/auth_screens/please_login_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
-import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,7 @@ enum ScreenTab {
   workspaces,
   workspace,
   createWorkspace,
-  notifications,
+  //notifications,
   profile,
   pleaseLogin,
   none
@@ -49,9 +48,9 @@ class ScreenNavigation extends ChangeNotifier {
       case ScreenTab.createWorkspace: // Goes to the page where workspaces are created
         context.go(MobileCreateWorkspacePage.routeName);
         break;
-      case ScreenTab.notifications:
-        context.go(NotificationPage.routeName);
-        break;
+      // case ScreenTab.notifications:
+      //   context.go(NotificationPage.routeName);
+      //   break;
       case ScreenTab.profile:
         if (email == "") {
           context.go(ProfilePage.routeName);
