@@ -7,7 +7,7 @@ class Annotation {
   String annotationContent;
   String annotationAuthor;
   String
-      sourceLocation; // http://13.51.205.39/node/{nodeId}%23{theorem|proof}%23{theoremId|proofId}
+      sourceLocation; // ${Constants.appUrl}/node/{nodeId}%23{theorem|proof}%23{theoremId|proofId}
   int startOffset;
   int endOffset;
 

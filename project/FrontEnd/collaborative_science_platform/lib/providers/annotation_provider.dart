@@ -18,18 +18,30 @@ class AnnotationProvider with ChangeNotifier {
     // API can match multiple authors
     // WARNING: not sure exactly how to give it as a list
     // Therefore, constructing query parameters manually
-    List<String> queryParams = ['source=$annotationSourceLocation'];
+    List<String> queryParams = [
+      'source=${Uri.encodeQueryComponent(annotationSourceLocation)}'
+          .replaceAll('%2F', '/')
+          .replaceAll('%3A', ':')
+    ];
 
     // Append each author as a separate 'creator' parameter as in Postman
     for (String author in annotationAuthors) {
-      queryParams.add('creator=${Uri.encodeQueryComponent(author)}');
+      queryParams.add('creator=${Uri.encodeQueryComponent(author)}'
+          .replaceAll('%2F', '/')
+          .replaceAll('%3A', ':'));
     }
 
     // Join all query parameters with '&' and append to the base URL
     String finalUrl = '$baseUrl?${queryParams.join('&')}';
+    print(finalUrl);
 
     try {
       var response = await http.get(Uri.parse(finalUrl));
+      if (jsonDecode(response.body)['message'] == "No annotation found!") {
+        _annotations.clear();
+        notifyListeners();
+        return;
+      }
       if (response.statusCode == 200) {
         List<dynamic> annotationsJson = jsonDecode(response.body);
 

@@ -11,18 +11,20 @@ import 'package:provider/provider.dart';
 
 class AnnotationText extends StatefulWidget {
   final String text;
-  final AnnotationType annotationType;
+  final String annotationSourceLocation;
+  final List<String> annotationAuthors;
   final TextStyle? style;
   final TextAlign? textAlign;
   final int? maxLines;
 
   const AnnotationText(
-    this.text, {
+    this.text,
+    this.annotationSourceLocation,
+    this.annotationAuthors, {
     super.key,
     this.style,
     this.textAlign,
     this.maxLines,
-    this.annotationType = AnnotationType.theorem,
   });
 
   @override
@@ -53,7 +55,8 @@ class _AnnotationTextState extends State<AnnotationText> {
         isLoading = true;
       });
       final annotationProvider = Provider.of<AnnotationProvider>(context);
-      await annotationProvider.getAnnotations(widget.annotationType);
+      await annotationProvider.getAnnotations(
+          widget.annotationSourceLocation, widget.annotationAuthors);
       annotations = annotationProvider.annotations;
       for (var element in annotations) {
         annotationIndices.add(element.startOffset);
@@ -406,6 +409,7 @@ class AddAnnotationButton extends StatefulWidget {
   State<AddAnnotationButton> createState() => _AddAnnotationButtonState();
 }
 
+// NOT IMPLEMENTED FULLY // TODO
 class _AddAnnotationButtonState extends State<AddAnnotationButton> {
   bool isHovering = false;
   bool isPortalOpen = false;
@@ -432,14 +436,22 @@ class _AddAnnotationButtonState extends State<AddAnnotationButton> {
       });
     }
     try {
+      // no update or remove mechanism implemented yet in backend
+      // DELETE this later if it won't be implemented
       if (change) {
-        await provider.updateAnnotation(widget.annotation!, _textEditingController.text);
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text("Something went wrong!"),
+          ),
+        );
+        //  await provider.updateAnnotation(widget.annotation!, _textEditingController.text);
       } else {
         Annotation annotation = Annotation(
           annotationContent: _textEditingController.text,
           startOffset: widget.startOffset!,
           endOffset: widget.endOffset!,
-          annotationAuthor: "test",
+          annotationAuthor: "TODO", // TODO
+          sourceLocation: "TODO", // TODO
         );
         await provider.addAnnotation(annotation);
       }

@@ -1,7 +1,9 @@
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -11,7 +13,10 @@ import 'dart:convert';
 
 class ProofListView extends StatefulWidget {
   final List<Proof> proof;
-  const ProofListView({super.key, required this.proof});
+  final List<User> contributors;
+  final int nodeID;
+  const ProofListView(
+      {super.key, required this.proof, required this.contributors, required this.nodeID});
 
   @override
   State<ProofListView> createState() => _ProofListViewState();
@@ -66,7 +71,10 @@ class _ProofListViewState extends State<ProofListView> {
                     showAnnotations
                         ? AnnotationText(
                             utf8.decode(widget.proof[index].proofContent.codeUnits),
-                            annotationType: AnnotationType.proof,
+                            "${Constants.appUrl}/node/${widget.nodeID}#proof#${index}",
+                            widget.contributors
+                                .map((user) => "${Constants.appUrl}/profile/${user.email}")
+                                .toList(),
                           )
                         : TeXView(
                             renderingEngine: const TeXViewRenderingEngine.katex(),
