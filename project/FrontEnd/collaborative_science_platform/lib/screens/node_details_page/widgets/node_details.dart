@@ -164,9 +164,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                             ),
                             const SizedBox(width: 10),
                             SizedBox(
-                              width: 110,
+                              width: 135,
                               child: AppButton(
-                                  text: "Graph",
+                                  text: "Relations",
                                   height: 40,
                                   icon: const Icon(
                                     CupertinoIcons.square_grid_3x2,
