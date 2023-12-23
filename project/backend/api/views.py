@@ -605,6 +605,7 @@ def get_workspace_from_id(request):
         user = User.objects.get(id=cont.user_id)
         if pend.status == 'P':
             pending.append({"id": cont.id,
+                            'request_id':pend.id,
                              "first_name": user.first_name,
                              "last_name": user.last_name,
                              "username": user.username})
@@ -1545,4 +1546,51 @@ class AddUserSemanticTag(APIView):
         
         user.semantic_tags.add(sm_tag)
         return Response({"message": "Semantic Tag successfully added to user."}, status=status.HTTP_201_CREATED)
-    
+
+def get_related_nodes(request):
+    node_id = request.GET.get("node_id")
+    node = Node.objects.filter(node_id=node_id)
+    if not node.exists():
+        return JsonResponse({'message':'There is no node with this node_id.'},status=404)
+    node = node[0]
+    tags = node.semantic_tags
+    nodes = []
+    if not tags.exists():
+        count = Node.objects.count()
+        prev = []
+        if count < 20:
+            c = count
+        else:
+            c = 20
+        i = 0
+        while i < c:
+            ran = random.randint(0, count - 1)
+            if ran not in prev:
+                prev.append(ran)
+                random_node = Node.objects.all()[ran]
+                if not random_node.removed_by_admin:
+                    nodes.append(random_node)
+                    i += 1
+
+    try:
+        for tag in tags.all():
+            for node in tag.nodes:
+                if not node.removed_by_admin:
+                    nodes.append(node)
+        if len(nodes) < 20: # TAKES A LOT LONGER FOR RELATED NODES TO BE FOUND SO TRY TO AVOID THEM
+            for tag in tags.all():
+                for node in tag.related_nodes:
+                    if not node.removed_by_admin:
+                        nodes.append(node)
+    except:
+        return JsonResponse({'message':'An internal server error occured. Please try again.'},status=500)
+    node_infos = []
+    for node in nodes:
+        authors = []
+        for cont in node.contributors.all():
+            user = User.objects.get(id=cont.user_id)
+            authors.append({'name': user.first_name,
+                            'surname': user.last_name, 'username': user.username, 'id': cont.id})
+        node_infos.append({'id': node.node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors,
+                           'num_visits': node.num_visits, 'removed_by_admin': node.removed_by_admin})
+    return JsonResponse({'nodes':node_infos},status=200)
