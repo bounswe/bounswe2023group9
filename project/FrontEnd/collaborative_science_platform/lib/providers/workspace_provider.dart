@@ -118,6 +118,42 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateReviewRequest(int id, RequestStatus status, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/update_review_req/");
+
+    String requestStatus = "";
+    if (status == RequestStatus.approved) {
+      requestStatus = "A";
+    } else if (status == RequestStatus.rejected) {
+      requestStatus = "R";
+    } else {
+      requestStatus = "P";
+    }
+
+    var request = http.MultipartRequest('PUT', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'id': "$id",
+      'status': requestStatus,
+      'comment': "OK",
+    });
+    print(request.fields);
+    http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    print(await response.stream.bytesToString());
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw SendCollaborationRequestException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
   Future<void> updateCollaborationRequest(int id, RequestStatus status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_collab_req/");
     String requestStatus = "";
@@ -435,9 +471,12 @@ class WorkspaceProvider with ChangeNotifier {
       'id': "$id",
       'status': requestStatus,
       'comment': comment,
+      'response': requestStatus,
     });
 
     http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    print(await response.stream.bytesToString());
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());
       notifyListeners();

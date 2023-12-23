@@ -420,8 +420,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                     child: AppButton(
-                      isActive: widget.workspace!.status == WorkspaceStatus.workable ||
-                          widget.workspace!.status == WorkspaceStatus.finalized,
+                      isActive: widget.workspace.status == WorkspaceStatus.inReview,
                       text: "Review Workspace",
                       height: 40,
                       onTap: () {
@@ -445,7 +444,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                   height: 40,
                                   onTap: () {
                                     /** Approve workspace*/
-                                    widget.addReview(widget.workspace!.workspaceId,
+                                    widget.addReview(widget.workspace.requestId,
                                         RequestStatus.approved, reviewController.text);
                                     Navigator.of(context).pop();
                                   },
@@ -459,7 +458,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                   type: "outlined",
                                   onTap: () {
                                     /** Reject workspace*/
-                                    widget.addReview(widget.workspace!.workspaceId,
+                                    widget.addReview(widget.workspace.requestId,
                                         RequestStatus.rejected, reviewController.text);
                                     Navigator.of(context).pop();
                                   },

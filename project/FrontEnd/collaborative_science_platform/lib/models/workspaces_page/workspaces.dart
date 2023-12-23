@@ -22,13 +22,13 @@ class Workspaces {
         workspacesList.map((e) => WorkspacesObject.fromJson(e)).toList();
 
     List<WorkspacesObject> pendingWorkspaces =
-        pendingWorkspacesList.map((e) => WorkspacesObject.fromJson(e)).toList();
+        pendingWorkspacesList.map((e) => WorkspacesObject.fromJsonforRequests(e)).toList();
 
     List<WorkspacesObject> reviewWorkspaces =
         reviewWorkspacesList.map((e) => WorkspacesObject.fromJson(e)).toList();
 
     List<WorkspacesObject> pendingReviewWorkspaces =
-        pendingReviewWorkspacesList.map((e) => WorkspacesObject.fromJson(e)).toList();
+        pendingReviewWorkspacesList.map((e) => WorkspacesObject.fromJsonforRequests(e)).toList();
     return Workspaces(
         workspaces: workspaces,
         pendingWorkspaces: pendingWorkspaces,

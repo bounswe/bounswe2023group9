@@ -33,6 +33,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function updateReviewRequest;
 
   const MobileWorkspacePage({
     super.key,
@@ -51,6 +52,7 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+    required this.updateReviewRequest,
   });
 
   @override
@@ -70,7 +72,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   int workspaceIndex = 0;
 
   bool showSidebar = false;
-  
 
   Widget mobileAddNewWorkspaceIcon() {
     return CircleAvatar(
@@ -237,7 +238,6 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
     );
   }
 
-
   @override
   void dispose() {
     controller1.dispose();
@@ -249,7 +249,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
       showSidebar = false;
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (isLoading || error) {
@@ -280,6 +280,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                       height: MediaQuery.of(context).size.height,
                       workspaces: widget.workspaces,
                       createNewWorkspace: widget.createNewWorkspace,
+                      updateReviewRequest: widget.updateReviewRequest,
                     ),
                   ]
                 : [
@@ -288,8 +289,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                     //   padding: EdgeInsets.symmetric(horizontal: 12.0),
                     //   child: Divider(),
                     // ),
-                    Row(mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: AppBarButton(
@@ -307,60 +307,59 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                         style: TextStyles.bodyGrey,
                       )
                     ]),
-                    
-              (widget.workspaces != null && widget.workspace == null)
-                  ? ((widget.workspaces!.workspaces.length +
-                              widget.workspaces!.pendingWorkspaces.length !=
-                          0)
-                      ? const Padding(
-                          padding: EdgeInsets.fromLTRB(16.0, 120.0, 16.0, 0.0),
-                          child: Text(
-                            "Select a workspace to see details.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 24.0,
-                            ),
-                          ),
-                        )
-                      : const Padding(
-                          padding: EdgeInsets.fromLTRB(16.0, 120.0, 16.0, 0.0),
-                          child: Text(
-                            "You haven't created any workspace yet!",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 24.0,
-                            ),
-                          ),
-                        ))
-                  : (widget.workspaces != null && widget.workspace != null)
-                      ? MobileWorkspaceContent(
-                          workspace: widget.workspace!,
-                          pending: (workspaceIndex < widget.workspaces!.workspaces.length)
-                              ? false
-                              : true,
-                          createNewEntry: widget.createNewEntry,
-                          editEntry: widget.editEntry,
-                          deleteEntry: widget.deleteEntry,
-                          addReference: widget.addReference,
-                          deleteReference: widget.deleteReference,
-                          editTitle: widget.editTitle,
-                          addSemanticTags: widget.addSemanticTags,
-                          finalizeWorkspace: widget.finalizeWorkspace,
-                          sendCollaborationRequest: widget.sendCollaborationRequest,
-                          updateRequest: widget.updateRequest,
-                          sendWorkspaceToReview: widget.sendWorkspaceToReview,
-                          addReview: widget.addReview,
-                        )
-                      : const SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-            ],
+                    (widget.workspaces != null && widget.workspace == null)
+                        ? ((widget.workspaces!.workspaces.length +
+                                    widget.workspaces!.pendingWorkspaces.length !=
+                                0)
+                            ? const Padding(
+                                padding: EdgeInsets.fromLTRB(16.0, 120.0, 16.0, 0.0),
+                                child: Text(
+                                  "Select a workspace to see details.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 24.0,
+                                  ),
+                                ),
+                              )
+                            : const Padding(
+                                padding: EdgeInsets.fromLTRB(16.0, 120.0, 16.0, 0.0),
+                                child: Text(
+                                  "You haven't created any workspace yet!",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 24.0,
+                                  ),
+                                ),
+                              ))
+                        : (widget.workspaces != null && widget.workspace != null)
+                            ? MobileWorkspaceContent(
+                                workspace: widget.workspace!,
+                                pending: (workspaceIndex < widget.workspaces!.workspaces.length)
+                                    ? false
+                                    : true,
+                                createNewEntry: widget.createNewEntry,
+                                editEntry: widget.editEntry,
+                                deleteEntry: widget.deleteEntry,
+                                addReference: widget.addReference,
+                                deleteReference: widget.deleteReference,
+                                editTitle: widget.editTitle,
+                                addSemanticTags: widget.addSemanticTags,
+                                finalizeWorkspace: widget.finalizeWorkspace,
+                                sendCollaborationRequest: widget.sendCollaborationRequest,
+                                updateRequest: widget.updateRequest,
+                                sendWorkspaceToReview: widget.sendWorkspaceToReview,
+                                addReview: widget.addReview,
+                              )
+                            : const SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                  ],
           ),
         ),
       );

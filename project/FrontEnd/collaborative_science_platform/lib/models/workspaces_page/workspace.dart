@@ -17,7 +17,6 @@ class Workspace {
   List<Node> references;
   int fromNodeId;
   int requestId;
-  List<String> comments;
   Workspace({
     required this.workspaceId,
     required this.workspaceTitle,
@@ -27,7 +26,6 @@ class Workspace {
     required this.contributors,
     required this.pendingContributors,
     required this.references,
-    required this.comments,
     required this.fromNodeId,
     required this.requestId,
   });
@@ -55,8 +53,6 @@ class Workspace {
                 : (statusString == "published")
                     ? WorkspaceStatus.published
                     : WorkspaceStatus.rejected;
-    var commentsList = jsonString['comments'] as List;
-    List<String> comments = List<String>.from(commentsList);
     return Workspace(
       workspaceId: jsonString['workspace_id'],
       workspaceTitle: jsonString['workspace_title'],
@@ -66,7 +62,6 @@ class Workspace {
       contributors: contributors,
       pendingContributors: pendingContributors,
       references: references,
-      comments: comments,
       requestId: jsonString["request_id"] == "" ? -1 : jsonString["request_id"],
       fromNodeId: jsonString["from_node_id"] == "" ? -1 : jsonString["from_node_id"],
     );

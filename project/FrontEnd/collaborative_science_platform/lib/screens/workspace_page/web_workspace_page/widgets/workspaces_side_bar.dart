@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
@@ -19,6 +20,7 @@ class WorkspacesSideBar extends StatefulWidget {
   final double height;
   final Workspaces? workspaces;
   final Function createNewWorkspace;
+  final Function updateReviewRequest;
 
   const WorkspacesSideBar({
     super.key,
@@ -27,6 +29,7 @@ class WorkspacesSideBar extends StatefulWidget {
     required this.height,
     this.workspaces,
     required this.createNewWorkspace,
+    required this.updateReviewRequest,
   });
 
   @override
@@ -251,7 +254,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                   child: CardContainer(
                                     onTap: () {
                                       context.push(
-                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingReviewWorkspaces[index].workspaceId}");
+                                          "${WorkspacesPage.routeName}/${widget.workspaces!.reviewWorkspaces[index].workspaceId}");
                                       widget.hideSidebar!();
                                     },
                                     child: Text(
@@ -291,8 +294,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                   icon: const Icon(
                                                       CupertinoIcons.check_mark_circled,
                                                       color: AppColors.infoColor),
-                                                  onPressed: () {
-                                                    // function to accept collaboration request
+                                                  onPressed: () async {
+                                                    // function to accept review request
+                                                    await widget.updateReviewRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingReviewWorkspaces[index -
+                                                                widget.workspaces!.reviewWorkspaces
+                                                                    .length]
+                                                            .requestId,
+                                                        RequestStatus.approved);
                                                   },
                                                 ),
                                                 IconButton(
@@ -300,8 +311,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                     CupertinoIcons.clear_circled,
                                                     color: AppColors.warningColor,
                                                   ),
-                                                  onPressed: () {
-                                                    // function to reject collaboration request
+                                                  onPressed: () async {
+                                                    // function to reject review request
+                                                    await widget.updateReviewRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingReviewWorkspaces[index -
+                                                                widget.workspaces!.reviewWorkspaces
+                                                                    .length]
+                                                            .requestId,
+                                                        RequestStatus.rejected);
                                                   },
                                                 ),
                                               ])
@@ -326,8 +345,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                     icon: const Icon(
                                                         CupertinoIcons.check_mark_circled,
                                                         color: AppColors.infoColor),
-                                                    onPressed: () {
-                                                      // function to accept collaboration request
+                                                    onPressed: () async {
+                                                      // function to accept review request
+                                                      await widget.updateReviewRequest(
+                                                          widget
+                                                              .workspaces!
+                                                              .pendingReviewWorkspaces[index -
+                                                                  widget.workspaces!
+                                                                      .reviewWorkspaces.length]
+                                                              .requestId,
+                                                          RequestStatus.approved);
                                                     },
                                                   ),
                                                   IconButton(
@@ -335,8 +362,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                       CupertinoIcons.clear_circled,
                                                       color: AppColors.warningColor,
                                                     ),
-                                                    onPressed: () {
-                                                      // function to reject collaboration request
+                                                    onPressed: () async {
+                                                      // function to accept review request
+                                                      await widget.updateReviewRequest(
+                                                          widget
+                                                              .workspaces!
+                                                              .pendingReviewWorkspaces[index -
+                                                                  widget.workspaces!
+                                                                      .reviewWorkspaces.length]
+                                                              .requestId,
+                                                          RequestStatus.rejected);
                                                     },
                                                   ),
                                                 ],

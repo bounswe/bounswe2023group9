@@ -418,6 +418,37 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+  Future<void> updateReviewRequest(int id, RequestStatus status) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await workspaceProvider.updateReviewRequest(id, status, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+        workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
+      });
+    } on SendCollaborationRequestException {
+      setState(() {
+        error = true;
+        errorMessage = SendCollaborationRequestException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void addSemanticTags(List<int> semanticTags) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -447,7 +478,6 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-
   void addReview(int id, RequestStatus status, String comment) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -457,8 +487,10 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
       await workspaceProvider.addReview(id, status, comment, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
+        workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
       });
     } catch (e) {
       setState(() {
@@ -471,6 +503,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
+
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -503,6 +536,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
+        updateReviewRequest: updateReviewRequest,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -521,6 +555,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
+        updateReviewRequest: updateReviewRequest,
       ),
     );
   }
