@@ -1203,6 +1203,20 @@ def add_reference(request):
         return JsonResponse({'message': 'this reference already exists in this workspace.'}, status=400)
     workspace[0].references.add(node[0])
     workspace[0].save()
+
+    receivers = node[0].contributors.all()
+    email = ""
+    check = 0
+    for x in receivers:
+        if x.email_notification_preference:
+            email += str(x.user) + ","
+            check = 1
+    if check:
+        subject = "Referenced node"
+        content = "A node of yours is referenced by another contributor!"
+        send_notification(email,subject,content)
+
+
     return JsonResponse({'message': 'reference added to the workspace successfully.'}, status=200)
 @csrf_exempt
 def create_workspace(request):
@@ -1290,7 +1304,10 @@ def update_collab_request_status(request):
 
     req.status = status
     req.save()
-
+    if req.sender.email_notification_preference:
+        subject = "Collaboration Request answered"
+        content = "You collaboration request is approved by the contributor!"
+        send_notification(str(req.sender.user), subject, content)
     serializer = RequestSerializer(req)
     return Response(serializer.data, status=200)
 
@@ -1497,7 +1514,17 @@ class AskQuestion(APIView):
         
         question = Question.objects.create(node=node, asker=asker, question_content=question_content)
         question.save()
-
+        receivers = node.contributors.all()
+        emails = ""
+        check = 0
+        for x in receivers:
+            if x.email_notification_preference:
+                emails += str(x.user) + ","
+                check = 1
+        if check:
+            subject = "Question asked"
+            content = "A question is asked for your node!"
+            send_notification(emails, subject, content)
         return Response({"message": "Question submitted successfully.", "QuestionID": question.pk}, status=status.HTTP_201_CREATED)
 
 class AnswerQuestion(APIView):
@@ -1520,6 +1547,11 @@ class AnswerQuestion(APIView):
             return Response({"error": "Contributor not found."}, status=status.HTTP_404_NOT_FOUND)
         
         if (question.answer(answer_content, answerer)):
+            receiver = str(question.asker.user)
+            if question.asker.email_notification_preference:
+                subject = "Question answered"
+                content = "A question you asked is answered by one of the contributors!"
+                send_notification(receiver, subject, content)
             return Response({"message": "Answer submitted successfully."}, status=status.HTTP_201_CREATED)
         else:
             return Response({"error": "Question is not asked to logged Contributor or already answered."}, status=status.HTTP_400_BAD_REQUEST)
@@ -1583,8 +1615,11 @@ def promote_contributor(request):
             reviewer = Reviewer(contributor_ptr_id=cont.id)
             reviewer.__dict__.update(cont.__dict__)
             reviewer.save()
+            if cont.email_notification_preference:
+                subject = "Promotion"
+                content = "You are promoted to a reviewer!"
+                send_notification(str(cont.user), subject, content)
             return Response(ReviewerSerializer(reviewer).data, status=201)
-            
         return Response("Contributor does not exist!", status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response(str(e), status=500)
@@ -1599,7 +1634,10 @@ def demote_reviewer(request):
         if reviewer.count():
             reviewer = reviewer.first()
             reviewer.delete(keep_parents=True)
-
+            if reviewer.email_notification_preference:
+                subject = "Demotion"
+                content = "You are demoted to a contributor from a reviewer!"
+                send_notification(str(reviewer.user), subject, content)
             return Response("Reviewer demoted to Contributor successfully", status=status.HTTP_204_NO_CONTENT)
             
         return Response("Reviewer does not exist!", status=status.HTTP_404_NOT_FOUND)    
