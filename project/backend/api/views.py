@@ -12,7 +12,11 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from django.contrib.postgres.search import SearchVector
 from database.models import *
+from django.core.mail import *
 import random, json, datetime
+
+from backend import settings
+
 
 
 # from nltk.corpus import wordnet as wn
@@ -132,6 +136,15 @@ class WorkspacePostAPIView(APIView):
             serializer.errors, status=400
         )
 
+
+def send_notification(receiver,subject,content):
+        receiver = receiver.split(",")
+        try:
+            send_mail(subject = subject, message = content,from_email = settings.EMAIL_HOST_USER,recipient_list = receiver)
+        except:
+            return Response({"message": "A mistake occured while sending notification."}, status=400)
+        return Response({"message": "Notification sent successfully."}, status=201)
+
 class SemanticTagAPIView(APIView):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, IsContributorAndWorkspace)
@@ -180,6 +193,7 @@ def remove_workspace_tag(request):
         return JsonResponse({'message': 'Tag is successfully removed from workspace.'}, status=200)
     else:
         return JsonResponse({'message': "You don't have permission to do this!"}, status=403)
+
 
 def search(request):
     res = BasicUserDetailAPI.as_view()(request)
@@ -1264,6 +1278,12 @@ def get_random_node_id(request):
 def send_collaboration_request(request):
     if not request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace')).exists():
         return Response({"message": "This contributor is not allowed to access this workspace."}, status=403)
+    receiver = BasicUser.objects.filter(id=request.data.get('receiver'))[0]
+    if receiver.email_notification_preference:
+        subject = 'Incoming collaboration request'
+        content = 'You have received a collaboration request!'
+        receiver = receiver.user
+        send_notification(receiver, subject, content)
     serializer = CollaborationRequestSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -1315,6 +1335,17 @@ def send_review_request(request):
             if rv not in reviewers:
                 reviewers.append(rv)
         response_data = {'reviewer1': '', 'reviewer2': ''}
+
+    
+        data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id ,'workspace': request.data.get('workspace')}
+
+        receiver = BasicUser.objects.filter(id=reviewers[0].id)[0]
+        if receiver.email_notification_preference:
+            subject = 'Incoming review request'
+            content = 'You have received a review request!'
+            receiver = receiver.user
+            send_notification(receiver,subject,content)
+
         workspace = request.user.basicuser.contributor.workspaces.filter(workspace_id=request.data.get('workspace'))[0]
         if workspace.is_in_review:
             return Response({"message": "This workspace is already under review."}, status=403)
@@ -1324,6 +1355,7 @@ def send_review_request(request):
         workspace.is_rejected = False
         workspace.save()
         data = {'sender': request.data.get('sender'), 'receiver': reviewers[0].id, 'workspace': request.data.get('workspace')}
+
         serializer = ReviewRequestSerializer(data=data)
 
         if serializer.is_valid():
@@ -1477,6 +1509,8 @@ def update_review_request_status(request):
 
     serializer = ReviewRequestSerializer(req)
     return Response(serializer.data, status=200)
+
+
 
 class AskQuestion(APIView):
     authentication_classes = (TokenAuthentication,)
