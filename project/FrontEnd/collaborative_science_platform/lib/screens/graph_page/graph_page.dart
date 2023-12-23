@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class GraphPage extends StatefulWidget {
-  static const routeName = '/graph';
+  static const routeName = '/relation';
   final int nodeId;
   const GraphPage({super.key, this.nodeId = -1});
 

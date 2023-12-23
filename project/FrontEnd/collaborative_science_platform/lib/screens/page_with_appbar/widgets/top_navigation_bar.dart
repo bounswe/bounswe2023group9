@@ -25,7 +25,7 @@ class TopNavigationBar extends StatelessWidget {
         NavigationBarItem(
           icon: Icons.graphic_eq,
           value: ScreenTab.graph,
-          text: "Graph",
+          text: "Relations",
           isSelected: screenNavigation.selectedTab == ScreenTab.graph,
         ),
         NavigationBarItem(

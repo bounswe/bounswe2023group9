@@ -271,28 +271,28 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               child: Column(children: [
                 Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: titleReadOnly
-                    ? [
-                        SizedBox(
-                          width: Responsive.getGenericPageWidth(context) - 150,
-                          child: Text(
-                            widget.workspace.workspaceTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyles.title2,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: titleReadOnly
+                      ? [
+                          SizedBox(
+                            width: Responsive.getGenericPageWidth(context) - 150,
+                            child: Text(
+                              widget.workspace.workspaceTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.title2,
+                            ),
                           ),
-                        ),
-                        if (widget.workspace.status == WorkspaceStatus.workable)
-                          IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  titleController.text = widget.workspace.workspaceTitle;
-                                  titleReadOnly = false;
-                                });
-                              },
-                              icon: const Icon(Icons.edit)),
+                          if (widget.workspace.status == WorkspaceStatus.workable)
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    titleController.text = widget.workspace.workspaceTitle;
+                                    titleReadOnly = false;
+                                  });
+                                },
+                                icon: const Icon(Icons.edit)),
                         ]
                       : [
                           SizedBox(
@@ -403,7 +403,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                             );
                           },
                   ),
-
                 ),
                 if (true)
                   /** adjust it to check if the user is reviewer of this workspace */

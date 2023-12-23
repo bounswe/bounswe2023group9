@@ -36,11 +36,9 @@ class NodeDetails extends StatefulWidget {
     required this.node,
     required this.controller,
     required this.createNewWorkspacefromNode,
-
     required this.isHidden,
     required this.userType,
     required this.onTap,
-
   });
 
   @override
@@ -108,11 +106,12 @@ class _NodeDetailsState extends State<NodeDetails> {
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      NodeDetailsMenu(createNewWorkspacefromNode: widget.createNewWorkspacefromNode)
-                    ],
-                  ),
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        NodeDetailsMenu(
+                            createNewWorkspacefromNode: widget.createNewWorkspacefromNode)
+                      ],
+                    ),
                     Padding(
                         padding: Responsive.isDesktop(context)
                             ? const EdgeInsets.all(70.0)
@@ -122,7 +121,6 @@ class _NodeDetailsState extends State<NodeDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
-
                       children: [
                         SelectableText.rich(
                           TextSpan(
@@ -167,9 +165,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                             ),
                             const SizedBox(width: 10),
                             SizedBox(
-                              width: 110,
+                              width: 135,
                               child: AppButton(
-                                  text: "Graph",
+                                  text: "Relations",
                                   height: 40,
                                   icon: const Icon(
                                     CupertinoIcons.square_grid_3x2,
