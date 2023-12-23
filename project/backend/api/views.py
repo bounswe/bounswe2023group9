@@ -797,8 +797,6 @@ def remove_workspace_disproof(request):
     if not is_cont_workspace(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     workspace = Workspace.objects.get(workspace_id=workspace_id)
-    if workspace.node != None:
-        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
     if workspace.is_finalized:
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.disproof_entry != None:
