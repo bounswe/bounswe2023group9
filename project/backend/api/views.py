@@ -1651,6 +1651,11 @@ def promote_contributor(request):
             reviewer = Reviewer(contributor_ptr_id=cont.id)
             reviewer.__dict__.update(cont.__dict__)
             reviewer.save()
+
+            if cont.email_notification_preference:
+                subject = "Promotion"
+                content = "You are promoted to a reviewer!"
+                send_notification(str(cont.user),subject,content)
             return Response(ReviewerSerializer(reviewer).data, status=201)
             
         return Response("Contributor does not exist!", status=status.HTTP_404_NOT_FOUND)
@@ -1667,6 +1672,10 @@ def demote_reviewer(request):
         if reviewer.count():
             reviewer = reviewer.first()
             reviewer.delete(keep_parents=True)
+            if reviewer.email_notification_preference:
+                subject = "Demotion"
+                content = "You are demoted to a contributor from a reviewer!"
+                send_notification(str(reviewer.user), subject, content)
 
             return Response("Reviewer demoted to Contributor successfully", status=status.HTTP_204_NO_CONTENT)
             
