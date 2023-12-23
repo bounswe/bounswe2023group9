@@ -182,7 +182,14 @@ def remove_workspace_tag(request):
         return JsonResponse({'message': "You don't have permission to do this!"}, status=403)
 
 def search(request):
-
+    res = BasicUserDetailAPI.as_view()(request)
+    try:
+        admin = Admin.objects.filter(pk=request.user.basicuser)
+        is_admin = False
+        if admin.exists():
+            is_admin = True
+    except:
+        is_admin = False
     search = request.GET.get("query")
     search_type = request.GET.get("type")
     if (search == None or search == "") and search_type != 'random' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read' and search_type != 'for_you':
@@ -213,12 +220,14 @@ def search(request):
     if search_type == 'latest':
         all = Node.objects.order_by('-publish_date')[:50]
         for node in all:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
 
     if search_type == 'most_read':
         all = Node.objects.order_by('-num_visits')[:50]
         for node in all:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
 
     if search_type == 'trending':
         all = Node.objects.order_by('-publish_date')[:250]
@@ -230,7 +239,8 @@ def search(request):
         sort.reverse()
         sort = sort[:50]
         for elem in sort:
-            nodes.append(elem[0])
+            if not Node.objects.get(node_id=elem[0]).removed_by_admin or is_admin:
+                nodes.append(elem[0])
 
 
     if search_type == 'for_you':
@@ -242,9 +252,11 @@ def search(request):
             nodes_q = tag.nodes
             related_nodes_q = tag.related_nodes
             for node in nodes_q:
-                non_rel_nodes.append(node.node_id)
+                if not node.removed_by_admin or is_admin:
+                    non_rel_nodes.append(node.node_id)
             for rel_node in related_nodes_q:
-                rel_nodes.append(rel_node.node_id)
+                if not rel_node.removed_by_admin or is_admin:
+                    rel_nodes.append(rel_node.node_id)
         random.shuffle(non_rel_nodes)
         random.shuffle(rel_nodes)
         nodes = non_rel_nodes + rel_nodes
@@ -260,13 +272,15 @@ def search(request):
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
-                        nodes.append(node.node_id)
+                        if not node.removed_by_admin or is_admin:
+                            nodes.append(node.node_id)
 
             for e in res_surname:
                 if Contributor.objects.filter(user_id=e.id).count() != 0:
                     cont_nodes = Contributor.objects.get(user_id=e.id).NodeContributors.all()
                     for node in cont_nodes:
-                        nodes.append(node.node_id)
+                        if not node.removed_by_admin or is_admin:
+                            nodes.append(node.node_id)
 
     contributors = []
     if search_type == 'node' or search_type == 'all':
@@ -274,7 +288,8 @@ def search(request):
         for el in search_elements:
             res = Node.objects.annotate(search=SearchVector("node_title")).filter(node_title__icontains=el)
             for e in res:
-                nodes.append(e.node_id)
+                if not e.removed_by_admin or is_admin:
+                    nodes.append(e.node_id)
 
     if search_type == 'author' or search_type == 'all':    # TODO This method is too inefficient
         search_elements = search.split()
@@ -297,9 +312,11 @@ def search(request):
         nodes_q = tag.nodes
         related_nodes_q = tag.related_nodes
         for node in nodes_q:
-            nodes.append(node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(node.node_id)
         for rel_node in related_nodes_q:
-            nodes.append(rel_node.node_id)
+            if not node.removed_by_admin or is_admin:
+                nodes.append(rel_node.node_id)
 
     if search_type == 'random':
         count = Node.objects.count()
@@ -314,8 +331,9 @@ def search(request):
             if ran not in prev:
                 prev.append(ran)
                 random_node = Node.objects.all()[ran]
-                nodes.append(random_node.node_id)
-                i += 1
+                if not random_node.removed_by_admin or is_admin:
+                    nodes.append(random_node.node_id)
+                    i += 1
     contributors = list(set(contributors))
     if not (search_type == 'latest' or search_type == 'most_read' or search_type == 'for_you'  or search_type == 'trending'):
         nodes = list(set(nodes))
@@ -333,7 +351,7 @@ def search(request):
             user = User.objects.get(id=cont.user_id)
             authors.append({'name': user.first_name,
                             'surname': user.last_name, 'username': user.username, 'id': cont.id})
-        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors, 'num_visits' : node.num_visits})
+        node_infos.append({'id': node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors, 'num_visits' : node.num_visits,'removed_by_admin':node.removed_by_admin})
     return JsonResponse({'nodes' : node_infos , 'authors' :res_authors },status=200)
 
 def get_profile(request):
@@ -402,7 +420,8 @@ def get_profile(request):
     if Admin.objects.filter(id=basic_user.id).exists():
        user_type = 'admin'
 
-    return JsonResponse({'name':user.first_name,
+    return JsonResponse({'id': user.id,
+                         'name':user.first_name,
                          'surname':user.last_name,
                          'orcid': orcid,
                          'bio':basic_user.bio,
@@ -493,7 +512,7 @@ def get_workspaces(request):
     pending_review = []
     review_workspace_list = []
     if Reviewer.objects.filter(pk=request.user.basicuser.pk).exists():
-        reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
+        reviwer = Reviewer.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])[0]
         for workspace in reviwer.review_workspaces.all():
             for req in  ReviewRequest.objects.filter(workspace=workspace):
                 if req.status == 'A' and req.response == 'P':
@@ -526,9 +545,14 @@ def get_workspace_from_id(request):
     if not IsContributor().has_permission(request, get_workspace_from_id):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
     reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
+    cont = Contributor.objects.get(pk=request.user.basicuser)
     flag = True
     workspace = workspace[0]
     if reviewer.exists():
+        for req in ReviewRequest.objects.filter(receiver=cont):
+            if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
+                flag = False
+                request_id = req.id
         if workspace in reviewer[0].review_workspaces.all():
             cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
             requests = ReviewRequest.objects.filter(workspace=workspace)
@@ -672,6 +696,7 @@ def change_workspace_title(request):
 def set_workspace_proof(request):
     entry_id = request.POST.get("entry_id")
     workspace_id = request.POST.get("workspace_id")
+    is_disproof = request.POST.get("is_disproof")
     if entry_id == None or entry_id == '':
         return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
     try:
@@ -707,6 +732,8 @@ def set_workspace_proof(request):
         workspace.proof_entry.is_proof_entry = False
     workspace.proof_entry = entry
     entry.is_proof_entry = True
+    if is_disproof:
+        entry.is_disproof_entry= True
     entry.save()
     workspace.save()
     return JsonResponse({'message': 'Proof entry is successfully set.'}, status=200)
@@ -740,9 +767,11 @@ def remove_workspace_proof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.proof_entry != None:
         workspace.proof_entry.is_proof_entry = False
+        workspace.proof_entry.is_disproof_entry = False
+        workspace.proof_entry.save()
     workspace.proof_entry = None
     workspace.save()
-    return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
+    return JsonResponse({'message': 'Proof entry is successfully removed.'}, status=200)
 
 
 @csrf_exempt
@@ -1145,15 +1174,6 @@ def get_random_node_id(request):
         node_list.append(node_ids[index])
     return JsonResponse({'node_ids': node_list}, status=200)
 
-
-class IsContributor(BasePermission):
-    def has_permission(self, request, view):
-        if not request.user.is_authenticated:
-            return False
-        if not Contributor.objects.filter(pk=request.user.basicuser.pk).exists():
-            return False
-        return True
-
 @authentication_classes((TokenAuthentication,))
 @permission_classes((IsAuthenticated, IsContributor))
 @api_view(['POST'])
@@ -1294,7 +1314,7 @@ def update_review_request_status(request):
                                     proof_title="",
                                     proof_content=entry.content,
                                     is_valid=True,
-                                    is_disproof=False,
+                                    is_disproof= entry.is_disproof_entry,
                                     publish_date=datetime.date.today(),
                                     removed_by_admin=False,
                                     node=node,

@@ -492,6 +492,7 @@ class ProfileGETAPITestCase(TestCase):
         data = {'mail':'test@example.com'}
         response = self.client.get(self.get_profile_url, data, format="json")
         self.assertEqual(response.status_code,200)
+        self.assertEqual(response.json()['id'], 1)
         self.assertEqual(response.json()['name'],'User')
         self.assertEqual(response.json()['surname'], 'Test')
         self.assertEqual(response.json()['bio'], 'Hello')
@@ -1177,3 +1178,62 @@ class AddUserSemanticTagTestCase(TestCase):
         }
         response = self.client.post(url, payload, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+class WorkspaceProofTestCase(TestCase):
+    def setUp(self):
+        
+        self.user_for_contributor = User.objects.create_user(id=3, email= 'cont@example.com', username='cont@example.com', first_name='Contributor User', last_name='Test')
+        self.contributor = Contributor.objects.create(user=self.user_for_contributor, bio="I am the contributor")
+
+        self.client = APIClient()
+      
+        self.cont_token = Token.objects.create(user=self.user_for_contributor)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.cont_token.key}")
+
+        self.entry = Entry.objects.create(entry_id = 1)
+        self.workspace = Workspace.objects.create(workspace_id=1)
+
+        self.workspace.entries.add(self.entry)
+
+        self.contributor.workspaces.add(self.workspace)
+
+    def tearDown(self):
+        Entry.objects.all().delete()
+        Workspace.objects.all().delete()
+        Contributor.objects.all().delete()
+        User.objects.all().delete()
+        Token.objects.all().delete()
+
+        print("All tests for setting/removing workspace proof are completed!")
+
+
+    def test_set_workspace_proof(self):
+        url = reverse('set_workspace_proof')
+        data = {
+            'workspace_id': self.workspace.workspace_id,
+            'entry_id': self.entry.entry_id,
+            'is_disproof': True,
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 200, response.json())
+        
+        self.assertEqual(Workspace.objects.get(pk=self.workspace.workspace_id).proof_entry.entry_id, self.entry.entry_id)
+        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_proof_entry, True)
+        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_disproof_entry, True)
+
+    
+    def test_remove_workspace_proof(self):
+        url = reverse('remove_workspace_proof')
+        data = {
+            'workspace_id': self.workspace.workspace_id,
+        }
+
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, 200, response.json())
+
+        self.assertIsNone(Workspace.objects.get(pk=self.workspace.workspace_id).proof_entry)
+        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_proof_entry, False)
+        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_disproof_entry, False)
