@@ -152,6 +152,42 @@ class NodeProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getNodeByType(String queryType) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/search/?type=$queryType");
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type": "application/json"
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _searchNodeResult.clear();
+        _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
+              contributors: (node['authors'] as List<dynamic>)
+                  .map((author) => User(
+                      id: author['id'],
+                      firstName: author['name'],
+                      lastName: author['surname'],
+                      email: author['username']))
+                  .toList(),
+              id: node['id'],
+              nodeTitle: node['title'],
+              publishDate: DateTime.parse(node['date']),
+            )));
+        notifyListeners();
+      } else if (response.statusCode == 400) {
+        throw SearchError();
+      } else {
+        print(response);
+        throw Exception("Error");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> getNodeSuggestions() async {
     await search(SearchType.theorem, "", random: true, suggestions: true);
   }
