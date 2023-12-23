@@ -79,7 +79,7 @@ class SemanticTagSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
       wid = validated_data.get('wid', None)
       label = validated_data.get('label', None)
-      workspace_id = self.context['request'].POST.get('workspace_id', None)
+      workspace_id = self.context['request'].data.get('workspace_id', None)
 
       tag = SemanticTag.objects.create(wid=wid, label=label)
 
