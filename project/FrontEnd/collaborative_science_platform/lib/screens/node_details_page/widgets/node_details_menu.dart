@@ -10,11 +10,17 @@ class NodeDetailsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<Auth>(context);
-    return auth.isSignedIn
+    if (auth.basicUser != null) {
+      return (auth.basicUser!.userType == "contributor" || auth.basicUser!.userType == "reviewer") 
         ? AuthenticatedNodeDetailsMenu(
             createNewWorkspacefromNode: createNewWorkspacefromNode,
           )
         : const SizedBox();
+    } else {
+      return const SizedBox();
+    }
+
+    
   }
 }
 
