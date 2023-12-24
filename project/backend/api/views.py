@@ -94,7 +94,7 @@ class NodeAPIView(APIView):
   
     def get(self, request):
         id = request.GET.get("node_id")
-        res = BasicUserDetailAPI.as_view()(request)
+        # res = BasicUserDetailAPI.as_view()(request)
         try:
             admin = Admin.objects.filter(pk=request.user.basicuser)
             is_admin = False
@@ -113,7 +113,7 @@ class NodeAPIView(APIView):
             )
         elif node.first().removed_by_admin and not is_admin:
             return JsonResponse(
-                {"message": "The node is removed by admin."}, status=404
+                {"message": "The node is removed by admin."}, status=403
             )
         node = node.first()
         serializer = NodeSerializer(node)
