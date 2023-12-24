@@ -113,7 +113,7 @@ class NodeAPIView(APIView):
             )
         elif node.first().removed_by_admin and not is_admin:
             return JsonResponse(
-                {"message": "The node is removed by admin."}, status=403
+                {"message": "The node is removed by admin."}, status=404
             )
         node = node.first()
         serializer = NodeSerializer(node)
