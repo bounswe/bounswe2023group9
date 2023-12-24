@@ -43,7 +43,6 @@ class WorkspaceProvider with ChangeNotifier {
     };
     try {
       final response = await http.get(url, headers: headers);
-      print(response.body);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         workspace = Workspace.fromJson(data);

@@ -56,7 +56,7 @@ class WikiDataProvider with ChangeNotifier {
   }
 
   Future<void> removeSemanticTag(int workspaceId, int tagId, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/remove_semantic_tag/");
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_workspace_tag/");
     http.MultipartRequest request = http.MultipartRequest('PUT', url);
 
     request.headers.addAll({

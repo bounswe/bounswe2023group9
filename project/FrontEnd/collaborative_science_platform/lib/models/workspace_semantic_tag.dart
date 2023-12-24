@@ -12,7 +12,7 @@ class WorkspaceSemanticTag {
 
   factory WorkspaceSemanticTag.fromJson(Map<String, dynamic> json) {
     return WorkspaceSemanticTag(
-      tagId: 0, // json['tag_id'], uncomment this when the backend is ready
+      tagId: json['id'],
       wid: json['wid'],
       label: json['label'],
     );
