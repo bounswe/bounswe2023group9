@@ -9,12 +9,17 @@ class QuestionsView extends StatefulWidget {
   final List<Question> questions;
   final bool canAnswer;
   final bool canAsk;
+  final bool isAdmin;
+  final bool isHidden;
+
   const QuestionsView(
       {Key? key,
       required this.nodeId,
       required this.questions,
       required this.canAnswer,
-      required this.canAsk})
+      required this.canAsk,
+      required this.isAdmin,
+      required this.isHidden})
       : super(key: key);
 
   @override
@@ -61,6 +66,8 @@ class _QuestionsViewState extends State<QuestionsView> {
                 itemCount: filteredQuestions.length,
                 itemBuilder: (BuildContext context, int index) {
                   return QuestionBox(
+                    isAdmin: widget.isAdmin,
+                    isHidden: widget.isHidden,
                     question: filteredQuestions[index],
                     canAnswer: widget.canAnswer,
                   );

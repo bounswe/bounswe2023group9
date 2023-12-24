@@ -48,6 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   int response = -1; // response status code of demote/promote
   String newUserType = ""; //new user type according to response
 
+  bool isAdmin = false;
   int response_isBanned = -1;
   bool isBanned = false;
 
@@ -123,6 +124,9 @@ class _ProfilePageState extends State<ProfilePage> {
         final auth = Provider.of<Auth>(context);
         basicUser = (auth.basicUser ?? {} as BasicUser);
         isAuthLoading = true;
+        if (basicUser.userType == "admin") {
+          isAdmin = true;
+        }
         // user = (auth.user ?? {} as User);
       } catch (e) {
         setState(() {
@@ -223,7 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
       // own profile page, should be editible
-      return (!profileData.isBanned || basicUser.userType == "admin")
+      return (!profileData.isBanned || isAdmin)
           ? PageWithAppBar(
               appBar: const HomePageAppBar(),
               pageColor: Colors.grey.shade200,
@@ -300,7 +304,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(questions: questionList),
+                                          child: QuestionActivity(
+                                              isAdmin: isAdmin,
+                                              isHidden: false,
+                                              questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -371,7 +378,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(questions: questionList),
+                                          child: QuestionActivity(
+                                              isAdmin: isAdmin,
+                                              isHidden: false,
+                                              questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -385,7 +395,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // others profile page, will be same both on desktop and mobile
-    return (!profileData.isBanned || basicUser.userType == "admin")
+    return (!profileData.isBanned || isAdmin)
         ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
@@ -451,7 +461,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: CardContainer(
                                     child: SizedBox(
                                       height: 400,
-                                      child: QuestionActivity(questions: questionList),
+                                      child: QuestionActivity(
+                                          isAdmin: isAdmin,
+                                          isHidden: false,
+                                          questions: questionList),
                                     ),
                                   ),
                                 ),
