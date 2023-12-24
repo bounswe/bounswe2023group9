@@ -1517,6 +1517,11 @@ def update_review_request_status(request):
             workspace.is_rejected = True
             workspace.is_in_review = False
             workspace.is_published = False
+            for req in ReviewRequest.objects.filter(workspace=workspace):
+                if req.status == 'A' and req.response == 'P':
+                    workspace.is_in_review = True
+                if req.status == 'P':
+                    workspace.is_in_review = True
         comment = request.data.get('comment')
         req.comment = comment
         req.response = response
@@ -1763,3 +1768,46 @@ def get_related_nodes(request):
         node_infos.append({'id': node.node_id, 'title': node.node_title, 'date': node.publish_date, 'authors': authors,
                            'num_visits': node.num_visits, 'removed_by_admin': node.removed_by_admin})
     return JsonResponse({'nodes':node_infos},status=200)
+@csrf_exempt
+def reset_workspace_state(request):
+    workspace_id = request.POST.get("workspace_id")
+    if workspace_id == None or workspace_id == '':
+        return JsonResponse({'message': 'workspace_id field can not be empty'}, status=400)
+    try:
+        workspace_id = int(workspace_id)
+    except:
+        return JsonResponse({'message': 'workspace_id field has to be a integer'}, status=400)
+    workspace = Workspace.objects.filter(workspace_id=workspace_id)
+    if workspace.count() == 0:
+        return JsonResponse({'message': 'There is no workspace with this id.'}, status=404)
+
+    res = BasicUserDetailAPI.as_view()(request)
+    if not IsContributor().has_permission(request, delete_entry):
+        return JsonResponse({'message': 'User is not a Contributor'}, status=403)
+    if not is_cont_workspace(request):
+        return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
+    workspace = workspace[0]
+    if workspace.is_in_review:
+        return JsonResponse({'message': ' workspace is still under review.'}, status=403)
+
+    workspace.is_finalized = False
+    workspace.is_in_review = False
+    workspace.is_rejected = False
+
+    if workspace.node != None:
+        if workspace.theorem_entry != None:
+            workspace.theorem_entry.is_editable = True
+            workspace.theorem_entry.is_finalized = False
+            workspace.theorem_entry.save()
+    if workspace.proof_entry != None:
+        workspace.proof_entry.is_editable = True
+        workspace.proof_entry.is_finalized = False
+        workspace.proof_entry.save()
+    for entry in workspace.entries.all():
+        if entry.is_theorem_entry and workspace.node != None:
+            continue
+        entry.is_final_entry = False
+        entry.is_editable = True
+        entry.save()
+    workspace.save()
+    return JsonResponse({'message': 'workspace state is successfully reset.'}, status=200)
