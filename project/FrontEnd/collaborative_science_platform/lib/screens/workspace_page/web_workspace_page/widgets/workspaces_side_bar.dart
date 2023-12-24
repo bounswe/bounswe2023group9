@@ -1,5 +1,5 @@
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
-import 'package:collaborative_science_platform/models/workspaces_page/workspaces_object.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
@@ -20,6 +20,7 @@ class WorkspacesSideBar extends StatefulWidget {
   final double height;
   final Workspaces? workspaces;
   final Function createNewWorkspace;
+  final Function updateReviewRequest;
 
   const WorkspacesSideBar({
     super.key,
@@ -28,6 +29,7 @@ class WorkspacesSideBar extends StatefulWidget {
     required this.height,
     this.workspaces,
     required this.createNewWorkspace,
+    required this.updateReviewRequest,
   });
 
   @override
@@ -35,20 +37,6 @@ class WorkspacesSideBar extends StatefulWidget {
 }
 
 class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
-  
-  Workspaces reviewWorkspaces = Workspaces(workspaces: [
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed1", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed2", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed3", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed1", pending: false),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed2", pending: false),
-  ], pendingWorkspaces: [
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed1", pending: true),
-    WorkspacesObject(workspaceId: 5, workspaceTitle: "To be reviewed2", pending: true),
-  ]);
-
   TextEditingController textController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -127,9 +115,9 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                 ),
                 SizedBox(
                   height: (widget.workspaces != null)
-                      ? (auth.userType != UserType.reviewer
+                      ? (auth.basicUser!.userType != "reviewer"
                           ? widget.height * 0.9
-                          : widget.height * 0.45)
+                          : widget.height * 0.40)
                       : 40,
                   child: (widget.workspaces != null)
                       ? ListView.builder(
@@ -146,6 +134,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                   onTap: () {
                                     context.push(
                                         "${WorkspacesPage.routeName}/${widget.workspaces!.workspaces[index].workspaceId}");
+                                    widget.hideSidebar!();
                                   },
                                   child: Text(
                                     widget.workspaces!.workspaces[index].workspaceTitle,
@@ -161,6 +150,7 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                   onTap: () {
                                     context.push(
                                         "${WorkspacesPage.routeName}/${widget.workspaces!.pendingWorkspaces[index - widget.workspaces!.workspaces.length].workspaceId}");
+                                    widget.hideSidebar!();
                                   },
                                   child: (MediaQuery.of(context).size.width >
                                           Responsive.desktopPageWidth)
@@ -242,44 +232,46 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                           })
                       : const CircularProgressIndicator(),
                 ),
-                if (auth.userType == UserType.reviewer)
+                if (auth.basicUser!.userType == "reviewer")
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 5),
                     child: Text("Review Workspaces", style: TextStyles.title4secondary),
                   ),
-                if (auth.userType == UserType.reviewer)
+                if (auth.basicUser!.userType == "reviewer")
                   SizedBox(
-                    height: (reviewWorkspaces != null) ? widget.height * 0.45 : 40,
-                    child: (reviewWorkspaces != null)
+                    height: (widget.workspaces != null) ? widget.height * 0.40 : 40,
+                    child: (widget.workspaces != null)
                         ? ListView.builder(
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             padding: const EdgeInsets.all(8),
-                            itemCount: (reviewWorkspaces.workspaces.length +
-                                reviewWorkspaces.pendingWorkspaces.length),
+                            itemCount: (widget.workspaces!.reviewWorkspaces.length +
+                                widget.workspaces!.pendingReviewWorkspaces.length),
                             itemBuilder: (BuildContext context, int index) {
-                              if (index < reviewWorkspaces.workspaces.length) {
+                              if (index < widget.workspaces!.reviewWorkspaces.length) {
                                 return Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: CardContainer(
                                     onTap: () {
                                       context.push(
-                                          "${WorkspacesPage.routeName}/${reviewWorkspaces.workspaces[index].workspaceId}");
+                                          "${WorkspacesPage.routeName}/${widget.workspaces!.reviewWorkspaces[index].workspaceId}");
+                                      widget.hideSidebar!();
                                     },
                                     child: Text(
-                                      reviewWorkspaces.workspaces[index].workspaceTitle,
+                                      widget.workspaces!.reviewWorkspaces[index].workspaceTitle,
                                       style: TextStyles.title4,
                                       textAlign: TextAlign.start,
                                     ),
                                   ),
                                 );
-                              } else if (index >= reviewWorkspaces.workspaces.length) {
+                              } else if (index >= widget.workspaces!.reviewWorkspaces.length) {
                                 return Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: CardContainer(
                                     onTap: () {
                                       context.push(
-                                          "${WorkspacesPage.routeName}/${reviewWorkspaces.pendingWorkspaces[index - reviewWorkspaces.workspaces.length].workspaceId}");
+                                          "${WorkspacesPage.routeName}/${widget.workspaces!.pendingReviewWorkspaces[index - widget.workspaces!.reviewWorkspaces.length].workspaceId}");
+                                      widget.hideSidebar!();
                                     },
                                     child: (MediaQuery.of(context).size.width >
                                             Responsive.desktopPageWidth)
@@ -287,9 +279,10 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                                             children: [
                                               Text(
-                                                reviewWorkspaces
-                                                    .pendingWorkspaces[
-                                                        index - reviewWorkspaces.workspaces.length]
+                                                widget
+                                                    .workspaces!
+                                                    .pendingReviewWorkspaces[index -
+                                                        widget.workspaces!.reviewWorkspaces.length]
                                                     .workspaceTitle,
                                                 style: TextStyles.bodyBold,
                                                 maxLines: 1,
@@ -301,8 +294,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                   icon: const Icon(
                                                       CupertinoIcons.check_mark_circled,
                                                       color: AppColors.infoColor),
-                                                  onPressed: () {
-                                                    // function to accept collaboration request
+                                                  onPressed: () async {
+                                                    // function to accept review request
+                                                    await widget.updateReviewRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingReviewWorkspaces[index -
+                                                                widget.workspaces!.reviewWorkspaces
+                                                                    .length]
+                                                            .requestId,
+                                                        RequestStatus.approved);
                                                   },
                                                 ),
                                                 IconButton(
@@ -310,8 +311,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                     CupertinoIcons.clear_circled,
                                                     color: AppColors.warningColor,
                                                   ),
-                                                  onPressed: () {
-                                                    // function to reject collaboration request
+                                                  onPressed: () async {
+                                                    // function to reject review request
+                                                    await widget.updateReviewRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingReviewWorkspaces[index -
+                                                                widget.workspaces!.reviewWorkspaces
+                                                                    .length]
+                                                            .requestId,
+                                                        RequestStatus.rejected);
                                                   },
                                                 ),
                                               ])
@@ -320,9 +329,10 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                         : Column(
                                             children: [
                                               Text(
-                                                reviewWorkspaces
-                                                    .pendingWorkspaces[
-                                                        index - reviewWorkspaces.workspaces.length]
+                                                widget
+                                                    .workspaces!
+                                                    .pendingReviewWorkspaces[index -
+                                                        widget.workspaces!.reviewWorkspaces.length]
                                                     .workspaceTitle,
                                                 style: TextStyles.bodyBold,
                                                 maxLines: 1,
@@ -335,8 +345,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                     icon: const Icon(
                                                         CupertinoIcons.check_mark_circled,
                                                         color: AppColors.infoColor),
-                                                    onPressed: () {
-                                                      // function to accept collaboration request
+                                                    onPressed: () async {
+                                                      // function to accept review request
+                                                      await widget.updateReviewRequest(
+                                                          widget
+                                                              .workspaces!
+                                                              .pendingReviewWorkspaces[index -
+                                                                  widget.workspaces!
+                                                                      .reviewWorkspaces.length]
+                                                              .requestId,
+                                                          RequestStatus.approved);
                                                     },
                                                   ),
                                                   IconButton(
@@ -344,8 +362,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                       CupertinoIcons.clear_circled,
                                                       color: AppColors.warningColor,
                                                     ),
-                                                    onPressed: () {
-                                                      // function to reject collaboration request
+                                                    onPressed: () async {
+                                                      // function to accept review request
+                                                      await widget.updateReviewRequest(
+                                                          widget
+                                                              .workspaces!
+                                                              .pendingReviewWorkspaces[index -
+                                                                  widget.workspaces!
+                                                                      .reviewWorkspaces.length]
+                                                              .requestId,
+                                                          RequestStatus.rejected);
                                                     },
                                                   ),
                                                 ],

@@ -9,6 +9,7 @@ class SemanticTagListView extends StatefulWidget {
   final Function addSemanticTags;
   final Function deleteSemanticTag;
   final double height;
+  final bool finalized;
 
   const SemanticTagListView({
     super.key,
@@ -16,6 +17,7 @@ class SemanticTagListView extends StatefulWidget {
     required this.addSemanticTags,
     required this.deleteSemanticTag,
     required this.height,
+    required this.finalized,
   });
 
   @override
@@ -37,7 +39,6 @@ class _SemanticTagListViewState extends State<SemanticTagListView> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SemanticSearchBar(addSemanticTags: widget.addSemanticTags),
-            
           ),
           SizedBox(
             height: (widget.height * 3) / 5,
@@ -76,6 +77,7 @@ class _SemanticTagListViewState extends State<SemanticTagListView> {
                             ],
                           ),
                         ),
+                        if (!widget.finalized)
                         IconButton(
                           onPressed: () async {
                             await widget.deleteSemanticTag(widget.tags[index].id);

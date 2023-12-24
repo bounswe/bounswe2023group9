@@ -25,7 +25,7 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: isActive ? onTap : () {},
-      style: type != "outlined"
+      style: (type != "outlined" || !isActive)
           ? ElevatedButton.styleFrom(
               backgroundColor: isActive
                   ? (type == "primary"
@@ -65,7 +65,9 @@ class AppButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: height / 3.0,
                       fontWeight: FontWeight.bold,
-                      color: (type != "outlined" ? Colors.white : AppColors.primaryColor),
+                      color: ((type != "outlined" || !isActive)
+                          ? Colors.white
+                          : AppColors.primaryColor),
                     )),
               ],
             ),

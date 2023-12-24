@@ -7,11 +7,13 @@ class SemanticTagCard extends StatefulWidget {
   final SemanticTag tag;
   final Function() onDelete;
   final Color backgroundColor;
+  final bool finalized;
 
   const SemanticTagCard({
     required this.tag,
     required this.onDelete,
     required this.backgroundColor,
+    required this.finalized,
     super.key,
   });
 
@@ -63,6 +65,7 @@ class _SemanticTagCardState extends State<SemanticTagCard> {
                     ),
                   ],
                 ),
+              if (!widget.finalized)
                 IconButton(
                   onPressed: () {
                     // delete the semantic tag

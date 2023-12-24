@@ -81,8 +81,13 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     return Center(
       child: IconButton(
         iconSize: 40.0,
-        onPressed: onPressed,
-        icon: const Icon(Icons.add),
+        onPressed: widget.workspace.status != WorkspaceStatus.workable ? () {} : onPressed,
+        icon: Icon(
+          Icons.add,
+          color: widget.workspace.status != WorkspaceStatus.workable
+              ? Colors.grey[200]
+              : Colors.grey[800],
+        ),
       ),
     );
   }
@@ -129,6 +134,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return SemanticTagCard(
+            finalized: widget.workspace.status != WorkspaceStatus.workable,
             tag: tags[index],
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
             onDelete: () {/* delete the semantic tag */},
@@ -151,6 +157,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               itemBuilder: (context, index) {
                 return (index < length)
                     ? MobileEntryCard(
+                        finalized: widget.workspace.status != WorkspaceStatus.workable,
                         entry: widget.workspace.entries[index],
                         onDelete: () async {
                           await widget.deleteEntry(widget.workspace.entries[index].entryId);
@@ -161,6 +168,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                         onCreate: widget.createNewEntry,
                         backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                         isMobile: true,
+                        finalized: widget.workspace.status != WorkspaceStatus.workable,
                       );
               },
             ),
@@ -181,6 +189,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 onCreate: widget.createNewEntry,
                 backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                 isMobile: true,
+                finalized: widget.workspace.status != WorkspaceStatus.workable,
               ),
             ],
           );
@@ -321,6 +330,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           )
                         ],
                 ),
+                if (widget.workspace.requestId == -1)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                   child: AppButton(
@@ -404,13 +414,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           },
                   ),
                 ),
-                if (true)
+                if (widget.workspace.requestId != -1)
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                     child: AppButton(
-                      isActive: widget.workspace!.status == WorkspaceStatus.workable ||
-                          widget.workspace!.status == WorkspaceStatus.finalized,
+                      isActive: widget.workspace.status == WorkspaceStatus.inReview,
                       text: "Review Workspace",
                       height: 40,
                       onTap: () {
@@ -434,7 +443,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                   height: 40,
                                   onTap: () {
                                     /** Approve workspace*/
-                                    widget.addReview(widget.workspace!.workspaceId,
+                                    widget.addReview(widget.workspace.requestId,
                                         RequestStatus.approved, reviewController.text);
                                     Navigator.of(context).pop();
                                   },
@@ -448,7 +457,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                   type: "outlined",
                                   onTap: () {
                                     /** Reject workspace*/
-                                    widget.addReview(widget.workspace!.workspaceId,
+                                    widget.addReview(widget.workspace.requestId,
                                         RequestStatus.rejected, reviewController.text);
                                     Navigator.of(context).pop();
                                   },

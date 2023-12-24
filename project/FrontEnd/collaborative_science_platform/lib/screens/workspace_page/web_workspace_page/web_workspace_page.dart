@@ -34,6 +34,7 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function updateReviewRequest;
 
   const WebWorkspacePage({
     super.key,
@@ -53,6 +54,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+    required this.updateReviewRequest,
   });
 
   @override
@@ -139,6 +141,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           height: minHeight,
                           workspaces: widget.workspaces,
                           createNewWorkspace: widget.createNewWorkspace,
+                          updateReviewRequest: widget.updateReviewRequest,
                         ),
                       if (!showSidebar)
                         Container(
@@ -239,9 +242,10 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             )
                                           ],
                                   ),
-                                  if (widget.workspace!.status == WorkspaceStatus.workable ||
+                                  if (widget.workspace!.requestId == -1 &&
+                                      (widget.workspace!.status == WorkspaceStatus.workable ||
                                       widget.workspace!.status == WorkspaceStatus.finalized ||
-                                      widget.workspace!.status == WorkspaceStatus.inReview)
+                                          widget.workspace!.status == WorkspaceStatus.inReview))
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
@@ -278,14 +282,13 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                         type: "primary",
                                       ),
                                     ),
-                                  if (true)
+                                  if (widget.workspace!.requestId != -1)
                                     /** adjust it to check if the user is reviewer of this workspace */
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
                                         isActive: widget.workspace!.status ==
-                                                WorkspaceStatus.workable ||
-                                            widget.workspace!.status == WorkspaceStatus.finalized,
+                                                WorkspaceStatus.inReview,
                                         text: (MediaQuery.of(context).size.width >
                                                 Responsive.desktopPageWidth)
                                             ? "Review Workspace"
@@ -313,7 +316,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                     onTap: () {
                                                       /** Approve workspace*/
                                                       widget.addReview(
-                                                          widget.workspace!.workspaceId,
+                                                          widget.workspace!.requestId,
                                                           RequestStatus.approved,
                                                           reviewController.text);
                                                       Navigator.of(context).pop();
@@ -329,7 +332,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                     onTap: () {
                                                       /** Reject workspace*/
                                                       widget.addReview(
-                                                          widget.workspace!.workspaceId,
+                                                          widget.workspace!.requestId,
                                                           RequestStatus.rejected,
                                                           reviewController.text);
                                                       Navigator.of(context).pop();
@@ -357,12 +360,15 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   createNewEntry: widget.createNewEntry,
                                   editEntry: widget.editEntry,
                                   deleteEntry: widget.deleteEntry,
+                                  finalized: widget.workspace!.status != WorkspaceStatus.workable,
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SemanticTagListView(
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                       tags: <SemanticTag>[
                                         SemanticTag(
                                             id: "1",
@@ -384,6 +390,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       deleteSemanticTag: () {},
                                     ),
                                     ContributorsListView(
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                       contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
@@ -397,6 +405,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       height: minHeight / 3,
                                       addReference: widget.addReference,
                                       deleteReference: widget.deleteReference,
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                     ),
                                   ],
                                 )
