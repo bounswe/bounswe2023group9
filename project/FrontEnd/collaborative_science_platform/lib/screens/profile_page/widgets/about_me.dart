@@ -9,6 +9,7 @@ class AboutMe extends StatefulWidget {
   final ProfileData profileData;
   final int noWorks;
   final String userType;
+  final String newUserType;
   final Function() onTap;
   final Function() onTapReviewerButton;
   const AboutMe(
@@ -16,6 +17,7 @@ class AboutMe extends StatefulWidget {
       required this.profileData,
       required this.noWorks,
       required this.userType,
+      required this.newUserType,
       required this.onTap,
       required this.onTapReviewerButton});
 
@@ -51,9 +53,9 @@ class _AboutMeState extends State<AboutMe> {
                   children: [
                     Visibility(
                       visible: ((widget.userType == "admin" ? true : false) &&
-                          (widget.profileData.userType == "reviewer" ||
-                              widget.profileData.userType == "contributor")),
-                      child: widget.profileData.userType == "contributor"
+                          (widget.newUserType == "reviewer" ||
+                              widget.newUserType == "contributor")),
+                      child: widget.newUserType == "contributor"
                           ? SizedBox(
                               width: 220,
                               child: AppButton(

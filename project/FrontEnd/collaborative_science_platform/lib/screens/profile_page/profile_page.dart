@@ -33,6 +33,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  ProfileDataProvider profileDataProvider = ProfileDataProvider();
   ProfileData profileData = ProfileData();
   BasicUser basicUser = BasicUser();
   int noWorks = 0;
@@ -43,6 +44,12 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isAuthLoading = false;
   bool _isFirstTime = true;
   int currentIndex = 0;
+
+  int response = -1; // response status code of demote/promote
+  String newUserType = ""; //new user type according to response
+
+  int response_isBanned = -1;
+  bool isBanned = false;
 
   void updateIndex(int index) {
     setState(() {
@@ -67,10 +74,10 @@ class _ProfilePageState extends State<ProfilePage> {
     super.didChangeDependencies();
   }
 
-  void getUserData() async {
+  Future<void> getUserData() async {
     try {
       if (widget.email != "") {
-        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        profileDataProvider = Provider.of<ProfileDataProvider>(context);
         setState(() {
           isLoading = true;
         });
@@ -78,14 +85,18 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
+          newUserType = profileData.userType;
+          isBanned = profileData.isBanned;
         });
       } else {
         final User user = Provider.of<Auth>(context).user!;
-        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        profileDataProvider = Provider.of<ProfileDataProvider>(
+            context); //This is wrong? It seems like we are taking current users data
         await profileDataProvider.getData(user.email);
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
+          newUserType = profileData.userType;
         });
       }
     } on ProfileDoesNotExist {
@@ -127,11 +138,14 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void changeProfileStatus() async {
+  Future<void> changeProfileStatus() async {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      await adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
+      adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
+      setState(() {
+        isBanned = !isBanned;
+      });
       error = false;
       var message = "Profile status updated.";
       print(message);
@@ -144,20 +158,17 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void handleButtonIsBanned() {
-    setState(() {
-      changeProfileStatus();
-    });
+  void handleButtonIsBanned() async {
+    await changeProfileStatus();
   }
 
-  void promoteUser() async {
+  Future<void> promoteUser() async {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      await adminProvider.promoteUser(admin, profileData.id);
+      response = await adminProvider.promoteUser(admin, profileData.id);
+
       error = false;
-      var message = "User is promoted to reviewer.";
-      print(message);
     } catch (e) {
       setState(() {
         error = true;
@@ -167,14 +178,13 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void demoteUser() async {
+  Future<void> demoteUser() async {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      await adminProvider.demoteUser(admin, profileData.id);
+      response = await adminProvider.demoteUser(admin, profileData.id);
+
       error = false;
-      var message = "User is demoted to contributor.";
-      print(message);
     } catch (e) {
       setState(() {
         error = true;
@@ -184,16 +194,23 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void handleButtonIsReviewer() {
-    if (profileData.userType == "contributor") {
-      setState(() {
-        promoteUser();
-      });
-    } else if (profileData.userType == "reviewer") {
-      setState(() {
-        demoteUser();
-      });
+  void handleButtonIsReviewer() async {
+    if (newUserType == "contributor") {
+      await promoteUser();
+      if (response == 201) {
+        setState(() {
+          newUserType = "reviewer";
+        });
+      }
+    } else if (newUserType == "reviewer") {
+      await demoteUser();
+      if (response == 204) {
+        setState(() {
+          newUserType = "contributor";
+        });
+      }
     }
+    response = -1;
   }
 
   @override
@@ -233,6 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     profileData: profileData,
                                     noWorks: noWorks,
                                     userType: basicUser.userType,
+                                    newUserType: newUserType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
                                   ),
@@ -313,6 +331,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     profileData: profileData,
                                     noWorks: noWorks,
                                     userType: basicUser.userType,
+                                    newUserType: newUserType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
                                   ),
@@ -394,6 +413,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   profileData: profileData,
                                   noWorks: noWorks,
                                   userType: basicUser.userType,
+                                  newUserType: newUserType,
                                   onTap: handleButtonIsBanned,
                                   onTapReviewerButton: handleButtonIsReviewer),
                               Padding(

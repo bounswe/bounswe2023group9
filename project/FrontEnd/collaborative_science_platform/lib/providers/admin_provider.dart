@@ -78,7 +78,7 @@ class AdminProvider with ChangeNotifier {
     }
   }
 
-  Future<void> promoteUser(User? admin, int userId) async {
+  Future<int> promoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
@@ -88,25 +88,32 @@ class AdminProvider with ChangeNotifier {
     try {
       final response = await http.post(Uri.parse("${Constants.apiUrl}/promote_contributor/"),
           headers: header, body: body);
+
+      if (response.statusCode == 200) {
+        print("User is promoted to reviewer.");
+      }
       print(response.statusCode);
+      return response.statusCode;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> demoteUser(User? admin, int userId) async {
+  Future<int> demoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
       'Authorization': admin!.token,
     };
-    final String body = json.encode({'cont_id': userId});
     try {
       final response = await http.delete(
-          Uri.parse("${Constants.apiUrl}/demote_reviewer/?${userId.toString()}"),
-          headers: header,
-          body: body);
+          Uri.parse("${Constants.apiUrl}/demote_reviewer/?reviewer_id=${userId.toString()}"),
+          headers: header);
+      if (response.statusCode == 200) {
+        print("User is demoted to contributor.");
+      }
       print(response.statusCode);
+      return response.statusCode;
     } catch (e) {
       rethrow;
     }

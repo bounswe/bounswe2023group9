@@ -134,7 +134,11 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      getNodeDetails();
+      print(node.isHidden.toString());
       await adminProvider.hideNode(admin, node, !node.isHidden);
+      getNodeDetails();
+      print(node.isHidden.toString());
       error = false;
       message = "Node status updated.";
     } catch (e) {

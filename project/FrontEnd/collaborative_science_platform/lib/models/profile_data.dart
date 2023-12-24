@@ -56,6 +56,7 @@ class ProfileData {
     List<Question> answered = answeredList.map((e) => Question.fromJsonforProfilePage(e)).toList();
 
     return ProfileData(
+      id: jsonString['id'],
       nodes: nodes,
       name: jsonString['name'],
       surname: jsonString['surname'],
