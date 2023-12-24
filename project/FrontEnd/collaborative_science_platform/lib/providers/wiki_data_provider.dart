@@ -48,7 +48,7 @@ class WikiDataProvider with ChangeNotifier {
     });
 
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       notifyListeners();
     } else {
       throw Exception("Something has gone wrong");

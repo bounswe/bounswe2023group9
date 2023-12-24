@@ -43,7 +43,7 @@ class _NewEntryState extends State<NewEntry> {
 
   Widget upperIconRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
