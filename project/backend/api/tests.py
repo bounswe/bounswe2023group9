@@ -1119,7 +1119,7 @@ class AdminFeatureAPITest(TestCase):
     def test_update_user_status(self):
 
         url = reverse('update_content_status')
-        data = {'context': 'user', 'content_id': self.basic_user.id, 'hide': False}
+        data = {'context': 'user', 'content_id': self.basic_user.id, 'hide': True}
 
         response = self.client.put(url, data, format='json')
 
