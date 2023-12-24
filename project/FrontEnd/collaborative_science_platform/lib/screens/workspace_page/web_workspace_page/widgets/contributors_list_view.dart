@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/send_collaboration_request_form.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -111,10 +112,13 @@ class ContributorsListView extends StatelessWidget {
                                       CupertinoIcons.clear_circled,
                                       color: AppColors.warningColor,
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       // function to delete collaboration request
                                       //TODO - requests id's are absent for now.
-                                      //updateRequest();
+                                      await updateRequest(
+                                          pendingContributors[index - contributors.length]
+                                              .requestId,
+                                          RequestStatus.rejected);
                                     },
                                   ),
                                 ])

@@ -165,7 +165,7 @@ class WorkspaceProvider with ChangeNotifier {
       requestStatus = "P";
     }
 
-    var request = http.MultipartRequest('POST', url);
+    var request = http.MultipartRequest('PUT', url);
     request.headers.addAll({
       "Authorization": "Token $token",
       "content-type": "application/json",
@@ -174,7 +174,6 @@ class WorkspaceProvider with ChangeNotifier {
       'id': "$id",
       'status': requestStatus,
     });
-
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());

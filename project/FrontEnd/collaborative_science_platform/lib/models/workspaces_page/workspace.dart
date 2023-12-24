@@ -40,7 +40,9 @@ class Workspace {
     List<User> contributors =
         contributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<User> pendingContributors =
-        pendingContributorsList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
+        pendingContributorsList
+        .map((e) => User.fromJsonforNodeDetailPagePendingContributors(e))
+        .toList();
     List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
 
     String statusString = jsonString['status'];

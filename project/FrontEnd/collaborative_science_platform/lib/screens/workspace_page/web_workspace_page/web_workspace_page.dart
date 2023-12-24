@@ -28,13 +28,13 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReference;
   final Function deleteReference;
   final Function editTitle;
-  final Function updateRequest;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
+  final Function updateCollaborationRequest;
 
   const WebWorkspacePage({
     super.key,
@@ -51,10 +51,10 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addSemanticTags,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
-    required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
     required this.updateReviewRequest,
+    required this.updateCollaborationRequest,
   });
 
   @override
@@ -142,6 +142,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           workspaces: widget.workspaces,
                           createNewWorkspace: widget.createNewWorkspace,
                           updateReviewRequest: widget.updateReviewRequest,
+                          updateCollaborationRequest: widget.updateCollaborationRequest,
                         ),
                       if (!showSidebar)
                         Container(
@@ -397,7 +398,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       controller: controller3,
                                       height: minHeight / 3,
                                       sendCollaborationRequest: widget.sendCollaborationRequest,
-                                      updateRequest: widget.updateRequest,
+                                      updateRequest: widget.updateCollaborationRequest,
                                     ),
                                     ReferencesListView(
                                       references: widget.workspace!.references,
