@@ -140,6 +140,8 @@ class _AnnotationTextState extends State<AnnotationText> {
                           context,
                           editableTextState.contextMenuButtonItems,
                         ).toList(),
+                        sourceLocation: widget.annotationSourceLocation,
+                        author: "http://13.51.205.39/profile/cemsay@gmail.com", //TODO
                       );
                     }
                   }
@@ -152,6 +154,8 @@ class _AnnotationTextState extends State<AnnotationText> {
                       context,
                       editableTextState.contextMenuButtonItems,
                     ).toList(),
+                    sourceLocation: widget.annotationSourceLocation,
+                    author: "http://13.51.205.39/profile/cemsay@gmail.com", //TODO
                   );
                 },
               );
@@ -166,6 +170,8 @@ class _MyContextMenu extends StatelessWidget {
     required this.anchor,
     required this.children,
     required this.selectedText,
+    required this.sourceLocation,
+    required this.author,
     this.annotation,
     this.startOffset,
     this.endOffset,
@@ -174,6 +180,8 @@ class _MyContextMenu extends StatelessWidget {
   final Offset anchor;
   final List<Widget> children;
   final String selectedText;
+  final String sourceLocation;
+  final String author;
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +204,9 @@ class _MyContextMenu extends StatelessWidget {
                     text: selectedText,
                     startOffset: startOffset,
                     endOffset: endOffset,
-                    annotation: annotation),
+                    annotation: annotation,
+                    sourceLocation: sourceLocation,
+                    author: author),
                 const SizedBox(height: 2),
                 annotation != null
                     ? ShowAnnotationButton(
@@ -399,9 +409,17 @@ class AddAnnotationButton extends StatefulWidget {
   final int? startOffset;
   final int? endOffset;
   final Annotation? annotation;
-  const AddAnnotationButton(
-      {super.key, required this.text, this.annotation, this.startOffset, this.endOffset})
-      : assert(annotation == null ||
+  final String sourceLocation;
+  final String author;
+  const AddAnnotationButton({
+    super.key,
+    required this.text,
+    this.annotation,
+    this.startOffset,
+    this.endOffset,
+    required this.sourceLocation,
+    required this.author,
+  }) : assert(annotation == null ||
             (startOffset == null && endOffset == null) ||
             (startOffset != null && endOffset != null));
 
@@ -409,7 +427,6 @@ class AddAnnotationButton extends StatefulWidget {
   State<AddAnnotationButton> createState() => _AddAnnotationButtonState();
 }
 
-// NOT IMPLEMENTED FULLY // TODO
 class _AddAnnotationButtonState extends State<AddAnnotationButton> {
   bool isHovering = false;
   bool isPortalOpen = false;
@@ -450,8 +467,8 @@ class _AddAnnotationButtonState extends State<AddAnnotationButton> {
           annotationContent: _textEditingController.text,
           startOffset: widget.startOffset!,
           endOffset: widget.endOffset!,
-          annotationAuthor: "TODO", // TODO
-          sourceLocation: "TODO", // TODO
+          annotationAuthor: widget.author,
+          sourceLocation: widget.sourceLocation,
         );
         await provider.addAnnotation(annotation);
       }

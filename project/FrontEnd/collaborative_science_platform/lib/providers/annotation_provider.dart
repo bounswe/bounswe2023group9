@@ -37,7 +37,7 @@ class AnnotationProvider with ChangeNotifier {
 
     try {
       var response = await http.get(Uri.parse(finalUrl));
-      // print(response.body);
+      print(response.body);
       // print(response.statusCode);
       if (response.statusCode == 404) {
         // no annotations found
@@ -74,17 +74,25 @@ class AnnotationProvider with ChangeNotifier {
   }
 
   Future<void> addAnnotation(Annotation annotation) async {
+    print("debugging myself");
+    print(annotation.annotationContent);
+    print(annotation.sourceLocation);
+    print(annotation.annotationAuthor);
+    print(annotation.startOffset);
+    print(annotation.endOffset);
     Uri url = Uri.parse("${Constants.annotationUrl}/annotations/create_annotation/");
     var annotationJson = {
       "@context": "http://www.w3.org/ns/anno.jsonld",
       "type": "Annotation",
-      "body": {
+      "body": jsonEncode({
+        // Convert the body object to a JSON string
         "type": "TextualBody",
         "format": "text/html",
         "language": "en",
         "value": annotation.annotationContent,
-      },
-      "target": {
+      }),
+      "target": jsonEncode({
+        // Convert the target object to a JSON string
         "id": annotation.sourceLocation,
         "type": "text",
         "selector": {
@@ -92,13 +100,14 @@ class AnnotationProvider with ChangeNotifier {
           "start": annotation.startOffset,
           "end": annotation.endOffset,
         }
-      },
-      "creator": {
+      }),
+      "creator": jsonEncode({
+        // Convert the creator object to a JSON string
         "id": annotation.annotationAuthor,
         "type": "Person",
-      }
+      })
     };
-
+    print('Sending JSON: ${jsonEncode(annotationJson)}');
     try {
       var response = await http.post(
         url,
@@ -108,6 +117,8 @@ class AnnotationProvider with ChangeNotifier {
         },
         body: jsonEncode(annotationJson),
       );
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         annotation.annotationID = _annotations.length + 1;
         _annotations.add(annotation);
