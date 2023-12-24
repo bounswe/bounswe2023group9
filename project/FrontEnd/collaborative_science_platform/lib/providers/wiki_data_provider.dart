@@ -75,4 +75,47 @@ class WikiDataProvider with ChangeNotifier {
       throw Exception("Something has gone wrong");
     }
   }
+
+  Future<void> addUserSemanticTag(int userId, int tagId, String label, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/add_user_semantic_tag/");
+    http.MultipartRequest request = http.MultipartRequest('POST', url);
+
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'user_id': "$userId",
+      'sm_tag_id': "$tagId",
+      'label': label,
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      notifyListeners();
+    } else {
+      throw Exception("Something has gone wrong");
+    }
+  }
+
+  Future<void> removeUserSemanticTag(int userId, int tagId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_user_semantic_tag/");
+    http.MultipartRequest request = http.MultipartRequest('PUT', url);
+
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'user_id': "$userId",
+      'sm_tag_id': "$tagId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      notifyListeners();
+    } else {
+      throw Exception("Something has gone wrong");
+    }
+  }
 }

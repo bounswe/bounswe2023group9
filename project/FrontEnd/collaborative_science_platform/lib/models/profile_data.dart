@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 
 class Node {
   int id;
@@ -13,13 +14,14 @@ class Node {
     required this.publishDate,
   });
   factory Node.fromJson(Map<String, dynamic> jsonString) {
-    var list = jsonString['authors'] as List;
-    List<User> contributors = list.map((e) => User.fromJson(e)).toList();
+    var contributorList = jsonString['authors'] as List;
+    List<User> contributors = contributorList.map((e) => User.fromJson(e)).toList();
     return Node(
-        id: jsonString['id'],
-        nodeTitle: jsonString['title'],
-        publishDate: jsonString['date'],
-        contributors: contributors);
+      id: jsonString['id'],
+      nodeTitle: jsonString['title'],
+      publishDate: jsonString['date'],
+      contributors: contributors,
+    );
   }
 }
 
@@ -32,24 +34,29 @@ class ProfileData {
   List<Node> nodes;
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
+  List<WorkspaceSemanticTag> tags;
   ProfileData(
       {this.id = 0,
       this.aboutMe = "",
       this.email = "",
       this.name = "",
       this.surname = "",
+      this.tags = const [],
       this.nodes = const [],
       this.askedQuestions = const [],
-      this.answeredQuestions = const []});
+      this.answeredQuestions = const [],
+  });
 
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
     var nodeList = jsonString['nodes'] as List;
     var askedList = jsonString['asked_questions'] as List;
     var answeredList = jsonString['answered_questions'] as List;
+    var tagList = jsonString['semantic_tags'] as List;
 
     List<Node> nodes = nodeList.map((e) => Node.fromJson(e)).toList();
     List<Question> asked = askedList.map((e) => Question.fromJsonforProfilePage(e)).toList();
     List<Question> answered = answeredList.map((e) => Question.fromJsonforProfilePage(e)).toList();
+    List<WorkspaceSemanticTag> tags = tagList.map((e) => WorkspaceSemanticTag.fromJson(e)).toList();
 
     return ProfileData(
       nodes: nodes,
@@ -58,6 +65,7 @@ class ProfileData {
       aboutMe: jsonString['bio'],
       askedQuestions: asked,
       answeredQuestions: answered,
+      tags: tags,
     );
   }
 
@@ -82,6 +90,7 @@ class ProfileData {
           ],
         ),
       ],
+      tags: [],
     );
   }
 }
