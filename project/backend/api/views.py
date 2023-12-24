@@ -1644,8 +1644,8 @@ def update_content_status(request):
                 user = BasicUser.objects.filter(pk=content_id)
                 if user.count() > 0:
                     user = user.first()
-                    user.user.is_active = hide
-                    user.save()
+                    user.user.is_active = not hide
+                    user.user.save()
                     return Response(BasicUserSerializer(user).data, status=200)
     except Exception as e:
         return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
