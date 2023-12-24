@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     if (_firstTime) {
-      randomNodes();
+      onTypeChange(0);
       _firstTime = false;
     }
     super.didChangeDependencies();
@@ -41,23 +41,25 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void randomNodes() async {
+  Future<void> onTypeChange(int index) async {
+    final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+    String type = "";
+    if (index == 0) {
+      type = "trending";
+    } else if (index == 1) {
+      type = "latest";
+    } else if (index == 2) {
+      type = "most_read";
+    } else if (index == 3) {
+      type = "random";
+    } else if (index == 4) {
+      type = "for_you";
+    }
     try {
-      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
       setState(() {
         isLoading = true;
       });
-      await nodeProvider.search(SearchType.both, "", random: true);
-    } on WrongSearchTypeError {
-      setState(() {
-        error = true;
-        errorMessage = WrongSearchTypeError().message;
-      });
-    } on SearchError {
-      setState(() {
-        error = true;
-        errorMessage = SearchError().message;
-      });
+      await nodeProvider.getNodeByType(type);
     } catch (e) {
       setState(() {
         error = true;
@@ -69,6 +71,35 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
+  // void randomNodes() async {
+  //   try {
+  //     final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     await nodeProvider.search(SearchType.both, "", random: true);
+  //   } on WrongSearchTypeError {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = WrongSearchTypeError().message;
+  //     });
+  //   } on SearchError {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = SearchError().message;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = "Something went wrong!";
+  //     });
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   void search(String text) async {
     if (text.isEmpty) return;
@@ -146,6 +177,7 @@ class _HomePageState extends State<HomePage> {
     return MobileHomePage(
       searchBarFocusNode: searchBarFocusNode,
       onSearch: search,
+      onTypeChange: onTypeChange,
       onSemanticSearch: semanticSearch,
       isLoading: isLoading,
       error: error,

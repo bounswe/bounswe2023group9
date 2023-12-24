@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/node_cards.dart';
+import 'package:collaborative_science_platform/screens/home_page/widgets/select_buttons.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/user_cards.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
@@ -14,6 +15,7 @@ import 'package:provider/provider.dart';
 class MobileHomePage extends StatelessWidget {
   final FocusNode searchBarFocusNode;
   final Function onSearch;
+  final Function onTypeChange;
   final Function onSemanticSearch;
   final bool isLoading;
   final bool error;
@@ -23,6 +25,7 @@ class MobileHomePage extends StatelessWidget {
     super.key,
     required this.searchBarFocusNode,
     required this.onSearch,
+    required this.onTypeChange,
     required this.onSemanticSearch,
     required this.isLoading,
     required this.error,
@@ -52,6 +55,8 @@ class MobileHomePage extends StatelessWidget {
                     desktop:
                         SearchBarExtended(exactSearch: onSearch, semanticSearch: onSemanticSearch)),
               ),
+              const SizedBox(height: 10.0),
+              SelectButtons(onTypeChange),
               Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: isLoading

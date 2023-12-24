@@ -83,7 +83,6 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     }
   }
 
-
   void createNewWorkspacefromNode() async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -177,7 +176,8 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                         textAlign: TextAlign.center,
                       )
                     : Responsive.isDesktop(context)
-                        ? WebNodeDetails(node: node, createNewWorkspacefromNode: createNewWorkspacefromNode)
+                        ? WebNodeDetails(
+                            node: node, createNewWorkspacefromNode: createNewWorkspacefromNode)
                         : NodeDetails(
                             node: node,
                             controller: controller2,
@@ -294,7 +294,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Contributors(
@@ -321,7 +321,6 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                   ),
                 ),
               ],
-
             ),
           )
         : const ErrorPage();

@@ -25,52 +25,55 @@ class _WebGraphPageState extends State<WebGraphPage> {
     return PageWithAppBar(
       appBar: const HomePageAppBar(),
       pageColor: Colors.grey.shade200,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          widget.node.references.isEmpty
-              ? const Center(
-                  child: Text(
-                    "No references",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            widget.node.references.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No references",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : Flexible(
+                    flex: 2,
+                    child: NodeList(
+                        nodes: widget.node.references,
+                        title: "References",
+                        width: MediaQuery.of(context).size.width / 3.2),
+                  ),
+            Flexible(
+              flex: 6,
+              child: GraphPageNodeCard(
+                  node: widget.node,
+                  onTap: () => context.go('${NodeDetailsPage.routeName}/${widget.node.nodeId}')),
+            ),
+            widget.node.citations.isEmpty
+                ? const Center(
+                    child: Text(
+                      "No citations",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : Flexible(
+                    flex: 2,
+                    child: NodeList(
+                      nodes: widget.node.citations,
+                      title: "Citations",
+                      width: MediaQuery.of(context).size.width / 5,
                     ),
                   ),
-                )
-              : Flexible(
-                  flex: 2,
-                  child: NodeList(
-                      nodes: widget.node.references,
-                      title: "References",
-                      width: MediaQuery.of(context).size.width / 3.2),
-                ),
-          Flexible(
-            flex: 6,
-            child: GraphPageNodeCard(
-                node: widget.node,
-                onTap: () => context.go('${NodeDetailsPage.routeName}/${widget.node.nodeId}')),
-          ),
-          widget.node.citations.isEmpty
-              ? const Center(
-                  child: Text(
-                    "No citations",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-              : Flexible(
-                  flex: 2,
-                  child: NodeList(
-                    nodes: widget.node.citations,
-                    title: "Citations",
-                    width: MediaQuery.of(context).size.width / 5,
-                  ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }

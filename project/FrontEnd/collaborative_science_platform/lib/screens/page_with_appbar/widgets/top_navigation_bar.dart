@@ -25,7 +25,7 @@ class TopNavigationBar extends StatelessWidget {
         NavigationBarItem(
           icon: Icons.graphic_eq,
           value: ScreenTab.graph,
-          text: "Graph",
+          text: "Relations",
           isSelected: screenNavigation.selectedTab == ScreenTab.graph,
         ),
         NavigationBarItem(
@@ -34,13 +34,13 @@ class TopNavigationBar extends StatelessWidget {
           isSelected: screenNavigation.selectedTab == ScreenTab.workspaces,
           text: "Workspaces",
         ),
-        if (Responsive.isMobile(context))
-          NavigationBarItem(
-            icon: Icons.notifications,
-            value: ScreenTab.notifications,
-            isSelected: screenNavigation.selectedTab == ScreenTab.notifications,
-            text: "Notifications",
-          ),
+        // if (Responsive.isMobile(context))
+        //   NavigationBarItem(
+        //     icon: Icons.notifications,
+        //     value: ScreenTab.notifications,
+        //     isSelected: screenNavigation.selectedTab == ScreenTab.notifications,
+        //     text: "Notifications",
+        //   ),
         if (Responsive.isMobile(context))
           NavigationBarItem(
             icon: Icons.person,

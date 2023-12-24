@@ -6,6 +6,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   User? user;
@@ -41,6 +42,10 @@ class Auth with ChangeNotifier {
           'Accept': 'application/json',
           'Authorization': "Token $token"
         };
+
+        //Add token to SharedPreferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', token);
 
         final tokenResponse = await http.get(url, headers: tokenHeaders);
         if (tokenResponse.statusCode == 200) {
@@ -113,9 +118,64 @@ class Auth with ChangeNotifier {
     }
   }
 
-  void logout() {
+  Future<bool> checkTokenAndLogin() async {
+    // Step 1: Retrieve the token from SharedPreferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token != null) {
+      // Step 2: Make the HTTP request with the token
+      Uri url = Uri.parse("${Constants.apiUrl}/get_authenticated_user/");
+      final tokenHeaders = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': "Token $token",
+      };
+
+      try {
+        final response = await http.get(url, headers: tokenHeaders);
+        if (response.statusCode == 200) {
+          final userData = json.decode(response.body);
+          user = User(
+              id: userData['id'],
+              email: userData['email'],
+              firstName: userData['first_name'],
+              lastName: userData['last_name'],
+              token: token);
+        } else {
+          // This means that the token is not valid anymore
+          user = null;
+          //Delete it from SharedPreferences
+          prefs.remove('token');
+          return false;
+        }
+        Uri urlBasicUser = Uri.parse("${Constants.apiUrl}/get_authenticated_basic_user/");
+
+        final basicUserResponse = await http.get(urlBasicUser, headers: tokenHeaders);
+
+        if (basicUserResponse.statusCode == 200) {
+          final basicUserData = json.decode(basicUserResponse.body);
+          basicUser = BasicUser.fromJson(basicUserData);
+        } else {
+          throw Exception("Something has happened");
+        }
+        notifyListeners();
+        return true;
+      } catch (e) {
+        print("Error: $e");
+        throw Exception("Something has happened");
+      }
+    } else {
+      return false;
+    }
+  }
+
+  void logout() async {
     user = null;
     basicUser = null;
+    userType = UserType.guest;
+    //Delete token from shared preferences
+    SharedPreferences.getInstance().then((prefs) => prefs.remove('token'));
     notifyListeners();
   }
 }
