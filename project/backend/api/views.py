@@ -619,7 +619,8 @@ def get_workspace_from_id(request):
     semantic_tags = []
     for tag in workspace.semantic_tags.all():
         semantic_tags.append({'wid':tag.wid,
-                              'label':tag.label,})
+                              'label':tag.label,
+                              'id':tag.id})
     contributors = []
     for cont in Contributor.objects.filter(workspaces=workspace):
         user = User.objects.get(id=cont.user_id)
