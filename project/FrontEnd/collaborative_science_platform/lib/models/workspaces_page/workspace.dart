@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 
 enum WorkspaceStatus {finalized, workable, inReview, published, rejected}
+enum RequestStatus { approved, rejected, pending }
 
 class Workspace {
   int workspaceId;

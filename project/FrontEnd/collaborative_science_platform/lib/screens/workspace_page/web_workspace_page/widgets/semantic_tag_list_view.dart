@@ -37,9 +37,10 @@ class _SemanticTagListViewState extends State<SemanticTagListView> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SemanticSearchBar(addSemanticTags: widget.addSemanticTags),
+            
           ),
           SizedBox(
-            height: (widget.height * 2) / 3,
+            height: (widget.height * 3) / 5,
             child: ListView.builder(
               itemCount: widget.tags.length,
               shrinkWrap: true,

@@ -40,7 +40,7 @@ class _EntriesListViewState extends State<EntriesListView> {
   Widget build(BuildContext context) {
     int length = widget.entries.length;
     return Container(
-      // height: widget.height,
+      height: widget.height,
       width: widget.showSidebar
           ? MediaQuery.of(context).size.width / 2
           : MediaQuery.of(context).size.width * 0.7,

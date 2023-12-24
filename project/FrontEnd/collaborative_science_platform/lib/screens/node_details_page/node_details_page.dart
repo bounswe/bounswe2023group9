@@ -1,4 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
+import 'package:collaborative_science_platform/exceptions/workspace_exceptions.dart';
+import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/models/user.dart';
@@ -80,6 +82,32 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     }
   }
 
+  void createNewWorkspacefromNode() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.createWorkspacefromNode(widget.nodeID, auth.user!.token);
+    } on CreateWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = CreateWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void getAuthUser() async {
     final User? user = Provider.of<Auth>(context).user;
     if (user != null) {
@@ -109,12 +137,10 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
       await adminProvider.hideNode(admin, node, !node.isHidden);
       error = false;
       message = "Node status updated.";
-      print(message);
     } catch (e) {
       setState(() {
         error = true;
         message = "Something went wrong!";
-        print(message);
       });
     }
   }
@@ -149,13 +175,13 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                         ? WebNodeDetails(
                             node: node,
                             handleButton: handleButton,
-                          )
+                            createNewWorkspacefromNode: createNewWorkspacefromNode)
                         : NodeDetails(
                             node: node,
                             controller: controller2,
                             userType: basicUser.userType,
                             onTap: handleButton,
-                          ),
+                            createNewWorkspacefromNode: createNewWorkspacefromNode),
           )
         : const ErrorPage();
   }
@@ -163,9 +189,14 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
 class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
+  final Function createNewWorkspacefromNode;
   final Function() handleButton;
 
-  const WebNodeDetails({super.key, required this.node, required this.handleButton});
+  const WebNodeDetails(
+      {super.key,
+      required this.node,
+      required this.handleButton,
+      required this.createNewWorkspacefromNode});
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -257,16 +288,13 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
     try {
       final User? user = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      print(widget.node.isHidden.toString());
       await adminProvider.hideNode(user, widget.node, widget.node.isHidden);
       error = false;
       message = "Node status updated.";
-      print(message);
     } catch (e) {
       setState(() {
         error = true;
         message = "Something went wrong!";
-        print(message);
       });
     }
   }
@@ -277,7 +305,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Contributors(
@@ -291,6 +319,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                     controller: controller2,
                     userType: basicUser.userType,
                     onTap: widget.handleButton,
+                    createNewWorkspacefromNode: widget.createNewWorkspacefromNode,
                   ),
                 ),
                 const SizedBox(width: 12),

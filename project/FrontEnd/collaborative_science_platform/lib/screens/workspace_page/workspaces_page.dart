@@ -153,7 +153,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
         isLoading = true;
       });
-      await workspaceProvider.editEntry(content, entryId, auth.user!.token);
+      await workspaceProvider.editEntry(content, entryId, widget.workspaceId, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -305,6 +305,41 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         isLoading = true;
       });
       await workspaceProvider.finalizeWorkspace(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on FinalizeWorkspaceException {
+      setState(() {
+        error = true;
+        errorMessage = FinalizeWorkspaceException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void sendWorkspaceToReview() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.sendWorkspaceToReview(
+          widget.workspaceId, auth.basicUser!.basicUserId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
     } on FinalizeWorkspaceException {
       setState(() {
         error = true;
@@ -354,7 +389,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void updateCollaborationRequest(int id, String status) async {
+  void updateCollaborationRequest(int id, RequestStatus status) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
@@ -412,6 +447,30 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+
+void addReview(int id, RequestStatus status, String comment) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await workspaceProvider.addReview(id, status, comment, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -442,7 +501,8 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
-
+        sendWorkspaceToReview: sendWorkspaceToReview,
+        addReview: addReview,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -459,6 +519,8 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
+        sendWorkspaceToReview: sendWorkspaceToReview,
+        addReview: addReview,
       ),
     );
   }

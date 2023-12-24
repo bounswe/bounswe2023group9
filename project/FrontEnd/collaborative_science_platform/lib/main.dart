@@ -15,9 +15,9 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   configureApp();
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider.value(value: Auth(), child: const MyApp()));
 }
 
 void configureApp() {
@@ -28,11 +28,16 @@ void configureApp() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  Future<void> checkTokenAndLogin(BuildContext context) async {
+    final auth = Provider.of<Auth>(context, listen: false);
+    await auth.checkTokenAndLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<Auth>(create: (context) => Auth()),
         ChangeNotifierProvider<ScreenNavigation>(create: (context) => ScreenNavigation()),
         ChangeNotifierProvider<ProfileDataProvider>(create: (context) => ProfileDataProvider()),
         ChangeNotifierProvider<NodeProvider>(create: (context) => NodeProvider()),
@@ -43,16 +48,28 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
         ChangeNotifierProvider<AdminProvider>(create: (context) => AdminProvider()),
       ],
-      child: Portal(
-        child: MaterialApp.router(
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          title: Constants.appName,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 85, 234, 145)),
-            useMaterial3: true,
-          ),
-        ),
+      child: FutureBuilder(
+        future: checkTokenAndLogin(context),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Portal(
+              child: MaterialApp.router(
+                routerConfig: router,
+                debugShowCheckedModeBanner: false,
+                title: Constants.appName,
+                theme: ThemeData(
+                  colorScheme:
+                      ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 85, 234, 145)),
+                  useMaterial3: true,
+                ),
+              ),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }

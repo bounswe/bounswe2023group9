@@ -4,6 +4,7 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
+import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_menu.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_tab_bar.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/proof_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
@@ -24,12 +25,15 @@ import 'package:provider/provider.dart';
 class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
+  final Function createNewWorkspacefromNode;
   final String userType;
   final Function() onTap;
+
   const NodeDetails({
     super.key,
     required this.node,
     required this.controller,
+    required this.createNewWorkspacefromNode,
     required this.userType,
     required this.onTap,
   });
@@ -83,7 +87,7 @@ class _NodeDetailsState extends State<NodeDetails> {
         color: Colors.grey[200],
       ),
       width: Responsive.isDesktop(context)
-          ? Responsive.desktopPageWidth * 0.8
+          ? Responsive.desktopNodePageWidth * 0.8
           : Responsive.getGenericPageWidth(context),
       height: MediaQuery.of(context).size.height - 60,
       child: SingleChildScrollView(
@@ -98,11 +102,18 @@ class _NodeDetailsState extends State<NodeDetails> {
                 child: Column(
                   //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        NodeDetailsMenu(
+                            createNewWorkspacefromNode: widget.createNewWorkspacefromNode)
+                      ],
+                    ),
                     Padding(
                         padding: Responsive.isDesktop(context)
                             ? const EdgeInsets.all(70.0)
                             : const EdgeInsets.all(10.0),
-                        child: AnnotationText(utf8.decode(widget.node.nodeTitle.codeUnits),
+                        child: SelectableText(utf8.decode(widget.node.nodeTitle.codeUnits),
                             textAlign: TextAlign.center, style: TextStyles.title2)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,9 +162,9 @@ class _NodeDetailsState extends State<NodeDetails> {
                             ),
                             const SizedBox(width: 10),
                             SizedBox(
-                              width: 110,
+                              width: 135,
                               child: AppButton(
-                                  text: "Graph",
+                                  text: "Relations",
                                   height: 40,
                                   icon: const Icon(
                                     CupertinoIcons.square_grid_3x2,
