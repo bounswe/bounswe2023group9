@@ -42,7 +42,8 @@ class QuestionAnswerProvider with ChangeNotifier {
             answerer: null,
             answeredAt: null,
             nodeId: nodeId,
-            isAnswered: false));
+            isAnswered: false,
+            isHidden: false));
         notifyListeners();
       } else if (response.statusCode == 401) {
         throw PostQuestionError();

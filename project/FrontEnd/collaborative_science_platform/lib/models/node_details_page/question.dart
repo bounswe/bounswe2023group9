@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collaborative_science_platform/models/user.dart';
 
 class Question {
@@ -10,6 +12,7 @@ class Question {
   String? answeredAt;
   int? nodeId;
   bool isAnswered;
+  bool isHidden;
   Question(
       {required this.id,
       required this.content,
@@ -19,7 +22,8 @@ class Question {
       required this.answerer,
       required this.answeredAt,
       required this.nodeId,
-      required this.isAnswered});
+      required this.isAnswered,
+      required this.isHidden});
   factory Question.fromJson(Map<String, dynamic> jsonString) {
     return Question(
       id: jsonString['id'] ?? -1,
@@ -33,6 +37,7 @@ class Question {
       asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
       nodeId: jsonString['node_id'] ?? -1,
       isAnswered: jsonString['answer_content'] != null,
+      isHidden: jsonString['removed_by_admin'],
     );
   }
 
@@ -59,6 +64,7 @@ class Question {
       answeredAt: jsonString.containsKey("answer_date") ? jsonString["answer_date"] as String : "",
       nodeId: jsonString['node_id'] ?? -1,
       isAnswered: jsonString['is_answered'] == 1,
+      isHidden: jsonString['removed_by_admin'],
     );
   }
 }

@@ -23,9 +23,9 @@ class QuestionActivity extends StatelessWidget {
         return ElevatedButton(
           child: QuestionBox(
             isAdmin: isAdmin,
-            isHidden: isHidden,
             question: questions[index],
             canAnswer: false,
+            onTap: () {},
           ),
           onPressed: () {
             context.push("${NodeDetailsPage.routeName}/${questions[index].nodeId}");

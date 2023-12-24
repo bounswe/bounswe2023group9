@@ -279,8 +279,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                   nodeId: widget.node.nodeId,
                   canAnswer: canAnswerQuestions,
                   canAsk: canAskQuestions,
-                  isAdmin: true,
-                  isHidden: false,
+                  isAdmin: (widget.userType == "admin"),
                 ),
               ),
             if (currentIndex == 5)

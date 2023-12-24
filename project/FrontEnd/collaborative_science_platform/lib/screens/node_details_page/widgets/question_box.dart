@@ -1,32 +1,57 @@
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/answer_box.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
+import 'package:collaborative_science_platform/providers/admin_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class QuestionBox extends StatefulWidget {
   final Question question;
   final bool canAnswer;
   final bool isAdmin;
-  final bool isHidden;
+  final Function() onTap;
 
-  const QuestionBox(
-      {super.key,
-      required this.question,
-      required this.canAnswer,
-      required this.isAdmin,
-      required this.isHidden});
+  const QuestionBox({
+    super.key,
+    required this.question,
+    required this.canAnswer,
+    required this.isAdmin,
+    required this.onTap,
+  });
 
   @override
   State<QuestionBox> createState() => _QuestionBoxState();
 }
 
 class _QuestionBoxState extends State<QuestionBox> {
+  bool isHidden = false;
   bool isReplyVisible = false;
   TextEditingController answerController = TextEditingController();
 
+  void changeQuestionStatus() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      int response =
+          await adminProvider.hideQuestion(admin, widget.question, !widget.question.isHidden);
+    } catch (e) {
+      print("Error");
+      setState(() {});
+    }
+  }
+
+  void handleButton() {
+    setState(() {
+      isHidden = !isHidden;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isHidden = widget.question.isHidden;
     return Card(
       margin: const EdgeInsets.all(16.0),
       child: Padding(
@@ -82,8 +107,8 @@ class _QuestionBoxState extends State<QuestionBox> {
               ],
             ),
             Visibility(
-              visible: widget.isAdmin ? true : false,
-              child: widget.isHidden
+              visible: widget.isAdmin, //visible only to admin
+              child: isHidden //button view will change according to this
                   ? SizedBox(
                       width: 110,
                       child: AppButton(
@@ -95,21 +120,30 @@ class _QuestionBoxState extends State<QuestionBox> {
                           color: Colors.white,
                         ),
                         type: "grey",
-                        onTap: () {},
+                        onTap: () {
+                          changeQuestionStatus();
+                          handleButton();
+                          widget.onTap(); // Call the onTap callback here
+                        },
                       ),
                     )
                   : SizedBox(
                       width: 110,
                       child: AppButton(
-                          text: "Hide",
-                          height: 40,
-                          icon: const Icon(
-                            CupertinoIcons.eye_slash,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          type: "danger",
-                          onTap: () {}),
+                        text: "Hide",
+                        height: 40,
+                        icon: const Icon(
+                          CupertinoIcons.eye_slash,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        type: "danger",
+                        onTap: () {
+                          changeQuestionStatus();
+                          handleButton();
+                          widget.onTap(); // Call the onTap callback here
+                        },
+                      ),
                     ),
             ),
           ],
