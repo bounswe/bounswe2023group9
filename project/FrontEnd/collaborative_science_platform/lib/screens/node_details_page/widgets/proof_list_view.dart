@@ -19,66 +19,15 @@ class ProofListView extends StatefulWidget {
 }
 
 class _ProofListViewState extends State<ProofListView> {
+  bool showAnnotations = false;
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: Responsive.desktopPageWidth,
+      width: Responsive.desktopPageWidth - 50,
       decoration: BoxDecoration(color: Colors.grey[200]),
       child: SingleChildScrollView(
         child: Column(
-          children: widget.proof.map((proof) => ProofItemWidget(proof: proof)).toList(),
-        ),
-      ),
-    );
-  }
-}
-
-class ProofItemWidget extends StatefulWidget {
-  final Proof proof;
-
-  ProofItemWidget({Key? key, required this.proof}) : super(key: key);
-
-  @override
-  _ProofItemWidgetState createState() => _ProofItemWidgetState();
-}
-
-class _ProofItemWidgetState extends State<ProofItemWidget> {
-  bool showAnnotations = true;
-  bool isLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Delay the rendering of TeXView
-    Future.delayed(Duration(milliseconds: 500), () {
-      if (mounted) {
-        setState(() {
-          isLoaded = true;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: CardContainer(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   proof[index].isDisproof ? "Disproof" : "Proof",
-            //   style: TextStyles.bodyGrey,
-            //   textAlign: TextAlign.start,
-            // ),
-            // Text(
-            //   proof[index].proofTitle,
-            //   style: TextStyles.title4,
-            //   textAlign: TextAlign.start,
-            // ),
-            // Conditional rendering based on isLoaded
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -95,46 +44,85 @@ class _ProofItemWidgetState extends State<ProofItemWidget> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
             showAnnotations
-                ? AnnotationText(
-                    utf8.decode(widget.proof.proofContent.codeUnits),
-                    annotationType: AnnotationType.proof,
-                  )
-                : isLoaded
-                    ? TeXView(
-                        renderingEngine: const TeXViewRenderingEngine.katex(),
-                        child: TeXViewDocument(utf8.decode(widget.proof.proofContent.codeUnits)))
-                    : SizedBox.shrink(),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   crossAxisAlignment: CrossAxisAlignment.end,
-            //   children: [
-            //     Icon(
-            //       proof[index].isValid ? Icons.check : Icons.clear,
-            //       color: proof[index].isValid ? AppColors.successColor : AppColors.dangerColor,
-            //     ),
-            //     Text(
-            //       proof[index].isValid ? "valid" : "invalid",
-            //       style: TextStyles.bodyGrey,
-            //       textAlign: TextAlign.end,
-            //     ),
-            //   ],
-            // ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  widget.proof.publishDate.toString(),
-                  style: TextStyles.bodyGrey,
-                  textAlign: TextAlign.end,
-                )
-              ],
-            ),
+                ? ProofItemWidget(proof: widget.proof)
+                : ProofTexView(proof: widget.proof),
           ],
         ),
       ),
+    );
+  }
+}
+
+class ProofTexView extends StatelessWidget {
+  final List<Proof> proof;
+  const ProofTexView({
+    super.key,
+    required this.proof,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TeXView(
+      renderingEngine: const TeXViewRenderingEngine.katex(),
+      child: TeXViewColumn(
+        children: [
+          for (int i = 0; i < proof.length; i++)
+            TeXViewContainer(
+              child: TeXViewDocument(
+                proof[i].proofContent,
+              ),
+              style: const TeXViewStyle(
+                margin: TeXViewMargin.all(10),
+                elevation: 5,
+                padding: TeXViewPadding.all(16),
+                borderRadius: TeXViewBorderRadius.all(5),
+                backgroundColor: Colors.white,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProofItemWidget extends StatelessWidget {
+  final List<Proof> proof;
+
+  const ProofItemWidget({Key? key, required this.proof}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (int i = 0; i < proof.length; i++)
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: CardContainer(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnnotationText(
+                    utf8.decode(proof[i].proofContent.codeUnits),
+                    annotationType: AnnotationType.proof,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        proof[i].publishDate.toString(),
+                        style: TextStyles.bodyGrey,
+                        textAlign: TextAlign.end,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
