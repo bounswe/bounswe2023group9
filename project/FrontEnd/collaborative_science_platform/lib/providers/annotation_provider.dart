@@ -37,7 +37,10 @@ class AnnotationProvider with ChangeNotifier {
 
     try {
       var response = await http.get(Uri.parse(finalUrl));
-      if (jsonDecode(response.body)['message'] == "No annotation found!") {
+      // print(response.body);
+      // print(response.statusCode);
+      if (response.statusCode == 404) {
+        // no annotations found
         _annotations.clear();
         notifyListeners();
         return;
@@ -49,8 +52,9 @@ class AnnotationProvider with ChangeNotifier {
 
         // Parse each JSON object into an Annotation and add to _annotations
         for (var annotationJson in annotationsJson) {
+          Uri idUri = Uri.parse(annotationJson['id']);
           _annotations.add(Annotation(
-            annotationID: int.tryParse(annotationJson['id'].pathSegments.last) ??
+            annotationID: int.tryParse(idUri.pathSegments.last) ??
                 -1, // Adjust according to your JSON structure
             startOffset: annotationJson['target']['selector']['start'],
             endOffset: annotationJson['target']['selector']['end'],
@@ -58,6 +62,7 @@ class AnnotationProvider with ChangeNotifier {
             annotationAuthor: annotationJson['creator']['id'],
             sourceLocation: annotationJson['target']['id'],
           ));
+          print(annotationJson['body']['value']);
         }
         notifyListeners();
       } else {
