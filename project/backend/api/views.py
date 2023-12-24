@@ -1423,11 +1423,8 @@ def update_review_request_status(request):
     if not req:
         return Response({"message": "Request not found."}, status=404)
     req = req.first()
-
-
     if request.user.basicuser.id != req.receiver.id:
         return Response({"message": "Unauthorized reviewer"}, status=400)
-
     if req.status == "R":
         return Response({"message": "The request has already been rejected."}, status=400)
 
@@ -1447,6 +1444,17 @@ def update_review_request_status(request):
                     workspace.is_published = True
                     workspace.is_in_review = False
                     workspace.is_rejected = False
+
+                    emails = ""
+                    check = 0
+                    for x in workspace.contributor_set.all():
+                        if x.email_notification_preference:
+                            emails += str(x.user) + ","
+                            check = 1
+                    if check:
+                        subject = "Workspace approved"
+                        content = "Review of your workspace and it is approved with the comment: " + str(req.comment)
+                        send_notification(emails,subject,content)
 
                     if workspace.node == None:
                         node = Node.objects.create(
@@ -1513,7 +1521,16 @@ def update_review_request_status(request):
                                 node.semantic_tags.add(tag)
                     for review_request in workspace.reviewrequest_set.all():
                         node.reviewers.add(Reviewer.objects.get(id=review_request.receiver.id))
-
+                    emails = ""
+                    check = 0
+                    for x in workspace.contributor_set.all():
+                        if x.email_notification_preference:
+                            emails += str(x.user) + ","
+                            check = 1
+                    if check:
+                        subject = "Workspace approved"
+                        content = "Review of your workspace is completed and it is approved with the comment: " + str(req.comment)
+                        send_notification(emails, subject, content)
                     serializer = NodeSerializer(data=node)
                     if serializer.is_valid():
                         serializer.save()
@@ -1525,11 +1542,24 @@ def update_review_request_status(request):
             workspace.is_rejected = True
             workspace.is_in_review = False
             workspace.is_published = False
+
+            emails = ""
+            check = 0
+            for x in workspace.contributor_set.all():
+                if x.email_notification_preference:
+                    emails += str(x.user) + ","
+                    check = 1
+            if check:
+                subject = "Workspace rejected"
+                content = "Review of your workspace is completed and it is rejected with the comment: " + str(req.comment)
+                send_notification(emails, subject, content)
+
             for req in ReviewRequest.objects.filter(workspace=workspace):
                 if req.status == 'A' and req.response == 'P':
                     workspace.is_in_review = True
                 if req.status == 'P':
                     workspace.is_in_review = True
+
         comment = request.data.get('comment')
         req.comment = comment
         req.response = response
