@@ -11,7 +11,6 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -30,7 +29,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTag;
-  final Function deleteSemanticTag;
+  final Function removeSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
@@ -48,7 +47,7 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.deleteReference,
     required this.editTitle,
     required this.addSemanticTag,
-    required this.deleteSemanticTag,
+    required this.removeSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.sendWorkspaceToReview,
@@ -339,16 +338,15 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                         : (widget.workspaces != null && widget.workspace != null)
                             ? MobileWorkspaceContent(
                                 workspace: widget.workspace!,
-                                pending: (workspaceIndex < widget.workspaces!.workspaces.length)
-                                    ? false
-                                    : true,
+                                pending: (workspaceIndex >= widget.workspaces!.workspaces.length),
                                 createNewEntry: widget.createNewEntry,
                                 editEntry: widget.editEntry,
                                 deleteEntry: widget.deleteEntry,
                                 addReference: widget.addReference,
                                 deleteReference: widget.deleteReference,
                                 editTitle: widget.editTitle,
-                                addSemanticTags: widget.addSemanticTags,
+                                addSemanticTag: widget.addSemanticTag,
+                                removeSemanticTag: widget.removeSemanticTag,
                                 finalizeWorkspace: widget.finalizeWorkspace,
                                 sendCollaborationRequest: widget.sendCollaborationRequest,
                                 updateRequest: widget.updateCollaborationRequest,

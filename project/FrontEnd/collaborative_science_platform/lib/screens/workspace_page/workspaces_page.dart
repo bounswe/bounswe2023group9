@@ -31,6 +31,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
 
   void getWorkspaceById(int id) async {
     try {
+      print("Workspace Id: $id");
       final workspaceProvider = Provider.of<WorkspaceProvider>(context);
       final auth = Provider.of<Auth>(context);
       setState(() {
@@ -458,7 +459,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = false;
       });
-      await wikiDataProvider.addSemanticTag(wikiId, label, auth.user!.token);
+      await wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -480,7 +481,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void deleteSemanticTag(String wikiId, String label) async {
+  void removeSemanticTag(int tagId) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
@@ -488,7 +489,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = false;
       });
-      await wikiDataProvider.deleteSemanticTag(wikiId, label, auth.user!.token);
+      await wikiDataProvider.removeSemanticTag(widget.workspaceId, tagId, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -509,37 +510,6 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
-
-  /*
-  void addSemanticTags(List<int> semanticTags) async {
-    try {
-      final auth = Provider.of<Auth>(context, listen: false);
-      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
-      setState(() {
-        error = false;
-      });
-      await workspaceProvider.addSemanticTags(widget.workspaceId, auth.user!.token, semanticTags);
-      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
-      setState(() {
-        workspace = (workspaceProvider.workspace ?? {} as Workspace);
-      });
-    } on WorkspacePermissionException {
-      setState(() {
-        error = true;
-        errorMessage = WorkspacePermissionException().message;
-      });
-    } catch (e) {
-      setState(() {
-        error = true;
-        errorMessage = "Something went wrong!";
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-   */
 
   void addReview(int id, RequestStatus status, String comment) async {
     try {
@@ -594,8 +564,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
         addSemanticTag: addSemanticTag,
-        deleteSemanticTag: deleteSemanticTag,
-        updateRequest: updateCollaborationRequest,
+        removeSemanticTag: removeSemanticTag,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
@@ -615,8 +584,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
         addSemanticTag: addSemanticTag,
-        deleteSemanticTag: deleteSemanticTag,
-        updateRequest: updateCollaborationRequest,
+        removeSemanticTag: removeSemanticTag,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,

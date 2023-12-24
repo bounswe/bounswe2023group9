@@ -1,4 +1,3 @@
-import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
@@ -29,7 +28,7 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTag;
-  final Function deleteSemanticTag;
+  final Function removeSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
 
@@ -44,7 +43,7 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.deleteReference,
     required this.editTitle,
     required this.addSemanticTag,
-    required this.deleteSemanticTag,
+    required this.removeSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
@@ -69,12 +68,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   bool newEntryOpen = false;
   final FocusNode reviewFocusNode = FocusNode();
   final TextEditingController reviewController = TextEditingController();
-
-  List<WorkspaceSemanticTag> tags = <WorkspaceSemanticTag>[
-    WorkspaceSemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1"),
-    WorkspaceSemanticTag(id: "2", label: "Label 2"),
-    WorkspaceSemanticTag(id: "2", label: "Label 3"),
-  ];
 
   @override
   void dispose() {
@@ -128,15 +121,15 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
       child: ListView.builder(
         padding: const EdgeInsets.all(0.0),
         shrinkWrap: true,
-        itemCount: tags.length,
+        itemCount: widget.workspace.tags.length,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return SemanticTagCard(
             finalized: widget.workspace.status != WorkspaceStatus.workable,
-            tag: tags[index],
+            tag: widget.workspace.tags[index],
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
             onDelete: () async {
-              await widget.deleteSemanticTag(tags[index].id, tags[index].label);
+              await widget.removeSemanticTag(widget.workspace.tags[index].tagId);
             },
           );
         },
@@ -489,7 +482,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ),
             Center(
               child: Text(
-                (tags.isNotEmpty) ? "Added Tags" : "You haven't added any tag yet!",
+                (widget.workspace.tags.isNotEmpty) ? "Added Tags" : "You haven't added any tag yet!",
                 style: TextStyles.bodySecondary,
               ),
             ),

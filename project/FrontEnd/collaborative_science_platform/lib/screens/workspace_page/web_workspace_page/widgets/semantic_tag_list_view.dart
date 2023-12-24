@@ -7,7 +7,7 @@ import 'package:collaborative_science_platform/utils/text_styles.dart';
 class SemanticTagListView extends StatefulWidget {
   final List<WorkspaceSemanticTag> tags;
   final Function addSemanticTag;
-  final Function deleteSemanticTag;
+  final Function removeSemanticTag;
   final double height;
   final bool finalized;
 
@@ -15,7 +15,7 @@ class SemanticTagListView extends StatefulWidget {
     super.key,
     required this.tags,
     required this.addSemanticTag,
-    required this.deleteSemanticTag,
+    required this.removeSemanticTag,
     required this.height,
     required this.finalized,
   });
@@ -69,7 +69,8 @@ class _SemanticTagListViewState extends State<SemanticTagListView> {
                         if (!widget.finalized)
                         IconButton(
                           onPressed: () async {
-                            await widget.deleteSemanticTag(widget.tags[index].id, widget.tags[index].label);
+                            await widget.removeSemanticTag(widget.tags[index].tagId);
+                            setState(() { });
                           },
                           icon: const Icon(
                             Icons.delete,

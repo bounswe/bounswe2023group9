@@ -10,9 +10,6 @@ class WikiDataProvider with ChangeNotifier {
 
   Future<void> wikiDataSearch(String query, int maxLength) async {
     Uri url = Uri.parse("https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&format=json&search=$query");
-    Map header = {
-
-    };
     final http.Response response = await http.get(url);
     try {
       if (response.statusCode == 200) {
@@ -22,7 +19,7 @@ class WikiDataProvider with ChangeNotifier {
         tags.clear();
         tags = List.generate(
           length, (index) => SemanticTag(
-            id: data[index]["id"],
+            wid: data[index]["id"],
             label: data[index]["display"]["label"]["value"],
             description: data[index]["display"]["description"]["value"],
           ),
@@ -36,7 +33,7 @@ class WikiDataProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addSemanticTag(String wikiId, String label, String token) async {
+  Future<void> addSemanticTag(String wid, String label, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/add_semantic_tag/");
     http.MultipartRequest request = http.MultipartRequest('POST', url);
 
@@ -45,8 +42,9 @@ class WikiDataProvider with ChangeNotifier {
       "content-type": "application/json",
     });
     request.fields.addAll({
-      'wiki_id': wikiId,
+      'wid': wid,
       'label': label,
+      'workspace_id': "$workspaceId",
     });
 
     http.StreamedResponse response = await request.send();
@@ -57,17 +55,17 @@ class WikiDataProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteSemanticTag(String wikiId, String label, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/delete_semantic_tag/");
-    http.MultipartRequest request = http.MultipartRequest('POST', url);
+  Future<void> removeSemanticTag(int workspaceId, int tagId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_semantic_tag/");
+    http.MultipartRequest request = http.MultipartRequest('PUT', url);
 
     request.headers.addAll({
       "Authorization": "Token $token",
       "content-type": "application/json",
     });
     request.fields.addAll({
-      'wiki_id': wikiId,
-      'label': label,
+      'workspace_id': "$workspaceId",
+      'tag_id': "$tagId",
     });
 
     http.StreamedResponse response = await request.send();
