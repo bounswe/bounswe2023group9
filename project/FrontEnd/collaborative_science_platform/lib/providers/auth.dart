@@ -173,7 +173,6 @@ class Auth with ChangeNotifier {
   void logout() async {
     user = null;
     basicUser = null;
-    userType = UserType.guest;
     //Delete token from shared preferences
     SharedPreferences.getInstance().then((prefs) => prefs.remove('token'));
     notifyListeners();
