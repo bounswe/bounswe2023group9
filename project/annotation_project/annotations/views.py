@@ -66,9 +66,24 @@ def matched_annotations_get_view(request):
         return response
 
 @csrf_exempt
-@require_http_methods(['GET', 'HEAD'])
+@require_http_methods(['GET', 'HEAD', 'DELETE'])
 @vary_on_headers('Accept')
 def get_annotation_by_id(request, annotation_id):
+    print(request.method)
+    if request.method == 'DELETE':
+        try:
+            annotation = Annotation.objects.filter(id=annotation_id)
+            if len(annotation) == 0:
+                response = JsonResponse({'message': 'No annotation found!'}, status=404)
+            else:
+                annotation = annotation.first()
+                annotation.delete()
+                response = JsonResponse({'message' : 'Annotation deleted successfully'}, status=204)
+        except Exception as e:
+            response = JsonResponse({'message': str(e)}, status=500)
+        finally:
+            return response
+
     try:
         annotation = Annotation.objects.get(id=annotation_id)
         response = JsonResponse({'message': 'No annotation found!'}, status=404)
@@ -82,7 +97,7 @@ def get_annotation_by_id(request, annotation_id):
     finally:
         response.headers['Content-Type'] = 'application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"'
         response.headers['Link'] = '<http://www.w3.org/ns/ldp#Resource>; rel="type"'
-        response['Allow'] = 'GET,OPTIONS,HEAD'
+        response['Allow'] = 'GET,OPTIONS,HEAD,DELETE'
         response['Vary'] = 'Accept'
         return response
     
