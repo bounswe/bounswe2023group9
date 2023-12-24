@@ -387,9 +387,12 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             description: "Description 3"),
                                       ],
                                       addSemanticTags: widget.addSemanticTags,
-                                      height: minHeight / 3,
+                                      height: (widget.workspace!.requestId == -1)
+                                          ? minHeight / 3
+                                          : minHeight / 2,
                                       deleteSemanticTag: () {},
                                     ),
+                                    if (widget.workspace!.requestId == -1)
                                     ContributorsListView(
                                       finalized:
                                           widget.workspace!.status != WorkspaceStatus.workable,
@@ -403,8 +406,10 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                     ReferencesListView(
                                       references: widget.workspace!.references,
                                       controller: controller4,
-                                      height: minHeight / 3,
-                                      addReference: widget.addReference,
+                                      height: (widget.workspace!.requestId == -1)
+                                          ? minHeight / 3
+                                          : minHeight / 2,
+                                      addReference: widget.addReference, 
                                       deleteReference: widget.deleteReference,
                                       finalized:
                                           widget.workspace!.status != WorkspaceStatus.workable,
