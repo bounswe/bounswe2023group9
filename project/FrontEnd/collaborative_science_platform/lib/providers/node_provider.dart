@@ -52,7 +52,6 @@ class NodeProvider with ChangeNotifier {
     };
     try {
       final response = await http.get(url, headers: headers);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
@@ -119,6 +118,7 @@ class NodeProvider with ChangeNotifier {
   }
 
   Future<void> getRelatedNodes(int nodeId) async {
+    _youMayLikeNodeResult.clear();
     Uri url = Uri.parse("${Constants.apiUrl}/get_related_nodes/?node_id=$nodeId");
     final Map<String, String> headers = {
       "Accept": "application/json",
@@ -181,7 +181,6 @@ class NodeProvider with ChangeNotifier {
     };
     try {
       final response = await http.get(url, headers: headers);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _searchNodeResult.clear();

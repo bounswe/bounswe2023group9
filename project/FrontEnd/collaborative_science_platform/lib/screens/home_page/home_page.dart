@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
+import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
@@ -57,6 +58,7 @@ class _HomePageState extends State<HomePage> {
     }
     try {
       setState(() {
+        error = false;
         isLoading = true;
       });
       await nodeProvider.getNodeByType(type);
@@ -102,6 +104,7 @@ class _HomePageState extends State<HomePage> {
   // }
 
   void search(String text) async {
+    SelectButtonsHelper.selectedIndex = -1;
     if (text.isEmpty) return;
     if (text.length < 4) return;
     SearchType searchType = SearchHelper.searchType;
