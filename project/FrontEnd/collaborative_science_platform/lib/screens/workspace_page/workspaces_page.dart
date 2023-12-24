@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/workspace_exceptions.d
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/web_workspace_page.dart';
 import 'package:flutter/material.dart';
@@ -374,13 +375,11 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = true;
         errorMessage = SendCollaborationRequestException().message;
-        print(errorMessage);
       });
     } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
-        print(errorMessage);
       });
     } finally {
       setState(() {
@@ -451,6 +450,67 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+  void addSemanticTag(String wikiId, String label) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await wikiDataProvider.addSemanticTag(wikiId, label, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on WorkspacePermissionException {
+      setState(() {
+        error = true;
+        errorMessage = WorkspacePermissionException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void deleteSemanticTag(String wikiId, String label) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await wikiDataProvider.deleteSemanticTag(wikiId, label, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on WorkspacePermissionException {
+      setState(() {
+        error = true;
+        errorMessage = WorkspacePermissionException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  /*
   void addSemanticTags(List<int> semanticTags) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
@@ -479,6 +539,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
+   */
 
   void addReview(int id, RequestStatus status, String comment) async {
     try {
@@ -532,7 +593,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReference: addReference,
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
-        addSemanticTags: addSemanticTags,
+        addSemanticTag: addSemanticTag,
+        deleteSemanticTag: deleteSemanticTag,
+        updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
@@ -551,7 +614,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReference: addReference,
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
-        addSemanticTags: addSemanticTags,
+        addSemanticTag: addSemanticTag,
+        deleteSemanticTag: deleteSemanticTag,
+        updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,

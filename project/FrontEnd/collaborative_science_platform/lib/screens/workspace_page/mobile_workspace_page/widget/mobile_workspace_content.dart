@@ -1,4 +1,4 @@
-import 'package:collaborative_science_platform/models/semantic_tag.dart';
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
@@ -28,7 +28,8 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function updateRequest;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
-  final Function addSemanticTags;
+  final Function addSemanticTag;
+  final Function deleteSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
 
@@ -42,7 +43,8 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
+    required this.deleteSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.updateRequest,
@@ -61,12 +63,18 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   bool entryLoading = false;
 
   bool titleReadOnly = true;
-  TextEditingController titleController = TextEditingController();
-  FocusNode titleFocusNode = FocusNode();
+  final TextEditingController titleController = TextEditingController();
+  final FocusNode titleFocusNode = FocusNode();
 
   bool newEntryOpen = false;
-  FocusNode reviewFocusNode = FocusNode();
-  TextEditingController reviewController = TextEditingController();
+  final FocusNode reviewFocusNode = FocusNode();
+  final TextEditingController reviewController = TextEditingController();
+
+  List<WorkspaceSemanticTag> tags = <WorkspaceSemanticTag>[
+    WorkspaceSemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1"),
+    WorkspaceSemanticTag(id: "2", label: "Label 2"),
+    WorkspaceSemanticTag(id: "2", label: "Label 3"),
+  ];
 
   @override
   void dispose() {
@@ -115,16 +123,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
   }
 
   Widget semanticTagList() {
-    List<SemanticTag> tags = <SemanticTag>[
-      SemanticTag(
-          id: "1",
-          label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1",
-          description:
-              "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
-      SemanticTag(id: "2", label: "Label 2", description: "Description 2"),
-      SemanticTag(id: "2", label: "Label 3", description: "Description 3"),
-    ];
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: ListView.builder(
@@ -137,7 +135,9 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             finalized: widget.workspace.status != WorkspaceStatus.workable,
             tag: tags[index],
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
-            onDelete: () {/* delete the semantic tag */},
+            onDelete: () async {
+              await widget.deleteSemanticTag(tags[index].id, tags[index].label);
+            },
           );
         },
       ),
@@ -485,7 +485,13 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             const SubSectionTitle(title: "Semantic Tags"),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SemanticSearchBar(addSemanticTags: widget.addSemanticTags),
+              child: SemanticSearchBar(addSemanticTag: widget.addSemanticTag),
+            ),
+            Center(
+              child: Text(
+                (tags.isNotEmpty) ? "Added Tags" : "You haven't added any tag yet!",
+                style: TextStyles.bodySecondary,
+              ),
             ),
             semanticTagList(),
             const Padding(

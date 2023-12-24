@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/home_page_appbar.dart';
@@ -13,7 +14,6 @@ import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +30,8 @@ class WebWorkspacePage extends StatefulWidget {
   final Function editTitle;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
-  final Function addSemanticTags;
+  final Function addSemanticTag;
+  final Function deleteSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
@@ -48,7 +49,8 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
+    required this.deleteSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.sendWorkspaceToReview,
@@ -385,10 +387,18 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             id: "2",
                                             label: "Label 3",
                                             description: "Description 3"),
+                                      tags: <WorkspaceSemanticTag>[
+                                        WorkspaceSemanticTag(id: "1", label: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1"),
+                                        WorkspaceSemanticTag(id: "2", label: "Label 2"),
+                                        WorkspaceSemanticTag(id: "3", label: "Label 3"),
+                                        WorkspaceSemanticTag(id: "4", label: "Label 4"),
+                                        WorkspaceSemanticTag(id: "5", label: "Label 5"),
+                                        WorkspaceSemanticTag(id: "6", label: "Label 6"),
+                                        WorkspaceSemanticTag(id: "7", label: "Label 7"),
                                       ],
-                                      addSemanticTags: widget.addSemanticTags,
-                                      height: minHeight / 3,
-                                      deleteSemanticTag: () {},
+                                      addSemanticTag: widget.addSemanticTag,
+                                      deleteSemanticTag: widget.deleteSemanticTag,
+                                      height: minHeight,
                                     ),
                                     ContributorsListView(
                                       finalized:

@@ -29,7 +29,8 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function editTitle;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
-  final Function addSemanticTags;
+  final Function addSemanticTag;
+  final Function deleteSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
@@ -46,7 +47,8 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
+    required this.deleteSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.sendWorkspaceToReview,

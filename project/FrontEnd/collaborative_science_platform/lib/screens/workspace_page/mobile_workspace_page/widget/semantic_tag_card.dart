@@ -1,10 +1,9 @@
-import 'package:collaborative_science_platform/models/semantic_tag.dart';
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class SemanticTagCard extends StatefulWidget {
-  final SemanticTag tag;
+  final WorkspaceSemanticTag tag;
   final Function() onDelete;
   final Color backgroundColor;
   final bool finalized;
@@ -38,37 +37,21 @@ class _SemanticTagCardState extends State<SemanticTagCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: Responsive.getGenericPageWidth(context)-100,
-                      child: Text(
-                        widget.tag.label,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18.0,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                SizedBox(
+                  width: Responsive.getGenericPageWidth(context)-100,
+                  child: Text(
+                    widget.tag.label,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18.0,
                     ),
-                    SizedBox(
-                      width: Responsive.getGenericPageWidth(context)-100,
-                      child: Text(
-                        widget.tag.description,
-                        style: TextStyles.bodyBlack,
-                        maxLines: 8,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               if (!widget.finalized)
                 IconButton(
                   onPressed: () {
-                    // delete the semantic tag
                     widget.onDelete();
                     setState(() { });
                   },

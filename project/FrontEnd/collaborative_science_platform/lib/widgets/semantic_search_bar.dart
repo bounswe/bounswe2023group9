@@ -1,16 +1,16 @@
-import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
-import 'package:collaborative_science_platform/providers/node_provider.dart';
-import 'package:easy_search_bar/easy_search_bar.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:collaborative_science_platform/utils/text_styles.dart';
 
 class SemanticSearchBar extends StatefulWidget {
-  final Function addSemanticTags;
+  final Function addSemanticTag;
 
   const SemanticSearchBar({
     super.key,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
   });
 
   @override
@@ -18,55 +18,240 @@ class SemanticSearchBar extends StatefulWidget {
 }
 
 class _SemanticSearchBarState extends State<SemanticSearchBar> {
-  final List<String> semantics = [];
+  final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
+  final TextEditingController labelController = TextEditingController();
+  final FocusNode labelFocusNode = FocusNode();
+  final int maxLength = 5;
 
-  Future<List<String>> _getSuggestions(String query) async {
-    semantics.clear();
-    if (query.length < 3) return [];
-    final NodeProvider nodeProvider = Provider.of<NodeProvider>(context, listen: false);
-    try {
-      await nodeProvider.semanticSuggestions(query);
-    } on SearchError {
-      return [];
-    }
-    semantics.addAll(nodeProvider.semanticTags.map((e) => e.label));
-    return semantics;
+  List<SemanticTag> tags = [];
+  bool isLoading = false;
+  bool error = false;
+  String errorMessage = "";
+  int selectedIndex = -1;
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    searchFocusNode.dispose();
+    labelController.dispose();
+    labelFocusNode.dispose();
+    super.dispose();
   }
 
-  SemanticTag getTag(String label) {
-    final NodeProvider nodeProvider = Provider.of<NodeProvider>(context, listen: false);
-    return nodeProvider.getSemanticTag(label);
+  Future<void> search(String query) async {
+    try {
+      final WikiDataProvider wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await wikiDataProvider.wikiDataSearch(query, maxLength);
+      setState(() {
+        tags = wikiDataProvider.tags;
+      });
+    } catch (e) {
+      error = true;
+      errorMessage = e.toString();
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget searchResults() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        if (tags.isNotEmpty) const Text(
+          "Search Results",
+          style: TextStyles.bodySecondary,
+        ),
+        ListView.builder(
+          padding: const EdgeInsets.all(0.0),
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: tags.length,
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Card(
+              elevation: 4.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              color: AppColors.primaryLightColor,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tags[index].label,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 18.0,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      tags[index].description,
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade700,
+                      ),
+                      maxLines: 8,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (index == selectedIndex) Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Container(
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8.0),
+                                border: Border.all(color: Colors.grey[400]!),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 6.0),
+                                child: TextField(
+                                  textAlignVertical: TextAlignVertical.center,
+                                  controller: labelController,
+                                  focusNode: labelFocusNode,
+                                  textInputAction: TextInputAction.go,
+                                  decoration: InputDecoration(
+                                    hintText: "Tag Name",
+                                    border: InputBorder.none,
+                                    hintStyle: TextStyle(color: Colors.grey[600]!),
+                                    isCollapsed: true,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            if (labelController.text.isNotEmpty) {
+                              await widget.addSemanticTag(tags[index].id, labelController.text);
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.add,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Center(
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (index == selectedIndex) {
+                              selectedIndex = -1;
+                              labelController.text = "";
+                            } else {
+                              selectedIndex = index;
+                            }
+                          });
+                        },
+                        icon: Icon(
+                          (index == selectedIndex) ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 55,
-      child: EasySearchBar(
-        searchHintText: "Search",
-        searchBackgroundColor: Colors.teal.shade100,
-        backgroundColor: Colors.grey.shade300,
-        title: const SizedBox(),
-        elevation: 5,
-        searchBackIconTheme: const IconThemeData(color: Colors.grey),
-        titleTextStyle: TextStyle(color: Colors.grey[600]!),
-        searchTextStyle: const TextStyle(color: Colors.grey),
-        onSearch: (value) { },
-        asyncSuggestions: (value) => _getSuggestions(value),
-        suggestionLoaderBuilder: () => const Center(child: CircularProgressIndicator()),
-        suggestionBuilder: (label) {
-          final SemanticTag tag = getTag(label);
-          return ListTile(
-            title: Text(tag.label),
-            subtitle: Text(tag.description),
-          );
-        },
-        onSuggestionTap: (label) {
-          final SemanticTag tag = getTag(label);
-          widget.addSemanticTags(<String>[tag.id]);
-          setState(() { });
-        },
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              border: Border.all(color: Colors.grey[400]!),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () async {
+                      if (searchController.text.isNotEmpty) {
+                        await search(searchController.text);
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          bottomLeft: Radius.circular(8),
+                        ),
+                      ),
+                      width: 38,
+                      height: 38,
+                      child: Icon(
+                        Icons.search,
+                        color: Colors.indigo[500],
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextField(
+                    textAlignVertical: TextAlignVertical.center,
+                    controller: searchController,
+                    focusNode: searchFocusNode,
+                    textInputAction: TextInputAction.search,
+                    decoration: InputDecoration(
+                      hintText: "Search Tag",
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: Colors.grey[600]!),
+                      isCollapsed: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        (isLoading) ? const Center(child: CircularProgressIndicator()) :
+        (error) ? Text(
+          errorMessage,
+          style: const TextStyle(
+            fontSize: 16.0,
+            color: Colors.red,
+          ),
+        ) : searchResults()
+      ],
     );
   }
 }
