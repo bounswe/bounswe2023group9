@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:collaborative_science_platform/models/annotation.dart';
 import 'package:collaborative_science_platform/providers/annotation_provider.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -136,12 +137,11 @@ class _AnnotationTextState extends State<AnnotationText> {
                         anchor: editableTextState.contextMenuAnchors.primaryAnchor,
                         selectedText: widget.text.substring(element.startOffset, element.endOffset),
                         annotation: element,
+                        sourceLocation: widget.annotationSourceLocation,
                         children: AdaptiveTextSelectionToolbar.getAdaptiveButtons(
                           context,
                           editableTextState.contextMenuButtonItems,
                         ).toList(),
-                        sourceLocation: widget.annotationSourceLocation,
-                        author: "http://13.51.205.39/profile/cemsay@gmail.com", //TODO
                       );
                     }
                   }
@@ -150,12 +150,11 @@ class _AnnotationTextState extends State<AnnotationText> {
                     selectedText: selectedText.trim(),
                     startOffset: selectedIndices.baseOffset,
                     endOffset: selectedIndices.extentOffset,
+                    sourceLocation: widget.annotationSourceLocation,
                     children: AdaptiveTextSelectionToolbar.getAdaptiveButtons(
                       context,
                       editableTextState.contextMenuButtonItems,
-                    ).toList(),
-                    sourceLocation: widget.annotationSourceLocation,
-                    author: "http://13.51.205.39/profile/cemsay@gmail.com", //TODO
+                    ).toList(), //TODO
                   );
                 },
               );
@@ -171,7 +170,6 @@ class _MyContextMenu extends StatelessWidget {
     required this.children,
     required this.selectedText,
     required this.sourceLocation,
-    required this.author,
     this.annotation,
     this.startOffset,
     this.endOffset,
@@ -181,7 +179,6 @@ class _MyContextMenu extends StatelessWidget {
   final List<Widget> children;
   final String selectedText;
   final String sourceLocation;
-  final String author;
 
   @override
   Widget build(BuildContext context) {
@@ -200,20 +197,23 @@ class _MyContextMenu extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //...children,
-                AddAnnotationButton(
-                    text: selectedText,
-                    startOffset: startOffset,
-                    endOffset: endOffset,
-                    annotation: annotation,
-                    sourceLocation: sourceLocation,
-                    author: author),
-                const SizedBox(height: 2),
-                annotation != null
-                    ? ShowAnnotationButton(
+                if (Provider.of<Auth>(context).isSignedIn)
+                  AddAnnotationButton(
+                      text: selectedText,
+                      startOffset: startOffset,
+                      endOffset: endOffset,
+                      annotation: annotation,
+                      sourceLocation: sourceLocation),
+                if (annotation != null)
+                  Column(
+                    children: [
+                      const SizedBox(height: 2),
+                      ShowAnnotationButton(
                         text: selectedText,
                         annotation: annotation!,
-                      )
-                    : const SizedBox(),
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
@@ -410,7 +410,6 @@ class AddAnnotationButton extends StatefulWidget {
   final int? endOffset;
   final Annotation? annotation;
   final String sourceLocation;
-  final String author;
   const AddAnnotationButton({
     super.key,
     required this.text,
@@ -418,7 +417,6 @@ class AddAnnotationButton extends StatefulWidget {
     this.startOffset,
     this.endOffset,
     required this.sourceLocation,
-    required this.author,
   }) : assert(annotation == null ||
             (startOffset == null && endOffset == null) ||
             (startOffset != null && endOffset != null));
@@ -467,7 +465,8 @@ class _AddAnnotationButtonState extends State<AddAnnotationButton> {
           annotationContent: _textEditingController.text,
           startOffset: widget.startOffset!,
           endOffset: widget.endOffset!,
-          annotationAuthor: widget.author,
+          annotationAuthor:
+              "http://13.51.205.39/profile/${Provider.of<Auth>(context, listen: false).user!.id}",
           sourceLocation: widget.sourceLocation,
         );
         await provider.addAnnotation(annotation);
