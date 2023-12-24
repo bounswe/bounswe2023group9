@@ -1644,7 +1644,10 @@ def update_content_status(request):
                 user = BasicUser.objects.filter(pk=content_id)
                 if user.count() > 0:
                     user = user.first()
-                    user.user.is_active = not hide
+                    if hide == 'True' or hide == True:
+                        user.user.is_active = False
+                    elif hide == 'False' or hide == False:
+                        user.user.is_active = True
                     user.user.save()
                     return Response(BasicUserSerializer(user).data, status=200)
     except Exception as e:
