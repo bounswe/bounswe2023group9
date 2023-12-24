@@ -398,7 +398,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
       await workspaceProvider.updateCollaborationRequest(id, status, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
       setState(() {
+        workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
       });
     } on SendCollaborationRequestException {
@@ -418,7 +420,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  Future<void> updateReviewRequest(int id, RequestStatus status) async {
+  void updateReviewRequest(int id, RequestStatus status) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
@@ -531,12 +533,12 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
         addSemanticTags: addSemanticTags,
-        updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
+        updateCollaborationRequest: updateCollaborationRequest,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -550,12 +552,12 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
         addSemanticTags: addSemanticTags,
-        updateRequest: updateCollaborationRequest,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
+        updateCollaborationRequest: updateCollaborationRequest,
       ),
     );
   }

@@ -21,6 +21,7 @@ class WorkspacesSideBar extends StatefulWidget {
   final Workspaces? workspaces;
   final Function createNewWorkspace;
   final Function updateReviewRequest;
+  final Function updateCollaborationRequest;
 
   const WorkspacesSideBar({
     super.key,
@@ -30,6 +31,7 @@ class WorkspacesSideBar extends StatefulWidget {
     this.workspaces,
     required this.createNewWorkspace,
     required this.updateReviewRequest,
+    required this.updateCollaborationRequest,
   });
 
   @override
@@ -157,23 +159,33 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                       ? Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
-                                            Text(
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width / 7,
+                                              child: Text(
                                               widget
                                                   .workspaces!
                                                   .pendingWorkspaces[
                                                       index - widget.workspaces!.workspaces.length]
                                                   .workspaceTitle,
                                               style: TextStyles.bodyBold,
-                                              maxLines: 1,
+                                                maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                               textAlign: TextAlign.start,
+                                            ),
                                             ),
                                             Column(children: [
                                               IconButton(
                                                 icon: const Icon(CupertinoIcons.check_mark_circled,
                                                     color: AppColors.infoColor),
-                                                onPressed: () {
-                                                  // function to accept collaboration request
+                                                onPressed: () async {
+                                                  // function to accept review request
+                                                  await widget.updateCollaborationRequest(
+                                                      widget
+                                                          .workspaces!
+                                                          .pendingWorkspaces[index -
+                                                              widget.workspaces!.workspaces.length]
+                                                          .requestId,
+                                                      RequestStatus.approved);
                                                 },
                                               ),
                                               IconButton(
@@ -181,8 +193,15 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                   CupertinoIcons.clear_circled,
                                                   color: AppColors.warningColor,
                                                 ),
-                                                onPressed: () {
-                                                  // function to reject collaboration request
+                                                onPressed: () async {
+                                                  // function to reject review request
+                                                  await widget.updateCollaborationRequest(
+                                                      widget
+                                                          .workspaces!
+                                                          .pendingWorkspaces[index -
+                                                              widget.workspaces!.workspaces.length]
+                                                          .requestId,
+                                                      RequestStatus.rejected);
                                                 },
                                               ),
                                             ])
@@ -190,6 +209,9 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                         )
                                       : Column(
                                           children: [
+                                            SizedBox(
+                                              width: MediaQuery.of(context).size.width,
+                                              child:
                                             Text(
                                               widget
                                                   .workspaces!
@@ -197,18 +219,28 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                       index - widget.workspaces!.workspaces.length]
                                                   .workspaceTitle,
                                               style: TextStyles.bodyBold,
-                                              maxLines: 1,
+                                                maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
                                               textAlign: TextAlign.start,
+                                              ),
                                             ),
                                             Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
                                                 IconButton(
                                                   icon: const Icon(
                                                       CupertinoIcons.check_mark_circled,
                                                       color: AppColors.infoColor),
                                                   onPressed: () {
-                                                    // function to accept collaboration request
+                                                    // function to accept review request
+                                                    widget.updateCollaborationRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingWorkspaces[index -
+                                                                widget
+                                                                    .workspaces!.workspaces.length]
+                                                            .requestId,
+                                                        RequestStatus.approved);
                                                   },
                                                 ),
                                                 IconButton(
@@ -216,8 +248,16 @@ class _WorkspacesSideBarState extends State<WorkspacesSideBar> {
                                                     CupertinoIcons.clear_circled,
                                                     color: AppColors.warningColor,
                                                   ),
-                                                  onPressed: () {
-                                                    // function to reject collaboration request
+                                                  onPressed: () async {
+                                                    // function to reject review request
+                                                    await widget.updateCollaborationRequest(
+                                                        widget
+                                                            .workspaces!
+                                                            .pendingWorkspaces[index -
+                                                                widget
+                                                                    .workspaces!.workspaces.length]
+                                                            .requestId,
+                                                        RequestStatus.rejected);
                                                   },
                                                 ),
                                               ],
