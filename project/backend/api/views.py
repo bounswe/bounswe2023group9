@@ -583,12 +583,12 @@ def get_workspace_from_id(request):
                     request_id = request.id
             reviewer_flag = False
     collab_flag = True
-    collab_comment = ''
-    for req in CollabarationRequest.objects.filter(receiver=cont):
+    # collab_comment = ''
+    for req in CollaborationRequest.objects.filter(receiver=cont):
         if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
             collab_flag = False
             request_id = req.id
-            collab_comment = req.comment
+            # collab_comment = req.comment
     if reviewer_flag and collab_flag:
         request_id = ''
     if collab_flag and reviewer_flag and not is_cont_workspace(request):
@@ -685,7 +685,6 @@ def get_workspace_from_id(request):
                          'from_node_id' :  node_id,
                          'request_id' : request_id,
                          'comments':comments,
-                         'collab_comment':collab_comment
                          }, status=200)
 
 def get_semantic_suggestion(request):
@@ -1034,7 +1033,7 @@ def edit_entry(request):
     entry = Entry.objects.get(entry_id=entry_id)
     if entry.is_editable == False:
         return JsonResponse({'message': 'This Entry is not editable'}, status=403)
-    if entry.is_final_entry == False:
+    if entry.is_final_entry:
         return JsonResponse({'message': 'This Entry is not editable'}, status=403)
     entry.content = content
     entry.save(update_fields=["content"])
