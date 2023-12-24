@@ -27,6 +27,7 @@ class ProfileDataProvider with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (e) {
+      print(e);
       rethrow;
     }
   }

@@ -37,7 +37,7 @@ class Question {
       asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
       nodeId: jsonString['node_id'] ?? -1,
       isAnswered: jsonString['answer_content'] != null,
-      isHidden: jsonString['removed_by_admin'],
+      isHidden: jsonString['removed_by_admin'] ?? false,
     );
   }
 
@@ -64,7 +64,7 @@ class Question {
       answeredAt: jsonString.containsKey("answer_date") ? jsonString["answer_date"] as String : "",
       nodeId: jsonString['node_id'] ?? -1,
       isAnswered: jsonString['is_answered'] == 1,
-      isHidden: jsonString['removed_by_admin'],
+      isHidden: jsonString['removed_by_admin'] ?? false,
     );
   }
 }

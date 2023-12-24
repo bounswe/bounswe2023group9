@@ -29,22 +29,25 @@ class ProfileData {
   String surname;
   String email;
   String aboutMe;
+  String orcid;
   List<Node> nodes;
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
   String userType;
   bool isBanned;
-  ProfileData(
-      {this.id = 0,
-      this.aboutMe = "",
-      this.email = "",
-      this.name = "",
-      this.surname = "",
-      this.nodes = const [],
-      this.askedQuestions = const [],
-      this.answeredQuestions = const [],
-      this.userType = "",
-      this.isBanned = false});
+  ProfileData({
+    this.id = 0,
+    this.aboutMe = "",
+    this.email = "",
+    this.name = "",
+    this.surname = "",
+    this.orcid = "",
+    this.nodes = const [],
+    this.askedQuestions = const [],
+    this.answeredQuestions = const [],
+    this.userType = "",
+    this.isBanned = false,
+  });
 
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
     var nodeList = jsonString['nodes'] as List;
@@ -57,14 +60,15 @@ class ProfileData {
 
     return ProfileData(
       id: jsonString['id'],
-      nodes: nodes,
       name: jsonString['name'],
       surname: jsonString['surname'],
       aboutMe: jsonString['bio'],
+      orcid: jsonString['orcid'] ?? "",
+      nodes: nodes,
       askedQuestions: asked,
       answeredQuestions: answered,
       userType: jsonString['user_type'],
-      isBanned: jsonString['is_banned'],
+      isBanned: jsonString['is_banned'] ?? false,
     );
   }
 
