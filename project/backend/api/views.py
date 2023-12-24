@@ -434,6 +434,13 @@ def get_profile(request):
             authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
         node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
 
+    semantic_tags = []
+    for tag in basic_user.semantic_tags.all():
+        semantic_tags.append({'wid': tag.wid,
+                              'label': tag.label,
+                              'id': tag.id})
+
+
     user_type = 'basic_user'
     if  Contributor.objects.filter(id=basic_user.id).exists():
         user_type = 'contributor'
@@ -451,7 +458,8 @@ def get_profile(request):
                          'asked_questions':asked_questions,
                          'answered_questions':answered_questions,
                          'user_type': user_type,
-                         'is_banned': not user.is_active},status=200)
+                         'is_banned': not user.is_active,
+                         'semantic_tags':semantic_tags},status=200)
 
 def get_proof_from_id(request):
     id = int(request.GET.get("proof_id"))
