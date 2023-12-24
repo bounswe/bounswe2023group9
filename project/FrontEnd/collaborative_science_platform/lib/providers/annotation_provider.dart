@@ -81,6 +81,7 @@ class AnnotationProvider with ChangeNotifier {
     print(annotation.startOffset);
     print(annotation.endOffset);
     Uri url = Uri.parse("${Constants.annotationUrl}/annotations/create_annotation/");
+    /*
     var annotationJson = {
       "@context": "http://www.w3.org/ns/anno.jsonld",
       "type": "Annotation",
@@ -108,18 +109,37 @@ class AnnotationProvider with ChangeNotifier {
       })
     };
     print('Sending JSON: ${jsonEncode(annotationJson)}');
+    */
+    var request = http.MultipartRequest('POST', url);
+
+// Add each field as a string
+    request.fields['@context'] = "http://www.w3.org/ns/anno.jsonld";
+    request.fields['type'] = "Annotation";
+    request.fields['body'] = jsonEncode({
+      "type": "TextualBody",
+      "format": "text/html",
+      "language": "en",
+      "value": annotation.annotationContent,
+    });
+    request.fields['target'] = jsonEncode({
+      "id": annotation.sourceLocation,
+      "type": "text",
+      "selector": {
+        "type": "TextPositionSelector",
+        "start": annotation.startOffset,
+        "end": annotation.endOffset,
+      }
+    });
+    request.fields['creator'] = jsonEncode({
+      "id": annotation.annotationAuthor,
+      "type": "Person",
+    });
     try {
-      var response = await http.post(
-        url,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode(annotationJson),
-      );
+      var response = await request.send();
       print('Response Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
+        var responseBody = await response.stream.bytesToString();
+        print(responseBody);
         annotation.annotationID = _annotations.length + 1;
         _annotations.add(annotation);
         notifyListeners();
