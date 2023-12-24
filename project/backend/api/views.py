@@ -1787,23 +1787,29 @@ def get_related_nodes(request):
                 prev.append(ran)
                 random_node = Node.objects.all()[ran]
                 if not random_node.removed_by_admin:
-                    nodes.append(random_node)
+                    nodes.append(random_node.node_id)
                     i += 1
 
     try:
         for tag in tags.all():
             for node in tag.nodes:
                 if not node.removed_by_admin:
-                    nodes.append(node)
+                    nodes.append(node.node_id)
         if len(nodes) < 20: # TAKES A LOT LONGER FOR RELATED NODES TO BE FOUND SO TRY TO AVOID THEM
             for tag in tags.all():
+                if len(nodes) >= 20:
+                    break
                 for node in tag.related_nodes:
+                    if len(nodes) >= 20:
+                        break
                     if not node.removed_by_admin:
-                        nodes.append(node)
+                        nodes.append(node.node_id)
     except:
         return JsonResponse({'message':'An internal server error occured. Please try again.'},status=500)
+    nodes = list(set(nodes))
     node_infos = []
-    for node in nodes:
+    for node_id in nodes:
+        node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
