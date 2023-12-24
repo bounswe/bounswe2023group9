@@ -27,6 +27,7 @@ class _SemanticSearchBarState extends State<SemanticSearchBar> {
   List<SemanticTag> tags = [];
   bool isLoading = false;
   bool error = false;
+  bool emptySearch = false;
   String errorMessage = "";
   int selectedIndex = -1;
 
@@ -65,6 +66,13 @@ class _SemanticSearchBarState extends State<SemanticSearchBar> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        if (emptySearch) const Text(
+          "No Result",
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+          ),
+        ),
         if (tags.isNotEmpty) const Text(
           "Search Results",
           style: TextStyles.bodySecondary,
@@ -143,6 +151,7 @@ class _SemanticSearchBarState extends State<SemanticSearchBar> {
                           onPressed: () async {
                             if (labelController.text.isNotEmpty) {
                               await widget.addSemanticTag(tags[index].wid, labelController.text);
+                              setState(() { });
                             }
                           },
                           icon: const Icon(
@@ -205,6 +214,9 @@ class _SemanticSearchBarState extends State<SemanticSearchBar> {
                     onTap: () async {
                       if (searchController.text.isNotEmpty) {
                         await search(searchController.text);
+                        setState(() {
+                          emptySearch = tags.isEmpty;
+                        });
                       }
                     },
                     child: Container(
