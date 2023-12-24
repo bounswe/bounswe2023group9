@@ -94,6 +94,14 @@ class NodeAPIView(APIView):
   
     def get(self, request):
         id = request.GET.get("node_id")
+        # res = BasicUserDetailAPI.as_view()(request)
+        try:
+            admin = Admin.objects.filter(pk=request.user.basicuser)
+            is_admin = False
+            if admin.exists():
+                is_admin = True
+        except:
+            is_admin = False
         if not id:
             node_list = Node.objects.all()
             return Response(NodeSerializer(node_list[random.randint(0, len(node_list)-1)]).data)
@@ -103,7 +111,7 @@ class NodeAPIView(APIView):
             return JsonResponse(
                 {"message": "There is no node with this id."}, status=404
             )
-        elif node.first().removed_by_admin:
+        elif node.first().removed_by_admin and not is_admin:
             return JsonResponse(
                 {"message": "The node is removed by admin."}, status=404
             )
@@ -560,12 +568,12 @@ def get_workspace_from_id(request):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
     reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
     cont = Contributor.objects.get(pk=request.user.basicuser)
-    flag = True
+    reviewer_flag = True
     workspace = workspace[0]
     if reviewer.exists():
         for req in ReviewRequest.objects.filter(receiver=cont):
             if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
-                flag = False
+                reviewer_flag = False
                 request_id = req.id
         if workspace in reviewer[0].review_workspaces.all():
             cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
@@ -573,15 +581,21 @@ def get_workspace_from_id(request):
             for request in requests:
                 if request.receiver == cont:
                     request_id = request.id
-            flag = False
-    if flag:
+            reviewer_flag = False
+    collab_flag = True
+    collab_comment = ''
+    for req in CollabarationRequest.objects.filter(receiver=cont):
+        if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
+            collab_flag = False
+            request_id = req.id
+            collab_comment = req.comment
+    if reviewer_flag and collab_flag:
         request_id = ''
-
-    if flag and not is_cont_workspace(request):
+    if collab_flag and reviewer_flag and not is_cont_workspace(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     entries = []
     for entry in workspace.entries.all():
-        if not flag:
+        if not reviewer_flag:
             if entry.is_proof_entry or entry.is_theorem_entry:
                 entries.append({'entry_id': entry.entry_id,
                                 'entry_date': entry.entry_date,
@@ -605,7 +619,8 @@ def get_workspace_from_id(request):
     semantic_tags = []
     for tag in workspace.semantic_tags.all():
         semantic_tags.append({'wid':tag.wid,
-                              'label':tag.label,})
+                              'label':tag.label,
+                              'id':tag.id})
     contributors = []
     for cont in Contributor.objects.filter(workspaces=workspace):
         user = User.objects.get(id=cont.user_id)
@@ -669,7 +684,8 @@ def get_workspace_from_id(request):
                          'created_at':workspace.created_at,
                          'from_node_id' :  node_id,
                          'request_id' : request_id,
-                         'comments':comments
+                         'comments':comments,
+                         'collab_comment':collab_comment
                          }, status=200)
 
 def get_semantic_suggestion(request):
@@ -1506,7 +1522,6 @@ def update_review_request_status(request):
         req.comment = comment
         req.response = response
         req.save()
-
 
     else:
         status = request.data.get('status')
