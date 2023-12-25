@@ -1,4 +1,4 @@
-# Backend of collaborative_science_platform project
+# Annotation service of collaborative_science_platform project
 
 This project uses Django 4.2.6 and PostgreSQL 14.10 mainly.
 
@@ -7,7 +7,7 @@ This project uses Django 4.2.6 and PostgreSQL 14.10 mainly.
 To build a docker image, 
  - `docker build --tag <your-tag> .`
 To run,
- - `docker run -p 8000:8000 <your-tag>`
+ - `docker run -p 8001:8000 <your-tag>`
 
 Dont forget to set the following environment variables,
 - DJANGO_SECRET_KEY
