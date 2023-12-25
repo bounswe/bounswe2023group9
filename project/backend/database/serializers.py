@@ -272,6 +272,14 @@ class NodeViewReferenceSerializer(serializers.ModelSerializer):
     model = Node
     fields = ['node_id', 'node_title', 'contributors', 'publish_date']
 
+# Serializer for Semantic Tags
+class NodeViewSemanticTagSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = SemanticTag
+    fields = ['wid', 'id', 'label']
+
+
+
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
   to_referenced_nodes = NodeViewReferenceSerializer(many=True)
@@ -280,6 +288,7 @@ class NodeSerializer(serializers.ModelSerializer):
   theorem = NodeViewTheoremSerializer()
   question_set = NodeViewQuestionSerializer(many=True)
   contributors = NodeViewBasicUserSerializer(many=True)
+  semantic_tags = NodeViewSemanticTagSerializer(many=True)
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
