@@ -61,6 +61,7 @@ class AnnotationProvider with ChangeNotifier {
             annotationContent: annotationJson['body']['value'],
             annotationAuthor: annotationJson['creator']['id'],
             sourceLocation: annotationJson['target']['id'],
+            dateCreated: DateTime.parse(annotationJson['created']),
           ));
           print(annotationJson['body']['value']);
         }

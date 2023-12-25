@@ -10,6 +10,7 @@ class Annotation {
       sourceLocation; // ${Constants.appUrl}/node/{nodeId}%23{theorem|proof}%23{theoremId|proofId}
   int startOffset;
   int endOffset;
+  DateTime dateCreated;
 
   Annotation({
     this.annotationID,
@@ -18,5 +19,6 @@ class Annotation {
     required this.annotationContent,
     required this.annotationAuthor,
     required this.sourceLocation,
+    required this.dateCreated,
   });
 }
