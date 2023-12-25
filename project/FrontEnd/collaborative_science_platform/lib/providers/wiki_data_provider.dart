@@ -33,7 +33,7 @@ class WikiDataProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addSemanticTag(String wid, String label, int workspaceId, String token) async {
+  Future<void> addSemanticTag(String wid, String label, int id, String type, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/add_semantic_tag/");
     http.MultipartRequest request = http.MultipartRequest('POST', url);
 
@@ -41,10 +41,14 @@ class WikiDataProvider with ChangeNotifier {
       "Authorization": "Token $token",
       "content-type": "application/json",
     });
-    request.fields.addAll({
+    request.fields.addAll( (type == 'workspace') ? {
       'wid': wid,
       'label': label,
-      'workspace_id': "$workspaceId",
+      'workspace_id': "$id",
+    } : {
+      'wid': wid,
+      'label': label,
+      'user_id': "$id",
     });
 
     http.StreamedResponse response = await request.send();
@@ -69,28 +73,6 @@ class WikiDataProvider with ChangeNotifier {
     });
 
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
-      notifyListeners();
-    } else {
-      throw Exception("Something has gone wrong");
-    }
-  }
-
-  Future<void> addUserSemanticTag(int userId, int tagId, String label, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/add_user_semantic_tag/");
-    http.MultipartRequest request = http.MultipartRequest('POST', url);
-
-    request.headers.addAll({
-      "Authorization": "Token $token",
-      "content-type": "application/json",
-    });
-    request.fields.addAll({
-      'user_id': "$userId",
-      'sm_tag_id': "$tagId",
-      'label': label,
-    });
-
-    http.StreamedResponse response = await request.send();
     if (response.statusCode == 200 || response.statusCode == 201) {
       notifyListeners();
     } else {
@@ -98,17 +80,16 @@ class WikiDataProvider with ChangeNotifier {
     }
   }
 
-  Future<void> removeUserSemanticTag(int userId, int tagId, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/remove_user_semantic_tag/");
-    http.MultipartRequest request = http.MultipartRequest('PUT', url);
+  Future<void> removeUserSemanticTag(int tagId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_user_tag/");
+    http.MultipartRequest request = http.MultipartRequest('POST', url);
 
     request.headers.addAll({
       "Authorization": "Token $token",
       "content-type": "application/json",
     });
     request.fields.addAll({
-      'user_id': "$userId",
-      'sm_tag_id': "$tagId",
+      'tag_id': "$tagId",
     });
 
     http.StreamedResponse response = await request.send();

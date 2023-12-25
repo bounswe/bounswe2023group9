@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:collaborative_science_platform/models/user.dart';
 
 class Question {

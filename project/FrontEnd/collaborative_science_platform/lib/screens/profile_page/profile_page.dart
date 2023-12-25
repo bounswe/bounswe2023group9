@@ -143,16 +143,16 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void addUserSemanticTag(int tagId, String label) async {
+  void addUserSemanticTag(String wikiId, String label) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
-      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context, listen: false);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await wikiDataProvider.addUserSemanticTag(profileData.id, tagId, label, auth.user!.token);
+      await wikiDataProvider.addSemanticTag(wikiId, label, auth.basicUser!.basicUserId, 'user', auth.user!.token);
       await profileDataProvider.getData(widget.email);
       setState(() {
         profileData = (profileDataProvider.profileData ?? {} as ProfileData);
@@ -174,12 +174,12 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
-      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context, listen: false);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await wikiDataProvider.removeUserSemanticTag(profileData.id, tagId, auth.user!.token);
+      await wikiDataProvider.removeUserSemanticTag(tagId, auth.user!.token);
       await profileDataProvider.getData(widget.email);
       setState(() {
         profileData = (profileDataProvider.profileData ?? {} as ProfileData);

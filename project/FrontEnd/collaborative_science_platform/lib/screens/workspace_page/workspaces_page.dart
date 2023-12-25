@@ -459,7 +459,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = false;
       });
-      await wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, auth.user!.token);
+      wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, 'workspace', auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -536,8 +536,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-
-void setProof(int entryId) async {
+  void setProof(int entryId) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
