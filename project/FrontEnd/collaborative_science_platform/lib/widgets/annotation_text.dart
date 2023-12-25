@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:collaborative_science_platform/models/annotation.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
@@ -57,8 +58,9 @@ class _AnnotationTextState extends State<AnnotationText> {
         isLoading = true;
       });
       final annotationProvider = Provider.of<AnnotationProvider>(context);
-      final email = Provider.of<Auth>(context, listen: false).user!.email;
-      widget.annotationAuthors.add("http://13.51.205.39/profile/$email");
+      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final email = user == null ? "" : user.email;
+      if (user != null) widget.annotationAuthors.add("http://13.51.205.39/profile/$email");
       await annotationProvider.getAnnotations(
           widget.annotationSourceLocation, widget.annotationAuthors);
       annotations = annotationProvider.annotations;
@@ -170,8 +172,8 @@ class _AnnotationTextState extends State<AnnotationText> {
           text: widget.text.substring(annotation.startOffset, annotation.endOffset),
           style: TextStyle(
             backgroundColor: annotationEmail == email
-                ? Colors.orange.withOpacity(0.3)
-                : Colors.yellow.withOpacity(0.3),
+                ? Colors.indigo[600]!.withOpacity(0.3)
+                : Colors.deepOrangeAccent.withOpacity(0.3),
           ),
         ));
 
@@ -187,6 +189,7 @@ class _AnnotationTextState extends State<AnnotationText> {
         ));
       }
     } catch (e) {
+      print(e);
       setState(() {
         error = true;
       });
@@ -446,8 +449,17 @@ class _DesktopShowAnnotationButtonState extends State<DesktopShowAnnotationButto
             child: Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5.0),
-                  color: Colors.grey[900]!.withOpacity(0.9)),
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.grey[850],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2), // Soft shadow for depth
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: Offset(0, 4), // changes position of shadow
+                  ),
+                ],
+              ),
               width: 400,
               constraints: const BoxConstraints(maxWidth: 400),
               child: SingleChildScrollView(
@@ -539,12 +551,17 @@ class _AddAnnotationButtonState extends State<AddAnnotationButton> {
       // no update or remove mechanism implemented yet in backend
       // DELETE this later if it won't be implemented
       if (change) {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(
-            content: Text("Something went wrong!"),
-          ),
+        Annotation annotation = Annotation(
+          annotationContent: _textEditingController.text,
+          startOffset: widget.annotation!.startOffset,
+          endOffset: widget.annotation!.endOffset,
+          annotationAuthor:
+              "http://13.51.205.39/profile/${Provider.of<Auth>(context, listen: false).user!.email}",
+          sourceLocation: widget.sourceLocation,
+          dateCreated: DateTime.now(),
         );
-        //  await provider.updateAnnotation(widget.annotation!, _textEditingController.text);
+        await provider.addAnnotation(annotation);
+        await provider.deleteAnnotation(widget.annotation!);
       } else {
         Annotation annotation = Annotation(
           annotationContent: _textEditingController.text,

@@ -152,12 +152,22 @@ class AnnotationProvider with ChangeNotifier {
     }
   }
 
-/*
-  Future<void> updateAnnotation(Annotation annotation, String text) async {
-    final index =
-        _annotations.indexWhere((element) => element.annotationID == annotation.annotationID);
-    _annotations[index].annotationContent = text;
-    notifyListeners();
+  Future<void> deleteAnnotation(Annotation annotation) async {
+    Uri url =
+        Uri.parse("${Constants.annotationUrl}/annotations/annotation/${annotation.annotationID}");
+    try {
+      var response = await http.delete(url);
+      print(response.statusCode);
+      print(response.body);
+      if (response.statusCode == 204 || response.statusCode == 201 || response.statusCode == 200) {
+        print("Annotation deleted");
+        _annotations.remove(annotation);
+        notifyListeners();
+      } else {
+        throw Exception("Something has happened");
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
-*/
 }
