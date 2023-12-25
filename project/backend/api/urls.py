@@ -50,6 +50,7 @@ urlpatterns = [
     path('add_user_semantic_tag/', AddUserSemanticTag.as_view(), name='add_user_semantic_tag'),
     path('add_semantic_tag/', SemanticTagAPIView.as_view(), name='add_semantic_tag'),
     path('remove_workspace_tag/', remove_workspace_tag, name='remove_workspace_tag'),
+    path('remove_user_tag/', remove_user_tag, name='remove_user_tag'),
     path('get_related_nodes/', get_related_nodes, name='get_related_nodes'),
     path('reset_workspace_state/', reset_workspace_state, name='reset_workspace_state'),
 

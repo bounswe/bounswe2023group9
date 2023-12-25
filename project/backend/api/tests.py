@@ -743,47 +743,7 @@ class ContributorGETAPITestCase(TestCase):
         )
 
 
-# class UserWorkspacesGETAPITestCase(TestCase):
-#     def setUp(self):
-#         self.client = APIClient()
-#         self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
-#                                         last_name='Test')
-#         self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
-#         self.workspace = self.cont.create_workspace('test')
-#         self.url = reverse('get_user_workspaces')
-#
-#     def test_get_workspaces_of_user(self):
-#         response = self.client.get(self.url, {'user_id': self.cont.id})
-#
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response.json()['workspaces'][0]['workspace_id'],self.workspace.workspace_id)
-#         self.assertEqual(response.json()['workspaces'][0]['workspace_title'], self.workspace.workspace_title)
-#         self.assertEqual(response.json()['workspaces'][0]['pending'], False)
-#
-#
-#
-# class WorkspaceGETAPITestCase(TestCase):
-#     def setUp(self):
-#         self.client = APIClient()
-#         self.user = User.objects.create_user(id=1, email='test@example.com', username='test@example.com', first_name='User',
-#                                         last_name='Test')
-#         self.cont = Contributor.objects.create(user=self.user, bio='Hello',id=3)
-#         self.workspace = self.cont.create_workspace('test')
-#         self.url = reverse('get_workspace')
-#
-#     def test_get_workspace_from_id(self):
-#         response = self.client.get(self.url, {'workspace_id': self.workspace.workspace_id})
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response.json()['workspace_id'],self.workspace.workspace_id)
-#         self.assertEqual(response.json()['workspace_id'], self.workspace.workspace_id)
-#         self.assertEqual(response.json()['contributors'], [{'id':self.cont.id,'first_name':self.user.first_name,'last_name':self.user.last_name,'username':self.user.username}])
-#         self.assertEqual(response.json()['workspace_title'], self.workspace.workspace_title)
-#         self.assertEqual(response.json()['status'], 'workable')
-#         self.assertEqual(response.json()['references'], [])
-#         self.assertEqual(response.json()['semantic_tags'], [])
-#         self.assertEqual(response.json()['pending_contributors'], [])
-#         self.assertEqual(response.json()['num_approvals'], 0)
-#         # self.assertEqual(response.json()['created_at'], self.workspace.created_at)
+
 
 
 
@@ -880,43 +840,6 @@ class ReviewRequestAPITestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 2)
     
-    # def test_update_review_request(self):
-    #
-    #     self.reviewer1_token = Token.objects.create(user=self.receiver1_user)
-    #     self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer1_token.key}")
-    #
-    #     url = reverse('update_review_req')
-    #
-    #     initial_num_approvals = self.workspace.num_approvals
-    #     initial_node_len = len(Node.objects.all())
-    #
-    #     response = self.client.put(url, {'id': self.request.id, 'status': 'A', 'comment': 'OK'}, format='json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.data['status'], 'A')
-    #     self.assertEqual(response.data['comment'], 'OK')
-    #
-    #     updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
-    #     self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
-    #
-    #     # Reviewer 2
-    #     self.reviewer2_token = Token.objects.create(user=self.receiver2_user)
-    #     self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.reviewer2_token.key}")
-    #
-    #     url = reverse('update_review_req')
-    #
-    #     initial_num_approvals = updated_workspace.num_approvals
-    #
-    #     response = self.client.put(url, {'id': self.request2.id, 'status': 'A', 'comment': 'OK'}, format='json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.data['status'], 'A')
-    #     self.assertEqual(response.data['comment'], 'OK')
-    #
-    #     updated_workspace = Workspace.objects.get(pk=self.workspace.workspace_id)
-    #     self.assertEqual(updated_workspace.num_approvals, initial_num_approvals - 1)
-    #
-    #     self.assertEqual(updated_workspace.num_approvals, 0)
-    #
-    #     self.assertEqual(len(Node.objects.all()), initial_node_len + 1)
 
 
 
@@ -1207,21 +1130,7 @@ class WorkspaceProofTestCase(TestCase):
         print("All tests for setting/removing workspace proof are completed!")
 
 
-    def test_set_workspace_proof(self):
-        url = reverse('set_workspace_proof')
-        data = {
-            'workspace_id': self.workspace.workspace_id,
-            'entry_id': self.entry.entry_id,
-            'is_disproof': True,
-        }
 
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        self.assertEqual(Workspace.objects.get(pk=self.workspace.workspace_id).proof_entry.entry_id, self.entry.entry_id)
-        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_proof_entry, True)
-        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_disproof_entry, True)
 
     
     def test_remove_workspace_proof(self):

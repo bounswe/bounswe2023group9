@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from database.models import Contributor
-# from django.contrib.auth.password_validation import validate_password
 from django.http import JsonResponse
 import requests
 from .models import *
@@ -81,12 +80,19 @@ class SemanticTagSerializer(serializers.ModelSerializer):
       wid = validated_data.get('wid', None)
       label = validated_data.get('label', None)
       workspace_id = self.context['request'].data.get('workspace_id', None)
+      user_id = self.context['request'].data.get('user_id', None)
 
       tag = SemanticTag.objects.create(wid=wid, label=label)
 
       if workspace_id is not None:
         workspace = Workspace.objects.get(workspace_id=workspace_id)
         workspace.semantic_tags.add(tag)
+        workspace.save()
+
+      if user_id is not None:
+        user = BasicUser.objects.get(id=user_id)
+        user.semantic_tags.add(tag)
+        user.save()
 
       return tag
 
@@ -197,7 +203,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     validators=[UniqueValidator(queryset=User.objects.all())]
   )
   password = serializers.CharField(write_only=True, required=True)
-  # password2 = serializers.CharField(write_only=True, required=True)
+
 
   class Meta:
     model = User
@@ -207,11 +213,7 @@ class RegisterSerializer(serializers.ModelSerializer):
       'last_name': {'required': True}
     }
 
-  # def validate(self, attrs):
-  #   if attrs['password'] != attrs['password2']:
-  #     raise serializers.ValidationError({"password": "Password fields didn't match."})
-    
-    # return attrs
+
   
   # This method will be used when generic create api called
   def create(self, validated_data):
@@ -265,6 +267,14 @@ class NodeViewReferenceSerializer(serializers.ModelSerializer):
     model = Node
     fields = ['node_id', 'node_title', 'contributors', 'publish_date']
 
+# Serializer for Semantic Tags
+class NodeViewSemanticTagSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = SemanticTag
+    fields = ['wid', 'id', 'label']
+
+
+
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
   to_referenced_nodes = NodeViewReferenceSerializer(many=True)
@@ -273,6 +283,7 @@ class NodeSerializer(serializers.ModelSerializer):
   theorem = NodeViewTheoremSerializer()
   question_set = NodeViewQuestionSerializer(many=True)
   contributors = NodeViewBasicUserSerializer(many=True)
+  semantic_tags = NodeViewSemanticTagSerializer(many=True)
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
