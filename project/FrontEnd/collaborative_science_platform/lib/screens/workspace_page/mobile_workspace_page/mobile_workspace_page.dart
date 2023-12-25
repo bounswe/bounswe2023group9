@@ -34,6 +34,12 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
 
   const MobileWorkspacePage({
     super.key,
@@ -53,6 +59,12 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
   });
 
   @override
@@ -352,6 +364,12 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                                 updateRequest: widget.updateCollaborationRequest,
                                 sendWorkspaceToReview: widget.sendWorkspaceToReview,
                                 addReview: widget.addReview,
+                                setProof: widget.setProof,
+                                setDisproof: widget.setDisproof,
+                                setTheorem: widget.setTheorem,
+                                removeProof: widget.removeProof,
+                                removeDisproof: widget.removeDisproof,
+                                removeTheorem: widget.removeTheorem,
                               )
                             : const SizedBox(
                                 width: 100,

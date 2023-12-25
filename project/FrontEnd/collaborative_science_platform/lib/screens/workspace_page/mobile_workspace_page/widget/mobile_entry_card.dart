@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_menu.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
@@ -15,6 +16,14 @@ class MobileEntryCard extends StatefulWidget {
   final Function editEntry;
   final Color backgroundColor;
   final bool finalized;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+  final Function deleteEntry;
+  final bool fromNode;
 
   const MobileEntryCard({
     super.key,
@@ -23,6 +32,14 @@ class MobileEntryCard extends StatefulWidget {
     required this.editEntry,
     this.backgroundColor = const Color.fromARGB(255, 220, 235, 220),
     required this.finalized,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+    required this.deleteEntry,
+    required this.fromNode,
   });
 
   @override
@@ -105,7 +122,7 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Write",
+                      "Edit",
                       style: TextStyle(
                         color: (!editMode) ? Colors.grey : Colors.indigo[600],
                         fontSize: 16.0,
@@ -154,9 +171,21 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
                       color: Colors.red,
                     ),
                   ),
+                  EntryMenu(
+                    removeDisproof: widget.removeDisproof,
+                    removeProof: widget.removeProof,
+                    removeTheorem: widget.removeTheorem,
+                    setDisproof: widget.setDisproof,
+                    setProof: widget.setProof,
+                    setTheorem: widget.setTheorem,
+                    entry: widget.entry,
+                    deleteEntry: widget.deleteEntry,
+                    fromNode: widget.fromNode,
+                  ),
                 ],
               )
             : Container(),
+        
       ],
     );
   }
@@ -186,6 +215,7 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
             color: Colors.grey,
           ),
         ),
+
       ],
     );
   }
@@ -246,8 +276,7 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
                           ),
                         ),
                 ),
-                if (!widget.finalized)
-                lowerIconRow(),
+                if (!widget.finalized) lowerIconRow(),
               ],
             ),
           ),
