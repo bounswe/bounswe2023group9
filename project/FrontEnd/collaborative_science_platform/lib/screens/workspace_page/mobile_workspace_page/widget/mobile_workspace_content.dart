@@ -513,8 +513,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
             ),
+            if (widget.workspace.requestId == -1)
             const SubSectionTitle(title: "Contributors"),
+            if (widget.workspace.requestId == -1)
             contributorList(),
+            if (widget.workspace.requestId == -1)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
