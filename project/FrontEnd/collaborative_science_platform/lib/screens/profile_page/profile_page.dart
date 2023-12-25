@@ -21,6 +21,7 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
@@ -141,12 +142,66 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   }
- 
+
+  void addUserSemanticTag(int tagId, String label) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await wikiDataProvider.addUserSemanticTag(profileData.id, tagId, label, auth.user!.token);
+      await profileDataProvider.getData(widget.email);
+      setState(() {
+        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+        noWorks = profileData.nodes.length;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void removeUserSemanticTag(int tagId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await wikiDataProvider.removeUserSemanticTag(profileData.id, tagId, auth.user!.token);
+      await profileDataProvider.getData(widget.email);
+      setState(() {
+        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+        noWorks = profileData.nodes.length;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   Future<void> changeProfileStatus() async {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      
+
       adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
       setState(() {
         profileData.isBanned = !profileData.isBanned;
@@ -254,6 +309,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   AboutMe(
                                     profileData: profileData,
+                                    tags: profileData.tags,
+                                    addUserSemanticTag: addUserSemanticTag,
+                                    removeUserSemanticTag: removeUserSemanticTag,
                                     noWorks: noWorks,
                                     userType: basicUser.userType,
                                     newUserType: newUserType,
@@ -338,6 +396,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 children: [
                                   AboutMe(
                                     profileData: profileData,
+                                    tags: profileData.tags,
+                                    addUserSemanticTag: addUserSemanticTag,
+                                    removeUserSemanticTag: removeUserSemanticTag,
                                     noWorks: noWorks,
                                     userType: basicUser.userType,
                                     newUserType: newUserType,
@@ -423,6 +484,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               AboutMe(
                                   profileData: profileData,
+                                  tags: profileData.tags,
+                                  addUserSemanticTag: addUserSemanticTag,
+                                  removeUserSemanticTag: removeUserSemanticTag,
                                   noWorks: noWorks,
                                   userType: basicUser.userType,
                                   newUserType: newUserType,

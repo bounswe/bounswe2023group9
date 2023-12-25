@@ -34,7 +34,7 @@ class ContributorsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      // height: height,
       width: MediaQuery.of(context).size.width / 4,
       decoration: BoxDecoration(color: Colors.grey[100]),
       child: Padding(
@@ -42,11 +42,12 @@ class ContributorsListView extends StatelessWidget {
           child: Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             const Text("Contributors", style: TextStyles.title4secondary),
             SizedBox(
-              height: (height * 3) / 5,
+              //height: (height * 3) / 5,
               child: ListView.builder(
                   controller: controller,
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(3),
                   itemCount: contributors.length + pendingContributors.length,
                   itemBuilder: (BuildContext context, int index) {

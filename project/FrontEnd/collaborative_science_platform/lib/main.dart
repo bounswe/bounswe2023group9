@@ -6,10 +6,12 @@ import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
 import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/router.dart';
+import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -47,6 +49,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<QuestionAnswerProvider>(
             create: (context) => QuestionAnswerProvider()),
         ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
+        ChangeNotifierProvider<WikiDataProvider>(create: (context) => WikiDataProvider()),
         ChangeNotifierProvider<AdminProvider>(create: (context) => AdminProvider()),
         ChangeNotifierProvider<SettingsProvider>(create: (context) => SettingsProvider()),
       ],
