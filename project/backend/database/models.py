@@ -9,8 +9,8 @@ from api.wikidata import *
 
 class SemanticTag(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    wid = models.CharField(max_length=20)
-    label = models.CharField(max_length=30)
+    wid = models.CharField(max_length=20,unique=False)
+    label = models.CharField(max_length=30,unique=False)
     
     @property
     def nodes(self):

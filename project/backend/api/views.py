@@ -197,10 +197,49 @@ def remove_workspace_tag(request):
 
     if is_workspace_contributor(request):
         workspace = Workspace.objects.get(workspace_id=workspace_id)
+        tag = SemanticTag.objects.filter(id=tag_id)
+        if not tag.exists():
+            return JsonResponse({'message': 'There is no tag with this id.'}, status=404)
+        if tag not in  workspace.semantic_tags.all():
+            return JsonResponse({'message': 'There is no tag with this id in this workspace.'}, status=404)
         workspace.semantic_tags.remove(tag_id)
+        workspace.save()
         return JsonResponse({'message': 'Tag is successfully removed from workspace.'}, status=200)
     else:
         return JsonResponse({'message': "You don't have permission to do this!"}, status=403)
+
+
+@csrf_exempt
+def remove_user_tag(request):
+    tag_id = request.POST.get("tag_id")
+    res = BasicUserDetailAPI.as_view()(request)
+    try:
+        user = BasicUser.objects.filter(id=request.user.basicuser.id)
+    except:
+        return JsonResponse({'message': "invalid credentials."}, status=403)
+    if not user.exists():
+        return JsonResponse({'message': "invalid credentials."}, status=403)
+    if tag_id == None or tag_id == '':
+        return JsonResponse({'message': 'tag_id field can not be empty'}, status=400)
+    try:
+        tag_id = int(tag_id)
+    except:
+        return JsonResponse({'message': 'tag_id  field has to be an integer'}, status=400)
+    tag = SemanticTag.objects.filter(id=tag_id)
+    if not tag.exists():
+        return JsonResponse({'message': 'There is no tag with this id.'}, status=404)
+    tag = tag[0]
+    if tag not in request.user.basicuser.semantic_tags.all():
+        return JsonResponse({'message': 'This user does not have this tag.'}, status=404)
+    request.user.basicuser.semantic_tags.remove(tag)
+    request.user.basicuser.save()
+    return JsonResponse({'message': 'Tag is successfully removed from user.'}, status=200)
+
+
+
+
+
+
 
 
 def search(request):

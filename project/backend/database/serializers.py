@@ -81,12 +81,19 @@ class SemanticTagSerializer(serializers.ModelSerializer):
       wid = validated_data.get('wid', None)
       label = validated_data.get('label', None)
       workspace_id = self.context['request'].data.get('workspace_id', None)
+      user_id = self.context['request'].data.get('user_id', None)
 
       tag = SemanticTag.objects.create(wid=wid, label=label)
 
       if workspace_id is not None:
         workspace = Workspace.objects.get(workspace_id=workspace_id)
         workspace.semantic_tags.add(tag)
+        workspace.save()
+
+      if user_id is not None:
+        user = BasicUser.objects.get(id=user_id)
+        user.semantic_tags.add(tag)
+        user.save()
 
       return tag
 
