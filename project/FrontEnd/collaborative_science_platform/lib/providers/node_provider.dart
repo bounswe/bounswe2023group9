@@ -172,11 +172,13 @@ class NodeProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getNodeByType(String queryType) async {
+  Future<void> getNodeByType(String queryType, User? user) async {
+    final _token = user == null ? "" : user.token;
     Uri url = Uri.parse("${Constants.apiUrl}/search/?type=$queryType");
     final Map<String, String> headers = {
       "Accept": "application/json",
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "Authorization": "Token $_token"
     };
     try {
       final response = await http.get(url, headers: headers);

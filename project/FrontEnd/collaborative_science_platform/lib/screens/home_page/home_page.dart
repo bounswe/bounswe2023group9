@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/search_exceptions.dart
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
 import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/screens/home_page/mobile_home_page.dart';
@@ -62,7 +63,8 @@ class _HomePageState extends State<HomePage> {
         error = false;
         isLoading = true;
       });
-      await nodeProvider.getNodeByType(type);
+      final user = Provider.of<Auth>(context, listen: false).user;
+      await nodeProvider.getNodeByType(type, user);
     } catch (e) {
       setState(() {
         error = true;

@@ -1,6 +1,8 @@
 import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/select_button.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SelectButtons extends StatefulWidget {
   final Function onTypeChange;
@@ -50,14 +52,17 @@ class _SelectButtonsState extends State<SelectButtons> {
                 name: "Random",
                 selected: 3 == SelectButtonsHelper.selectedIndex,
                 onPressed: selectOne),
-            // if (Provider.of<Auth>(context).isSignedIn)
-            //   Row(
-            //     children: [
-            //       const SizedBox(width: 10.0),
-            //       SelectButton(
-            //           index: 4, name: "For You", selected: selectedIndex == 4, onPressed: selectOne),
-            //     ],
-            //   ),
+            if (Provider.of<Auth>(context).isSignedIn)
+              Row(
+                children: [
+                  const SizedBox(width: 10.0),
+                  SelectButton(
+                      index: 4,
+                      name: "For You",
+                      selected: 4 == SelectButtonsHelper.selectedIndex,
+                      onPressed: selectOne),
+                ],
+              ),
           ],
         ),
       ),
