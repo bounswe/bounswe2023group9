@@ -56,11 +56,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   void getNodeDetails() async {
     try {
       final nodeDetailsProvider = Provider.of<NodeProvider>(context);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.nodeID);
+      await nodeDetailsProvider.getNode(widget.nodeID, auth.isSignedIn ? auth.user!.token : "");
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
       });

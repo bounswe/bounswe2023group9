@@ -145,7 +145,7 @@ class NodeProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getNode(int id) async {
+  Future<void> getNode(int id, String token) async {
     clearAll();
     Uri url = Uri.parse("${Constants.apiUrl}/get_node/");
     if (id > -1) {
@@ -154,8 +154,13 @@ class NodeProvider with ChangeNotifier {
 
     final Map<String, String> headers = {
       "Accept": "application/json",
-      "content-type": "application/json"
+      "content-type": "application/json",
     };
+
+    if (token.isNotEmpty) {
+      headers.addAll({"Authorization": "Token $token"});
+    }
+
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
