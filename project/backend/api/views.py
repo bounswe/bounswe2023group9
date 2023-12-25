@@ -200,7 +200,7 @@ def remove_workspace_tag(request):
         tag = SemanticTag.objects.filter(id=tag_id)
         if not tag.exists():
             return JsonResponse({'message': 'There is no tag with this id.'}, status=404)
-        if tag not in  workspace.semantic_tags.all():
+        if tag[0] not in  workspace.semantic_tags.all():
             return JsonResponse({'message': 'There is no tag with this id in this workspace.'}, status=404)
         workspace.semantic_tags.remove(tag_id)
         workspace.save()
