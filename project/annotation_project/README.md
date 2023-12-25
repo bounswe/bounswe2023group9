@@ -22,7 +22,7 @@ Dont forget to set the following environment variables,
 - DATABASE_PORT: should be the port number of your database server, default: 5432
 
 You can set them while running the container like the following
-- `docker run -p 8000:8000 -e DJANGO_SECRET_KEY=<your-secret-key> <your-tag>`
+- `docker run -p 8001:8000 -e DJANGO_SECRET_KEY=<your-secret-key> <your-tag>`
 
 ## Database
 
