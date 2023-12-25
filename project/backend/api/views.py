@@ -618,14 +618,15 @@ def get_workspace_from_id(request):
     reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
     cont = Contributor.objects.get(pk=request.user.basicuser)
     reviewer_flag = True
-    pending = False
+    pending_reviewer = False
+    pending_collab = False
     workspace = workspace[0]
     if reviewer.exists():
         for req in ReviewRequest.objects.filter(receiver=cont):
             if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
                 reviewer_flag = False
                 request_id = req.id
-                pending = True
+                pending_reviewer = True
         if workspace in reviewer[0].review_workspaces.all():
             cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
             requests = ReviewRequest.objects.filter(workspace=workspace)
@@ -638,7 +639,7 @@ def get_workspace_from_id(request):
     for req in CollaborationRequest.objects.filter(receiver=cont):
         if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
             collab_flag = False
-            pending = True
+            pending_collab = True
             request_id = req.id
             # collab_comment = req.comment
     if reviewer_flag and collab_flag:
@@ -739,7 +740,8 @@ def get_workspace_from_id(request):
                          'from_node_id' :  node_id,
                          'request_id' : request_id,
                          'comments':comments,
-                         'pending':pending,
+                         'pending_reviewer':pending_reviewer,
+                         'pending_collab':pending_collab,
                          }, status=200)
 
 def get_semantic_suggestion(request):
