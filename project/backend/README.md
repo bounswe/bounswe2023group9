@@ -11,7 +11,7 @@ Please be sure your database server is running before run the container. You can
 
 To run the container,
  - `docker run -p 8000:8000 <your-tag>`
- 
+
 The first port number (8000) is the port number of your machine your service runs. Please be sure that the specified port is available. The second one is your container's port number and should be same as the one exported in the Dockerfile. (8000 for this project.)
 
 Dont forget to set the following environment variables,
@@ -21,6 +21,9 @@ Dont forget to set the following environment variables,
 - DATABASE_PASSWORD: should be the password of the owner of the created database, for root user: postgres
 - DATABASE_HOST: should be the address of your database server, in local: 127.0.0.1
 - DATABASE_PORT: should be the port number of your database server, default: 5432
+- EMAIL_HOST_USER: should be a real gmail email address, this is for sending user's email notifications
+- EMAIL_HOST_PASSWORD: should be the password of the gmail email address used as EMAIL_HOST_USER
+- ADMIN_EMAIL: should be the same as EMAIL_HOST_USER
 
 You can set them while running the container like the following
 - `docker run -p 8000:8000 -e DJANGO_SECRET_KEY=<your-secret-key> <your-tag>`
