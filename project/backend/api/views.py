@@ -446,8 +446,8 @@ def get_profile(request):
         node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
-            user = User.objects.get(id=cont.user_id)
-            authors.append({'name': user.first_name, 'surname': user.last_name, 'username': user.username})
+            user1 = User.objects.get(id=cont.user_id)
+            authors.append({'name': user1.first_name, 'surname': user1.last_name, 'username': user1.username})
         node_infos.append({'id':node_id,'title':node.node_title,'date':node.publish_date,'authors':authors})
 
     semantic_tags = []
