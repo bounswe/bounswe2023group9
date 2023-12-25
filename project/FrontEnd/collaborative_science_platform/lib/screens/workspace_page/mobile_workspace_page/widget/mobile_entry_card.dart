@@ -195,18 +195,18 @@ class _MobileEntryCardState extends State<MobileEntryCard> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        (widget.entry.isEditable)
-            ? IconButton(
-                onPressed: () {
-                  widget.onDelete();
-                  setState(() {});
-                },
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.grey,
-                ),
-              )
-            : Container(),
+        // (widget.entry.isEditable)
+        //     ? IconButton(
+        //         onPressed: () {
+        //           widget.onDelete();
+        //           setState(() {});
+        //         },
+        //         icon: const Icon(
+        //           Icons.delete,
+        //           color: Colors.grey,
+        //         ),
+        //       )
+        //     : Container(),
         Text(
           widget.entry.publishDateFormatted,
           style: const TextStyle(
