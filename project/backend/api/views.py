@@ -811,7 +811,7 @@ def remove_workspace_proof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.proof_entry != None:
         workspace.proof_entry.is_proof_entry = False
-        workspace.proof_entry.is_disproof_entry = False
+        # workspace.proof_entry.is_disproof_entry = False
         workspace.proof_entry.save()
     workspace.proof_entry = None
     workspace.save()
@@ -892,6 +892,7 @@ def remove_workspace_disproof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.disproof_entry != None:
         workspace.disproof_entry.is_disproof_entry = False
+        workspace.disproof_entry.save()
     workspace.disproof_entry = None
     workspace.save()
     return JsonResponse({'message': 'Disproof entry is successfully removed.'}, status=200)
@@ -970,6 +971,7 @@ def remove_workspace_theorem(request):
         return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
     if workspace.theorem_entry != None:
         workspace.theorem_entry.is_theorem_entry = False
+        workspace.theorem_entry.save()
     workspace.theorem_entry = None
     workspace.save()
     return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
