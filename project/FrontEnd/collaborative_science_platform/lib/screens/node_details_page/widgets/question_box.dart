@@ -37,21 +37,17 @@ class _QuestionBoxState extends State<QuestionBox> {
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
       int response =
           await adminProvider.hideQuestion(admin, widget.question, !widget.question.isHidden);
+      setState(() {
+        widget.question.isHidden = !widget.question.isHidden;
+      });
     } catch (e) {
       print("Error");
       setState(() {});
     }
   }
 
-  void handleButton() {
-    setState(() {
-      isHidden = !isHidden;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    bool isHidden = widget.question.isHidden;
     return Card(
       margin: const EdgeInsets.all(16.0),
       child: Padding(
@@ -92,9 +88,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                               isReplyVisible = !isReplyVisible;
                             });
                           },
-                          child: Text(
-                            isReplyVisible ? 'Hide Reply' : 'Reply',
-                          ),
+                          child: Text(isReplyVisible ? 'Hide Reply' : 'Reply'),
                         ),
                       ),
                       if (isReplyVisible)
@@ -108,7 +102,7 @@ class _QuestionBoxState extends State<QuestionBox> {
             ),
             Visibility(
               visible: widget.isAdmin, //visible only to admin
-              child: isHidden //button view will change according to this
+              child: widget.question.isHidden //button view will change according to this
                   ? SizedBox(
                       width: 110,
                       child: AppButton(
@@ -122,7 +116,6 @@ class _QuestionBoxState extends State<QuestionBox> {
                         type: "grey",
                         onTap: () {
                           changeQuestionStatus();
-                          handleButton();
                           widget.onTap(); // Call the onTap callback here
                         },
                       ),
@@ -140,7 +133,6 @@ class _QuestionBoxState extends State<QuestionBox> {
                         type: "danger",
                         onTap: () {
                           changeQuestionStatus();
-                          handleButton();
                           widget.onTap(); // Call the onTap callback here
                         },
                       ),

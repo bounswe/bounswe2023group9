@@ -39,14 +39,16 @@ class _QuestionsViewState extends State<QuestionsView> {
   void updateVisibility() {
     setState(() {
       isVisible = !isVisible;
+      questions = widget.questions;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     List<Question> filteredQuestions = questions.where((question) {
-      return question.isAnswered || widget.canAnswer;
+      return question.isAnswered || widget.canAnswer || widget.isAdmin;
     }).toList();
+    filteredQuestions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return SingleChildScrollView(
       child: Container(

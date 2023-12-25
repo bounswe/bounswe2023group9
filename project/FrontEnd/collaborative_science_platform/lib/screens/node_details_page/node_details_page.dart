@@ -56,11 +56,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   void getNodeDetails() async {
     try {
       final nodeDetailsProvider = Provider.of<NodeProvider>(context);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.nodeID);
+      await nodeDetailsProvider.getNode(widget.nodeID, auth.user!.token);
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
@@ -134,11 +135,10 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      getNodeDetails();
-      print(node.isHidden.toString());
       await adminProvider.hideNode(admin, node, !node.isHidden);
-      getNodeDetails();
-      print(node.isHidden.toString());
+      setState(() {
+        node.isHidden = !node.isHidden;
+      });
       error = false;
       message = "Node status updated.";
     } catch (e) {
@@ -179,7 +179,9 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                         ? WebNodeDetails(
                             node: node,
                             handleButton: handleButton,
-                            createNewWorkspacefromNode: createNewWorkspacefromNode)
+                            createNewWorkspacefromNode: createNewWorkspacefromNode,
+                            onNodeStatusChanged: () => setState(() {}),
+                          )
                         : NodeDetails(
                             node: node,
                             controller: controller2,
@@ -195,12 +197,14 @@ class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final Function createNewWorkspacefromNode;
   final Function() handleButton;
-
-  const WebNodeDetails(
-      {super.key,
-      required this.node,
-      required this.handleButton,
-      required this.createNewWorkspacefromNode});
+  final Function() onNodeStatusChanged;
+  const WebNodeDetails({
+    super.key,
+    required this.node,
+    required this.handleButton,
+    required this.createNewWorkspacefromNode,
+    required this.onNodeStatusChanged,
+  });
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -218,7 +222,6 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
 
   String errorMessage = "";
   String message = "";
-
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -293,6 +296,10 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
       final User? user = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
       await adminProvider.hideNode(user, widget.node, widget.node.isHidden);
+      setState(() {
+        widget.node.isHidden = !widget.node.isHidden;
+      });
+      widget.onNodeStatusChanged();
       error = false;
       message = "Node status updated.";
     } catch (e) {
