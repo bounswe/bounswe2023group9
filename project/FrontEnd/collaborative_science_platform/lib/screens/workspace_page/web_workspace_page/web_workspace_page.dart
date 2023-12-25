@@ -47,7 +47,6 @@ class WebWorkspacePage extends StatefulWidget {
   final Function removeTheorem;
   final Function removeProof;
 
-
   const WebWorkspacePage({
     super.key,
     required this.workspace,
@@ -68,16 +67,13 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
-
-    required this.resetWorkspace,
-
     required this.removeDisproof,
     required this.removeProof,
     required this.removeTheorem,
     required this.setDisproof,
     required this.setProof,
     required this.setTheorem,
-
+    required this.resetWorkspace,
   });
 
   @override
@@ -231,7 +227,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: titleReadOnly  
+                                    children: titleReadOnly
                                         ? [
                                             Text(widget.workspace!.workspaceTitle,
                                                 style: TextStyles.title2),
@@ -279,8 +275,12 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             )
                                           ],
                                   ),
-                                  if (!widget.workspace!.pending &&
-                                      widget.workspace!.requestId == -1 &&
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      if (!widget.workspace!.pending &&
+                                          widget.workspace!.requestId == -1 &&
                                       (widget.workspace!.status == WorkspaceStatus.workable ||
                                               widget.workspace!.status ==
                                                   WorkspaceStatus.finalized ||
@@ -292,7 +292,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                 WorkspaceStatus.workable ||
                                             widget.workspace!.status == WorkspaceStatus.finalized ||
                                             widget.workspace!.status == WorkspaceStatus.rejected,
-                                        text: widget.workspace!.status == WorkspaceStatus.workable
+                                            text:
+                                                widget.workspace!.status == WorkspaceStatus.workable
                                             ? ((MediaQuery.of(context).size.width >
                                                     Responsive.desktopPageWidth)
                                                 ? "Finalize Workspace"
@@ -312,7 +313,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                             WorkspaceStatus.inReview
                                                         ? "In Review"
                                                         : "Published")),
-                                        height: 45,
+                                            height: 45,
                                         onTap: () {
                                           /* finalize workspace*/
                                           if (widget.workspace!.status ==
@@ -323,8 +324,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                           else if (widget.workspace!.status ==
                                               WorkspaceStatus.finalized) {
                                             widget.sendWorkspaceToReview();
-                                          }
-                                          else if (widget.workspace!.status ==
+                                              } else if (widget.workspace!.status ==
                                               WorkspaceStatus.rejected) {
                                             widget.resetWorkspace();
                                           }
@@ -335,7 +335,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   if (!widget.workspace!.pending &&
                                       widget.workspace!.requestId != -1 &&
                                       widget.workspace!.status == WorkspaceStatus.inReview)
-                                    SizedBox(
+                                        SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
                                             isActive: widget.workspace!.status ==
@@ -444,7 +444,6 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   removeDisproof: widget.removeDisproof,
                                   removeTheorem: widget.removeTheorem,
                                   fromNode: widget.workspace!.fromNodeId != -1,
-
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -462,7 +461,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       finalized:
                                           widget.workspace!.status != WorkspaceStatus.workable ||
                                               widget.workspace!.pending,
-                                      contributors: widget.workspace!.contributors,
+                                        contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
                                       height: minHeight / 3,

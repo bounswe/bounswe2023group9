@@ -154,8 +154,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
 
             finalized:
                 widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending,
-
-            finalized: widget.workspace.status != WorkspaceStatus.workable,
             tag: widget.workspace.tags[index],
 
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
