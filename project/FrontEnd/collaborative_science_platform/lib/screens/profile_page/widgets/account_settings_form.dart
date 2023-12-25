@@ -8,6 +8,7 @@ import 'package:collaborative_science_platform/screens/profile_page/widgets/chan
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,9 +25,11 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
 
   final passwordController = TextEditingController();
   final aboutMeController = TextEditingController();
+  final orcidController = TextEditingController();
 
   final passwordFocusNode = FocusNode();
   final aboutMeFocusNode = FocusNode();
+  final orcidFocusNode = FocusNode();
 
   bool isSwitched = false;
   bool isSwitched2 = false;
@@ -90,7 +93,7 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
       final User? user = Provider.of<Auth>(context, listen: false).user;
       final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
       await settingsProvider.changePreferences(
-          user, aboutMeController.text, isSwitched, isSwitched2);
+          user, aboutMeController.text, isSwitched, isSwitched2, orcidController.text);
       error = false;
       message = "Changed Successfully.";
     } catch (e) {
@@ -106,19 +109,45 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
     final User? user = Provider.of<Auth>(context).user;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      width: Responsive.getGenericPageWidth(context),
+      width: Responsive.getGenericPageWidth(context) / 1.2,
       child: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 14),
           const Row(
             mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SelectableText('About', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
+              SelectableText('About',
+                  style:
+                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0)),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           AboutMeEdit(aboutMeController),
-          const Divider(height: 40.0),
+          const SizedBox(height: 14.0),
+          //  const Divider(height: 40.0),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Add your ORCID",
+                  style:
+                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0)),
+              const SizedBox(height: 10.0),
+              AppTextField(
+                controller: orcidController,
+                focusNode: orcidFocusNode,
+                hintText: 'Example: 0000-0002-4940-348X',
+                obscureText: false,
+                color: error && orcidController.text.isEmpty
+                    ? AppColors.dangerColor
+                    : AppColors.primaryColor,
+                prefixIcon: const Icon(Icons.edit),
+                height: 64.0,
+                onChanged: (_) {},
+              ),
+            ],
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -179,10 +208,12 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
               ),
             ),
           ),
-          const SizedBox(height: 10),
           Text(message),
           const Divider(height: 40.0),
-          Container(
+          const Text("or",
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16.0)),
+          const SizedBox(height: 10.0),
+          SizedBox(
             width: 400,
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
