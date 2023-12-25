@@ -42,11 +42,6 @@ class Auth with ChangeNotifier {
           'Accept': 'application/json',
           'Authorization': "Token $token"
         };
-
-        //Add token to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', token);
-
         final tokenResponse = await http.get(url, headers: tokenHeaders);
         if (tokenResponse.statusCode == 200) {
           final userData = json.decode(tokenResponse.body);
@@ -69,6 +64,15 @@ class Auth with ChangeNotifier {
         } else {
           throw Exception("Something has happened");
         }
+
+        //Add token to SharedPreferences
+        try {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('token', token);
+        } catch (e) {
+          print("Error: $e");
+        }
+
         notifyListeners();
       } else if (response.statusCode == 400) {
         throw WrongPasswordException(message: 'Your credentials are wrong');
@@ -76,6 +80,7 @@ class Auth with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -121,7 +126,12 @@ class Auth with ChangeNotifier {
   Future<bool> checkTokenAndLogin() async {
     // Step 1: Retrieve the token from SharedPreferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+    String? token;
+    try {
+      token = prefs.getString('token');
+    } catch (e) {
+      // If there is no token, then return false
+    }
 
     if (token != null) {
       // Step 2: Make the HTTP request with the token
