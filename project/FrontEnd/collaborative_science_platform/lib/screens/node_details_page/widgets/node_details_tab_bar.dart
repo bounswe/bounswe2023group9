@@ -73,6 +73,14 @@ class _NodeDetailsTabBarState extends State<NodeDetailsTabBar> {
             isSelected: currentIndex == 5,
             text: "Contributors",
           ),
+        if (!Responsive.isDesktop(context))
+          NavigationBarItem(
+            callback: updateIndex,
+            icon: Icons.tag,
+            index: 6,
+            isSelected: currentIndex == 6,
+            text: "Contributors",
+          ),
       ],
     ));
   }

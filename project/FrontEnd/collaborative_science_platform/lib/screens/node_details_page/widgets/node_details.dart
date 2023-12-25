@@ -284,10 +284,17 @@ class _NodeDetailsState extends State<NodeDetails> {
               ),
             if (currentIndex == 5)
               //contributors
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Contributors(
-                      contributors: widget.node.contributors, controller: widget.controller)),
+              Contributors(
+                contributors: widget.node.contributors,
+                controller: widget.controller,
+                semanticTags: const [],
+              ),
+            if (currentIndex == 6)
+              //contributors
+              SemantigTagsListView(
+                controller: widget.controller,
+                semanticTags: widget.node.semanticTags,
+              ),
           ],
         ),
       ),

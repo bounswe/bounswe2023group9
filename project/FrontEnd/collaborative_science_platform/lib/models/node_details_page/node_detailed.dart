@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/models/node.dart';
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
+import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/models/theorem.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 
@@ -16,6 +17,7 @@ class NodeDetailed {
   List<User> reviewers;
   List<Node> references;
   List<Node> citations;
+  List<SemanticTag> semanticTags;
   bool isValid;
   int noVisits;
   bool isHidden;
@@ -38,6 +40,7 @@ class NodeDetailed {
     this.isValid = true,
     this.noVisits = 0,
     this.questions = const [],
+    this.semanticTags = const [],
     this.isHidden = false,
     //required this.semanticTags,
     //required this.wikiTags,
@@ -57,6 +60,7 @@ class NodeDetailed {
     var proofsList = jsonString['proofs'] as List;
     var theorem = Theorem.fromJson(jsonString['theorem']);
     var questionsList = jsonString['question_set'] as List;
+    var semanticTagsList = jsonString['semantic_tags'] as List;
     List<Node> references = referencesList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
     List<Node> citations = citationsList.map((e) => Node.fromJsonforNodeDetailPage(e)).toList();
     List<User> contributors =
@@ -64,6 +68,8 @@ class NodeDetailed {
     //List<User> reviewers = reviewersList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<Proof> proof = proofsList.map((e) => Proof.fromJson(e)).toList();
     List<Question> questions = questionsList.map((e) => Question.fromJson(e)).toList();
+    List<SemanticTag> semanticTags =
+        semanticTagsList.map((e) => SemanticTag.fromJsonforNodeDetailPage(e)).toList();
     return NodeDetailed(
       citations: citations,
       contributors: contributors,
@@ -77,6 +83,7 @@ class NodeDetailed {
       questions: questions,
       references: references,
       //reviewers: reviewers,
+      semanticTags: semanticTags,
       theorem: theorem,
     );
   }

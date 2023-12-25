@@ -145,18 +145,16 @@ class NodeProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getNode(int id, String token) async {
+  Future<void> getNode(int id) async {
     clearAll();
     Uri url = Uri.parse("${Constants.apiUrl}/get_node/");
-
     if (id > -1) {
       url = Uri.parse("${Constants.apiUrl}/get_node/?node_id=$id");
     }
 
     final Map<String, String> headers = {
       "Accept": "application/json",
-      "content-type": "application/json",
-      "Authorization": "Token $token"
+      "content-type": "application/json"
     };
     try {
       final response = await http.get(url, headers: headers);

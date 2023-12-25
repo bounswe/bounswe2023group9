@@ -5,7 +5,6 @@ import 'dart:ui';
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
-import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
@@ -44,7 +43,6 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
   void getNode() async {
     try {
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
-      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
@@ -58,7 +56,7 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
           return;
         }
       }
-      await nodeProvider.getNode(widget.nodeId, auth.user!.token);
+      await nodeProvider.getNode(widget.nodeId);
       setState(() {
         node = nodeProvider.nodeDetailed!;
         isLoading = false;
