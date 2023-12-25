@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
 import 'package:collaborative_science_platform/screens/home_page/widgets/select_button.dart';
 import 'package:flutter/material.dart';
 
@@ -10,11 +11,9 @@ class SelectButtons extends StatefulWidget {
 }
 
 class _SelectButtonsState extends State<SelectButtons> {
-  int selectedIndex = 0;
-
   void selectOne(int index) async {
     setState(() {
-      selectedIndex = index;
+      SelectButtonsHelper.selectedIndex = index;
     });
     widget.onTypeChange(index);
   }
@@ -29,16 +28,28 @@ class _SelectButtonsState extends State<SelectButtons> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SelectButton(
-                index: 0, name: "Trending", selected: selectedIndex == 0, onPressed: selectOne),
+                index: 0,
+                name: "Trending",
+                selected: 0 == SelectButtonsHelper.selectedIndex,
+                onPressed: selectOne),
             const SizedBox(width: 10.0),
             SelectButton(
-                index: 1, name: "Latest", selected: selectedIndex == 1, onPressed: selectOne),
+                index: 1,
+                name: "Latest",
+                selected: 1 == SelectButtonsHelper.selectedIndex,
+                onPressed: selectOne),
             const SizedBox(width: 10.0),
             SelectButton(
-                index: 2, name: "Most Read", selected: selectedIndex == 2, onPressed: selectOne),
+                index: 2,
+                name: "Most Read",
+                selected: 2 == SelectButtonsHelper.selectedIndex,
+                onPressed: selectOne),
             const SizedBox(width: 10.0),
             SelectButton(
-                index: 3, name: "Random", selected: selectedIndex == 3, onPressed: selectOne),
+                index: 3,
+                name: "Random",
+                selected: 3 == SelectButtonsHelper.selectedIndex,
+                onPressed: selectOne),
             // if (Provider.of<Auth>(context).isSignedIn)
             //   Row(
             //     children: [
