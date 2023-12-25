@@ -20,6 +20,8 @@ class EntryHeader extends StatelessWidget {
               ? "Theorem"
               : entry.isProofEntry
               ? "Proof"
+                  : entry.isDisproofEntry
+                      ? "Disproof"
               : "",
           style: TextStyle(
             fontWeight: FontWeight.w600,

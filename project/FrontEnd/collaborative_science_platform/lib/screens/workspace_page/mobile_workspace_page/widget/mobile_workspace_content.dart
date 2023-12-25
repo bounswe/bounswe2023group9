@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
@@ -33,6 +34,16 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function addReview;
   final Function resetWorkspace;
 
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+
+  final Function displayCommentSidebar;
+
+
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -49,7 +60,18 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+
     required this.resetWorkspace,
+
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+    required this.displayCommentSidebar,
+
+
   });
 
   @override
@@ -169,6 +191,14 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           await widget.deleteEntry(widget.workspace.entries[index].entryId);
                         },
                         editEntry: widget.editEntry,
+                        setProof: widget.setProof,
+                        setDisproof: widget.setDisproof,
+                        setTheorem: widget.setTheorem,
+                        removeProof: widget.removeProof,
+                        removeDisproof: widget.removeDisproof,
+                        removeTheorem: widget.removeTheorem,
+                        deleteEntry: widget.deleteEntry,
+                        fromNode: widget.workspace.fromNodeId != -1,
                       )
                     : NewEntry(
                         onCreate: widget.createNewEntry,
@@ -364,6 +394,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                       : (widget.workspace.status == WorkspaceStatus.inReview
                                           ? "In Review"
                                           : "Published")),
+
                       onTap: widget.pending
                           ? () {
                               // accept or reject the review
@@ -397,9 +428,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                 builder: (context) => AppAlertDialog(
                                   text: widget.workspace.status == WorkspaceStatus.workable
                                       ? "Do you want to finalize the workspace?"
+
                                       : (widget.workspace.status == WorkspaceStatus.finalized
                                           ? "Do you want to send it to review?"
                                           : "Do you want to reset the workspace?"),
+
                                   actions: [
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -419,6 +452,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                               WorkspaceStatus.rejected) {
                                             widget.resetWorkspace();
                                             Navigator.of(context).pop();
+
                                           }
                                         },
                                       ),
@@ -442,6 +476,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 if (!widget.workspace.pending &&
                     widget.workspace.requestId != -1 &&
                     widget.workspace.status == WorkspaceStatus.inReview)
+
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
@@ -497,6 +532,20 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                       type: "primary",
                     ),
                   ),
+                if (widget.workspace.comments.isNotEmpty && widget.workspace.requestId == -1)
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        widget.displayCommentSidebar();
+                      },
+                      child: const Text(
+                        "See Review Comments",
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                      ),
+                    ),
+                  ),
               ]),
             ),
             const Padding(
@@ -519,8 +568,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
             ),
+            if (widget.workspace.requestId == -1)
             const SubSectionTitle(title: "Contributors"),
+            if (widget.workspace.requestId == -1)
             contributorList(),
+            if (widget.workspace.requestId == -1)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),

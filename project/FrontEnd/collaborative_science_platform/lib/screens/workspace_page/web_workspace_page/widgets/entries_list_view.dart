@@ -14,6 +14,14 @@ class EntriesListView extends StatefulWidget {
   final Function editEntry;
   final Function deleteEntry;
   final bool finalized;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+  final bool fromNode;
+
   const EntriesListView({
     super.key,
     required this.entries,
@@ -24,6 +32,13 @@ class EntriesListView extends StatefulWidget {
     required this.editEntry,
     required this.deleteEntry,
     required this.finalized,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+    required this.fromNode,
   });
   @override
   State<EntriesListView> createState() => _EntriesListViewState();
@@ -71,6 +86,14 @@ class _EntriesListViewState extends State<EntriesListView> {
                           },
                           editEntry: widget.editEntry,
                           backgroundColor: Colors.white,
+                          setProof: widget.setProof,
+                          setDisproof: widget.setDisproof,
+                          setTheorem: widget.setTheorem,
+                          removeProof: widget.removeProof,
+                          removeDisproof: widget.removeDisproof,
+                          removeTheorem: widget.removeTheorem,
+                          deleteEntry: widget.deleteEntry,
+                          fromNode: widget.fromNode,
                         )
                       : NewEntry(
                           onCreate: widget.createNewEntry,
