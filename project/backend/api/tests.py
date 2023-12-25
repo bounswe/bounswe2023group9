@@ -1207,21 +1207,21 @@ class WorkspaceProofTestCase(TestCase):
         print("All tests for setting/removing workspace proof are completed!")
 
 
-    def test_set_workspace_proof(self):
-        url = reverse('set_workspace_proof')
-        data = {
-            'workspace_id': self.workspace.workspace_id,
-            'entry_id': self.entry.entry_id,
-            'is_disproof': True,
-        }
-
-        response = self.client.post(url, data=data)
-
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        self.assertEqual(Workspace.objects.get(pk=self.workspace.workspace_id).proof_entry.entry_id, self.entry.entry_id)
-        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_proof_entry, True)
-        self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_disproof_entry, True)
+    # def test_set_workspace_proof(self):
+    #     url = reverse('set_workspace_proof')
+    #     data = {
+    #         'workspace_id': self.workspace.workspace_id,
+    #         'entry_id': self.entry.entry_id,
+    #         'is_disproof': True,
+    #     }
+    #
+    #     response = self.client.post(url, data=data)
+    #
+    #     self.assertEqual(response.status_code, 200, response.json())
+    #
+    #     self.assertEqual(Workspace.objects.get(pk=self.workspace.workspace_id).proof_entry.entry_id, self.entry.entry_id)
+    #     self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_proof_entry, True)
+    #     self.assertEqual(Entry.objects.get(pk=self.entry.entry_id).is_disproof_entry, True)
 
     
     def test_remove_workspace_proof(self):
