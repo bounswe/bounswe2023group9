@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/screens/workspace_page/mobile_wor
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/reference_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/semantic_tag_card.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/subsection_title.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
@@ -38,6 +39,9 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function removeTheorem;
   final Function removeProof;
 
+  final Function displayCommentSidebar;
+
+
   const MobileWorkspaceContent({
     super.key,
     required this.pending,
@@ -60,6 +64,8 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.setDisproof,
     required this.setProof,
     required this.setTheorem,
+    required this.displayCommentSidebar,
+
   });
 
   @override
@@ -351,89 +357,93 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                         ],
                 ),
                 if (widget.workspace.requestId == -1)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
-                  child: AppButton(
-                    height: 40,
-                    text: widget.pending
-                        ? "Accept Workspace"
-                        : (widget.workspace.status == WorkspaceStatus.workable
-                            ? "Finalize Workspace"
-                            : "Send to Review"),
-                    icon: widget.pending
-                        ? const Icon(Icons.approval)
-                        : (widget.workspace.status == WorkspaceStatus.workable
-                            ? const Icon(Icons.lock)
-                            : const Icon(Icons.send)),
-                    onTap: widget.pending
-                        ? () {
-                            // accept or reject the review
-                            showDialog(
-                              context: context,
-                              builder: (context) => AppAlertDialog(
-                                text: "Do you accept the work?",
-                                actions: [
-                                  AppButton(
-                                    text: "Accept",
-                                    height: 40,
-                                    onTap: () {
-                                      /* Send to review */
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  AppButton(
-                                    text: "Reject",
-                                    height: 40,
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        : () {
-                            // send to review
-                            showDialog(
-                              context: context,
-                              builder: (context) => AppAlertDialog(
-                                text: widget.workspace.status == WorkspaceStatus.workable
-                                    ? "Do you want to finalize the workspace?"
-                                    : "Do you want to send it to review?",
-                                actions: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 5),
-                                    child: AppButton(
-                                      text: "Yes",
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
+                    child: AppButton(
+                      isActive: widget.workspace.status == WorkspaceStatus.workable ||
+                          widget.workspace.status == WorkspaceStatus.finalized,
+                      height: 40,
+                      text: widget.pending
+                          ? "Accept Workspace"
+                          : (widget.workspace.status == WorkspaceStatus.workable
+                              ? "Finalize Workspace"
+                              : (widget.workspace.status == WorkspaceStatus.finalized
+                                  ? "Send to Review"
+                                  : "In Review")),
+                      icon: widget.pending
+                          ? const Icon(Icons.approval)
+                          : (widget.workspace.status == WorkspaceStatus.workable
+                              ? const Icon(Icons.lock)
+                              : const Icon(Icons.send)),
+                      onTap: widget.pending
+                          ? () {
+                              // accept or reject the review
+                              showDialog(
+                                context: context,
+                                builder: (context) => AppAlertDialog(
+                                  text: "Do you accept the work?",
+                                  actions: [
+                                    AppButton(
+                                      text: "Accept",
                                       height: 40,
                                       onTap: () {
-                                        if (widget.workspace.status == WorkspaceStatus.workable) {
-                                          widget.finalizeWorkspace();
-                                          Navigator.of(context).pop();
-                                        } else {
-                                          /* Send to review */
-                                          widget.sendWorkspaceToReview();
-                                          Navigator.of(context).pop();
-                                        }
+                                        /* Send to review */
+                                        Navigator.of(context).pop();
                                       },
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 5),
-                                    child: AppButton(
-                                      text: "No",
+                                    AppButton(
+                                      text: "Reject",
                                       height: 40,
                                       onTap: () {
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  ],
+                                ),
+                              );
+                            }
+                          : () {
+                              // send to review
+                              showDialog(
+                                context: context,
+                                builder: (context) => AppAlertDialog(
+                                  text: widget.workspace.status == WorkspaceStatus.workable
+                                      ? "Do you want to finalize the workspace?"
+                                      : "Do you want to send it to review?",
+                                  actions: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: AppButton(
+                                        text: "Yes",
+                                        height: 40,
+                                        onTap: () {
+                                          if (widget.workspace.status == WorkspaceStatus.workable) {
+                                            widget.finalizeWorkspace();
+                                            Navigator.of(context).pop();
+                                          } else {
+                                            /* Send to review */
+                                            widget.sendWorkspaceToReview();
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: AppButton(
+                                        text: "No",
+                                        height: 40,
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                    ),
                   ),
-                ),
                 if (widget.workspace.requestId != -1)
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(
@@ -490,6 +500,20 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                       type: "primary",
                     ),
                   ),
+                if (widget.workspace.comments.isNotEmpty && widget.workspace.requestId == -1)
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        widget.displayCommentSidebar();
+                      },
+                      child: const Text(
+                        "See Review Comments",
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, color: AppColors.hyperTextColor),
+                      ),
+                    ),
+                  ),
               ]),
             ),
             const Padding(
@@ -512,8 +536,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
             ),
+            if (widget.workspace.requestId == -1)
             const SubSectionTitle(title: "Contributors"),
+            if (widget.workspace.requestId == -1)
             contributorList(),
+            if (widget.workspace.requestId == -1)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),

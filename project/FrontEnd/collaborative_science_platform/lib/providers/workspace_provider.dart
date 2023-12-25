@@ -368,7 +368,7 @@ class WorkspaceProvider with ChangeNotifier {
     });
 
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       //print(await response.stream.bytesToString());
       notifyListeners();
     } else if (response.statusCode == 400) {
@@ -468,14 +468,11 @@ class WorkspaceProvider with ChangeNotifier {
     });
     request.fields.addAll({
       'id': "$id",
-      'status': requestStatus,
       'comment': comment,
       'response': requestStatus,
     });
 
     http.StreamedResponse response = await request.send();
-    print(response.statusCode);
-    print(await response.stream.bytesToString());
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());
       notifyListeners();
