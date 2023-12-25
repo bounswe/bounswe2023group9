@@ -37,6 +37,12 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
 
   const WebWorkspacePage({
     super.key,
@@ -57,6 +63,12 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
   });
 
   @override
@@ -401,6 +413,13 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   editEntry: widget.editEntry,
                                   deleteEntry: widget.deleteEntry,
                                   finalized: widget.workspace!.status != WorkspaceStatus.workable,
+                                  setProof: widget.setProof,
+                                  setDisproof: widget.setDisproof,
+                                  setTheorem: widget.setTheorem,
+                                  removeProof: widget.removeProof,
+                                  removeDisproof: widget.removeDisproof,
+                                  removeTheorem: widget.removeTheorem,
+                                  fromNode: widget.workspace!.fromNodeId != -1,
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,

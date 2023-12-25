@@ -32,7 +32,15 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+
   final Function displayCommentSidebar;
+
 
   const MobileWorkspaceContent({
     super.key,
@@ -50,7 +58,14 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
     required this.displayCommentSidebar,
+
   });
 
   @override
@@ -166,6 +181,14 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           await widget.deleteEntry(widget.workspace.entries[index].entryId);
                         },
                         editEntry: widget.editEntry,
+                        setProof: widget.setProof,
+                        setDisproof: widget.setDisproof,
+                        setTheorem: widget.setTheorem,
+                        removeProof: widget.removeProof,
+                        removeDisproof: widget.removeDisproof,
+                        removeTheorem: widget.removeTheorem,
+                        deleteEntry: widget.deleteEntry,
+                        fromNode: widget.workspace.fromNodeId != -1,
                       )
                     : NewEntry(
                         onCreate: widget.createNewEntry,
