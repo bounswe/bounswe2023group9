@@ -83,10 +83,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     return Center(
       child: IconButton(
         iconSize: 40.0,
-        onPressed: widget.workspace.status != WorkspaceStatus.workable ? () {} : onPressed,
+        onPressed: (widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending)
+            ? () {}
+            : onPressed,
         icon: Icon(
           Icons.add,
-          color: widget.workspace.status != WorkspaceStatus.workable
+          color: (widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending)
               ? Colors.grey[200]
               : Colors.grey[800],
         ),
@@ -222,11 +224,16 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ? ContributorCard(
                 contributor: widget.workspace.contributors[index],
                 pending: false,
+                workspacePending: widget.workspace.pending,
+                updateRequest: widget.updateRequest,
               )
             : (index < length + pendingLength)
                 ? ContributorCard(
                     contributor: widget.workspace.pendingContributors[index - length],
                     pending: true,
+                    workspacePending: widget.workspace.pending,
+                    updateRequest: widget.updateRequest,
+
                   )
                 : addIcon(() {
                     showDialog(context: context, builder: (context) => alertDialog);
@@ -299,7 +306,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                               style: TextStyles.title2,
                             ),
                           ),
-                          if (widget.workspace.status == WorkspaceStatus.workable)
+                          if (widget.workspace.status == WorkspaceStatus.workable &&
+                              !widget.workspace.pending)
                             IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -320,6 +328,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                 obscureText: false,
                                 height: 200),
                           ),
+                          if (!widget.workspace.pending)
                           SizedBox(
                             width: 50,
                             height: 50,
@@ -336,7 +345,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           )
                         ],
                 ),
-                if (widget.workspace.requestId == -1)
+                if (!widget.workspace.pending && widget.workspace.requestId == -1)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                     child: AppButton(

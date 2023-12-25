@@ -18,6 +18,8 @@ class Workspace {
   int fromNodeId;
   int requestId;
   bool pending;
+  bool pendingReviewer;
+  bool pendingContributor;
   Workspace({
     required this.workspaceId,
     required this.workspaceTitle,
@@ -29,7 +31,9 @@ class Workspace {
     required this.references,
     required this.fromNodeId,
     required this.requestId,
-    this.pending = false,
+    required this.pending,
+    required this.pendingContributor,
+    required this.pendingReviewer,
   });
 
   factory Workspace.fromJson(Map<String, dynamic> jsonString) {
@@ -67,7 +71,10 @@ class Workspace {
       references: references,
       requestId: jsonString["request_id"] == "" ? -1 : jsonString["request_id"],
       fromNodeId: jsonString["from_node_id"] == "" ? -1 : jsonString["from_node_id"],
-      pending: jsonString["pending"],
+      pending: jsonString["pending_reviewer"] || jsonString["pending_collab"],
+      pendingReviewer: jsonString["pending_reviewer"],
+      pendingContributor: jsonString["pending_collab"],
+
     );
   }
 }

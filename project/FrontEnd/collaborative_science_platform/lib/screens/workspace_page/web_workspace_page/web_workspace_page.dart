@@ -201,12 +201,13 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: titleReadOnly || widget.workspace!.pending 
+                                    children: titleReadOnly  
                                         ? [
                                             Text(widget.workspace!.workspaceTitle,
                                                 style: TextStyles.title2),
                                             if (widget.workspace!.status ==
-                                                WorkspaceStatus.workable)
+                                                    WorkspaceStatus.workable &&
+                                                !widget.workspace!.pending)
                                               IconButton(
                                                   onPressed: () {
                                                     setState(() {
@@ -229,6 +230,9 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                   obscureText: false,
                                                   height: 200),
                                             ),
+                                            if (!widget.workspace!.pending &&
+                                                !widget.workspace!.pendingContributor &&
+                                                !widget.workspace!.pendingReviewer)
                                             SizedBox(
                                               width: 50,
                                               height: 50,

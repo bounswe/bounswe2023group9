@@ -105,7 +105,7 @@ class ContributorsListView extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              if (MediaQuery.of(context).size.width > Responsive.desktopPageWidth)
+                              if (!finalized)
                                 Column(children: [
                                   IconButton(
                                     icon: const Icon(
