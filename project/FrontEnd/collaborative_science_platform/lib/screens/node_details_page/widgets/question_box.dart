@@ -41,7 +41,6 @@ class _QuestionBoxState extends State<QuestionBox> {
         widget.question.isHidden = !widget.question.isHidden;
       });
     } catch (e) {
-      print("Error");
       setState(() {});
     }
   }
