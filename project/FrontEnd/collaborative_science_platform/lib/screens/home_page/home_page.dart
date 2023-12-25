@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         isLoading = true;
       });
-      await nodeProvider.search(searchType, tag.id, semantic: true);
+      await nodeProvider.search(searchType, tag.wid, semantic: true);
     } on WrongSearchTypeError {
       setState(() {
         error = true;

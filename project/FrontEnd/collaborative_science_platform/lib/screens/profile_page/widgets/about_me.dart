@@ -1,8 +1,10 @@
+import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_semantic_tag_list_view.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 
 class AboutMe extends StatefulWidget {
   final String email;
@@ -14,6 +16,9 @@ class AboutMe extends StatefulWidget {
   final bool isReviewer;
   final String userType;
   final bool isValidUser;
+  final List<WorkspaceSemanticTag> tags;
+  final Function addUserSemanticTag;
+  final Function removeUserSemanticTag;
   final Function() onTap;
   final Function() onTapReviewerButton;
   const AboutMe(
@@ -27,8 +32,12 @@ class AboutMe extends StatefulWidget {
       required this.isReviewer,
       required this.userType,
       required this.isValidUser,
+      required this.tags,
+      required this.addUserSemanticTag,
+      required this.removeUserSemanticTag,
       required this.onTap,
-      required this.onTapReviewerButton});
+      required this.onTapReviewerButton,
+      });
 
   @override
   State<AboutMe> createState() => _AboutMeState();
@@ -162,7 +171,7 @@ class _AboutMeState extends State<AboutMe> {
                   width: 10,
                 ),
                 SelectableText(
-                  "${widget.email}",
+                  widget.email,
                   style: const TextStyle(
                     fontSize: 20,
                   ),
@@ -188,6 +197,11 @@ class _AboutMeState extends State<AboutMe> {
             ),
             const Divider(
               color: AppColors.tertiaryColor,
+            ),
+            ProfileSemanticTagListView(
+              tags: widget.tags,
+              addUserSemanticTag: widget.addUserSemanticTag,
+              removeUserSemanticTag: widget.removeUserSemanticTag,
             )
           ],
         ),

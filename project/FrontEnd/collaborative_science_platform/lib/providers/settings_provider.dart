@@ -12,10 +12,10 @@ class SettingsProvider with ChangeNotifier {
       "content-type": "application/json",
       'Authorization': "Token ${user!.token}",
     };
-      final String body = json.encode({
-        'old_password': oldPass,
-        'password': newPass,
-          
+    final String body = json.encode({
+      'old_password': oldPass,
+      'password': newPass,
+
     });
    
     try {
@@ -27,7 +27,7 @@ class SettingsProvider with ChangeNotifier {
       print(response.statusCode);
       return response.statusCode;
     } catch (e) {
-           print(e);
+      print(e);
       rethrow;
     }
   }
@@ -38,11 +38,10 @@ class SettingsProvider with ChangeNotifier {
       "content-type": "application/json",
       'Authorization': "Token ${user!.token}",
     };
-      final String body = json.encode({
-        'bio': bio,
-        'email_notification_preference': sendNotification,
-        'show_activity_preference': showActivity
-          
+    final String body = json.encode({
+      'bio': bio,
+      'email_notification_preference': sendNotification,
+      'show_activity_preference': showActivity    
     });
     try {
       final response = await http.put(
