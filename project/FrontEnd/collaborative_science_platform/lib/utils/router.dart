@@ -62,7 +62,9 @@ final router = GoRouter(
         redirect: (context, state) {
           Provider.of<ScreenNavigation>(context, listen: false)
               .changeSelectedTab(ScreenTab.workspaces);
-          if (!context.read<Auth>().isSignedIn) {
+          if (!context.read<Auth>().isSignedIn ||
+              (context.read<Auth>().basicUser!.userType != "contributor" &&
+                  context.read<Auth>().basicUser!.userType != "reviewer")) {
             return '${PleaseLoginPage.routeName}${WorkspacesPage.routeName}';
           } else {
             return null;

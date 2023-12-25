@@ -4,11 +4,13 @@ import 'package:collaborative_science_platform/screens/home_page/widgets/home_pa
 import 'package:collaborative_science_platform/screens/page_with_appbar/page_with_appbar.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/comments_sidebar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entries_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/references_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/semantic_tag_list_view.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
+import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
@@ -28,12 +30,19 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReference;
   final Function deleteReference;
   final Function editTitle;
-  final Function updateRequest;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function updateReviewRequest;
+  final Function updateCollaborationRequest;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
 
   const WebWorkspacePage({
     super.key,
@@ -50,9 +59,16 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addSemanticTags,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
-    required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+    required this.updateReviewRequest,
+    required this.updateCollaborationRequest,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
   });
 
   @override
@@ -64,13 +80,14 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   ScrollController controller2 = ScrollController();
   ScrollController controller3 = ScrollController();
   ScrollController controller4 = ScrollController();
-
+  ScrollController controller5 = ScrollController();
   bool _isFirstTime = true;
 
   bool error = false;
   String errorMessage = "";
 
   bool showSidebar = true;
+  bool showCommentSidebar = false;
   double minHeight = 750;
 
   bool titleReadOnly = true;
@@ -86,6 +103,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
     controller2.dispose();
     controller3.dispose();
     controller4.dispose();
+    controller5.dispose();
     titleController.dispose();
     titleFocusNode.dispose();
     reviewController.dispose();
@@ -110,6 +128,12 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
   hideSideBar() {
     setState(() {
       showSidebar = false;
+    });
+  }
+
+  hideCommentsSideBar() {
+    setState(() {
+      showCommentSidebar = false;
     });
   }
 
@@ -139,6 +163,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                           height: minHeight,
                           workspaces: widget.workspaces,
                           createNewWorkspace: widget.createNewWorkspace,
+                          updateReviewRequest: widget.updateReviewRequest,
+                          updateCollaborationRequest: widget.updateCollaborationRequest,
                         ),
                       if (!showSidebar)
                         Container(
@@ -164,6 +190,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   onPressed: () {
                                     setState(() {
                                       showSidebar = true;
+                                      showCommentSidebar = false;
                                     });
                                   },
                                   icon: CupertinoIcons.forward,
@@ -239,9 +266,15 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             )
                                           ],
                                   ),
-                                  if (widget.workspace!.status == WorkspaceStatus.workable ||
-                                      widget.workspace!.status == WorkspaceStatus.finalized ||
-                                      widget.workspace!.status == WorkspaceStatus.inReview)
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                  if (widget.workspace!.requestId == -1 &&
+                                      (widget.workspace!.status == WorkspaceStatus.workable ||
+                                              widget.workspace!.status ==
+                                                  WorkspaceStatus.finalized ||
+                                          widget.workspace!.status == WorkspaceStatus.inReview))
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
@@ -278,14 +311,13 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                         type: "primary",
                                       ),
                                     ),
-                                  if (true)
+                                  if (widget.workspace!.requestId != -1)
                                     /** adjust it to check if the user is reviewer of this workspace */
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
-                                        isActive: widget.workspace!.status ==
-                                                WorkspaceStatus.workable ||
-                                            widget.workspace!.status == WorkspaceStatus.finalized,
+                                            isActive: widget.workspace!.status ==
+                                                WorkspaceStatus.inReview,
                                         text: (MediaQuery.of(context).size.width >
                                                 Responsive.desktopPageWidth)
                                             ? "Review Workspace"
@@ -313,7 +345,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                     onTap: () {
                                                       /** Approve workspace*/
                                                       widget.addReview(
-                                                          widget.workspace!.workspaceId,
+                                                          widget.workspace!.requestId,
                                                           RequestStatus.approved,
                                                           reviewController.text);
                                                       Navigator.of(context).pop();
@@ -329,7 +361,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                     onTap: () {
                                                       /** Reject workspace*/
                                                       widget.addReview(
-                                                          widget.workspace!.workspaceId,
+                                                          widget.workspace!.requestId,
                                                           RequestStatus.rejected,
                                                           reviewController.text);
                                                       Navigator.of(context).pop();
@@ -343,6 +375,29 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                         type: "primary",
                                       ),
                                     ),
+                                      if (widget.workspace!.comments.isNotEmpty &&
+                                          !showCommentSidebar &&
+                                          widget.workspace!.requestId == -1)
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                showSidebar = false;
+                                                showCommentSidebar = true;
+                                              });
+                                            },
+                                            child: const Text(
+                                              "See Review Comments",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.hyperTextColor),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+
                                 ],
                               ),
                             ),
@@ -352,17 +407,27 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                 EntriesListView(
                                   entries: widget.workspace!.entries,
                                   controller: controller2,
-                                  showSidebar: showSidebar,
+                                  showSidebar: showSidebar || showCommentSidebar,
                                   height: minHeight,
                                   createNewEntry: widget.createNewEntry,
                                   editEntry: widget.editEntry,
                                   deleteEntry: widget.deleteEntry,
+                                  finalized: widget.workspace!.status != WorkspaceStatus.workable,
+                                  setProof: widget.setProof,
+                                  setDisproof: widget.setDisproof,
+                                  setTheorem: widget.setTheorem,
+                                  removeProof: widget.removeProof,
+                                  removeDisproof: widget.removeDisproof,
+                                  removeTheorem: widget.removeTheorem,
+                                  fromNode: widget.workspace!.fromNodeId != -1,
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SemanticTagListView(
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                       tags: <SemanticTag>[
                                         SemanticTag(
                                             id: "1",
@@ -380,31 +445,46 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             description: "Description 3"),
                                       ],
                                       addSemanticTags: widget.addSemanticTags,
-                                      height: minHeight / 3,
+                                      height: (widget.workspace!.requestId == -1)
+                                          ? minHeight / 3
+                                          : minHeight / 2,
                                       deleteSemanticTag: () {},
                                     ),
+                                    if (widget.workspace!.requestId == -1)
                                     ContributorsListView(
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                       contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
                                       height: minHeight / 3,
                                       sendCollaborationRequest: widget.sendCollaborationRequest,
-                                      updateRequest: widget.updateRequest,
+                                      updateRequest: widget.updateCollaborationRequest,
                                     ),
                                     ReferencesListView(
                                       references: widget.workspace!.references,
                                       controller: controller4,
-                                      height: minHeight / 3,
-                                      addReference: widget.addReference,
+                                      height: (widget.workspace!.requestId == -1)
+                                          ? minHeight / 3
+                                          : minHeight / 2,
+                                      addReference: widget.addReference, 
                                       deleteReference: widget.deleteReference,
+                                      finalized:
+                                          widget.workspace!.status != WorkspaceStatus.workable,
                                     ),
                                   ],
                                 )
                               ],
                             )
                           ],
-                        )
-                      else
+                        ),
+                      if (showCommentSidebar && widget.workspace != null)
+                        CommentsSideBar(
+                            controller: controller5,
+                            height: minHeight,
+                            hideSidebar: hideCommentsSideBar,
+                            comments: widget.workspace!.comments),
+                      if (widget.workspace == null)
                         SizedBox(
                           width: showSidebar
                               ? MediaQuery.of(context).size.width * 0.75

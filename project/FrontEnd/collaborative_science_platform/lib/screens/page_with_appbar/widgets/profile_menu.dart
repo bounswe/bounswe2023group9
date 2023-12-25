@@ -1,6 +1,7 @@
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/login_page.dart';
 import 'package:collaborative_science_platform/screens/auth_screens/signup_page.dart';
+import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
@@ -39,6 +40,7 @@ class AuthenticatedProfileMenu extends StatelessWidget {
             context.push('${ProfilePage.routeName}/$encodedEmail');
             break;
           case 'logout':
+            context.go(HomePage.routeName);
             auth.logout();
             break;
           default:

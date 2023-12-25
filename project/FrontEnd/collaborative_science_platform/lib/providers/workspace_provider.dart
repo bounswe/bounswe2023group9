@@ -118,6 +118,42 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateReviewRequest(int id, RequestStatus status, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/update_review_req/");
+
+    String requestStatus = "";
+    if (status == RequestStatus.approved) {
+      requestStatus = "A";
+    } else if (status == RequestStatus.rejected) {
+      requestStatus = "R";
+    } else {
+      requestStatus = "P";
+    }
+
+    var request = http.MultipartRequest('PUT', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'id': "$id",
+      'status': requestStatus,
+      'comment': "OK",
+    });
+    print(request.fields);
+    http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    print(await response.stream.bytesToString());
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw SendCollaborationRequestException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
   Future<void> updateCollaborationRequest(int id, RequestStatus status, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/update_collab_req/");
     String requestStatus = "";
@@ -129,7 +165,7 @@ class WorkspaceProvider with ChangeNotifier {
       requestStatus = "P";
     }
 
-    var request = http.MultipartRequest('POST', url);
+    var request = http.MultipartRequest('PUT', url);
     request.headers.addAll({
       "Authorization": "Token $token",
       "content-type": "application/json",
@@ -138,7 +174,6 @@ class WorkspaceProvider with ChangeNotifier {
       'id': "$id",
       'status': requestStatus,
     });
-
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());
@@ -328,12 +363,12 @@ class WorkspaceProvider with ChangeNotifier {
       "content-type": "application/json",
     });
     request.fields.addAll({
-      'workspace_id': "$workspaceId",
+      'workspace': "$workspaceId",
       'sender': "$userId",
     });
 
     http.StreamedResponse response = await request.send();
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       //print(await response.stream.bytesToString());
       notifyListeners();
     } else if (response.statusCode == 400) {
@@ -433,8 +468,8 @@ class WorkspaceProvider with ChangeNotifier {
     });
     request.fields.addAll({
       'id': "$id",
-      'status': requestStatus,
       'comment': comment,
+      'response': requestStatus,
     });
 
     http.StreamedResponse response = await request.send();
@@ -443,6 +478,135 @@ class WorkspaceProvider with ChangeNotifier {
       notifyListeners();
     } else if (response.statusCode == 400) {
       throw DeleteEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> setProof(int entryId, int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/set_workspace_proof/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      "entry_id": "$entryId",
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> setDisproof(int entryId, int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/set_workspace_disproof/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      "entry_id": "$entryId",
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> removeProof(int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_workspace_proof/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> removeDisproof(int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_workspace_disproof/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> setTheorem(int entryId, int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/set_workspace_theorem/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      "entry_id": "$entryId",
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> removeTheorem(int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/remove_workspace_theorem/");
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+    });
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw EditEntryException();
     } else {
       throw Exception("Something has happened");
     }

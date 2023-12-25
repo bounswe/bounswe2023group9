@@ -239,7 +239,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
         error = false;
         isLoading = true;
       });
-      await nodeDetailsProvider.getNodeSuggestions();
+      await nodeDetailsProvider.getRelatedNodes(widget.node.nodeId);
     } on NodeDoesNotExist {
       setState(() {
         error = true;

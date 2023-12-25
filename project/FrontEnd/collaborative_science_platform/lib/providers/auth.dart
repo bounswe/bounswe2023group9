@@ -8,12 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum UserType { guest, basicUser, contributor, reviewer, admin }
-
 class Auth with ChangeNotifier {
   User? user;
   BasicUser? basicUser;
-  UserType userType = UserType.guest;
   //User? user = User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer");
 
   bool get isSignedIn {
@@ -175,7 +172,7 @@ class Auth with ChangeNotifier {
 
   void logout() async {
     user = null;
-    userType = UserType.guest;
+    basicUser = null;
     //Delete token from shared preferences
     SharedPreferences.getInstance().then((prefs) => prefs.remove('token'));
     notifyListeners();

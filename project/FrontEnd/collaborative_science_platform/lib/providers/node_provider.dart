@@ -34,7 +34,7 @@ class NodeProvider with ChangeNotifier {
   }
 
   Future<void> search(SearchType type, String query,
-      {bool random = false, bool semantic = false, bool suggestions = false}) async {
+      {bool random = false, bool semantic = false}) async {
     if (type == SearchType.author) {
       throw WrongSearchTypeError();
     }
@@ -52,26 +52,9 @@ class NodeProvider with ChangeNotifier {
     };
     try {
       final response = await http.get(url, headers: headers);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (suggestions) {
-          _youMayLikeNodeResult.clear();
-          _youMayLikeNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
-                contributors: (node['authors'] as List<dynamic>)
-                    .map((author) => User(
-                        id: author['id'],
-                        firstName: author['name'],
-                        lastName: author['surname'],
-                        email: author['username']))
-                    .toList(),
-                id: node['id'],
-                nodeTitle: node['title'],
-                publishDate: DateTime.parse(node['date']),
-              )));
-          notifyListeners();
-          return;
-        }
+
         _searchNodeResult.clear();
         _searchNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
               contributors: (node['authors'] as List<dynamic>)
@@ -107,9 +90,47 @@ class NodeProvider with ChangeNotifier {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        data = data["suggestions"];
+        _youMayLikeNodeResult.clear();
+        _youMayLikeNodeResult.addAll((data['nodes'] as List<dynamic>).map((node) => Node(
+              contributors: (node['authors'] as List<dynamic>)
+                  .map((author) => User(
+                      id: author['id'],
+                      firstName: author['name'],
+                      lastName: author['surname'],
+                      email: author['username']))
+                  .toList(),
+              id: node['id'],
+              nodeTitle: node['title'],
+              publishDate: DateTime.parse(node['date']),
+            )));
+        notifyListeners();
+      } else if (response.statusCode == 400) {
+        throw SearchError();
+      } else {
+        if (json.decode(response.body)["message"] == "There are no nodes with this semantic tag.") {
+          throw SearchError();
+        }
+        throw Exception("Error");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> getRelatedNodes(int nodeId) async {
+    _youMayLikeNodeResult.clear();
+    Uri url = Uri.parse("${Constants.apiUrl}/get_related_nodes/?node_id=$nodeId");
+    final Map<String, String> headers = {
+      "Accept": "application/json",
+      "content-type": "application/json"
+    };
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        data = data["nodes"];
         for (var element in data) {
-          semanticTags.add(SemanticTag.fromJson(element));
+          _youMayLikeNodeResult.add(Node.fromJson(element));
         }
       } else if (response.statusCode == 400) {
         throw SearchError();
@@ -161,7 +182,6 @@ class NodeProvider with ChangeNotifier {
     };
     try {
       final response = await http.get(url, headers: headers);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         _searchNodeResult.clear();
@@ -181,16 +201,11 @@ class NodeProvider with ChangeNotifier {
       } else if (response.statusCode == 400) {
         throw SearchError();
       } else {
-        print(response);
         throw Exception("Error");
       }
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<void> getNodeSuggestions() async {
-    await search(SearchType.theorem, "", random: true, suggestions: true);
   }
 
   Map<SearchType, String> searchTypeToString = {
