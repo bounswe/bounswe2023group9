@@ -1,7 +1,8 @@
 import 'package:collaborative_science_platform/models/node_details_page/proof.dart';
-import 'package:collaborative_science_platform/providers/annotation_provider.dart';
+import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
+import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/card_container.dart';
@@ -11,8 +12,10 @@ import 'dart:convert';
 
 class ProofListView extends StatefulWidget {
   final List<Proof> proof;
-
-  const ProofListView({super.key, required this.proof});
+  final List<User> contributors;
+  final int nodeID;
+  const ProofListView(
+      {super.key, required this.proof, required this.contributors, required this.nodeID});
 
   @override
   State<ProofListView> createState() => _ProofListViewState();
@@ -45,7 +48,8 @@ class _ProofListViewState extends State<ProofListView> {
               ],
             ),
             showAnnotations
-                ? ProofItemWidget(proof: widget.proof)
+                ? ProofItemWidget(
+                    proof: widget.proof, contributors: widget.contributors, nodeID: widget.nodeID)
                 : ProofTexView(proof: widget.proof),
           ],
         ),
@@ -88,8 +92,12 @@ class ProofTexView extends StatelessWidget {
 
 class ProofItemWidget extends StatelessWidget {
   final List<Proof> proof;
+  final List<User> contributors;
+  final int nodeID;
 
-  const ProofItemWidget({Key? key, required this.proof}) : super(key: key);
+  const ProofItemWidget(
+      {Key? key, required this.proof, required this.contributors, required this.nodeID})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +113,10 @@ class ProofItemWidget extends StatelessWidget {
                 children: [
                   AnnotationText(
                     utf8.decode(proof[i].proofContent.codeUnits),
-                    annotationType: AnnotationType.proof,
+                    "${Constants.appUrl}/node/$nodeID#proof#$i",
+                    contributors
+                        .map((user) => "${Constants.appUrl}/profile/${user.email}")
+                        .toList(),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,

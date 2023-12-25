@@ -1,7 +1,6 @@
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
-import 'package:collaborative_science_platform/providers/annotation_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/contributors_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/node_details_menu.dart';
@@ -10,6 +9,7 @@ import 'package:collaborative_science_platform/screens/node_details_page/widgets
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/questions_list_view.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/references_list_view.dart';
 import 'package:collaborative_science_platform/services/share_page.dart';
+import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -237,7 +237,10 @@ class _NodeDetailsState extends State<NodeDetails> {
                             child: showAnnotations
                                 ? AnnotationText(
                                     NodeHelper.getNodeContentLatex(widget.node, "long"),
-                                    annotationType: AnnotationType.theorem,
+                                    "${Constants.appUrl}/node/${widget.node.nodeId}#theorem",
+                                    widget.node.contributors
+                                        .map((user) => "${Constants.appUrl}/profile/${user.email}")
+                                        .toList(),
                                   )
                                 : TeXView(
                                     renderingEngine: const TeXViewRenderingEngine.katex(),
@@ -257,7 +260,10 @@ class _NodeDetailsState extends State<NodeDetails> {
               //proofs
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: ProofListView(proof: widget.node.proof),
+                child: ProofListView(
+                    proof: widget.node.proof,
+                    contributors: widget.node.contributors,
+                    nodeID: widget.node.nodeId),
               ),
             if (currentIndex == 2)
               Padding(
