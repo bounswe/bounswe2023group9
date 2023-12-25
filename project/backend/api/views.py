@@ -378,7 +378,7 @@ def search(request):
             if not node.removed_by_admin or is_admin:
                 nodes.append(node.node_id)
         for rel_node in related_nodes_q:
-            if not node.removed_by_admin or is_admin:
+            if not rel_node.removed_by_admin or is_admin:
                 nodes.append(rel_node.node_id)
 
     if search_type == 'random':
