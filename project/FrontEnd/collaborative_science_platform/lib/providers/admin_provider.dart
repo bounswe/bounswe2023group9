@@ -11,13 +11,13 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
     final String body = json.encode({
       'context': "user",
       'content_id': userId,
       'hide': isBanned,
-    });
+    }); 
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
@@ -35,7 +35,7 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
     final String body = json.encode({
       'context': "node",
@@ -58,7 +58,7 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
     final String body = json.encode({
       'context': "question",
@@ -82,7 +82,7 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
     final String body = json.encode({'cont_id': userId});
     try {
@@ -103,7 +103,7 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
     try {
       final response = await http.delete(
