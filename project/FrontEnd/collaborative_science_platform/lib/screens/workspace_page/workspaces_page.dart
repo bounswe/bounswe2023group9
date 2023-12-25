@@ -488,10 +488,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         error = false;
       });
       await workspaceProvider.addReview(id, status, comment, auth.user!.token);
-      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       await workspaceProvider.getUserWorkspaces(auth.basicUser!.basicUserId, auth.user!.token);
       setState(() {
-        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+        workspace = null;
         workspaces = (workspaceProvider.workspaces ?? {} as Workspaces);
       });
     } catch (e) {

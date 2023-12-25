@@ -6,6 +6,7 @@ import 'package:collaborative_science_platform/screens/page_with_appbar/page_wit
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_workspace_content.dart';
+import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/comments_sidebar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/create_workspace_form.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/workspaces_side_bar.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
@@ -63,6 +64,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   final CarouselController controller = CarouselController();
   TextEditingController textController = TextEditingController();
   ScrollController controller1 = ScrollController();
+  ScrollController controller2 = ScrollController();
 
   bool isLoading = false;
   bool error = false;
@@ -72,6 +74,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   int workspaceIndex = 0;
 
   bool showSidebar = false;
+  bool showCommentSidebar = false;
 
   Widget mobileAddNewWorkspaceIcon() {
     return CircleAvatar(
@@ -241,11 +244,25 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
   @override
   void dispose() {
     controller1.dispose();
+    controller2.dispose();
     super.dispose();
   }
 
   hideSideBar() {
     setState(() {
+      showSidebar = false;
+    });
+  }
+
+  hideCommentsSideBar() {
+    setState(() {
+      showCommentSidebar = false;
+    });
+  }
+
+  displayCommentSidebar() {
+    setState(() {
+      showCommentSidebar = true;
       showSidebar = false;
     });
   }
@@ -272,17 +289,25 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
           child: ListView(
             physics: const ScrollPhysics(),
             padding: const EdgeInsets.only(top: 10.0),
-            children: showSidebar
+            children: showSidebar || showCommentSidebar
                 ? [
-                    WorkspacesSideBar(
-                      controller: controller1,
-                      hideSidebar: hideSideBar,
-                      height: MediaQuery.of(context).size.height,
-                      workspaces: widget.workspaces,
-                      createNewWorkspace: widget.createNewWorkspace,
-                      updateReviewRequest: widget.updateReviewRequest,
-                      updateCollaborationRequest: widget.updateCollaborationRequest,
-                    ),
+                    if (showSidebar && !showCommentSidebar)
+                      WorkspacesSideBar(
+                        controller: controller1,
+                        hideSidebar: hideSideBar,
+                        height: MediaQuery.of(context).size.height,
+                        workspaces: widget.workspaces,
+                        createNewWorkspace: widget.createNewWorkspace,
+                        updateReviewRequest: widget.updateReviewRequest,
+                        updateCollaborationRequest: widget.updateCollaborationRequest,
+                      ),
+                    if (showCommentSidebar && !showSidebar)
+                      CommentsSideBar(
+                        controller: controller2,
+                        height: MediaQuery.of(context).size.height,
+                        comments: widget.workspace!.comments,
+                        hideSidebar: hideCommentsSideBar,
+                      )
                   ]
                 : [
                     // slidingWorkspaceList(),
@@ -297,6 +322,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                           onPressed: () {
                             setState(() {
                               showSidebar = true;
+                              showCommentSidebar = false;
                             });
                           },
                           icon: Icons.menu,
@@ -352,6 +378,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                                 updateRequest: widget.updateCollaborationRequest,
                                 sendWorkspaceToReview: widget.sendWorkspaceToReview,
                                 addReview: widget.addReview,
+                                displayCommentSidebar: displayCommentSidebar,
                               )
                             : const SizedBox(
                                 width: 100,
