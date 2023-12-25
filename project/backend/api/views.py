@@ -781,7 +781,7 @@ def change_workspace_title(request):
 def set_workspace_proof(request):
     entry_id = request.POST.get("entry_id")
     workspace_id = request.POST.get("workspace_id")
-    is_disproof = request.POST.get("is_disproof")
+    # is_disproof = request.POST.get("is_disproof")
     if entry_id == None or entry_id == '':
         return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
     try:
@@ -817,8 +817,8 @@ def set_workspace_proof(request):
         workspace.proof_entry.is_proof_entry = False
     workspace.proof_entry = entry
     entry.is_proof_entry = True
-    if is_disproof:
-        entry.is_disproof_entry= True
+    # if is_disproof:
+    #     entry.is_disproof_entry= True
     entry.save()
     workspace.save()
     return JsonResponse({'message': 'Proof entry is successfully set.'}, status=200)
