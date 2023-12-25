@@ -6,8 +6,12 @@ This project uses Python 3.11, Django 4.2.6, and PostgreSQL 14.10
 
 To build a docker image, 
  - `docker build --tag <your-tag> .`
-To run,
+
+Please be sure your database server is running before run the container. You can check below for database setup.
+
+To run the container,
  - `docker run -p 8000:8000 <your-tag>`
+ 
 The first port number (8000) is the port number of your machine your service runs. Please be sure that the specified port is available. The second one is your container's port number and should be same as the one exported in the Dockerfile. (8000 for this project.)
 
 Dont forget to set the following environment variables,

@@ -9,8 +9,9 @@ To build a docker image,
 
 Please be sure your database server is running before run the container. You can check below for database setup.
 
-To run,
+To run the container,
  - `docker run -p 8001:8000 <your-tag>`
+ 
 The first port number (8001) is the port number of your machine your service runs. Please be sure that the specified port is available. The second one is your container's port number and should be same as the one exported in the Dockerfile. (8000 for this project.)
 
 Dont forget to set the following environment variables,
