@@ -111,22 +111,28 @@ class AuthenticatedEntryMenu extends StatelessWidget {
           value: 'removeEntry',
           child: Text("Remove Entry"),
         ),
-        if (!entry.isFinalEntry && !entry.isProofEntry)
+        if (!entry.isFinalEntry &&
+            !entry.isTheoremEntry &&
+            !entry.isProofEntry &&
+            !entry.isDisproofEntry)
           const PopupMenuItem<String>(
             value: 'setTheorem',
             child: Text("Set this entry as theorem"),
           ),
-        if (!entry.isFinalEntry && !entry.isProofEntry)
+        if (!entry.isFinalEntry &&
+            !entry.isTheoremEntry &&
+            !entry.isProofEntry &&
+            !entry.isDisproofEntry)
           const PopupMenuItem<String>(
             value: 'setProof',
             child: Text("Set this entry as proof"),
           ),
-        if (!entry.isFinalEntry && !entry.isProofEntry && fromNode)
+        if (!entry.isTheoremEntry && !entry.isProofEntry && !entry.isDisproofEntry && fromNode)
           const PopupMenuItem<String>(
             value: 'setDisproof',
             child: Text("Set this entry as disproof"),
           ),
-        if (entry.isProofEntry && fromNode)
+        if (entry.isDisproofEntry)
           const PopupMenuItem<String>(
             value: 'removeDisproof',
             child: Text("Unset Disproof"),
