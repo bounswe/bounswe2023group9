@@ -110,7 +110,7 @@ def create_annotation(request):
         body = json.loads(body)
         
         value = body.get('value')
-        if not value:
+        if value is None:
             return JsonResponse({'message': 'body value must be given!'}, status=400)
         
         body_type = body.get('type')
@@ -132,11 +132,11 @@ def create_annotation(request):
         
         selector_type = selector.get('type')
         selector_start = selector.get('start')
-        if not selector_start:
+        if selector_start is None:
             return JsonResponse({'message': 'selector start must be given!'}, status=400)
 
         selector_end = selector.get('end')
-        if not selector_end:
+        if selector_end is None:
             return JsonResponse({'message': 'selector end must be given!'}, status=400)
         
         creator = request.POST.get('creator')
@@ -203,6 +203,7 @@ def create_annotation(request):
         
         return JsonResponse(data = serialize_annotation(annotation_object), status=201)
     except Exception as e:
+        print(str(e))
         if "duplicate key value violates unique constraint" in str(e):
             return JsonResponse({'message': 'Annotation already exists!'}, status=400)
         return JsonResponse({'message': "Internal server error"}, status=500)
