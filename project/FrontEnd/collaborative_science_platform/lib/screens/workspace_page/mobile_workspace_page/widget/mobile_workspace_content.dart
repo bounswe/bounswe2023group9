@@ -136,7 +136,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return SemanticTagCard(
-            finalized: widget.workspace.status != WorkspaceStatus.workable,
+            finalized:
+                widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending,
             tag: tags[index],
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
             onDelete: () {/* delete the semantic tag */},
@@ -159,7 +160,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               itemBuilder: (context, index) {
                 return (index < length)
                     ? MobileEntryCard(
-                        finalized: widget.workspace.status != WorkspaceStatus.workable,
+                        finalized: widget.workspace.status != WorkspaceStatus.workable ||
+                            widget.workspace.pending,
                         entry: widget.workspace.entries[index],
                         onDelete: () async {
                           await widget.deleteEntry(widget.workspace.entries[index].entryId);
@@ -170,7 +172,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                         onCreate: widget.createNewEntry,
                         backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                         isMobile: true,
-                        finalized: widget.workspace.status != WorkspaceStatus.workable,
+                        finalized: widget.workspace.status != WorkspaceStatus.workable ||
+                            widget.workspace.pending,
                       );
               },
             ),
@@ -191,7 +194,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 onCreate: widget.createNewEntry,
                 backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                 isMobile: true,
-                finalized: widget.workspace.status != WorkspaceStatus.workable,
+                finalized:
+                    widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending,
               ),
             ],
           );
@@ -337,6 +341,9 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                     child: AppButton(
                       height: 40,
+                      isActive: widget.workspace.status == WorkspaceStatus.workable ||
+                          widget.workspace.status == WorkspaceStatus.finalized ||
+                          widget.workspace.status == WorkspaceStatus.rejected,
                       text: widget.pending
                           ? "Accept Workspace"
                           : widget.workspace.status == WorkspaceStatus.workable
@@ -348,11 +355,6 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                       : (widget.workspace.status == WorkspaceStatus.inReview
                                           ? "In Review"
                                           : "Published")),
-                      icon: widget.pending
-                          ? const Icon(Icons.approval)
-                          : (widget.workspace.status == WorkspaceStatus.workable
-                              ? const Icon(Icons.lock)
-                              : const Icon(Icons.send)),
                       onTap: widget.pending
                           ? () {
                               // accept or reject the review
@@ -428,7 +430,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                             },
                     ),
                   ),
-                if (widget.workspace.requestId != -1 &&
+                if (!widget.workspace.pending &&
+                    widget.workspace.requestId != -1 &&
                     widget.workspace.status == WorkspaceStatus.inReview)
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(

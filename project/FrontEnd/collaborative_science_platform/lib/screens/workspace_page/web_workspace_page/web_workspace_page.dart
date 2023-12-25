@@ -201,7 +201,7 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: titleReadOnly
+                                    children: titleReadOnly || widget.workspace!.pending 
                                         ? [
                                             Text(widget.workspace!.workspaceTitle,
                                                 style: TextStyles.title2),
@@ -245,7 +245,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             )
                                           ],
                                   ),
-                                  if (widget.workspace!.requestId == -1 &&
+                                  if (!widget.workspace!.pending &&
+                                      widget.workspace!.requestId == -1 &&
                                       (widget.workspace!.status == WorkspaceStatus.workable ||
                                       widget.workspace!.status == WorkspaceStatus.finalized ||
                                           widget.workspace!.status == WorkspaceStatus.inReview))
@@ -296,7 +297,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                         type: "primary",
                                       ),
                                     ),
-                                  if (widget.workspace!.requestId != -1 &&
+                                  if (!widget.workspace!.pending &&
+                                      widget.workspace!.requestId != -1 &&
                                       widget.workspace!.status == WorkspaceStatus.inReview)
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
@@ -374,7 +376,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   createNewEntry: widget.createNewEntry,
                                   editEntry: widget.editEntry,
                                   deleteEntry: widget.deleteEntry,
-                                  finalized: widget.workspace!.status != WorkspaceStatus.workable,
+                                  finalized: widget.workspace!.status != WorkspaceStatus.workable ||
+                                      widget.workspace!.pending,
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -382,7 +385,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   children: [
                                     SemanticTagListView(
                                       finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
+                                          widget.workspace!.status != WorkspaceStatus.workable ||
+                                              widget.workspace!.pending,
                                       tags: <SemanticTag>[
                                         SemanticTag(
                                             id: "1",
@@ -405,7 +409,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                     ),
                                     ContributorsListView(
                                       finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
+                                          widget.workspace!.status != WorkspaceStatus.workable ||
+                                              widget.workspace!.pending,
                                       contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
@@ -420,7 +425,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       addReference: widget.addReference,
                                       deleteReference: widget.deleteReference,
                                       finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
+                                          widget.workspace!.status != WorkspaceStatus.workable ||
+                                              widget.workspace!.pending,
                                     ),
                                   ],
                                 )

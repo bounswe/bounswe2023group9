@@ -1,13 +1,8 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_entry_card.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/widgets/app_button.dart';
-import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
-import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/entry_header.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 
 class EntriesListView extends StatefulWidget {

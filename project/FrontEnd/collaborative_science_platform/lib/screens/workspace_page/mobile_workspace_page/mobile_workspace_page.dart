@@ -339,9 +339,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                         : (widget.workspaces != null && widget.workspace != null)
                             ? MobileWorkspaceContent(
                                 workspace: widget.workspace!,
-                                pending: (workspaceIndex < widget.workspaces!.workspaces.length)
-                                    ? false
-                                    : true,
+                                pending: widget.workspace!.pending,
                                 createNewEntry: widget.createNewEntry,
                                 editEntry: widget.editEntry,
                                 deleteEntry: widget.deleteEntry,
