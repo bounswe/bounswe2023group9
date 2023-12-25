@@ -496,7 +496,6 @@ class WorkspaceProvider with ChangeNotifier {
     request.fields.addAll({
       "entry_id": "$entryId",
       'workspace_id': "$workspaceId",
-      'is_disproof': "false",
     });
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -605,9 +604,7 @@ class WorkspaceProvider with ChangeNotifier {
     request.fields.addAll({
       'workspace_id': "$workspaceId",
     });
-    print(request.fields);
     http.StreamedResponse response = await request.send();
-    print(await response.stream.bytesToString());
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());
       notifyListeners();
