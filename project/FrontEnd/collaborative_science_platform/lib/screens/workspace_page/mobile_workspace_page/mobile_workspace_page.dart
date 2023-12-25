@@ -12,7 +12,6 @@ import 'package:collaborative_science_platform/screens/workspace_page/web_worksp
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -30,11 +29,22 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function editTitle;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
-  final Function addSemanticTags;
+  final Function addSemanticTag;
+  final Function removeSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+
+  final Function resetWorkspace;
+
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+
 
   const MobileWorkspacePage({
     super.key,
@@ -47,13 +57,23 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
+    required this.removeSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.resetWorkspace,
+
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+
   });
 
   @override
@@ -363,22 +383,33 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                         : (widget.workspaces != null && widget.workspace != null)
                             ? MobileWorkspaceContent(
                                 workspace: widget.workspace!,
-                                pending: (workspaceIndex < widget.workspaces!.workspaces.length)
-                                    ? false
-                                    : true,
+                                pending: widget.workspace!.pending,
+
                                 createNewEntry: widget.createNewEntry,
                                 editEntry: widget.editEntry,
                                 deleteEntry: widget.deleteEntry,
                                 addReference: widget.addReference,
                                 deleteReference: widget.deleteReference,
                                 editTitle: widget.editTitle,
-                                addSemanticTags: widget.addSemanticTags,
+                                addSemanticTag: widget.addSemanticTag,
+                                removeSemanticTag: widget.removeSemanticTag,
                                 finalizeWorkspace: widget.finalizeWorkspace,
                                 sendCollaborationRequest: widget.sendCollaborationRequest,
                                 updateRequest: widget.updateCollaborationRequest,
                                 sendWorkspaceToReview: widget.sendWorkspaceToReview,
                                 addReview: widget.addReview,
+
+                                resetWorkspace: widget.resetWorkspace,
+
+                                setProof: widget.setProof,
+                                setDisproof: widget.setDisproof,
+                                setTheorem: widget.setTheorem,
+                                removeProof: widget.removeProof,
+                                removeDisproof: widget.removeDisproof,
+                                removeTheorem: widget.removeTheorem,
+
                                 displayCommentSidebar: displayCommentSidebar,
+
                               )
                             : const SizedBox(
                                 width: 100,

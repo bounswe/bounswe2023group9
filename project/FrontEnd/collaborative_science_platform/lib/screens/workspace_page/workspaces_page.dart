@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/workspace_exceptions.d
 import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:collaborative_science_platform/models/workspaces_page/workspaces.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/web_workspace_page.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
 
   void getWorkspaceById(int id) async {
     try {
+      print("Workspace Id: $id");
       final workspaceProvider = Provider.of<WorkspaceProvider>(context);
       final auth = Provider.of<Auth>(context);
       setState(() {
@@ -374,13 +376,11 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = true;
         errorMessage = SendCollaborationRequestException().message;
-        print(errorMessage);
       });
     } catch (e) {
       setState(() {
         error = true;
         errorMessage = "Something went wrong!";
-        print(errorMessage);
       });
     } finally {
       setState(() {
@@ -451,14 +451,15 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  void addSemanticTags(List<int> semanticTags) async {
+  void addSemanticTag(String wikiId, String label) async {
     try {
       final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
       final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
       setState(() {
         error = false;
       });
-      await workspaceProvider.addSemanticTags(widget.workspaceId, auth.user!.token, semanticTags);
+      await wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -471,7 +472,37 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     } catch (e) {
       setState(() {
         error = true;
-        errorMessage = "Something went wrong!";
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void removeSemanticTag(int tagId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+      });
+      await wikiDataProvider.removeSemanticTag(widget.workspaceId, tagId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on WorkspacePermissionException {
+      setState(() {
+        error = true;
+        errorMessage = WorkspacePermissionException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
       });
     } finally {
       setState(() {
@@ -505,6 +536,215 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+
+void setProof(int entryId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.setProof(entryId, widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void setDisproof(int entryId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.setDisproof(entryId, widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void setTheorem(int entryId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.setTheorem(entryId, widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void removeProof() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.removeProof(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void removeDisproof() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.removeDisproof(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void removeTheorem() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.removeTheorem(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on EditEntryException {
+      setState(() {
+        error = true;
+        errorMessage = EditEntryException().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+  void resetWorkspace() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.resetWorkspace(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on WorkspaceDoesNotExist {
+      setState(() {
+        error = true;
+        errorMessage = WorkspaceDoesNotExist().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -531,13 +771,23 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReference: addReference,
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
-        addSemanticTags: addSemanticTags,
+        addSemanticTag: addSemanticTag,
+        removeSemanticTag: removeSemanticTag,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
         updateCollaborationRequest: updateCollaborationRequest,
+        resetWorkspace: resetWorkspace,
+
+        setProof: setProof,
+        setDisproof: setDisproof,
+        setTheorem: setTheorem,
+        removeProof: removeProof,
+        removeDisproof: removeDisproof,
+        removeTheorem: removeTheorem,
+
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -550,13 +800,24 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReference: addReference,
         deleteReference: deleteReference,
         editTitle: editWorkspaceTitle,
-        addSemanticTags: addSemanticTags,
+        addSemanticTag: addSemanticTag,
+        removeSemanticTag: removeSemanticTag,
         sendCollaborationRequest: sendCollaborationRequest,
         finalizeWorkspace: finalizeWorkspace,
         sendWorkspaceToReview: sendWorkspaceToReview,
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
         updateCollaborationRequest: updateCollaborationRequest,
+
+        resetWorkspace: resetWorkspace,
+
+        setProof: setProof,
+        setDisproof: setDisproof,
+        setTheorem: setTheorem,
+        removeProof: removeProof,
+        removeDisproof: removeDisproof,
+        removeTheorem: removeTheorem,
+
       ),
     );
   }

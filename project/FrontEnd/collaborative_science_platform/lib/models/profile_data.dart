@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 
 class Node {
   int id;
@@ -13,13 +14,14 @@ class Node {
     required this.publishDate,
   });
   factory Node.fromJson(Map<String, dynamic> jsonString) {
-    var list = jsonString['authors'] as List;
-    List<User> contributors = list.map((e) => User.fromJson(e)).toList();
+    var contributorList = jsonString['authors'] as List;
+    List<User> contributors = contributorList.map((e) => User.fromJson(e)).toList();
     return Node(
-        id: jsonString['id'],
-        nodeTitle: jsonString['title'],
-        publishDate: jsonString['date'],
-        contributors: contributors);
+      id: jsonString['id'],
+      nodeTitle: jsonString['title'],
+      publishDate: jsonString['date'],
+      contributors: contributors,
+    );
   }
 }
 
@@ -29,35 +31,51 @@ class ProfileData {
   String surname;
   String email;
   String aboutMe;
+  String orcid;
   List<Node> nodes;
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
-  ProfileData(
-      {this.id = 0,
-      this.aboutMe = "",
-      this.email = "",
-      this.name = "",
-      this.surname = "",
-      this.nodes = const [],
-      this.askedQuestions = const [],
-      this.answeredQuestions = const []});
+  String userType;
+  bool isBanned;
+  List<WorkspaceSemanticTag> tags;
+  ProfileData({
+    this.id = 0,
+    this.aboutMe = "",
+    this.email = "",
+    this.name = "",
+    this.surname = "",
+    this.orcid = "",
+    this.tags = const [],
+    this.nodes = const [],
+    this.askedQuestions = const [],
+    this.answeredQuestions = const [],
+    this.userType = "",
+    this.isBanned = false,
+  });
 
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
     var nodeList = jsonString['nodes'] as List;
     var askedList = jsonString['asked_questions'] as List;
     var answeredList = jsonString['answered_questions'] as List;
+    var tagList = jsonString['semantic_tags'] as List;
 
     List<Node> nodes = nodeList.map((e) => Node.fromJson(e)).toList();
     List<Question> asked = askedList.map((e) => Question.fromJsonforProfilePage(e)).toList();
     List<Question> answered = answeredList.map((e) => Question.fromJsonforProfilePage(e)).toList();
+    List<WorkspaceSemanticTag> tags = tagList.map((e) => WorkspaceSemanticTag.fromJson(e)).toList();
 
     return ProfileData(
-      nodes: nodes,
+      id: jsonString['id'],
       name: jsonString['name'],
       surname: jsonString['surname'],
       aboutMe: jsonString['bio'],
+      orcid: jsonString['orcid'] ?? "",
+      nodes: nodes,
       askedQuestions: asked,
       answeredQuestions: answered,
+      userType: jsonString['user_type'],
+      isBanned: jsonString['is_banned'] ?? false,
+      tags: tags,
     );
   }
 
@@ -82,6 +100,7 @@ class ProfileData {
           ],
         ),
       ],
+      tags: [],
     );
   }
 }

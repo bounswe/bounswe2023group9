@@ -2,6 +2,7 @@ import 'package:collaborative_science_platform/exceptions/profile_page_exception
 import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/admin_provider.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/screens/error_page/error_page.dart';
@@ -20,6 +21,7 @@ import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   static const routeName = '/profile';
@@ -31,23 +33,25 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-// TODO: add optional parameter to ProfilePage to get others profileData
 class _ProfilePageState extends State<ProfilePage> {
+  ProfileDataProvider profileDataProvider = ProfileDataProvider();
   ProfileData profileData = ProfileData();
   BasicUser basicUser = BasicUser();
   int noWorks = 0;
   bool error = false;
   String errorMessage = "";
+
   bool isLoading = false;
   bool isAuthLoading = false;
-
   bool _isFirstTime = true;
-
-  bool isBanned = false;
-  bool isValidUser = false; //visited user's type is contributor or reviewer
-  bool isReviewer = false;
-
   int currentIndex = 0;
+
+  int response = -1; // response status code of demote/promote
+  String newUserType = ""; //new user type according to response
+
+  bool isAdmin = false;
+  int response_isBanned = -1;
+  bool isBanned = false;
 
   void updateIndex(int index) {
     setState(() {
@@ -72,10 +76,10 @@ class _ProfilePageState extends State<ProfilePage> {
     super.didChangeDependencies();
   }
 
-  void getUserData() async {
+  Future<void> getUserData() async {
     try {
       if (widget.email != "") {
-        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        profileDataProvider = Provider.of<ProfileDataProvider>(context);
         setState(() {
           isLoading = true;
         });
@@ -83,14 +87,18 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
+          newUserType = profileData.userType;
+          isBanned = profileData.isBanned;
         });
       } else {
         final User user = Provider.of<Auth>(context).user!;
-        final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+        profileDataProvider = Provider.of<ProfileDataProvider>(
+            context); //This is wrong? It seems like we are taking current users data
         await profileDataProvider.getData(user.email);
         setState(() {
           profileData = (profileDataProvider.profileData ?? {} as ProfileData);
           noWorks = profileData.nodes.length;
+          newUserType = profileData.userType;
         });
       }
     } on ProfileDoesNotExist {
@@ -117,6 +125,9 @@ class _ProfilePageState extends State<ProfilePage> {
         final auth = Provider.of<Auth>(context);
         basicUser = (auth.basicUser ?? {} as BasicUser);
         isAuthLoading = true;
+        if (basicUser.userType == "admin") {
+          isAdmin = true;
+        }
         // user = (auth.user ?? {} as User);
       } catch (e) {
         setState(() {
@@ -132,16 +143,135 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void handleButtonIsBanned() {
-    setState(() {
-      isBanned = !isBanned; // Toggle the state for example purposes
-    });
+  void addUserSemanticTag(int tagId, String label) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await wikiDataProvider.addUserSemanticTag(profileData.id, tagId, label, auth.user!.token);
+      await profileDataProvider.getData(widget.email);
+      setState(() {
+        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+        noWorks = profileData.nodes.length;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
-  void handleButtonIsReviewer() {
-    setState(() {
-      isReviewer = !isReviewer; // Toggle the state for example purposes
-    });
+  void removeUserSemanticTag(int tagId) async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final wikiDataProvider = Provider.of<WikiDataProvider>(context, listen: false);
+      final profileDataProvider = Provider.of<ProfileDataProvider>(context);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await wikiDataProvider.removeUserSemanticTag(profileData.id, tagId, auth.user!.token);
+      await profileDataProvider.getData(widget.email);
+      setState(() {
+        profileData = (profileDataProvider.profileData ?? {} as ProfileData);
+        noWorks = profileData.nodes.length;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> changeProfileStatus() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+
+      adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
+      setState(() {
+        profileData.isBanned = !profileData.isBanned;
+        isBanned = !isBanned;
+      });
+      error = false;
+      var message = "Profile status updated.";
+      print(message);
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
+  void handleButtonIsBanned() async {
+    await changeProfileStatus();
+  }
+
+  Future<void> promoteUser() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      response = await adminProvider.promoteUser(admin, profileData.id);
+
+      error = false;
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
+  Future<void> demoteUser() async {
+    try {
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      response = await adminProvider.demoteUser(admin, profileData.id);
+
+      error = false;
+    } catch (e) {
+      setState(() {
+        error = true;
+        var message = "Something went wrong!";
+        print(message);
+      });
+    }
+  }
+
+  void handleButtonIsReviewer() async {
+    if (newUserType == "contributor") {
+      await promoteUser();
+      if (response == 201) {
+        setState(() {
+          newUserType = "reviewer";
+        });
+      }
+    } else if (newUserType == "reviewer") {
+      await demoteUser();
+      if (response == 204) {
+        setState(() {
+          newUserType = "contributor";
+        });
+      }
+    }
+    response = -1;
   }
 
   @override
@@ -154,7 +284,7 @@ class _ProfilePageState extends State<ProfilePage> {
       // guest can see profile pages
     } else if (user.email == profileData.email) {
       // own profile page, should be editible
-      return (!isBanned || basicUser.userType == "admin")
+      return (!profileData.isBanned || isAdmin)
           ? PageWithAppBar(
               appBar: const HomePageAppBar(),
               pageColor: Colors.grey.shade200,
@@ -178,15 +308,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                    aboutMe: profileData.aboutMe,
-                                    email: profileData.email,
-                                    name: profileData.name,
-                                    surname: profileData.surname,
+                                    profileData: profileData,
+                                    tags: profileData.tags,
+                                    addUserSemanticTag: addUserSemanticTag,
+                                    removeUserSemanticTag: removeUserSemanticTag,
                                     noWorks: noWorks,
-                                    isBanned: isBanned,
-                                    isReviewer: isReviewer,
-                                    isValidUser: isValidUser,
                                     userType: basicUser.userType,
+                                    newUserType: newUserType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
                                   ),
@@ -236,7 +364,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(questions: questionList),
+                                          child: QuestionActivity(
+                                              isAdmin: isAdmin,
+                                              isHidden: false,
+                                              questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -264,15 +395,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             : Column(
                                 children: [
                                   AboutMe(
-                                    aboutMe: profileData.aboutMe,
-                                    email: profileData.email,
-                                    name: profileData.name,
-                                    surname: profileData.surname,
+                                    profileData: profileData,
+                                    tags: profileData.tags,
+                                    addUserSemanticTag: addUserSemanticTag,
+                                    removeUserSemanticTag: removeUserSemanticTag,
                                     noWorks: noWorks,
-                                    isBanned: isBanned,
-                                    isReviewer: isReviewer,
-                                    isValidUser: isValidUser,
                                     userType: basicUser.userType,
+                                    newUserType: newUserType,
                                     onTap: handleButtonIsBanned,
                                     onTapReviewerButton: handleButtonIsReviewer,
                                   ),
@@ -312,7 +441,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                       child: CardContainer(
                                         child: SizedBox(
                                           height: 400,
-                                          child: QuestionActivity(questions: questionList),
+                                          child: QuestionActivity(
+                                              isAdmin: isAdmin,
+                                              isHidden: false,
+                                              questions: questionList),
                                         ),
                                       ),
                                     ),
@@ -326,7 +458,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     // others profile page, will be same both on desktop and mobile
-    return (!isBanned || basicUser.userType == "admin")
+    return (!profileData.isBanned || isAdmin)
         ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
@@ -351,15 +483,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               AboutMe(
-                                  aboutMe: profileData.aboutMe,
-                                  email: profileData.email,
-                                  name: profileData.name,
-                                  surname: profileData.surname,
+                                  profileData: profileData,
+                                  tags: profileData.tags,
+                                  addUserSemanticTag: addUserSemanticTag,
+                                  removeUserSemanticTag: removeUserSemanticTag,
                                   noWorks: noWorks,
-                                  isBanned: isBanned,
-                                  isReviewer: isReviewer,
-                                  isValidUser: isValidUser,
                                   userType: basicUser.userType,
+                                  newUserType: newUserType,
                                   onTap: handleButtonIsBanned,
                                   onTapReviewerButton: handleButtonIsReviewer),
                               Padding(
@@ -397,7 +527,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: CardContainer(
                                     child: SizedBox(
                                       height: 400,
-                                      child: QuestionActivity(questions: questionList),
+                                      child: QuestionActivity(
+                                          isAdmin: isAdmin,
+                                          isHidden: false,
+                                          questions: questionList),
                                     ),
                                   ),
                                 ),

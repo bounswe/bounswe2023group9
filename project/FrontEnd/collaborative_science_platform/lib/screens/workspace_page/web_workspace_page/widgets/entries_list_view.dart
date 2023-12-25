@@ -1,13 +1,8 @@
 import 'package:collaborative_science_platform/models/workspaces_page/entry.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/mobile_entry_card.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/web_workspace_page/widgets/entry_form.dart';
 import 'package:collaborative_science_platform/utils/text_styles.dart';
-import 'package:collaborative_science_platform/widgets/app_button.dart';
-import 'package:collaborative_science_platform/widgets/card_container.dart';
 import 'package:flutter/material.dart';
 
-import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/app_alert_dialog.dart';
-import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/entry_header.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/mobile_workspace_page/widget/new_entry.dart';
 
 class EntriesListView extends StatefulWidget {
@@ -19,6 +14,14 @@ class EntriesListView extends StatefulWidget {
   final Function editEntry;
   final Function deleteEntry;
   final bool finalized;
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
+  final bool fromNode;
+
   const EntriesListView({
     super.key,
     required this.entries,
@@ -29,6 +32,13 @@ class EntriesListView extends StatefulWidget {
     required this.editEntry,
     required this.deleteEntry,
     required this.finalized,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+    required this.fromNode,
   });
   @override
   State<EntriesListView> createState() => _EntriesListViewState();
@@ -76,6 +86,14 @@ class _EntriesListViewState extends State<EntriesListView> {
                           },
                           editEntry: widget.editEntry,
                           backgroundColor: Colors.white,
+                          setProof: widget.setProof,
+                          setDisproof: widget.setDisproof,
+                          setTheorem: widget.setTheorem,
+                          removeProof: widget.removeProof,
+                          removeDisproof: widget.removeDisproof,
+                          removeTheorem: widget.removeTheorem,
+                          deleteEntry: widget.deleteEntry,
+                          fromNode: widget.fromNode,
                         )
                       : NewEntry(
                           onCreate: widget.createNewEntry,

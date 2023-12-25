@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class QuestionActivity extends StatelessWidget {
+  final bool isAdmin;
+  final bool isHidden;
   final List<Question> questions;
-  const QuestionActivity({Key? key, required this.questions}) : super(key: key);
+  const QuestionActivity(
+      {Key? key, required this.isAdmin, required this.isHidden, required this.questions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +20,16 @@ class QuestionActivity extends StatelessWidget {
       shrinkWrap: true,
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
-        return ElevatedButton(
-          child: QuestionBox(
-            question: questions[index],
-            canAnswer: false,
-          ),
-          onPressed: () {
+        return GestureDetector(
+          onTap: () {
             context.push("${NodeDetailsPage.routeName}/${questions[index].nodeId}");
           },
+          child: QuestionBox(
+            isAdmin: isAdmin,
+            question: questions[index],
+            canAnswer: false,
+            onTap: () {},
+          ),
         );
       },
     );

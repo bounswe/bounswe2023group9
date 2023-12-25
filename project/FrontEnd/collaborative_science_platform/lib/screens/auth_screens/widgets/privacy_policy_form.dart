@@ -10,60 +10,157 @@ class PrivacyPolicyForm extends StatefulWidget {
 class _PrivacyPolicyForm extends State<PrivacyPolicyForm> {
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Padding(
-        padding: EdgeInsets.all(18.0),
-
-        //TODO latex
-        //TODO use actual text
-        child: Text('''Privacy Policy for Collobrative Science Platform
-
-          Thank you for choosing this Science Platform. This Privacy Policy is designed to help you understand how we collect, use, and safeguard your personal information when you visit our website or use our services.
-
-          1. Information We Collect:
-          a. Personal Information:
-          We may collect personal information such as your name, email address, and affiliation when you register for an account or subscribe to our services.
-          
-          b. Usage Information:
-          We automatically collect information about your interaction with our platform, including your IP address, device information, and browsing behavior.
-          
-          2. How We Use Your Information:
-          a. Providing Services:
-          We use your personal information to provide you with access to our science platform, including personalized content and features based on your preferences.
-          
-          b. Communication:
-          We may use your contact information to send you important updates, newsletters, and information related to our platform. You can opt out of promotional emails at any time.
-          
-          c. Improving Services:
-          We analyze user behavior to improve our platform, enhance user experience, and develop new features.
-
-          3. Information Sharing:
-          a. Third-Party Service Providers:
-          We may share your information with third-party service providers who assist us in delivering and improving our services.
-          
-          b. Legal Compliance:
-          We may disclose your information if required by law or in response to legal requests.
-          
-          4. Data Security:
-          We employ industry-standard security measures to protect your information from unauthorized access, disclosure, alteration, and destruction.
-          
-          5. Cookies and Tracking Technologies:
-          We use cookies and similar technologies to collect information about your usage patterns and preferences. You can manage your cookie preferences through your browser settings.
-          
-          6. Your Choices:
-          You have the right to access, correct, or delete your personal information. You can manage your communication preferences and account settings through your profile.
-          
-          7. Childrens Privacy:
-          Our platform is not intended for children under the age of 13. We do not knowingly collect personal information from children.
-          
-          8. Changes to This Privacy Policy:
-          We may update this Privacy Policy to reflect changes in our practices. We encourage you to review this page periodically for the latest information.
-          
-          9. Contact Us:
-          If you have any questions or concerns about this Privacy Policy, please contact us at some-mail@science.com.tr
-          By using Science Platform, you agree to the terms outlined in this Privacy Policy. Please review this policy regularly for updates.
-          '''),
+    return const SizedBox(
+      width: 450,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Privacy Policy for Collaborative Science Platform',
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+              Text('Updated: 23 December 2023',
+                  style: TextStyle(fontStyle: FontStyle.italic)),
+                  SizedBox(height:4.0),
+                  Divider(),
+                  SizedBox(height:6.0),
+              Text('Introduction', style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600)),
+              Text(
+                  'Welcome to the Collaborative Science Platform. This Privacy Policy outlines our commitment to protecting the privacy and personal information of our users. This policy applies to all information collected through our platform by "Guests," "Basic Users," "Contributors," "Reviewers," and "Admins."\n',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal)),
+              Text('Information Collection and Use',
+                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600)),
+                  SizedBox(height:8.0),
+              Text('Personal Data', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(
+                '''We collect information that you provide to us directly, such as when you create an account or use our services. This may include:
+- Name and Contact Data (email address)
+- Passwords (stored in a secure, hashed format)
+- ORCID-ID for contributors (for identity verification)
+- Any other information you choose to provide
+''',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Usage Data',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '''We may also collect information on how our platform is accessed and used ("Usage Data"). This includes information such as your computer's Internet Protocol address (IP address), browser type, browser version, the pages of our platform that you visit, the time and date of your visit, and other diagnostic data.\n''',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Data Use',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '''We use the collected data for various purposes:
+- To provide and maintain our platform
+- To notify you about changes to our platform
+- To allow you to participate in interactive features when you choose to do so
+- To provide customer support
+- To gather analysis or valuable information so that we can improve our platform
+- To monitor the usage of our platform
+- To detect, prevent, and address technical issues
+''',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Data Sharing and Disclosure',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                '''We may disclose your Personal Data in the following situations:
+- To Comply with Laws:** If we are required to disclose your information in accordance with legal or regulatory requirements.
+- For Platform Administration:** To administer our platform, including troubleshooting, data analysis, testing, and research.
+- For External Processing:** To our affiliates, service providers, and other trusted businesses or persons who process it for us, based on our instructions and in compliance with our Privacy Policy and other appropriate confidentiality and security measures.
+''',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Data Security',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'The security of your data is important to us. We strive to use commercially acceptable means to protect your Personal Data, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure.\n',                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Your Data Protection Rights',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'In accordance with GDPR and KVKK, you have certain data protection rights. These include the right to access, update, or delete the information we hold about you, the right of rectification, the right to object, the right of restriction, the right to data portability, and the right to withdraw consent.\n',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Changes to This Privacy Policy',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page. We will let you know via email and/or a prominent notice on our platform, prior to the change becoming effective and update the "effective date" at the top of this Privacy Policy.\n',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              Text(
+                'Contact Us',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                'If you have any questions about this Privacy Policy, please contact us.',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

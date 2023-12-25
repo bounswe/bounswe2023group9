@@ -42,7 +42,11 @@ class QuestionAnswerProvider with ChangeNotifier {
             answerer: null,
             answeredAt: null,
             nodeId: nodeId,
-            isAnswered: false));
+            isAnswered: false,
+            isHidden: false));
+
+        _questions
+            .sort((a, b) => DateTime.parse(b.createdAt).compareTo(DateTime.parse(a.createdAt)));
         notifyListeners();
       } else if (response.statusCode == 401) {
         throw PostQuestionError();
@@ -54,7 +58,7 @@ class QuestionAnswerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> postAnswer(String answerText, int questionId, User user) async {
+  Future<void> postAnswer(String answerText, Question question, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/answer_question/");
     final Map<String, String> headers = {
       "Accept": "application/json",
@@ -63,7 +67,7 @@ class QuestionAnswerProvider with ChangeNotifier {
     };
     final Map<String, dynamic> postData = {
       "answer_content": answerText,
-      "question_id": questionId,
+      "question_id": question.id,
     };
     try {
       final response = await http.post(
@@ -72,11 +76,10 @@ class QuestionAnswerProvider with ChangeNotifier {
         body: json.encode(postData),
       );
       if (response.statusCode == 201) {
-        Question answeredQuestions = questions.firstWhere((element) => element.id == questionId);
-        answeredQuestions.isAnswered = true;
-        answeredQuestions.answer = answerText;
-        answeredQuestions.answeredAt = DateTime.now().toString();
-        answeredQuestions.answerer = user;
+        question.isAnswered = true;
+        question.answer = answerText;
+        question.answeredAt = DateTime.now().toString();
+        question.answerer = user;
         notifyListeners();
       } else if (response.statusCode == 403) {
         throw PostQuestionError();

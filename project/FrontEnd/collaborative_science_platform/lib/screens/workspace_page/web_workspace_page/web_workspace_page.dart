@@ -15,7 +15,6 @@ import 'package:collaborative_science_platform/utils/text_styles.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
 import 'package:collaborative_science_platform/widgets/app_text_field.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,11 +31,21 @@ class WebWorkspacePage extends StatefulWidget {
   final Function editTitle;
   final Function sendCollaborationRequest;
   final Function finalizeWorkspace;
-  final Function addSemanticTags;
+  final Function addSemanticTag;
+  final Function removeSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+
+  final Function resetWorkspace;
+
+  final Function setProof;
+  final Function setDisproof;
+  final Function setTheorem;
+  final Function removeDisproof;
+  final Function removeTheorem;
+  final Function removeProof;
 
   const WebWorkspacePage({
     super.key,
@@ -50,13 +59,21 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReference,
     required this.deleteReference,
     required this.editTitle,
-    required this.addSemanticTags,
+    required this.addSemanticTag,
+    required this.removeSemanticTag,
     required this.finalizeWorkspace,
     required this.sendCollaborationRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.removeDisproof,
+    required this.removeProof,
+    required this.removeTheorem,
+    required this.setDisproof,
+    required this.setProof,
+    required this.setTheorem,
+    required this.resetWorkspace,
   });
 
   @override
@@ -215,7 +232,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                             Text(widget.workspace!.workspaceTitle,
                                                 style: TextStyles.title2),
                                             if (widget.workspace!.status ==
-                                                WorkspaceStatus.workable)
+                                                    WorkspaceStatus.workable &&
+                                                !widget.workspace!.pending)
                                               IconButton(
                                                   onPressed: () {
                                                     setState(() {
@@ -238,6 +256,9 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                   obscureText: false,
                                                   height: 200),
                                             ),
+                                            if (!widget.workspace!.pending &&
+                                                !widget.workspace!.pendingContributor &&
+                                                !widget.workspace!.pendingReviewer)
                                             SizedBox(
                                               width: 50,
                                               height: 50,
@@ -258,7 +279,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                  if (widget.workspace!.requestId == -1 &&
+                                      if (!widget.workspace!.pending &&
+                                          widget.workspace!.requestId == -1 &&
                                       (widget.workspace!.status == WorkspaceStatus.workable ||
                                               widget.workspace!.status ==
                                                   WorkspaceStatus.finalized ||
@@ -268,8 +290,10 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       child: AppButton(
                                         isActive: widget.workspace!.status ==
                                                 WorkspaceStatus.workable ||
-                                            widget.workspace!.status == WorkspaceStatus.finalized,
-                                        text: widget.workspace!.status == WorkspaceStatus.workable
+                                            widget.workspace!.status == WorkspaceStatus.finalized ||
+                                            widget.workspace!.status == WorkspaceStatus.rejected,
+                                            text:
+                                                widget.workspace!.status == WorkspaceStatus.workable
                                             ? ((MediaQuery.of(context).size.width >
                                                     Responsive.desktopPageWidth)
                                                 ? "Finalize Workspace"
@@ -279,11 +303,17 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                         Responsive.desktopPageWidth)
                                                     ? "Send to Review"
                                                     : "Send")
-                                                : ((MediaQuery.of(context).size.width >
+                                                : (widget.workspace!.status ==
+                                                        WorkspaceStatus.rejected
+                                                    ? ((MediaQuery.of(context).size.width >
                                                         Responsive.desktopPageWidth)
-                                                    ? "In Review"
-                                                    : "In Review"),
-                                        height: 45,
+                                                        ? "Reset Workspace"
+                                                        : "Workspace")
+                                                    : (widget.workspace!.status ==
+                                                            WorkspaceStatus.inReview
+                                                        ? "In Review"
+                                                        : "Published")),
+                                            height: 45,
                                         onTap: () {
                                           /* finalize workspace*/
                                           if (widget.workspace!.status ==
@@ -294,14 +324,18 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                           else if (widget.workspace!.status ==
                                               WorkspaceStatus.finalized) {
                                             widget.sendWorkspaceToReview();
+                                              } else if (widget.workspace!.status ==
+                                              WorkspaceStatus.rejected) {
+                                            widget.resetWorkspace();
                                           }
                                         },
                                         type: "primary",
                                       ),
                                     ),
-                                  if (widget.workspace!.requestId != -1)
-                                    /** adjust it to check if the user is reviewer of this workspace */
-                                    SizedBox(
+                                  if (!widget.workspace!.pending &&
+                                      widget.workspace!.requestId != -1 &&
+                                      widget.workspace!.status == WorkspaceStatus.inReview)
+                                        SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(
                                             isActive: widget.workspace!.status ==
@@ -400,42 +434,35 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                   createNewEntry: widget.createNewEntry,
                                   editEntry: widget.editEntry,
                                   deleteEntry: widget.deleteEntry,
-                                  finalized: widget.workspace!.status != WorkspaceStatus.workable,
+                                  finalized: widget.workspace!.status != WorkspaceStatus.workable ||
+                                      widget.workspace!.pending,
+
+                                  setProof: widget.setProof,
+                                  setDisproof: widget.setDisproof,
+                                  setTheorem: widget.setTheorem,
+                                  removeProof: widget.removeProof,
+                                  removeDisproof: widget.removeDisproof,
+                                  removeTheorem: widget.removeTheorem,
+                                  fromNode: widget.workspace!.fromNodeId != -1,
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     SemanticTagListView(
-                                      finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
-                                      tags: <SemanticTag>[
-                                        SemanticTag(
-                                            id: "1",
-                                            label:
-                                                "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Label 1",
-                                            description:
-                                                "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong Description 1"),
-                                        SemanticTag(
-                                            id: "2",
-                                            label: "Label 2",
-                                            description: "Description 2"),
-                                        SemanticTag(
-                                            id: "2",
-                                            label: "Label 3",
-                                            description: "Description 3"),
-                                      ],
-                                      addSemanticTags: widget.addSemanticTags,
-                                      height: (widget.workspace!.requestId == -1)
-                                          ? minHeight / 3
-                                          : minHeight / 2,
-                                      deleteSemanticTag: () {},
+                                      finalized: widget.workspace!.status != WorkspaceStatus.workable,
+                                      tags: widget.workspace!.tags,
+                                      addSemanticTag: widget.addSemanticTag,
+                                      removeSemanticTag: widget.removeSemanticTag,
+                                      height: minHeight,
                                     ),
-                                    if (widget.workspace!.requestId == -1)
+                                    if (widget.workspace!.requestId == -1 ||
+                                        widget.workspace!.pendingContributor)
                                     ContributorsListView(
                                       finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
-                                      contributors: widget.workspace!.contributors,
+                                          widget.workspace!.status != WorkspaceStatus.workable ||
+                                              widget.workspace!.pending,
+                                        contributors: widget.workspace!.contributors,
                                       pendingContributors: widget.workspace!.pendingContributors,
                                       controller: controller3,
                                       height: minHeight / 3,
@@ -451,7 +478,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       addReference: widget.addReference, 
                                       deleteReference: widget.deleteReference,
                                       finalized:
-                                          widget.workspace!.status != WorkspaceStatus.workable,
+                                          widget.workspace!.status != WorkspaceStatus.workable ||
+                                              widget.workspace!.pending,
                                     ),
                                   ],
                                 )

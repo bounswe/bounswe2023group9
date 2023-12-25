@@ -29,7 +29,7 @@ class ReferencesListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: height,
+        // height: height,
         width: MediaQuery.of(context).size.width / 4,
         decoration: BoxDecoration(color: Colors.grey[100]),
         child: Padding(
@@ -66,6 +66,7 @@ class ReferencesListView extends StatelessWidget {
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   padding: const EdgeInsets.all(3),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: references.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
@@ -124,7 +125,26 @@ class ReferencesListView extends StatelessWidget {
                     );
                   }),
             ),
-          ]),
-        ));
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width / 6,
+            //   child: AppButton(
+            //     text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Add References" : "Add",
+            //     height: 40,
+            //     type: "outlined",
+            //     onTap: () {
+            //       showDialog(
+            //         context: context,
+            //         builder: (context) => AppAlertDialog(
+            //           text: "Add References",
+            //           content: AddReferenceForm(onAdd: addReference),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -328,33 +328,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           onTap: () {
                             showDialog(
                               context: context,
-                              builder: (context) => AlertDialog(
-                                title: SizedBox(
-                                  width: 500,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                          child: Container(
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                            bottom: BorderSide(width: 1.5, color: Colors.grey),
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.only(
-                                            bottom: 8.0), // Adjust the value as needed
-                                        child: const Text(
-                                          'Collaborative Science Platform Privacy Policy',
-                                          style: TextStyle(fontSize: 20.0),
-                                        ),
-                                      )),
-                                      const SizedBox(height: 10.0),
-                                    ],
-                                  ),
-                                ),
+                              builder: (context) => const AlertDialog(
+                                
                                 backgroundColor: Colors.white,
                                 shadowColor: Colors.white,
-                                content: const PrivacyPolicyForm(),
+                                content: PrivacyPolicyForm(),
                               ),
                             );
                           },
