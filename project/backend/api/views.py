@@ -617,6 +617,7 @@ def get_workspace_from_id(request):
                                 'is_theorem_entry': entry.is_theorem_entry,
                                 'is_final_entry': entry.is_final_entry,
                                 'is_proof_entry': entry.is_proof_entry,
+                                'is_disproof_entry': entry.is_disproof_entry,
                                 'is_editable': entry.is_editable,
                                 'entry_number': entry.entry_number, })
         else:
@@ -626,6 +627,7 @@ def get_workspace_from_id(request):
                             'entry_index':entry.entry_index,
                             'is_theorem_entry':entry.is_theorem_entry,
                             'is_final_entry':entry.is_final_entry,
+                            'is_disproof_entry': entry.is_disproof_entry,
                             'is_proof_entry':entry.is_proof_entry,
                             'is_editable':entry.is_editable,
                             'entry_number':entry.entry_number,})
