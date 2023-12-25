@@ -30,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     if (_firstTime) {
-      onTypeChange(0);
+      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      if (nodeProvider.searchNodeResult.isEmpty) onTypeChange(0);
       _firstTime = false;
     }
     super.didChangeDependencies();

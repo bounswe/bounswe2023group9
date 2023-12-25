@@ -299,6 +299,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
               children: [
                 Contributors(
                   contributors: widget.node.contributors, //widget.inputNode.contributors,
+                  semanticTags: const [],
                   controller: controller1,
                 ),
                 const SizedBox(width: 12),
