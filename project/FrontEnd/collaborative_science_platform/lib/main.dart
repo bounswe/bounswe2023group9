@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
+import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/providers/wiki_data_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
