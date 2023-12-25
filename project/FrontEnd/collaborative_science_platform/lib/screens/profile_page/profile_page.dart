@@ -141,13 +141,15 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   }
-
+ 
   Future<void> changeProfileStatus() async {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      
       adminProvider.banUser(admin, profileData.id, !profileData.isBanned);
       setState(() {
+        profileData.isBanned = !profileData.isBanned;
         isBanned = !isBanned;
       });
       error = false;
