@@ -20,16 +20,16 @@ class QuestionActivity extends StatelessWidget {
       shrinkWrap: true,
       itemCount: questions.length,
       itemBuilder: (BuildContext context, int index) {
-        return ElevatedButton(
+        return GestureDetector(
+          onTap: () {
+            context.push("${NodeDetailsPage.routeName}/${questions[index].nodeId}");
+          },
           child: QuestionBox(
             isAdmin: isAdmin,
             question: questions[index],
             canAnswer: false,
             onTap: () {},
           ),
-          onPressed: () {
-            context.push("${NodeDetailsPage.routeName}/${questions[index].nodeId}");
-          },
         );
       },
     );

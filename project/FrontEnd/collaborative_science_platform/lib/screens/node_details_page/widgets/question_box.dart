@@ -89,7 +89,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                   ),
                   if (isReplyVisible)
                     AnswerBox(
-                      questionId: widget.question.id,
+                      question: widget.question,
                       onQuestionAnswered: () => setState(() {}),
                     ),
                 ],
@@ -114,7 +114,7 @@ class _QuestionBoxState extends State<QuestionBox> {
                       type: widget.question.isHidden ? "grey" : "danger",
                       onTap: () {
                         changeQuestionStatus();
-                        widget.onTap(); // Call the onTap callback here
+                        widget.onTap();
                       },
                     ),
                   ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/question_box.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/ask_question_form.dart';
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 
 class QuestionsView extends StatefulWidget {
   final int nodeId;
@@ -48,7 +47,8 @@ class _QuestionsViewState extends State<QuestionsView> {
     List<Question> filteredQuestions = questions.where((question) {
       return question.isAnswered || widget.canAnswer || widget.isAdmin;
     }).toList();
-    filteredQuestions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    filteredQuestions
+        .sort((a, b) => DateTime.parse(b.createdAt).compareTo(DateTime.parse(a.createdAt)));
 
     return SingleChildScrollView(
       child: Container(

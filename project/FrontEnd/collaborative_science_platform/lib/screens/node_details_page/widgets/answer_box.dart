@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/exceptions/question_exceptions.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
@@ -6,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AnswerBox extends StatefulWidget {
-  final int questionId;
+  final Question question;
   final Function() onQuestionAnswered;
-  const AnswerBox({Key? key, required this.questionId, required this.onQuestionAnswered})
+  const AnswerBox({Key? key, required this.question, required this.onQuestionAnswered})
       : super(key: key);
 
   @override
@@ -29,7 +30,7 @@ class _AnswerBoxState extends State<AnswerBox> {
         setState(() {
           isLoading = true;
         });
-        await questionAnswerProvider.postAnswer(answerController.text, widget.questionId, user);
+        await questionAnswerProvider.postAnswer(answerController.text, widget.question, user);
         widget.onQuestionAnswered();
         answerController.clear();
       }
