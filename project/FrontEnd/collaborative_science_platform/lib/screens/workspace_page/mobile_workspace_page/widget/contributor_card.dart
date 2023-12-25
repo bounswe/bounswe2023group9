@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/workspaces_page/workspace.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -6,15 +7,18 @@ import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 
-
 class ContributorCard extends StatelessWidget {
   final User contributor;
   final bool pending;
+  final bool workspacePending;
+  final Function updateRequest;
 
   const ContributorCard({
     super.key,
     required this.contributor,
     required this.pending,
+    required this.workspacePending,
+    required this.updateRequest,
   });
 
   @override
@@ -69,17 +73,17 @@ class ContributorCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  if (pending) IconButton(
-                    icon: const Icon(
-                      CupertinoIcons.clear_circled,
-                      color: AppColors.warningColor,
+                  if (pending && !workspacePending)
+                    IconButton(
+                      icon: const Icon(
+                        CupertinoIcons.clear_circled,
+                        color: AppColors.warningColor,
+                      ),
+                      onPressed: () async {
+                        // function to delete collaboration request
+                        await updateRequest(contributor.requestId, RequestStatus.rejected);
+                      },
                     ),
-                    onPressed: () {
-                      // function to delete collaboration request
-                      //TODO - requests id's are absent for now.
-                      //updateRequest();
-                    },
-                  ),
                 ],
               ),
             ),

@@ -32,6 +32,8 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function removeSemanticTag;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function resetWorkspace;
+
   final Function setProof;
   final Function setDisproof;
   final Function setTheorem;
@@ -59,6 +61,9 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+
+    required this.resetWorkspace,
+
     required this.removeDisproof,
     required this.removeProof,
     required this.removeTheorem,
@@ -66,6 +71,7 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.setProof,
     required this.setTheorem,
     required this.displayCommentSidebar,
+
 
   });
 
@@ -100,10 +106,12 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
     return Center(
       child: IconButton(
         iconSize: 40.0,
-        onPressed: widget.workspace.status != WorkspaceStatus.workable ? () {} : onPressed,
+        onPressed: (widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending)
+            ? () {}
+            : onPressed,
         icon: Icon(
           Icons.add,
-          color: widget.workspace.status != WorkspaceStatus.workable
+          color: (widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending)
               ? Colors.grey[200]
               : Colors.grey[800],
         ),
@@ -143,8 +151,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           return SemanticTagCard(
-            finalized: widget.workspace.status != WorkspaceStatus.workable,
+
+            finalized:
+                widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending,
             tag: widget.workspace.tags[index],
+
             backgroundColor: const Color.fromARGB(255, 220, 235, 220),
             onDelete: () async {
               await widget.removeSemanticTag(widget.workspace.tags[index].tagId);
@@ -168,7 +179,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               itemBuilder: (context, index) {
                 return (index < length)
                     ? MobileEntryCard(
-                        finalized: widget.workspace.status != WorkspaceStatus.workable,
+                        finalized: widget.workspace.status != WorkspaceStatus.workable ||
+                            widget.workspace.pending,
                         entry: widget.workspace.entries[index],
                         onDelete: () async {
                           await widget.deleteEntry(widget.workspace.entries[index].entryId);
@@ -187,7 +199,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                         onCreate: widget.createNewEntry,
                         backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                         isMobile: true,
-                        finalized: widget.workspace.status != WorkspaceStatus.workable,
+                        finalized: widget.workspace.status != WorkspaceStatus.workable ||
+                            widget.workspace.pending,
                       );
               },
             ),
@@ -208,7 +221,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                 onCreate: widget.createNewEntry,
                 backgroundColor: const Color.fromARGB(255, 220, 220, 240),
                 isMobile: true,
-                finalized: widget.workspace.status != WorkspaceStatus.workable,
+                finalized:
+                    widget.workspace.status != WorkspaceStatus.workable || widget.workspace.pending,
               ),
             ],
           );
@@ -235,11 +249,16 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
             ? ContributorCard(
                 contributor: widget.workspace.contributors[index],
                 pending: false,
+                workspacePending: widget.workspace.pending,
+                updateRequest: widget.updateRequest,
               )
             : (index < length + pendingLength)
                 ? ContributorCard(
                     contributor: widget.workspace.pendingContributors[index - length],
                     pending: true,
+                    workspacePending: widget.workspace.pending,
+                    updateRequest: widget.updateRequest,
+
                   )
                 : addIcon(() {
                     showDialog(context: context, builder: (context) => alertDialog);
@@ -312,7 +331,8 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                               style: TextStyles.title2,
                             ),
                           ),
-                          if (widget.workspace.status == WorkspaceStatus.workable)
+                          if (widget.workspace.status == WorkspaceStatus.workable &&
+                              !widget.workspace.pending)
                             IconButton(
                                 onPressed: () {
                                   setState(() {
@@ -333,6 +353,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                 obscureText: false,
                                 height: 200),
                           ),
+                          if (!widget.workspace.pending)
                           SizedBox(
                             width: 50,
                             height: 50,
@@ -349,25 +370,26 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                           )
                         ],
                 ),
-                if (widget.workspace.requestId == -1)
+                if (!widget.workspace.pending && widget.workspace.requestId == -1)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
                     child: AppButton(
-                      isActive: widget.workspace.status == WorkspaceStatus.workable ||
-                          widget.workspace.status == WorkspaceStatus.finalized,
                       height: 40,
+                      isActive: widget.workspace.status == WorkspaceStatus.workable ||
+                          widget.workspace.status == WorkspaceStatus.finalized ||
+                          widget.workspace.status == WorkspaceStatus.rejected,
                       text: widget.pending
                           ? "Accept Workspace"
-                          : (widget.workspace.status == WorkspaceStatus.workable
+                          : widget.workspace.status == WorkspaceStatus.workable
                               ? "Finalize Workspace"
-                              : (widget.workspace.status == WorkspaceStatus.finalized
+                              : widget.workspace.status == WorkspaceStatus.finalized
                                   ? "Send to Review"
-                                  : "In Review")),
-                      icon: widget.pending
-                          ? const Icon(Icons.approval)
-                          : (widget.workspace.status == WorkspaceStatus.workable
-                              ? const Icon(Icons.lock)
-                              : const Icon(Icons.send)),
+                                  : (widget.workspace.status == WorkspaceStatus.rejected
+                                      ? "Reset Workspace"
+                                      : (widget.workspace.status == WorkspaceStatus.inReview
+                                          ? "In Review"
+                                          : "Published")),
+
                       onTap: widget.pending
                           ? () {
                               // accept or reject the review
@@ -396,13 +418,16 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                               );
                             }
                           : () {
-                              // send to review
                               showDialog(
                                 context: context,
                                 builder: (context) => AppAlertDialog(
                                   text: widget.workspace.status == WorkspaceStatus.workable
                                       ? "Do you want to finalize the workspace?"
-                                      : "Do you want to send it to review?",
+
+                                      : (widget.workspace.status == WorkspaceStatus.finalized
+                                          ? "Do you want to send it to review?"
+                                          : "Do you want to reset the workspace?"),
+
                                   actions: [
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -413,10 +438,16 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                                           if (widget.workspace.status == WorkspaceStatus.workable) {
                                             widget.finalizeWorkspace();
                                             Navigator.of(context).pop();
-                                          } else {
+                                          } else if (widget.workspace.status ==
+                                              WorkspaceStatus.finalized) {
                                             /* Send to review */
                                             widget.sendWorkspaceToReview();
                                             Navigator.of(context).pop();
+                                          } else if (widget.workspace.status ==
+                                              WorkspaceStatus.rejected) {
+                                            widget.resetWorkspace();
+                                            Navigator.of(context).pop();
+
                                           }
                                         },
                                       ),
@@ -437,7 +468,10 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                             },
                     ),
                   ),
-                if (widget.workspace.requestId != -1)
+                if (!widget.workspace.pending &&
+                    widget.workspace.requestId != -1 &&
+                    widget.workspace.status == WorkspaceStatus.inReview)
+
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
@@ -535,11 +569,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
             ),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             const SubSectionTitle(title: "Contributors"),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             contributorList(),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),

@@ -483,7 +483,31 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
-  Future<void> setProof(int entryId, int workspaceId, String token) async {
+
+    Future<void> resetWorkspace(int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/reset_workspace_state/");
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw WorkspaceDoesNotExist();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+ Future<void> setProof(int entryId, int workspaceId, String token) async {
     Uri url = Uri.parse("${Constants.apiUrl}/set_workspace_proof/");
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
