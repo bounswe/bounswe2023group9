@@ -484,8 +484,10 @@ class WorkspaceProvider with ChangeNotifier {
     }
   }
 
+
+
   Future<void> resetWorkspace(int workspaceId, String token) async {
-    Uri url = Uri.parse("${Constants.apiUrl}/delete_entry/");
+    Uri url = Uri.parse("${Constants.apiUrl}/reset_workspace_state/");
 
     var request = http.MultipartRequest('POST', url);
     request.headers.addAll({
@@ -506,4 +508,6 @@ class WorkspaceProvider with ChangeNotifier {
       throw Exception("Something has happened");
     }
   }
+
+
 }
