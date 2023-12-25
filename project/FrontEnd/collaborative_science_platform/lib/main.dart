@@ -3,6 +3,7 @@ import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/profile_data_provider.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/question_provider.dart';
+import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
 import 'package:collaborative_science_platform/providers/workspace_provider.dart';
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<QuestionAnswerProvider>(
             create: (context) => QuestionAnswerProvider()),
         ChangeNotifierProvider<AnnotationProvider>(create: (context) => AnnotationProvider()),
+        ChangeNotifierProvider<SettingsProvider>(create: (context) => SettingsProvider()),
       ],
       child: FutureBuilder(
         future: checkTokenAndLogin(context),

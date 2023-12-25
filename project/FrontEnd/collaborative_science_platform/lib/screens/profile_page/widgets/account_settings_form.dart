@@ -1,3 +1,4 @@
+import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/auth.dart';
@@ -19,6 +20,8 @@ class AccountSettingsForm extends StatefulWidget {
 
 class _AccountSettingsFormState extends State<AccountSettingsForm> {
   ProfileData profileData = ProfileData();
+  BasicUser basicUser = BasicUser();
+
   final passwordController = TextEditingController();
   final aboutMeController = TextEditingController();
 
@@ -30,6 +33,9 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
   bool error = false;
   String message = "";
 
+  bool isLoading = false;
+  bool _isFirstTime = true;
+
   @override
   void dispose() {
     passwordController.dispose();
@@ -37,6 +43,46 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
     passwordFocusNode.dispose();
     aboutMeFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isFirstTime) {
+      try {
+        getBasicUser();
+      } catch (e) {
+        setState(() {
+          error = true;
+          message = "Something went wrong!";
+        });
+      }
+      _isFirstTime = false;
+    }
+    super.didChangeDependencies();
+  }
+
+  void getBasicUser() async {
+    final User? user = Provider.of<Auth>(context).user;
+    if (user != null) {
+      try {
+        final auth = Provider.of<Auth>(context);  //for token
+        basicUser = (auth.basicUser ?? {} as BasicUser);
+        isLoading = true;
+        // user = (auth.user ?? {} as User);
+      } catch (e) {
+        setState(() {
+          error = true;
+          message = "Something went wrong!";
+        });
+        rethrow;
+      } finally {
+        setState(() {
+          isSwitched = basicUser.emailNotificationPreference;
+          isSwitched2 = basicUser.showActivity;
+          isLoading = false;
+        });
+      }
+    }
   }
 
   void changePreff() async {
