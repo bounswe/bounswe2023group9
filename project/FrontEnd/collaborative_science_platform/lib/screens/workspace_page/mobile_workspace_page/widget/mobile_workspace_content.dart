@@ -569,11 +569,11 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),
             ),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             const SubSectionTitle(title: "Contributors"),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             contributorList(),
-            if (widget.workspace.requestId == -1)
+            if (widget.workspace.requestId == -1 || widget.workspace.pendingContributor)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Divider(),

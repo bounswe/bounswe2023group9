@@ -125,23 +125,23 @@ class ReferencesListView extends StatelessWidget {
                     );
                   }),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 6,
-              child: AppButton(
-                text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Add References" : "Add",
-                height: 40,
-                type: "outlined",
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AppAlertDialog(
-                      text: "Add References",
-                      content: AddReferenceForm(onAdd: addReference),
-                    ),
-                  );
-                },
-              ),
-            ),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width / 6,
+            //   child: AppButton(
+            //     text: (MediaQuery.of(context).size.width > Responsive.desktopPageWidth) ? "Add References" : "Add",
+            //     height: 40,
+            //     type: "outlined",
+            //     onTap: () {
+            //       showDialog(
+            //         context: context,
+            //         builder: (context) => AppAlertDialog(
+            //           text: "Add References",
+            //           content: AddReferenceForm(onAdd: addReference),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

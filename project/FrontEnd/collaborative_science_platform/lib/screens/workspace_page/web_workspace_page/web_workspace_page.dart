@@ -456,7 +456,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       removeSemanticTag: widget.removeSemanticTag,
                                       height: minHeight,
                                     ),
-                                    if (widget.workspace!.requestId == -1)
+                                    if (widget.workspace!.requestId == -1 ||
+                                        widget.workspace!.pendingContributor)
                                     ContributorsListView(
                                       finalized:
                                           widget.workspace!.status != WorkspaceStatus.workable ||
