@@ -17,13 +17,6 @@ import random, json, datetime
 
 from backend import settings
 
-
-
-# from nltk.corpus import wordnet as wn
-# import nltk
-#
-# nltk.download('wordnet')
-
 # Create your views here.
 
 # Class to check if user is a Contributor
@@ -94,7 +87,6 @@ class NodeAPIView(APIView):
   
     def get(self, request):
         id = request.GET.get("node_id")
-        # res = BasicUserDetailAPI.as_view()(request)
         try:
             admin = Admin.objects.filter(pk=request.user.basicuser)
             is_admin = False
@@ -260,22 +252,6 @@ def search(request):
     if search_type != 'node' and search_type != 'author' and search_type != 'all' and search_type != 'by'and search_type != 'random' and search_type != 'semantic' and search_type != 'trending' and search_type != 'latest' and search_type != 'most_read'  and search_type != 'for_you':
         return JsonResponse({'status': 'invalid search type.'}, status=400)
 
-
-    # similars = [] # TODO ADVANCED SEARCH
-    # also_sees = []
-    #
-    # for element in search_elements:
-    #     if  len(wn.synsets(element)) != 0:
-    #         for el in wn.synsets(element)[0].also_sees():
-    #             el = el.name()
-    #             el = el[:el.find('.')]
-    #             also_sees.append(el)
-    #         for el in wn.synsets(element)[0].similar_tos():
-    #             el = el.name()
-    #             el = el[:el.find('.')]
-    #             similars.append(el)
-    # start search with exact search
-
     nodes = []
 
     if search_type == 'latest':
@@ -326,7 +302,6 @@ def search(request):
 
 
     if search_type == 'by' or search_type == 'all':
-        # print(search_elements)
         search_elements = search.split()
         for el in search_elements:
             res_name = User.objects.filter(first_name__icontains=el)
@@ -463,7 +438,7 @@ def get_profile(request):
              'asker_mail': asker_user.username, 'answerer_name': answerer_user.first_name,
              'answerer_surname': answerer_user.last_name,
              'answerer_mail': answerer_user.username,
-             'answerer_id': q.answerer.id, 'question_content': q.question_content,
+             'answerer_id': q.answerer.id, 'question_content':q.question_content,
              'answer_content': q.answer_content, 'answer_date': q.answered_at, 'is_answered':1})
 
     node_infos = []
@@ -557,13 +532,9 @@ def is_cont_workspace(request):
 
 def get_workspaces(request):
     res = BasicUserDetailAPI.as_view()(request)
-    # basic_user = BasicUser.objects.get(id=json.loads(res.content.decode())['basic_user_id'])
     if not IsContributor().has_permission(request,get_workspaces):
         return JsonResponse({'message':'User is not a Contributor'},status=403)
-    # id = int(request.GET.get("user_id"))
     cont = Contributor.objects.filter(id=json.loads(res.content.decode())['basic_user_id'])
-    # if cont.count() == 0:
-    #     return JsonResponse({'message':'There is no contributor with this id.'},status=404)
     cont = cont[0]
     workspace_list = []
     for workspace in cont.workspaces.all():
@@ -635,13 +606,11 @@ def get_workspace_from_id(request):
                     request_id = request.id
             reviewer_flag = False
     collab_flag = True
-    # collab_comment = ''
     for req in CollaborationRequest.objects.filter(receiver=cont):
         if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
             collab_flag = False
             pending_collab = True
             request_id = req.id
-            # collab_comment = req.comment
     if reviewer_flag and collab_flag:
         request_id = ''
     if collab_flag and reviewer_flag and not is_cont_workspace(request):
@@ -783,7 +752,6 @@ def change_workspace_title(request):
 def set_workspace_proof(request):
     entry_id = request.POST.get("entry_id")
     workspace_id = request.POST.get("workspace_id")
-    # is_disproof = request.POST.get("is_disproof")
     if entry_id == None or entry_id == '':
         return JsonResponse({'message': 'entry_id field can not be empty'}, status=400)
     try:
@@ -819,8 +787,6 @@ def set_workspace_proof(request):
         workspace.proof_entry.is_proof_entry = False
     workspace.proof_entry = entry
     entry.is_proof_entry = True
-    # if is_disproof:
-    #     entry.is_disproof_entry= True
     entry.save()
     workspace.save()
     return JsonResponse({'message': 'Proof entry is successfully set.'}, status=200)
@@ -852,7 +818,6 @@ def remove_workspace_proof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.proof_entry != None:
         workspace.proof_entry.is_proof_entry = False
-        # workspace.proof_entry.is_disproof_entry = False
         workspace.proof_entry.save()
     workspace.proof_entry = None
     workspace.save()
@@ -1099,10 +1064,8 @@ def edit_entry(request):
 def delete_workspace(request):
     res = BasicUserDetailAPI.as_view()(request)
     workspace_id = request.POST.get("workspace_id")
-    # contributor_id = request.POST.get("contributor_id")
     try:
         workspace_id = int(workspace_id)
-        # contributor_id = int(contributor_id)
     except:
         return JsonResponse({'message': 'workspace_id  field have to be a integer'}, status=400)
     workspace = Workspace.objects.filter(workspace_id=workspace_id)
@@ -1129,8 +1092,6 @@ def delete_workspace(request):
         return JsonResponse({'message': 'there is no contributor with this id in this workspace.'}, status=404)
     contributor[0].workspaces.remove(workspace[0])
     contributor[0].save()
-    # if workspace[0].contributor_set.all().count() == 0:
-    #     workspace[0].delete()
     return JsonResponse({'message': 'workspace deleted successfully.'}, status=200)
 
 @csrf_exempt
@@ -1313,16 +1274,8 @@ def create_workspace(request):
     if not IsContributor().has_permission(request, delete_entry):
         return JsonResponse({'message': 'User is not a Contributor'}, status=403)
 
-
-    # user_id = request.POST.get("user_id")
     if title == '' or title == None:
         return JsonResponse({'message': 'workspace_title field can not be empty'}, status=400)
-    # if user_id == '' or user_id == None:
-    #     return JsonResponse({'message': 'user_id field can not be empty'}, status=400)
-    # try:
-    #     creator = int(user_id)
-    # except:
-    #     return JsonResponse({'message': 'user_id has to be a integer'}, status=400)
     cont = Contributor.objects.filter(id=request.user.basicuser.id)
     if cont.count() == 0:
         return JsonResponse({'message': 'there is no contributor with this user_id'}, status=400)

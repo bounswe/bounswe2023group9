@@ -59,7 +59,6 @@ class SemanticTag(models.Model):
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
     entry_index = models.IntegerField(blank=True,null=True)
-    #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
     content = models.TextField(null=False)
     entry_date = models.DateField(auto_now_add=True)
     is_theorem_entry = models.BooleanField(default=False)
@@ -67,9 +66,7 @@ class Entry(models.Model):
     is_proof_entry = models.BooleanField(default=False)
     is_disproof_entry = models.BooleanField(default=False)
     is_editable = models.BooleanField(default=True)
-    #creator = models.ForeignKey(Contributor,null=True,blank=True, on_delete = models.CASCADE)
     entry_number = models.IntegerField(blank=True,null=True)
-    #contributors = models.ManyToManyField(Contributor,related_name="EntryContributors")
     def set_as_final(self):
         self.is_final_entry = True
     def set_as_theorem(self):
@@ -82,7 +79,6 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
     workspace_title = models.CharField(max_length=100)
     semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
-    # wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
     is_finalized = models.BooleanField(null = True,default=False)
     is_published = models.BooleanField(null = True,default=False)
     is_in_review = models.BooleanField(null = True,default=False)
@@ -96,9 +92,7 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     theorem_entry = models.ForeignKey('Entry',null=True,blank=True,on_delete=models.CASCADE,related_name='workspace_theorem')
     proof_entry = models.ForeignKey('Entry',null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_proof')
     disproof_entry = models.ForeignKey('Entry', null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_disproof')
-    # theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
-    # final_entry = models.ForeignKey(Entry,null=True, on_
-    # delete=models.CASCADE,related_name='FinalEntry')
+
     def finalize_workspace(self):
         self.is_finalized = True
         self.is_in_review = False
@@ -203,7 +197,6 @@ class Theorem(models.Model):
 
 
 class Annotation(models.Model):
-    # ReviewRequest has annotations, must be handled.  
     pass
 
 
@@ -217,8 +210,6 @@ class Node(models.Model):
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
-    # Nodes also have to_referenced_nodes list to access the nodes this node references
-    # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()

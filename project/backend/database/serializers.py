@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from database.models import Contributor
-# from django.contrib.auth.password_validation import validate_password
 from django.http import JsonResponse
 import requests
 from .models import *
@@ -204,7 +203,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     validators=[UniqueValidator(queryset=User.objects.all())]
   )
   password = serializers.CharField(write_only=True, required=True)
-  # password2 = serializers.CharField(write_only=True, required=True)
+
 
   class Meta:
     model = User
@@ -214,11 +213,7 @@ class RegisterSerializer(serializers.ModelSerializer):
       'last_name': {'required': True}
     }
 
-  # def validate(self, attrs):
-  #   if attrs['password'] != attrs['password2']:
-  #     raise serializers.ValidationError({"password": "Password fields didn't match."})
-    
-    # return attrs
+
   
   # This method will be used when generic create api called
   def create(self, validated_data):
