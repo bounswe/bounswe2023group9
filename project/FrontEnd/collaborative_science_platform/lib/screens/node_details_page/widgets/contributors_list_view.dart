@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/extensions/string_extensions.dart';
+import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
@@ -169,6 +170,7 @@ class SemanticTagBox extends StatelessWidget {
         onTap: () async {
           await Provider.of<NodeProvider>(context, listen: false)
               .search(SearchType.both, semanticTag.wid, semantic: true);
+          SelectButtonsHelper.selectedIndex = -1;
           context.go('/');
         },
         child: Column(

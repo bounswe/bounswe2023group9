@@ -56,13 +56,11 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   void getNodeDetails() async {
     try {
       final nodeDetailsProvider = Provider.of<NodeProvider>(context);
-      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.nodeID, auth.user!.token);
-
+      await nodeDetailsProvider.getNode(widget.nodeID);
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
       });
@@ -321,7 +319,7 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
               children: [
                 Contributors(
                   contributors: widget.node.contributors, //widget.inputNode.contributors,
-                  semanticTags: const [],
+                  semanticTags: widget.node.semanticTags,
                   controller: controller1,
                 ),
                 const SizedBox(width: 12),
