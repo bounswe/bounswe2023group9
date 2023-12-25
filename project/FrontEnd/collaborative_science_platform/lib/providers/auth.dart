@@ -11,15 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum UserType { guest, basicUser, contributor, reviewer, admin }
 
 class Auth with ChangeNotifier {
-  BasicUser? basicUser = BasicUser(
-      basicUserId: 92,
-      bio: "Administrator",
-      emailNotificationPreference: false,
-      showActivity: true,
-      userType: "admin");
-  UserType userType = UserType.admin;
-  User? user = User(
-      email: "", firstName: "", lastName: "", token: "34808af355721d988331adc0bffc897dff8c142a");
+  User? user;
+  BasicUser? basicUser;
+  UserType userType = UserType.guest;
+  //User? user = User(email: "utkangezer@gmail.com", firstName: "utkan", lastName: "gezer");
 
   bool get isSignedIn {
     return user != null && user!.token.isNotEmpty;
