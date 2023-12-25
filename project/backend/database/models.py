@@ -9,8 +9,8 @@ from api.wikidata import *
 
 class SemanticTag(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    wid = models.CharField(max_length=20)
-    label = models.CharField(max_length=30, unique=True)
+    wid = models.CharField(max_length=20,unique=False)
+    label = models.CharField(max_length=30,unique=False)
     
     @property
     def nodes(self):
@@ -23,13 +23,16 @@ class SemanticTag(models.Model):
     @property
     def related_nodes(self):
         parent_wids = get_parent_ids(self.wid)
+        for pw in parent_wids:
+            if not SemanticTag.objects.filter(wid=pw).exists():
+                parent_wids.remove(pw)
         sibling_wids = get_children_ids(parent_wids)
 
-        if self.wid in sibling_wids:
+        while self.wid in sibling_wids:
             sibling_wids.remove(self.wid)
 
         children_wids = get_children_ids([self.wid])
-        combined = sibling_wids + parent_wids + children_wids
+        combined = sibling_wids + children_wids + parent_wids
 
         return Node.objects.filter(semantic_tags__wid__in=combined)
 
@@ -55,17 +58,15 @@ class SemanticTag(models.Model):
 
 class Entry(models.Model):
     entry_id = models.AutoField(primary_key=True)
-    entry_index = models.IntegerField()
-    #workspace_id =  models.ForeignKey(Workspace,null=False, blank = False, on_delete=models.CASCADE,related_name='WorkspaceID')
+    entry_index = models.IntegerField(blank=True,null=True)
     content = models.TextField(null=False)
     entry_date = models.DateField(auto_now_add=True)
     is_theorem_entry = models.BooleanField(default=False)
     is_final_entry = models.BooleanField(default=False)
     is_proof_entry = models.BooleanField(default=False)
+    is_disproof_entry = models.BooleanField(default=False)
     is_editable = models.BooleanField(default=True)
-    #creator = models.ForeignKey(Contributor,null=True,blank=True, on_delete = models.CASCADE)
-    entry_number = models.IntegerField()
-    #contributors = models.ManyToManyField(Contributor,related_name="EntryContributors")
+    entry_number = models.IntegerField(blank=True,null=True)
     def set_as_final(self):
         self.is_final_entry = True
     def set_as_theorem(self):
@@ -78,7 +79,6 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     workspace_id = models.AutoField(primary_key=True)
     workspace_title = models.CharField(max_length=100)
     semantic_tags = models.ManyToManyField(SemanticTag, blank=True,related_name = 'WorkspaceSemanticTags')
-    # wiki_tags = models.ManyToManyField(WikiTag,blank=True,related_name = 'WorkspaceWikiTags')
     is_finalized = models.BooleanField(null = True,default=False)
     is_published = models.BooleanField(null = True,default=False)
     is_in_review = models.BooleanField(null = True,default=False)
@@ -87,10 +87,12 @@ class Workspace(models.Model):  #Node and Review Requests may be added later
     num_approvals = models.IntegerField(null = True,default=0)
     entries = models.ManyToManyField(Entry,blank=True,related_name = 'WorkspaceEntries')
     references = models.ManyToManyField('Node',blank=True,related_name='WorkspaceReferences')
+    node = models.ForeignKey('Node',on_delete=models.CASCADE,blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    # theorem_entry = models.ManyToManyField(Entry,related_name='TheoremEntry')
-    # final_entry = models.ForeignKey(Entry,null=True, on_
-    # delete=models.CASCADE,related_name='FinalEntry')
+    theorem_entry = models.ForeignKey('Entry',null=True,blank=True,on_delete=models.CASCADE,related_name='workspace_theorem')
+    proof_entry = models.ForeignKey('Entry',null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_proof')
+    disproof_entry = models.ForeignKey('Entry', null=True, blank=True, on_delete=models.CASCADE,related_name='workspace_disproof')
+
     def finalize_workspace(self):
         self.is_finalized = True
         self.is_in_review = False
@@ -106,6 +108,7 @@ class BasicUser(models.Model):
     )
     email_notification_preference = models.BooleanField(default=False)
     show_activity_preference = models.BooleanField(default=True)
+    semantic_tags = models.ManyToManyField(SemanticTag, blank=True, related_name='BasicUserSemanticTags')
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
@@ -114,7 +117,7 @@ class BasicUser(models.Model):
 
 class Contributor(BasicUser):
     workspaces = models.ManyToManyField(Workspace, blank=True)
-
+    orcid = models.TextField(unique=True, null=True, blank=True)
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
@@ -134,6 +137,7 @@ class Contributor(BasicUser):
             self.workspaces.remove(workspace_to_delete)     # errors if multiple Contributors present
 
 class Reviewer(Contributor):
+    review_workspaces =  models.ManyToManyField(Workspace, blank=True)
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
@@ -177,6 +181,7 @@ class ReviewRequest(Request):
     """
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.
     comment   = models.CharField(max_length=400, null=True, default=None)
+    response = models.CharField(max_length=1, choices=Request.request_status_choices, default="P")
 
 class CollaborationRequest(Request):
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)    #Note that workspace is accessed directly by Workspace instance not via "workspaceID" as proposed in project class diagram.
@@ -186,10 +191,12 @@ class Theorem(models.Model):
     theorem_title = models.CharField(max_length=100, null=False)
     theorem_content = models.TextField(null=False)
     publish_date = models.DateField()
+    contributors = models.ManyToManyField(Contributor, related_name='TheoremContributors')
+
+
 
 
 class Annotation(models.Model):
-    # ReviewRequest has annotations, must be handled.  
     pass
 
 
@@ -203,8 +210,6 @@ class Node(models.Model):
     from_referenced_nodes = models.ManyToManyField(
         "self", related_name="to_referenced_nodes", symmetrical=False
     )
-    # Nodes also have to_referenced_nodes list to access the nodes this node references
-    # Nodes also have a 'proofs' list which can be accessed as Node.proofs.all()
     semantic_tags = models.ManyToManyField(SemanticTag)
     annotations = models.ManyToManyField(Annotation)
     is_valid = models.BooleanField()
@@ -222,7 +227,7 @@ class Proof(models.Model):
     is_disproof = models.BooleanField()
     publish_date = models.DateField()
     removed_by_admin = models.BooleanField(default=False)
-
+    contributors = models.ManyToManyField(Contributor, related_name='ProofContributors')
     node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="proofs")
 
 
@@ -236,7 +241,7 @@ class Question(models.Model):
     answerer = models.ForeignKey(Contributor, on_delete=models.PROTECT, null=True, blank=True, related_name="answered_questions")
     answer_content = models.TextField(max_length=600, null=True, blank=True)
     answered_at = models.DateTimeField(null=True, blank=True)
-
+    removed_by_admin = models.BooleanField(default=False)
     def answer(self, answer, answerer):
         if self.answer_content is None or self.answer_content == "":
             print("first if")

@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
-# from django.contrib.auth.password_validation import validate_password
-
+from database.models import Contributor
+from django.http import JsonResponse
+import requests
 from .models import *
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -67,6 +68,33 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
       return workspace
 
+class SemanticTagSerializer(serializers.ModelSerializer):
+    wid = serializers.CharField(required=True)
+    label = serializers.CharField(required=True)
+
+    class Meta:
+        model = SemanticTag
+        fields = "__all__"
+
+    def create(self, validated_data):
+      wid = validated_data.get('wid', None)
+      label = validated_data.get('label', None)
+      workspace_id = self.context['request'].data.get('workspace_id', None)
+      user_id = self.context['request'].data.get('user_id', None)
+
+      tag = SemanticTag.objects.create(wid=wid, label=label)
+
+      if workspace_id is not None:
+        workspace = Workspace.objects.get(workspace_id=workspace_id)
+        workspace.semantic_tags.add(tag)
+        workspace.save()
+
+      if user_id is not None:
+        user = BasicUser.objects.get(id=user_id)
+        user.semantic_tags.add(tag)
+        user.save()
+
+      return tag
 
 # Serializer to change password
 class ChangePasswordSerializer(serializers.ModelSerializer):
@@ -94,10 +122,10 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False)
     email_notification_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
     show_activity_preference = serializers.BooleanField(required=False, allow_null=True, default=None)
-
+    orcid = serializers.CharField(required=False, allow_null=True, default=None)
     class Meta:
       model = BasicUser
-      fields = ('bio', 'email_notification_preference', 'show_activity_preference')
+      fields = ('bio', 'email_notification_preference', 'show_activity_preference', 'orcid')
     
     def update(self, instance, validated_data):
       change = False
@@ -115,6 +143,29 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
         if validated_data['show_activity_preference'] is not None:
           instance.show_activity_preference = validated_data['show_activity_preference']
           change = True
+      if 'orcid' in validated_data:
+        if validated_data['orcid'] is not None:
+          if Contributor.objects.filter(orcid=validated_data['orcid']).exists():
+            raise serializers.ValidationError({"error": 'A contributor with this ORCID already exists'})
+          res = requests.get('https://orcid.org/'+validated_data['orcid'],headers={"Accept": "application/json"})
+          if res.status_code == 404:
+            raise serializers.ValidationError({"error": "Please provide a valid ORCID"})
+          cont =  Contributor.objects.filter(user_id=instance.user.id)
+          if cont.count() != 0 and cont[0].orcid == None:
+            contributor_serializer = ContributorSerializer(cont[0], data={'orcid': validated_data['orcid']}, partial=True)
+            if contributor_serializer.is_valid():
+              contributor_serializer.save()
+              change = True
+              cont[0].save()
+            instance.save()
+            return cont[0]
+          elif cont.count() == 0:
+            basic_user = BasicUser.objects.filter(user_id=instance.user.id)[0]
+            contributor = Contributor(basicuser_ptr_id=basic_user.id,orcid=validated_data['orcid'])
+            contributor.__dict__.update(basic_user.__dict__)
+            contributor.save()
+            change = True
+            instance.orcid = validated_data['orcid']
 
       if change:
         instance.save()
@@ -137,7 +188,7 @@ class BasicUserSerializer(serializers.ModelSerializer):
 class ContributorSerializer(serializers.ModelSerializer):
   class Meta:
     model = Contributor
-    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+    fields = ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces","orcid"]
     
 # Serializer to get Reviewer details
 class ReviewerSerializer(serializers.ModelSerializer):
@@ -152,7 +203,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     validators=[UniqueValidator(queryset=User.objects.all())]
   )
   password = serializers.CharField(write_only=True, required=True)
-  # password2 = serializers.CharField(write_only=True, required=True)
+
 
   class Meta:
     model = User
@@ -162,11 +213,7 @@ class RegisterSerializer(serializers.ModelSerializer):
       'last_name': {'required': True}
     }
 
-  # def validate(self, attrs):
-  #   if attrs['password'] != attrs['password2']:
-  #     raise serializers.ValidationError({"password": "Password fields didn't match."})
-    
-    # return attrs
+
   
   # This method will be used when generic create api called
   def create(self, validated_data):
@@ -191,12 +238,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class NodeViewProofSerializer(serializers.ModelSerializer):
   class Meta:
     model = Proof
-    fields = ['proof_content', 'publish_date']
+    fields = ['proof_content', 'publish_date','contributors','is_disproof']
 
 class NodeViewTheoremSerializer(serializers.ModelSerializer):
   class Meta:
     model = Theorem
-    fields = ['theorem_content', 'publish_date']
+    fields = ['theorem_content', 'publish_date','contributors']
 
 class NodeViewBasicUserSerializer(serializers.ModelSerializer):
   first_name = serializers.CharField(source='user.first_name', read_only=True)
@@ -211,7 +258,7 @@ class NodeViewQuestionSerializer(serializers.ModelSerializer):
   answerer = NodeViewBasicUserSerializer()
   class Meta:
     model = Question
-    fields = ['question_content', 'created_at', 'asker', 'answer_content', 'answerer', 'answered_at']
+    fields = ['id', 'question_content', 'created_at', 'asker', 'answer_content', 'answerer', 'answered_at', 'removed_by_admin']
 
 # Serializer for Node References
 class NodeViewReferenceSerializer(serializers.ModelSerializer):
@@ -219,6 +266,14 @@ class NodeViewReferenceSerializer(serializers.ModelSerializer):
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'contributors', 'publish_date']
+
+# Serializer for Semantic Tags
+class NodeViewSemanticTagSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = SemanticTag
+    fields = ['wid', 'id', 'label']
+
+
 
 # Serializer to Node
 class NodeSerializer(serializers.ModelSerializer):
@@ -228,10 +283,11 @@ class NodeSerializer(serializers.ModelSerializer):
   theorem = NodeViewTheoremSerializer()
   question_set = NodeViewQuestionSerializer(many=True)
   contributors = NodeViewBasicUserSerializer(many=True)
+  semantic_tags = NodeViewSemanticTagSerializer(many=True)
   class Meta:
     model = Node
     fields = ['node_id', 'node_title', 'publish_date', 'is_valid', 'num_visits' , 'theorem', 'contributors',
-                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'annotations']
+                   'reviewers', 'from_referenced_nodes' , 'to_referenced_nodes', 'proofs' , 'question_set', 'semantic_tags', 'annotations', 'removed_by_admin']
 
 class RequestSerializer(serializers.ModelSerializer):
   class Meta:

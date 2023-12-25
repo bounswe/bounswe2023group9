@@ -590,7 +590,7 @@ class ContributorSerializerTestCase(TestCase):
 
         serializer = ContributorSerializer(contributor)
         expected_fields = set(
-            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces"]
+            ["user", "bio", "email_notification_preference", "show_activity_preference", "workspaces", "orcid"]
         )
         self.assertEqual(set(serializer.data.keys()), expected_fields)
 
@@ -688,4 +688,3 @@ class SemanticTagModelTestCase(TestCase):
             self.assertIn(self.algo_node, r_nodes, "Algorithm node not in related nodes of combintaional semantic tag!")
             self.assertIn(self.search_node, r_nodes, "Search node not in related nodes of combintaional semantic tag!")
             self.assertIn(self.sort_node, r_nodes, "Sort node not in related nodes of combintaional semantic tag!")
-
