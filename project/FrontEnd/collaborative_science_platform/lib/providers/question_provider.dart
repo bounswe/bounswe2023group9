@@ -73,11 +73,11 @@ class QuestionAnswerProvider with ChangeNotifier {
         body: json.encode(postData),
       );
       if (response.statusCode == 201) {
-        Question answeredQuestions = questions.firstWhere((element) => element.id == questionId);
-        answeredQuestions.isAnswered = true;
-        answeredQuestions.answer = answerText;
-        answeredQuestions.answeredAt = DateTime.now().toString();
-        answeredQuestions.answerer = user;
+        Question answeredQuestion = _questions.firstWhere((element) => element.id == questionId);
+        answeredQuestion.isAnswered = true;
+        answeredQuestion.answer = answerText;
+        answeredQuestion.answeredAt = DateTime.now().toString();
+        answeredQuestion.answerer = user;
         notifyListeners();
       } else if (response.statusCode == 403) {
         throw PostQuestionError();

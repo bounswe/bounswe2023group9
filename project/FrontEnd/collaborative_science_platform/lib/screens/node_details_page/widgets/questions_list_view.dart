@@ -52,8 +52,7 @@ class _QuestionsViewState extends State<QuestionsView> {
 
     return SingleChildScrollView(
       child: Container(
-        width: Responsive.desktopPageWidth,
-        height: 1000,
+        width: double.infinity,
         decoration: BoxDecoration(color: Colors.grey[200]),
         child: Column(
           mainAxisSize: MainAxisSize.min,
