@@ -5,7 +5,7 @@ class Source(models.Model):
 
 class Selector(models.Model):
     type = models.CharField(max_length=100, default='TextPositionSelector')
-    start = models.PositiveIntegerField()
+    start = models.IntegerField()
     end = models.PositiveIntegerField()
     source = models.ForeignKey(Source, on_delete=models.CASCADE)
 
