@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from database.models import Contributor
 # from django.contrib.auth.password_validation import validate_password
-
+from django.http import JsonResponse
+import requests
 from .models import *
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -136,9 +137,13 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
         if validated_data['show_activity_preference'] is not None:
           instance.show_activity_preference = validated_data['show_activity_preference']
           change = True
-
       if 'orcid' in validated_data:
         if validated_data['orcid'] is not None:
+          if Contributor.objects.filter(orcid=validated_data['orcid']).exists():
+            raise serializers.ValidationError({"error": 'A contributor with this ORCID already exists'})
+          res = requests.get('https://orcid.org/'+validated_data['orcid'],headers={"Accept": "application/json"})
+          if res.status_code == 404:
+            raise serializers.ValidationError({"error": "Please provide a valid ORCID"})
           cont =  Contributor.objects.filter(user_id=instance.user.id)
           if cont.count() != 0 and cont[0].orcid == None:
             contributor_serializer = ContributorSerializer(cont[0], data={'orcid': validated_data['orcid']}, partial=True)
@@ -146,8 +151,15 @@ class ChangeProfileSettingsSerializer(serializers.ModelSerializer):
               contributor_serializer.save()
               change = True
               cont[0].save()
-          instance.save()
-          return cont[0]
+            instance.save()
+            return cont[0]
+          elif cont.count() == 0:
+            basic_user = BasicUser.objects.filter(user_id=instance.user.id)[0]
+            contributor = Contributor(basicuser_ptr_id=basic_user.id,orcid=validated_data['orcid'])
+            contributor.__dict__.update(basic_user.__dict__)
+            contributor.save()
+            change = True
+            instance.orcid = validated_data['orcid']
 
       if change:
         instance.save()

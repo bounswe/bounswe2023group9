@@ -256,6 +256,8 @@ def search(request):
         rate = {}
         for node in all:
             diff = datetime.datetime.now().date() - node.publish_date
+            if diff == 0:
+                diff = 1
             rate[node.node_id] = node.num_visits / diff.days.real
         sort = sorted(rate.items(), key=lambda x:x[1])
         sort.reverse()
@@ -449,7 +451,7 @@ def get_profile(request):
     if Admin.objects.filter(id=basic_user.id).exists():
        user_type = 'admin'
 
-    return JsonResponse({'id': user.id,
+    return JsonResponse({'id': basic_user.id,
                          'name':user.first_name,
                          'surname':user.last_name,
                          'orcid': orcid,
@@ -577,12 +579,14 @@ def get_workspace_from_id(request):
     reviewer = Reviewer.objects.filter(pk=request.user.basicuser)
     cont = Contributor.objects.get(pk=request.user.basicuser)
     reviewer_flag = True
+    pending = False
     workspace = workspace[0]
     if reviewer.exists():
         for req in ReviewRequest.objects.filter(receiver=cont):
             if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
                 reviewer_flag = False
                 request_id = req.id
+                pending = True
         if workspace in reviewer[0].review_workspaces.all():
             cont = Contributor.objects.filter(pk=request.user.basicuser)[0]
             requests = ReviewRequest.objects.filter(workspace=workspace)
@@ -595,6 +599,7 @@ def get_workspace_from_id(request):
     for req in CollaborationRequest.objects.filter(receiver=cont):
         if req.workspace.workspace_id == workspace.workspace_id and req.status == 'P':
             collab_flag = False
+            pending = True
             request_id = req.id
             # collab_comment = req.comment
     if reviewer_flag and collab_flag:
@@ -612,6 +617,7 @@ def get_workspace_from_id(request):
                                 'is_theorem_entry': entry.is_theorem_entry,
                                 'is_final_entry': entry.is_final_entry,
                                 'is_proof_entry': entry.is_proof_entry,
+                                'is_disproof_entry': entry.is_disproof_entry,
                                 'is_editable': entry.is_editable,
                                 'entry_number': entry.entry_number, })
         else:
@@ -621,6 +627,7 @@ def get_workspace_from_id(request):
                             'entry_index':entry.entry_index,
                             'is_theorem_entry':entry.is_theorem_entry,
                             'is_final_entry':entry.is_final_entry,
+                            'is_disproof_entry': entry.is_disproof_entry,
                             'is_proof_entry':entry.is_proof_entry,
                             'is_editable':entry.is_editable,
                             'entry_number':entry.entry_number,})
@@ -693,6 +700,7 @@ def get_workspace_from_id(request):
                          'from_node_id' :  node_id,
                          'request_id' : request_id,
                          'comments':comments,
+                         'pending':pending,
                          }, status=200)
 
 def get_semantic_suggestion(request):
@@ -799,13 +807,11 @@ def remove_workspace_proof(request):
     if not is_cont_workspace(request):
         return JsonResponse({'message': 'User does not have access to this workspace'}, status=403)
     workspace = Workspace.objects.get(workspace_id=workspace_id)
-    if workspace.node != None:
-        return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
     if workspace.is_finalized:
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.proof_entry != None:
         workspace.proof_entry.is_proof_entry = False
-        workspace.proof_entry.is_disproof_entry = False
+        # workspace.proof_entry.is_disproof_entry = False
         workspace.proof_entry.save()
     workspace.proof_entry = None
     workspace.save()
@@ -886,6 +892,7 @@ def remove_workspace_disproof(request):
         return JsonResponse({'message': 'Workspace is already finalized'}, status=403)
     if workspace.disproof_entry != None:
         workspace.disproof_entry.is_disproof_entry = False
+        workspace.disproof_entry.save()
     workspace.disproof_entry = None
     workspace.save()
     return JsonResponse({'message': 'Disproof entry is successfully removed.'}, status=200)
@@ -964,6 +971,7 @@ def remove_workspace_theorem(request):
         return JsonResponse({'message': 'You can not change the theorem entry of this workspace (created from node).'}, status=403)
     if workspace.theorem_entry != None:
         workspace.theorem_entry.is_theorem_entry = False
+        workspace.theorem_entry.save()
     workspace.theorem_entry = None
     workspace.save()
     return JsonResponse({'message': 'Theorem entry is successfully removed.'}, status=200)
@@ -1781,23 +1789,29 @@ def get_related_nodes(request):
                 prev.append(ran)
                 random_node = Node.objects.all()[ran]
                 if not random_node.removed_by_admin:
-                    nodes.append(random_node)
+                    nodes.append(random_node.node_id)
                     i += 1
 
     try:
         for tag in tags.all():
             for node in tag.nodes:
                 if not node.removed_by_admin:
-                    nodes.append(node)
+                    nodes.append(node.node_id)
         if len(nodes) < 20: # TAKES A LOT LONGER FOR RELATED NODES TO BE FOUND SO TRY TO AVOID THEM
             for tag in tags.all():
+                if len(nodes) >= 20:
+                    break
                 for node in tag.related_nodes:
+                    if len(nodes) >= 20:
+                        break
                     if not node.removed_by_admin:
-                        nodes.append(node)
+                        nodes.append(node.node_id)
     except:
         return JsonResponse({'message':'An internal server error occured. Please try again.'},status=500)
+    nodes = list(set(nodes))
     node_infos = []
-    for node in nodes:
+    for node_id in nodes:
+        node = Node.objects.get(node_id=node_id)
         authors = []
         for cont in node.contributors.all():
             user = User.objects.get(id=cont.user_id)
