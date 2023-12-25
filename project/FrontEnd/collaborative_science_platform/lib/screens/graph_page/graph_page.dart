@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/mobile_graph_page.dart';
 import 'package:collaborative_science_platform/screens/graph_page/web_graph_page.dart';
@@ -55,6 +56,7 @@ class _GraphPageState extends State<GraphPage> {
   void getNode() async {
     try {
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
@@ -67,7 +69,7 @@ class _GraphPageState extends State<GraphPage> {
           return;
         }
       }
-      await nodeProvider.getNode(widget.nodeId);
+      await nodeProvider.getNode(widget.nodeId, auth.user!.token);
       setState(() {
         node = nodeProvider.nodeDetailed!;
       });

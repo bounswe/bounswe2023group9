@@ -26,7 +26,6 @@ class NodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final ScrollController controller;
   final Function createNewWorkspacefromNode;
-  final bool isHidden;
   final String userType;
   final Function() onTap;
 
@@ -35,7 +34,6 @@ class NodeDetails extends StatefulWidget {
     required this.node,
     required this.controller,
     required this.createNewWorkspacefromNode,
-    required this.isHidden,
     required this.userType,
     required this.onTap,
   });
@@ -132,7 +130,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                           children: [
                             Visibility(
                               visible: widget.userType == "admin" ? true : false,
-                              child: widget.isHidden
+                              child: widget.node.isHidden
                                   ? SizedBox(
                                       width: 110,
                                       child: AppButton(
@@ -281,6 +279,7 @@ class _NodeDetailsState extends State<NodeDetails> {
                   nodeId: widget.node.nodeId,
                   canAnswer: canAnswerQuestions,
                   canAsk: canAskQuestions,
+                  isAdmin: (widget.userType == "admin"),
                 ),
               ),
             if (currentIndex == 5)

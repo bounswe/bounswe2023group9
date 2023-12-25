@@ -35,7 +35,6 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   NodeDetailed node = NodeDetailed();
   BasicUser basicUser = BasicUser();
 
-  bool isHidden = false;
   bool isAuthLoading = false;
 
   bool error = false;
@@ -57,11 +56,12 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
   void getNodeDetails() async {
     try {
       final nodeDetailsProvider = Provider.of<NodeProvider>(context);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
       });
-      await nodeDetailsProvider.getNode(widget.nodeID);
+      await nodeDetailsProvider.getNode(widget.nodeID, auth.user!.token);
 
       setState(() {
         node = (nodeDetailsProvider.nodeDetailed ?? {} as NodeDetailed);
@@ -133,31 +133,31 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 
   void changeNodeStatus() async {
     try {
-      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      await adminProvider.hideNode(user, node, isHidden);
+      await adminProvider.hideNode(admin, node, !node.isHidden);
+      setState(() {
+        node.isHidden = !node.isHidden;
+      });
       error = false;
       message = "Node status updated.";
-      print(message);
     } catch (e) {
       setState(() {
         error = true;
         message = "Something went wrong!";
-        print(message);
       });
     }
   }
 
   void handleButton() {
     setState(() {
-      isHidden = !isHidden; // Toggle the state for example purposes
+      changeNodeStatus();
     });
-    // changeNodeStatus();
   }
 
   @override
   Widget build(BuildContext context) {
-    return (!isHidden || basicUser.userType == "admin")
+    return (!node.isHidden || basicUser.userType == "admin")
         ? PageWithAppBar(
             appBar: const HomePageAppBar(),
             pageColor: Colors.grey.shade200,
@@ -177,11 +177,14 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
                       )
                     : Responsive.isDesktop(context)
                         ? WebNodeDetails(
-                            node: node, createNewWorkspacefromNode: createNewWorkspacefromNode)
+                            node: node,
+                            handleButton: handleButton,
+                            createNewWorkspacefromNode: createNewWorkspacefromNode,
+                            onNodeStatusChanged: () => setState(() {}),
+                          )
                         : NodeDetails(
                             node: node,
                             controller: controller2,
-                            isHidden: isHidden,
                             userType: basicUser.userType,
                             onTap: handleButton,
                             createNewWorkspacefromNode: createNewWorkspacefromNode),
@@ -193,8 +196,15 @@ class _NodeDetailsPageState extends State<NodeDetailsPage> {
 class WebNodeDetails extends StatefulWidget {
   final NodeDetailed node;
   final Function createNewWorkspacefromNode;
-
-  const WebNodeDetails({super.key, required this.node, required this.createNewWorkspacefromNode});
+  final Function() handleButton;
+  final Function() onNodeStatusChanged;
+  const WebNodeDetails({
+    super.key,
+    required this.node,
+    required this.handleButton,
+    required this.createNewWorkspacefromNode,
+    required this.onNodeStatusChanged,
+  });
 
   @override
   State<WebNodeDetails> createState() => _WebNodeDetailsState();
@@ -209,10 +219,9 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
   bool error = false;
   bool isLoading = false;
   bool isAuthLoading = false;
-  bool isHidden = false;
 
   String errorMessage = "";
-
+  String message = "";
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -282,15 +291,28 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
     super.initState();
   }
 
-  void handleButton() {
-    setState(() {
-      isHidden = !isHidden; // Toggle the state for example purposes
-    });
+  void changeNodeStatus() async {
+    try {
+      final User? user = Provider.of<Auth>(context, listen: false).user;
+      final adminProvider = Provider.of<AdminProvider>(context, listen: false);
+      await adminProvider.hideNode(user, widget.node, widget.node.isHidden);
+      setState(() {
+        widget.node.isHidden = !widget.node.isHidden;
+      });
+      widget.onNodeStatusChanged();
+      error = false;
+      message = "Node status updated.";
+    } catch (e) {
+      setState(() {
+        error = true;
+        message = "Something went wrong!";
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return (!isHidden || basicUser.userType == "admin")
+    return (!widget.node.isHidden || basicUser.userType == "admin")
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Row(
@@ -306,9 +328,8 @@ class _WebNodeDetailsState extends State<WebNodeDetails> {
                   child: NodeDetails(
                     node: widget.node,
                     controller: controller2,
-                    isHidden: isHidden,
                     userType: basicUser.userType,
-                    onTap: handleButton,
+                    onTap: widget.handleButton,
                     createNewWorkspacefromNode: widget.createNewWorkspacefromNode,
                   ),
                 ),

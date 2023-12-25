@@ -7,24 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AdminProvider with ChangeNotifier {
-  Future<int> banUser(User? user, User? admin, bool isBanned) async {
+  Future<int> banUser(User? admin, int userId, bool isBanned) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
-
+    final String body = json.encode({
+      'context': "user",
+      'content_id': userId,
+      'hide': isBanned,
+    }); 
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "user",
-            'content_id': user!.id.toString(),
-            'hide': isBanned.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
       return response.statusCode;
@@ -37,20 +35,18 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
-
+    final String body = json.encode({
+      'context': "node",
+      'content_id': node.nodeId,
+      'hide': isHidden,
+    });
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "node",
-            'content_id': node.nodeId.toString(),
-            'hide': isHidden.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
     } catch (e) {
@@ -62,20 +58,18 @@ class AdminProvider with ChangeNotifier {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
-
+    final String body = json.encode({
+      'context': "question",
+      'content_id': question.id,
+      'hide': isHidden,
+    });
     try {
       final response = await http.put(
         Uri.parse("${Constants.apiUrl}/update_content_status/"),
         headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'context': "question",
-            'content_id': "-1", // TODO question!.id.toString().
-            'hide': isHidden.toString()
-          },
-        ),
+        body: body,
       );
       print(response.statusCode);
       return response.statusCode;
@@ -84,47 +78,42 @@ class AdminProvider with ChangeNotifier {
     }
   }
 
-  Future<void> promoteUser(User? user, User? admin) async {
+  Future<int> promoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
-
+    final String body = json.encode({'cont_id': userId});
     try {
-      final response = await http.post(
-        Uri.parse("${Constants.apiUrl}/promote_contributor/"),
-        headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'cont_id': user!.id.toString(), //The basic user id of the contributor
-          },
-        ),
-      );
+      final response = await http.post(Uri.parse("${Constants.apiUrl}/promote_contributor/"),
+          headers: header, body: body);
+
+      if (response.statusCode == 200) {
+        print("User is promoted to reviewer.");
+      }
       print(response.statusCode);
+      return response.statusCode;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> demoteUser(User? user, User? admin) async {
+  Future<int> demoteUser(User? admin, int userId) async {
     final Map<String, String> header = {
       "Accept": "application/json",
       "content-type": "application/json",
-      'Authorization': admin!.token,
+      'Authorization': "Token ${admin!.token}",
     };
-
     try {
       final response = await http.delete(
-        Uri.parse("${Constants.apiUrl}/demote_reviewer/?${user!.id.toString()}"),
-        headers: header,
-        body: jsonEncode(
-          <String, String>{
-            'reviewer_id': user.id.toString(), //The basic user id of the reviewer
-          },
-        ),
-      );
+          Uri.parse("${Constants.apiUrl}/demote_reviewer/?reviewer_id=${userId.toString()}"),
+          headers: header);
+      if (response.statusCode == 200) {
+        print("User is demoted to contributor.");
+      }
       print(response.statusCode);
+      return response.statusCode;
     } catch (e) {
       rethrow;
     }

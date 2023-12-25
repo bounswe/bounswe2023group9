@@ -1,4 +1,5 @@
 import 'package:collaborative_science_platform/screens/profile_page/widgets/profile_semantic_tag_list_view.dart';
+import 'package:collaborative_science_platform/models/profile_data.dart';
 import 'package:collaborative_science_platform/utils/colors.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
@@ -7,37 +8,27 @@ import 'package:flutter/material.dart';
 import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
 
 class AboutMe extends StatefulWidget {
-  final String email;
-  final String name;
-  final String surname;
+  final ProfileData profileData;
   final int noWorks;
-  final String aboutMe;
-  final bool isBanned;
-  final bool isReviewer;
   final String userType;
-  final bool isValidUser;
+  final String newUserType;
   final List<WorkspaceSemanticTag> tags;
   final Function addUserSemanticTag;
   final Function removeUserSemanticTag;
   final Function() onTap;
   final Function() onTapReviewerButton;
-  const AboutMe(
-      {super.key,
-      required this.email,
-      required this.name,
-      required this.surname,
-      required this.noWorks,
-      required this.aboutMe,
-      required this.isBanned,
-      required this.isReviewer,
-      required this.userType,
-      required this.isValidUser,
-      required this.tags,
-      required this.addUserSemanticTag,
-      required this.removeUserSemanticTag,
-      required this.onTap,
-      required this.onTapReviewerButton,
-      });
+  const AboutMe({
+    super.key,
+    required this.profileData,
+    required this.noWorks,
+    required this.userType,
+    required this.newUserType,
+    required this.tags,
+    required this.addUserSemanticTag,
+    required this.removeUserSemanticTag,
+    required this.onTap,
+    required this.onTapReviewerButton,
+  });
 
   @override
   State<AboutMe> createState() => _AboutMeState();
@@ -58,7 +49,7 @@ class _AboutMeState extends State<AboutMe> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SelectableText(
-                  "${widget.name} ${widget.surname}",
+                  "${widget.profileData.name} ${widget.profileData.surname}",
                   style: const TextStyle(
                     color: AppColors.primaryDarkColor,
                     fontWeight: FontWeight.bold,
@@ -70,8 +61,10 @@ class _AboutMeState extends State<AboutMe> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Visibility(
-                      visible: ((widget.userType == "admin" ? true : false) && widget.isValidUser),
-                      child: widget.isReviewer
+                      visible: ((widget.userType == "admin" ? true : false) &&
+                          (widget.newUserType == "reviewer" ||
+                              widget.newUserType == "contributor")),
+                      child: widget.newUserType == "contributor"
                           ? SizedBox(
                               width: 220,
                               child: AppButton(
@@ -104,7 +97,7 @@ class _AboutMeState extends State<AboutMe> {
                     const SizedBox(height: 10.0),
                     Visibility(
                       visible: (widget.userType == "admin" ? true : false),
-                      child: widget.isBanned
+                      child: widget.profileData.isBanned
                           ? SizedBox(
                               width: 220,
                               child: AppButton(
@@ -148,7 +141,7 @@ class _AboutMeState extends State<AboutMe> {
                       ? MediaQuery.of(context).size.width * 0.9
                       : MediaQuery.of(context).size.width * 0.5,
                   child: SelectableText(
-                    widget.aboutMe,
+                    widget.profileData.aboutMe,
                     style: const TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 20,
@@ -171,7 +164,7 @@ class _AboutMeState extends State<AboutMe> {
                   width: 10,
                 ),
                 SelectableText(
-                  widget.email,
+                  widget.profileData.email,
                   style: const TextStyle(
                     fontSize: 20,
                   ),

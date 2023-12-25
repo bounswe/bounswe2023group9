@@ -31,20 +31,26 @@ class ProfileData {
   String surname;
   String email;
   String aboutMe;
+  String orcid;
   List<Node> nodes;
   List<Question> askedQuestions;
   List<Question> answeredQuestions;
+  String userType;
+  bool isBanned;
   List<WorkspaceSemanticTag> tags;
-  ProfileData(
-      {this.id = 0,
-      this.aboutMe = "",
-      this.email = "",
-      this.name = "",
-      this.surname = "",
-      this.tags = const [],
-      this.nodes = const [],
-      this.askedQuestions = const [],
-      this.answeredQuestions = const [],
+  ProfileData({
+    this.id = 0,
+    this.aboutMe = "",
+    this.email = "",
+    this.name = "",
+    this.surname = "",
+    this.orcid = "",
+    this.tags = const [],
+    this.nodes = const [],
+    this.askedQuestions = const [],
+    this.answeredQuestions = const [],
+    this.userType = "",
+    this.isBanned = false,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> jsonString) {
@@ -59,12 +65,16 @@ class ProfileData {
     List<WorkspaceSemanticTag> tags = tagList.map((e) => WorkspaceSemanticTag.fromJson(e)).toList();
 
     return ProfileData(
-      nodes: nodes,
+      id: jsonString['id'],
       name: jsonString['name'],
       surname: jsonString['surname'],
       aboutMe: jsonString['bio'],
+      orcid: jsonString['orcid'] ?? "",
+      nodes: nodes,
       askedQuestions: asked,
       answeredQuestions: answered,
+      userType: jsonString['user_type'],
+      isBanned: jsonString['is_banned'] ?? false,
       tags: tags,
     );
   }

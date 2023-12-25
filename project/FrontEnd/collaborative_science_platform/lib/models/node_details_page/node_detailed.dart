@@ -18,6 +18,7 @@ class NodeDetailed {
   List<Node> citations;
   bool isValid;
   int noVisits;
+  bool isHidden;
   List<Question> questions;
 
   //List<SemanticTag> semanticTags;
@@ -37,6 +38,7 @@ class NodeDetailed {
     this.isValid = true,
     this.noVisits = 0,
     this.questions = const [],
+    this.isHidden = false,
     //required this.semanticTags,
     //required this.wikiTags,
     //required this.annotations,
@@ -66,6 +68,7 @@ class NodeDetailed {
       citations: citations,
       contributors: contributors,
       isValid: jsonString['is_valid'],
+      isHidden: jsonString['removed_by_admin'],
       nodeId: jsonString['node_id'],
       nodeTitle: jsonString['node_title'],
       noVisits: jsonString['num_visits'],
