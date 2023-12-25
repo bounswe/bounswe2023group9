@@ -31,6 +31,7 @@ class MobileWorkspaceContent extends StatefulWidget {
   final Function addSemanticTags;
   final Function sendWorkspaceToReview;
   final Function addReview;
+  final Function resetWorkspace;
 
   const MobileWorkspaceContent({
     super.key,
@@ -48,6 +49,7 @@ class MobileWorkspaceContent extends StatefulWidget {
     required this.updateRequest,
     required this.sendWorkspaceToReview,
     required this.addReview,
+    required this.resetWorkspace,
   });
 
   @override
@@ -331,90 +333,103 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
                         ],
                 ),
                 if (widget.workspace.requestId == -1)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
-                  child: AppButton(
-                    height: 40,
-                    text: widget.pending
-                        ? "Accept Workspace"
-                        : (widget.workspace.status == WorkspaceStatus.workable
-                            ? "Finalize Workspace"
-                            : "Send to Review"),
-                    icon: widget.pending
-                        ? const Icon(Icons.approval)
-                        : (widget.workspace.status == WorkspaceStatus.workable
-                            ? const Icon(Icons.lock)
-                            : const Icon(Icons.send)),
-                    onTap: widget.pending
-                        ? () {
-                            // accept or reject the review
-                            showDialog(
-                              context: context,
-                              builder: (context) => AppAlertDialog(
-                                text: "Do you accept the work?",
-                                actions: [
-                                  AppButton(
-                                    text: "Accept",
-                                    height: 40,
-                                    onTap: () {
-                                      /* Send to review */
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  AppButton(
-                                    text: "Reject",
-                                    height: 40,
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        : () {
-                            // send to review
-                            showDialog(
-                              context: context,
-                              builder: (context) => AppAlertDialog(
-                                text: widget.workspace.status == WorkspaceStatus.workable
-                                    ? "Do you want to finalize the workspace?"
-                                    : "Do you want to send it to review?",
-                                actions: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 5),
-                                    child: AppButton(
-                                      text: "Yes",
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),
+                    child: AppButton(
+                      height: 40,
+                      text: widget.pending
+                          ? "Accept Workspace"
+                          : widget.workspace.status == WorkspaceStatus.workable
+                              ? "Finalize Workspace"
+                              : widget.workspace.status == WorkspaceStatus.finalized
+                                  ? "Send to Review"
+                                  : (widget.workspace.status == WorkspaceStatus.rejected
+                                      ? "Reset Workspace"
+                                      : (widget.workspace.status == WorkspaceStatus.inReview
+                                          ? "In Review"
+                                          : "Published")),
+                      icon: widget.pending
+                          ? const Icon(Icons.approval)
+                          : (widget.workspace.status == WorkspaceStatus.workable
+                              ? const Icon(Icons.lock)
+                              : const Icon(Icons.send)),
+                      onTap: widget.pending
+                          ? () {
+                              // accept or reject the review
+                              showDialog(
+                                context: context,
+                                builder: (context) => AppAlertDialog(
+                                  text: "Do you accept the work?",
+                                  actions: [
+                                    AppButton(
+                                      text: "Accept",
                                       height: 40,
                                       onTap: () {
-                                        if (widget.workspace.status == WorkspaceStatus.workable) {
-                                          widget.finalizeWorkspace();
-                                          Navigator.of(context).pop();
-                                        } else {
-                                          /* Send to review */
-                                          widget.sendWorkspaceToReview();
-                                          Navigator.of(context).pop();
-                                        }
+                                        /* Send to review */
+                                        Navigator.of(context).pop();
                                       },
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 5),
-                                    child: AppButton(
-                                      text: "No",
+                                    AppButton(
+                                      text: "Reject",
                                       height: 40,
                                       onTap: () {
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  ],
+                                ),
+                              );
+                            }
+                          : () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AppAlertDialog(
+                                  text: widget.workspace.status == WorkspaceStatus.workable
+                                      ? "Do you want to finalize the workspace?"
+                                      : (widget.workspace.status == WorkspaceStatus.finalized
+                                          ? "Do you want to send it to review?"
+                                          : "Do you want to reset the workspace?"),
+                                  actions: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: AppButton(
+                                        text: "Yes",
+                                        height: 40,
+                                        onTap: () {
+                                          if (widget.workspace.status == WorkspaceStatus.workable) {
+                                            widget.finalizeWorkspace();
+                                            Navigator.of(context).pop();
+                                          } else if (widget.workspace.status ==
+                                              WorkspaceStatus.finalized) {
+                                            /* Send to review */
+                                            widget.sendWorkspaceToReview();
+                                            Navigator.of(context).pop();
+                                          } else if (widget.workspace.status ==
+                                              WorkspaceStatus.rejected) {
+                                            widget.resetWorkspace();
+                                            Navigator.of(context).pop();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 5),
+                                      child: AppButton(
+                                        text: "No",
+                                        height: 40,
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                    ),
                   ),
-                ),
-                if (widget.workspace.requestId != -1)
+                if (widget.workspace.requestId != -1 &&
+                    widget.workspace.status == WorkspaceStatus.inReview)
                   /** adjust it to check if the user is reviewer of this workspace */
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 4.0),

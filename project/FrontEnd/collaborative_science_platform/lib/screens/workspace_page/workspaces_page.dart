@@ -506,6 +506,36 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
+
+  void resetWorkspace() async {
+    try {
+      final auth = Provider.of<Auth>(context, listen: false);
+      final workspaceProvider = Provider.of<WorkspaceProvider>(context, listen: false);
+      setState(() {
+        error = false;
+        isLoading = true;
+      });
+      await workspaceProvider.resetWorkspace(widget.workspaceId, auth.user!.token);
+      await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
+      setState(() {
+        workspace = (workspaceProvider.workspace ?? {} as Workspace);
+      });
+    } on WorkspaceDoesNotExist {
+      setState(() {
+        error = true;
+        errorMessage = WorkspaceDoesNotExist().message;
+      });
+    } catch (e) {
+      setState(() {
+        error = true;
+        errorMessage = "Something went wrong!";
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {
@@ -539,6 +569,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
         updateCollaborationRequest: updateCollaborationRequest,
+        resetWorkspace: resetWorkspace,
       ),
       desktop: WebWorkspacePage(
         isLoading: isLoading,
@@ -558,6 +589,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         addReview: addReview,
         updateReviewRequest: updateReviewRequest,
         updateCollaborationRequest: updateCollaborationRequest,
+        resetWorkspace: resetWorkspace,
       ),
     );
   }

@@ -35,6 +35,7 @@ class WebWorkspacePage extends StatefulWidget {
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+  final Function resetWorkspace;
 
   const WebWorkspacePage({
     super.key,
@@ -55,6 +56,7 @@ class WebWorkspacePage extends StatefulWidget {
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.resetWorkspace,
   });
 
   @override
@@ -252,7 +254,8 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                       child: AppButton(
                                         isActive: widget.workspace!.status ==
                                                 WorkspaceStatus.workable ||
-                                            widget.workspace!.status == WorkspaceStatus.finalized,
+                                            widget.workspace!.status == WorkspaceStatus.finalized ||
+                                            widget.workspace!.status == WorkspaceStatus.rejected,
                                         text: widget.workspace!.status == WorkspaceStatus.workable
                                             ? ((MediaQuery.of(context).size.width >
                                                     Responsive.desktopPageWidth)
@@ -263,10 +266,16 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                                         Responsive.desktopPageWidth)
                                                     ? "Send to Review"
                                                     : "Send")
-                                                : ((MediaQuery.of(context).size.width >
+                                                : (widget.workspace!.status ==
+                                                        WorkspaceStatus.rejected
+                                                    ? ((MediaQuery.of(context).size.width >
                                                         Responsive.desktopPageWidth)
-                                                    ? "In Review"
-                                                    : "In Review"),
+                                                        ? "Reset Workspace"
+                                                        : "Workspace")
+                                                    : (widget.workspace!.status ==
+                                                            WorkspaceStatus.inReview
+                                                        ? "In Review"
+                                                        : "Published")),
                                         height: 45,
                                         onTap: () {
                                           /* finalize workspace*/
@@ -279,12 +288,16 @@ class _WebWorkspacePageState extends State<WebWorkspacePage> {
                                               WorkspaceStatus.finalized) {
                                             widget.sendWorkspaceToReview();
                                           }
+                                          else if (widget.workspace!.status ==
+                                              WorkspaceStatus.rejected) {
+                                            widget.resetWorkspace();
+                                          }
                                         },
                                         type: "primary",
                                       ),
                                     ),
-                                  if (widget.workspace!.requestId != -1)
-                                    /** adjust it to check if the user is reviewer of this workspace */
+                                  if (widget.workspace!.requestId != -1 &&
+                                      widget.workspace!.status == WorkspaceStatus.inReview)
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width / 5,
                                       child: AppButton(

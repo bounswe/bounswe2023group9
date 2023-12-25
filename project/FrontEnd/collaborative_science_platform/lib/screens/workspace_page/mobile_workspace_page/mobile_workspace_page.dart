@@ -34,6 +34,7 @@ class MobileWorkspacePage extends StatefulWidget {
   final Function addReview;
   final Function updateReviewRequest;
   final Function updateCollaborationRequest;
+  final Function resetWorkspace;
 
   const MobileWorkspacePage({
     super.key,
@@ -53,6 +54,7 @@ class MobileWorkspacePage extends StatefulWidget {
     required this.addReview,
     required this.updateReviewRequest,
     required this.updateCollaborationRequest,
+    required this.resetWorkspace,
   });
 
   @override
@@ -352,6 +354,7 @@ class _MobileWorkspacesPageState extends State<MobileWorkspacePage> {
                                 updateRequest: widget.updateCollaborationRequest,
                                 sendWorkspaceToReview: widget.sendWorkspaceToReview,
                                 addReview: widget.addReview,
+                                resetWorkspace: widget.resetWorkspace,
                               )
                             : const SizedBox(
                                 width: 100,

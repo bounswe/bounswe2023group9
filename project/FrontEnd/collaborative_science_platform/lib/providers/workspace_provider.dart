@@ -474,13 +474,34 @@ class WorkspaceProvider with ChangeNotifier {
     });
 
     http.StreamedResponse response = await request.send();
-    print(response.statusCode);
-    print(await response.stream.bytesToString());
     if (response.statusCode == 200) {
       //print(await response.stream.bytesToString());
       notifyListeners();
     } else if (response.statusCode == 400) {
       throw DeleteEntryException();
+    } else {
+      throw Exception("Something has happened");
+    }
+  }
+
+  Future<void> resetWorkspace(int workspaceId, String token) async {
+    Uri url = Uri.parse("${Constants.apiUrl}/delete_entry/");
+
+    var request = http.MultipartRequest('POST', url);
+    request.headers.addAll({
+      "Authorization": "Token $token",
+      "content-type": "application/json",
+    });
+    request.fields.addAll({
+      'workspace_id': "$workspaceId",
+    });
+
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      //print(await response.stream.bytesToString());
+      notifyListeners();
+    } else if (response.statusCode == 400) {
+      throw WorkspaceDoesNotExist();
     } else {
       throw Exception("Something has happened");
     }
