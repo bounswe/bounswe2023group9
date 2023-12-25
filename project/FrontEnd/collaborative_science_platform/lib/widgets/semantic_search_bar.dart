@@ -151,7 +151,6 @@ class _SemanticSearchBarState extends State<SemanticSearchBar> {
                           onPressed: () async {
                             if (labelController.text.isNotEmpty) {
                               await widget.addSemanticTag(tags[index].wid, labelController.text);
-                              setState(() { });
                             }
                           },
                           icon: const Icon(

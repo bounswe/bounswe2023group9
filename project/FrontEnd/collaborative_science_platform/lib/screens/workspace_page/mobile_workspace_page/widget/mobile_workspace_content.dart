@@ -520,7 +520,7 @@ class _MobileWorkspaceContentState extends State<MobileWorkspaceContent> {
               child: Divider(),
             ),
             const SubSectionTitle(title: "Semantic Tags"),
-            Padding(
+            if (widget.workspace.status == WorkspaceStatus.workable) Padding(
               padding: const EdgeInsets.all(8.0),
               child: SemanticSearchBar(addSemanticTag: widget.addSemanticTag),
             ),

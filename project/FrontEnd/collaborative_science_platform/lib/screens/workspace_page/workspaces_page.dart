@@ -459,7 +459,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       setState(() {
         error = false;
       });
-      await wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, auth.user!.token);
+      await wikiDataProvider.addSemanticTag(wikiId, label, widget.workspaceId, 'workspace', auth.user!.token);
       await workspaceProvider.getWorkspaceById(widget.workspaceId, auth.user!.token);
       setState(() {
         workspace = (workspaceProvider.workspace ?? {} as Workspace);
@@ -535,7 +535,6 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       });
     }
   }
-
 
 void setProof(int entryId) async {
     try {
@@ -716,6 +715,7 @@ void setProof(int entryId) async {
       });
     }
   }
+
   @override
   void didChangeDependencies() {
     if (_isFirstTime) {

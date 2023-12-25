@@ -1,5 +1,4 @@
 import 'package:collaborative_science_platform/models/workspace_semantic_tag.dart';
-import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
 import 'package:flutter/material.dart';
 
 class SemanticTagCard extends StatefulWidget {
@@ -37,17 +36,14 @@ class _SemanticTagCardState extends State<SemanticTagCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: Responsive.getGenericPageWidth(context)-100,
-                  child: Text(
-                    widget.tag.label,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18.0,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  widget.tag.label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18.0,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               if (!widget.finalized)
                 IconButton(
