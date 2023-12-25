@@ -19,7 +19,7 @@ class SemanticTag {
 
   factory SemanticTag.fromJsonforNodeDetailPage(Map<String, dynamic> json) {
     return SemanticTag(
-      id: json['wid'].toString(),
+      wid: json['wid'].toString(),
       label: json['label'],
       description: "",
     );

@@ -11,7 +11,6 @@ import 'package:collaborative_science_platform/providers/workspace_provider.dart
 import 'package:collaborative_science_platform/services/screen_navigation.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:collaborative_science_platform/utils/router.dart';
-import 'package:collaborative_science_platform/providers/settings_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';

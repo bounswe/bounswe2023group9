@@ -168,7 +168,7 @@ class SemanticTagBox extends StatelessWidget {
       child: CardContainer(
         onTap: () async {
           await Provider.of<NodeProvider>(context, listen: false)
-              .search(SearchType.both, semanticTag.id, semantic: true);
+              .search(SearchType.both, semanticTag.wid, semantic: true);
           context.go('/');
         },
         child: Column(
