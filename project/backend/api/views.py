@@ -682,12 +682,12 @@ def get_workspace_from_id(request):
                             "first_name": user.first_name,
                             "last_name": user.last_name,
                             "username": user.username})
-    pending = []
+    pending_cont = []
     for pend in CollaborationRequest.objects.filter(workspace=workspace):
         cont = pend.receiver
         user = User.objects.get(id=cont.user_id)
         if pend.status == 'P':
-            pending.append({"id": cont.id,
+            pending_cont.append({"id": cont.id,
                             'request_id':pend.id,
                              "first_name": user.first_name,
                              "last_name": user.last_name,
@@ -733,7 +733,7 @@ def get_workspace_from_id(request):
                          'num_approvals':workspace.num_approvals,
                          'semantic_tags':semantic_tags,
                          'contributors':contributors,
-                         'pending_contributors':pending,
+                         'pending_contributors':pending_cont,
                         'references':references,
                          'created_at':workspace.created_at,
                          'from_node_id' :  node_id,
