@@ -44,6 +44,7 @@ class QuestionAnswerProvider with ChangeNotifier {
             nodeId: nodeId,
             isAnswered: false,
             isHidden: false));
+        _questions.sort((a, b) => b.createdAt.compareTo(a.createdAt));
         notifyListeners();
       } else if (response.statusCode == 401) {
         throw PostQuestionError();

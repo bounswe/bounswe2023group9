@@ -95,42 +95,31 @@ class _QuestionBoxState extends State<QuestionBox> {
                 ],
               ),
             Visibility(
-              visible: widget.isAdmin, //visible only to admin
-              child: widget.question.isHidden //button view will change according to this
-                  ? SizedBox(
-                      width: 110,
-                      child: AppButton(
-                        text: "Show",
-                        height: 40,
-                        icon: const Icon(
-                          CupertinoIcons.eye,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        type: "grey",
-                        onTap: () {
-                          changeQuestionStatus();
-                          widget.onTap(); // Call the onTap callback here
-                        },
+              visible: widget.isAdmin, // Visible only to admin
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 4.0), // Reduced right padding
+                  child: SizedBox(
+                    width: 100, // Further reduced width
+                    height: 30, // Adjusted height if needed
+                    child: AppButton(
+                      text: widget.question.isHidden ? "Show" : "Hide",
+                      height: 30, // Adjusted height
+                      icon: Icon(
+                        widget.question.isHidden ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
+                        size: 16,
+                        color: Colors.white,
                       ),
-                    )
-                  : SizedBox(
-                      width: 110,
-                      child: AppButton(
-                        text: "Hide",
-                        height: 40,
-                        icon: const Icon(
-                          CupertinoIcons.eye_slash,
-                          size: 16,
-                          color: Colors.white,
-                        ),
-                        type: "danger",
-                        onTap: () {
-                          changeQuestionStatus();
-                          widget.onTap(); // Call the onTap callback here
-                        },
-                      ),
+                      type: widget.question.isHidden ? "grey" : "danger",
+                      onTap: () {
+                        changeQuestionStatus();
+                        widget.onTap(); // Call the onTap callback here
+                      },
                     ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
