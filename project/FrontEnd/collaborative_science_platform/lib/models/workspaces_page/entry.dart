@@ -4,6 +4,7 @@ class Entry {
   bool isEditable;
   bool isFinalEntry;
   bool isProofEntry;
+  bool isDisproofEntry;
   bool isTheoremEntry;
   DateTime entryDate;
   int entryId;
@@ -21,6 +22,7 @@ class Entry {
     required this.isFinalEntry,
     required this.isProofEntry,
     required this.isTheoremEntry,
+    required this.isDisproofEntry,
   });
   String get publishDateFormatted {
     DateFormat formatter = DateFormat('dd-MM-yyyy');
@@ -34,9 +36,11 @@ class Entry {
         isProofEntry: jsonString['is_proof_entry'],
         isTheoremEntry: jsonString['is_theorem_entry'],
         entryDate: DateTime.parse(jsonString['entry_date']),
-        entryId: jsonString['entry_id'],
-        entryNumber: jsonString['entry_number'],
-        index: jsonString['entry_index'],
-        content: jsonString['content']);
+        entryId: jsonString['entry_id'] ?? -1,
+        entryNumber: jsonString['entry_number'] ?? -1,
+        index: jsonString['entry_index'] ?? -1,
+      content: jsonString['content'],
+      isDisproofEntry: jsonString['is_disproof_entry'],
+    );
   }
 }

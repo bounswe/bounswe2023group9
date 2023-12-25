@@ -25,7 +25,7 @@ class TopNavigationBar extends StatelessWidget {
         NavigationBarItem(
           icon: Icons.graphic_eq,
           value: ScreenTab.graph,
-          text: "Graph",
+          text: "Relations",
           isSelected: screenNavigation.selectedTab == ScreenTab.graph,
         ),
         NavigationBarItem(
@@ -34,13 +34,13 @@ class TopNavigationBar extends StatelessWidget {
           isSelected: screenNavigation.selectedTab == ScreenTab.workspaces,
           text: "Workspaces",
         ),
-        if (Responsive.isMobile(context))
-          NavigationBarItem(
-            icon: Icons.notifications,
-            value: ScreenTab.notifications,
-            isSelected: screenNavigation.selectedTab == ScreenTab.notifications,
-            text: "Notifications",
-          ),
+        // if (Responsive.isMobile(context))
+        //   NavigationBarItem(
+        //     icon: Icons.notifications,
+        //     value: ScreenTab.notifications,
+        //     isSelected: screenNavigation.selectedTab == ScreenTab.notifications,
+        //     text: "Notifications",
+        //   ),
         if (Responsive.isMobile(context))
           NavigationBarItem(
             icon: Icons.person,
@@ -119,20 +119,22 @@ class _NavigationBarItemState extends State<NavigationBarItem> {
                             if (!Responsive.isMobile(context))
                               Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
-                                child: Text(
-                                  widget.text,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: widget.isSelected
-                                        ? FontWeight.w700
-                                        : isHovering
-                                            ? FontWeight.w600
-                                            : FontWeight.w500,
-                                    color: widget.isSelected
-                                        ? Colors.indigo[600]
-                                        : isHovering
-                                            ? Colors.indigo[200]
-                                            : Colors.grey[700],
+                                child: SelectionContainer.disabled(
+                                  child: Text(
+                                    widget.text,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: widget.isSelected
+                                          ? FontWeight.w700
+                                          : isHovering
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                      color: widget.isSelected
+                                          ? Colors.indigo[600]
+                                          : isHovering
+                                              ? Colors.indigo[200]
+                                              : Colors.grey[700],
+                                    ),
                                   ),
                                 ),
                               ),

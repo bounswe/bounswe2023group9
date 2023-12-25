@@ -1,25 +1,24 @@
-import 'package:collaborative_science_platform/models/basic_user.dart';
-
 class Annotation {
-  int annotationID;
-  String annotationType;
-  String annotationVisibilityType;
-  BasicUser owner;
-  Object annotationLocation;
+  int? annotationID;
+//  String annotationType;
+//  String annotationVisibilityType;
+//  BasicUser owner;
+//  Object annotationLocation;
+  String annotationContent;
+  String annotationAuthor;
+  String
+      sourceLocation; // ${Constants.appUrl}/node/{nodeId}%23{theorem|proof}%23{theoremId|proofId}
   int startOffset;
   int endOffset;
-  DateTime createdAt;
-  DateTime updatedAt;
+  DateTime dateCreated;
 
   Annotation({
-    required this.annotationID,
-    required this.annotationType,
-    required this.annotationVisibilityType,
-    required this.owner,
-    required this.annotationLocation,
+    this.annotationID,
     required this.startOffset,
     required this.endOffset,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.annotationContent,
+    required this.annotationAuthor,
+    required this.sourceLocation,
+    required this.dateCreated,
   });
 }

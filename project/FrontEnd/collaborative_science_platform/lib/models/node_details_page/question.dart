@@ -1,22 +1,30 @@
 import 'package:collaborative_science_platform/models/user.dart';
 
 class Question {
+  int id;
   String content;
   String createdAt;
-  User? asker;
-  String answer;
+  User asker;
+  String? answer;
   User? answerer;
-  String answeredAt;
-  Question({
-    required this.content,
-    required this.createdAt,
-    required this.answer,
-    required this.answeredAt,
-    required this.answerer,
-    required this.asker,
-  });
+  String? answeredAt;
+  int? nodeId;
+  bool isAnswered;
+  bool isHidden;
+  Question(
+      {required this.id,
+      required this.content,
+      required this.createdAt,
+      required this.asker,
+      required this.answer,
+      required this.answerer,
+      required this.answeredAt,
+      required this.nodeId,
+      required this.isAnswered,
+      required this.isHidden});
   factory Question.fromJson(Map<String, dynamic> jsonString) {
     return Question(
+      id: jsonString['id'] ?? -1,
       content: jsonString['question_content'] ?? "",
       createdAt: jsonString['created_at'] ?? "",
       answer: jsonString['answer_content'] ?? "",
@@ -24,8 +32,37 @@ class Question {
       answerer: jsonString['answerer'] == null
           ? null
           : User.fromJsonforNodeDetailPage(jsonString['answerer']),
-      asker:
-          jsonString['asker'] == null ? null : User.fromJsonforNodeDetailPage(jsonString['asker']),
+      asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
+      nodeId: jsonString['node_id'] ?? -1,
+      isAnswered: jsonString['answer_content'] != null,
+      isHidden: jsonString['removed_by_admin'] ?? false,
+    );
+  }
+
+  factory Question.fromJsonforProfilePage(Map<String, dynamic> jsonString) {
+    return Question(
+      id: jsonString['id'] ?? -1,
+      content: jsonString['question_content'] ?? "",
+      createdAt: jsonString['ask_date'] ?? "",
+      asker: User(
+        id: jsonString['asker_id'],
+        email: jsonString['asker_mail'],
+        firstName: jsonString['asker_name'],
+        lastName: jsonString['asker_surname'],
+      ),
+      answer: jsonString.containsKey("answer_content") ? jsonString["answer_content"] : "",
+      answerer: jsonString.containsKey("answerer")
+          ? User(
+              id: jsonString['answerer_id'],
+              email: jsonString['answerer_mail'],
+              firstName: jsonString['answerer_name'],
+              lastName: jsonString['answerer_surname'],
+            )
+          : null,
+      answeredAt: jsonString.containsKey("answer_date") ? jsonString["answer_date"] as String : "",
+      nodeId: jsonString['node_id'] ?? -1,
+      isAnswered: jsonString['is_answered'] == 1,
+      isHidden: jsonString['removed_by_admin'] ?? false,
     );
   }
 }

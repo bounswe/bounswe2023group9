@@ -5,10 +5,10 @@ import 'dart:ui';
 import 'package:collaborative_science_platform/exceptions/node_details_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/node_helper.dart';
 import 'package:collaborative_science_platform/models/node_details_page/node_detailed.dart';
+import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
-import 'package:collaborative_science_platform/widgets/annotation_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:collaborative_science_platform/helpers/date_to_string.dart';
@@ -44,6 +44,7 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
   void getNode() async {
     try {
       final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      final auth = Provider.of<Auth>(context);
       setState(() {
         error = false;
         isLoading = true;
@@ -57,7 +58,7 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
           return;
         }
       }
-      await nodeProvider.getNode(widget.nodeId);
+      await nodeProvider.getNode(widget.nodeId, auth.isSignedIn ? auth.user!.token : "");
       setState(() {
         node = nodeProvider.nodeDetailed!;
         isLoading = false;
@@ -87,7 +88,7 @@ class _NodeDetailsPopupState extends State<NodeDetailsPopup> {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: AlertDialog(
-          title: AnnotationText(
+          title: SelectableText(
             utf8.decode(node.nodeTitle.codeUnits),
             style: const TextStyle(
               fontWeight: FontWeight.bold,

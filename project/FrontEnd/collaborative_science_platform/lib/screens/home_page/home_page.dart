@@ -1,5 +1,6 @@
 import 'package:collaborative_science_platform/exceptions/search_exceptions.dart';
 import 'package:collaborative_science_platform/helpers/search_helper.dart';
+import 'package:collaborative_science_platform/helpers/select_buttons_helper.dart';
 import 'package:collaborative_science_platform/models/semantic_tag.dart';
 import 'package:collaborative_science_platform/providers/node_provider.dart';
 import 'package:collaborative_science_platform/providers/user_provider.dart';
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     if (_firstTime) {
-      randomNodes();
+      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+      if (nodeProvider.searchNodeResult.isEmpty) onTypeChange(0);
       _firstTime = false;
     }
     super.didChangeDependencies();
@@ -41,23 +43,26 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void randomNodes() async {
+  Future<void> onTypeChange(int index) async {
+    final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+    String type = "";
+    if (index == 0) {
+      type = "trending";
+    } else if (index == 1) {
+      type = "latest";
+    } else if (index == 2) {
+      type = "most_read";
+    } else if (index == 3) {
+      type = "random";
+    } else if (index == 4) {
+      type = "for_you";
+    }
     try {
-      final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
       setState(() {
+        error = false;
         isLoading = true;
       });
-      await nodeProvider.search(SearchType.both, "", random: true);
-    } on WrongSearchTypeError {
-      setState(() {
-        error = true;
-        errorMessage = WrongSearchTypeError().message;
-      });
-    } on SearchError {
-      setState(() {
-        error = true;
-        errorMessage = SearchError().message;
-      });
+      await nodeProvider.getNodeByType(type);
     } catch (e) {
       setState(() {
         error = true;
@@ -70,7 +75,37 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // void randomNodes() async {
+  //   try {
+  //     final nodeProvider = Provider.of<NodeProvider>(context, listen: false);
+  //     setState(() {
+  //       isLoading = true;
+  //     });
+  //     await nodeProvider.search(SearchType.both, "", random: true);
+  //   } on WrongSearchTypeError {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = WrongSearchTypeError().message;
+  //     });
+  //   } on SearchError {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = SearchError().message;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       error = true;
+  //       errorMessage = "Something went wrong!";
+  //     });
+  //   } finally {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
+
   void search(String text) async {
+    SelectButtonsHelper.selectedIndex = -1;
     if (text.isEmpty) return;
     if (text.length < 4) return;
     SearchType searchType = SearchHelper.searchType;
@@ -118,7 +153,7 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         isLoading = true;
       });
-      await nodeProvider.search(searchType, tag.id, semantic: true);
+      await nodeProvider.search(searchType, tag.wid, semantic: true);
     } on WrongSearchTypeError {
       setState(() {
         error = true;
@@ -146,6 +181,7 @@ class _HomePageState extends State<HomePage> {
     return MobileHomePage(
       searchBarFocusNode: searchBarFocusNode,
       onSearch: search,
+      onTypeChange: onTypeChange,
       onSemanticSearch: semanticSearch,
       isLoading: isLoading,
       error: error,

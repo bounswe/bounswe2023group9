@@ -6,6 +6,6 @@ import 'package:share_plus/share_plus.dart';
 class SharePage {
   static void shareNodeView(NodeDetailed node) {
     Share.share(
-        'Check out this on Collaborative Science Platform: ${node.nodeTitle} at ${Constants.appUrl}/${NodeDetailsPage.routeName}/${node.nodeId}');
+        'Check out this on Collaborative Science Platform: ${node.nodeTitle} at ${Constants.appUrl}${NodeDetailsPage.routeName}/${node.nodeId}');
   }
 }

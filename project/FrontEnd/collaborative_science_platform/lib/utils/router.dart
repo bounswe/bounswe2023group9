@@ -6,7 +6,6 @@ import 'package:collaborative_science_platform/screens/auth_screens/signup_page.
 import 'package:collaborative_science_platform/screens/graph_page/graph_page.dart';
 import 'package:collaborative_science_platform/screens/home_page/home_page.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/node_details_page.dart';
-import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/account_settings_page.dart';
 import 'package:collaborative_science_platform/screens/profile_page/profile_page.dart';
 import 'package:collaborative_science_platform/screens/workspace_page/workspaces_page.dart';
@@ -63,7 +62,9 @@ final router = GoRouter(
         redirect: (context, state) {
           Provider.of<ScreenNavigation>(context, listen: false)
               .changeSelectedTab(ScreenTab.workspaces);
-          if (!context.read<Auth>().isSignedIn) {
+          if (!context.read<Auth>().isSignedIn ||
+              (context.read<Auth>().basicUser!.userType != "contributor" &&
+                  context.read<Auth>().basicUser!.userType != "reviewer")) {
             return '${PleaseLoginPage.routeName}${WorkspacesPage.routeName}';
           } else {
             return null;
@@ -106,24 +107,24 @@ final router = GoRouter(
         ),
       ],
     ),
-    GoRoute(
-      name: NotificationPage.routeName.substring(1),
-      path: NotificationPage.routeName,
-      builder: (context, state) {
-        Provider.of<ScreenNavigation>(context, listen: false)
-            .changeSelectedTab(ScreenTab.notifications);
-        return const NotificationPage();
-      },
-      redirect: (context, state) {
-        Provider.of<ScreenNavigation>(context, listen: false)
-            .changeSelectedTab(ScreenTab.notifications);
-        if (!context.read<Auth>().isSignedIn) {
-          return '${PleaseLoginPage.routeName}${NotificationPage.routeName}';
-        } else {
-          return null;
-        }
-      },
-    ),
+    // GoRoute(
+    //   name: NotificationPage.routeName.substring(1),
+    //   path: NotificationPage.routeName,
+    //   builder: (context, state) {
+    //     Provider.of<ScreenNavigation>(context, listen: false)
+    //         .changeSelectedTab(ScreenTab.notifications);
+    //     return const NotificationPage();
+    //   },
+    //   redirect: (context, state) {
+    //     Provider.of<ScreenNavigation>(context, listen: false)
+    //         .changeSelectedTab(ScreenTab.notifications);
+    //     if (!context.read<Auth>().isSignedIn) {
+    //       return '${PleaseLoginPage.routeName}${NotificationPage.routeName}';
+    //     } else {
+    //       return null;
+    //     }
+    //   },
+    // ),
     GoRoute(
       name: AccountSettingsPage.routeName.substring(1),
       path: AccountSettingsPage.routeName,

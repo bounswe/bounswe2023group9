@@ -1,37 +1,34 @@
-import 'package:collaborative_science_platform/screens/notifications_page/notifications_page.dart';
 import 'package:collaborative_science_platform/utils/responsive/responsive.dart';
-import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_button.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/profile_menu.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/app_bar_logo.dart';
 import 'package:collaborative_science_platform/screens/page_with_appbar/widgets/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class HomePageAppBar extends StatelessWidget {
   const HomePageAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Responsive(
-      mobile: const TopNavigationBar(),
+    return const Responsive(
+      mobile: TopNavigationBar(),
       desktop: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const AppBarLogo(height: 50.0),
-            const TopNavigationBar(),
+            AppBarLogo(height: 50.0),
+            TopNavigationBar(),
             Row(children: [
-              if (!Responsive.isMobile(context))
-                AppBarButton(
-                    icon: Icons.notifications,
-                    text: "Notifications",
-                    onPressed: () {
-                      context.push(NotificationPage.routeName);
-                    }),
-              const SizedBox(width: 10.0),
-              const ProfileMenu(),
+              // if (!Responsive.isMobile(context))
+              //   AppBarButton(
+              //       icon: Icons.notifications,
+              //       text: "Notifications",
+              //       onPressed: () {
+              //         context.push(NotificationPage.routeName);
+              //       }),
+              // const SizedBox(width: 10.0),
+              ProfileMenu(),
             ]),
           ],
         ),

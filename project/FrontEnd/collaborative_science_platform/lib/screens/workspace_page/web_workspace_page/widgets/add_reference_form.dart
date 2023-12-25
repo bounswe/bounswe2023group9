@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddReferenceForm extends StatefulWidget {
-  const AddReferenceForm({super.key});
+  final Function onAdd;
+  const AddReferenceForm({super.key, required this.onAdd});
 
   @override
   State<AddReferenceForm> createState() => _AddReferenceFormState();
@@ -113,7 +114,8 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
-                                            nodeProvider.searchNodeResult[index].publishDateFormatted,
+                                            nodeProvider
+                                                .searchNodeResult[index].publishDateFormatted,
                                             style: TextStyles.bodyGrey,
                                             textAlign: TextAlign.start,
                                             maxLines: 1,
@@ -124,7 +126,9 @@ class _AddReferenceFormState extends State<AddReferenceForm> {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        //add reference
+                                        widget.onAdd(nodeProvider.searchNodeResult[index].id);
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.of(context).pop();
                                       },
                                       icon: Icon(
                                         Icons.add,

@@ -25,12 +25,20 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: isActive ? onTap : () {},
-      style: type != "outlined"
+      style: (type != "outlined" || !isActive)
           ? ElevatedButton.styleFrom(
               backgroundColor: isActive
                   ? (type == "primary"
-                      ? AppColors.primaryColor
-                      : (type == "secondary" ? AppColors.secondaryColor : Colors.grey[600]))
+                      ? const Color.fromRGBO(8, 155, 171, 1)
+                      : (type == "secondary"
+                          ? AppColors.secondaryColor
+                          : (type == "danger"
+                              ? AppColors.dangerColor
+                              : (type == "grey"
+                                  ? Colors.grey[600]
+                                  : (type == "safe"
+                                      ? Color.fromARGB(255, 141, 208, 141)
+                                      : Colors.grey[600])))))
                   : Colors.grey[600],
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -57,7 +65,9 @@ class AppButton extends StatelessWidget {
                     style: TextStyle(
                       fontSize: height / 3.0,
                       fontWeight: FontWeight.bold,
-                      color: (type != "outlined" ? Colors.white : AppColors.primaryColor),
+                      color: ((type != "outlined" || !isActive)
+                          ? Colors.white
+                          : AppColors.primaryColor),
                     )),
               ],
             ),
