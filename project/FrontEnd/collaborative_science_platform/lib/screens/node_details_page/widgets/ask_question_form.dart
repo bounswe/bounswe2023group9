@@ -21,6 +21,7 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
   bool isLoading = false;
 
   TextEditingController questionController = TextEditingController();
+  TextEditingController urlController = TextEditingController();
 
   void askQuestion() async {
     try {
@@ -32,7 +33,7 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
             isLoading = true;
           });
           await questionProvider.postQuestion(
-              questionController.text, widget.nodeId, authProvider.user!);
+              questionController.text, urlController.text, widget.nodeId, authProvider.user!);
           widget.onQuestionPosted(questionProvider.questions.last);
           questionController.clear();
         }
@@ -60,13 +61,18 @@ class _AskQuestionFormState extends State<AskQuestionForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Ask a Question',
+          'Ask a Question. You can also add an image to your question.',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8.0),
         TextField(
           controller: questionController,
           decoration: const InputDecoration(labelText: 'Your Question'),
+        ),
+        const SizedBox(height: 2.0),
+        TextField(
+          controller: urlController,
+          decoration: const InputDecoration(labelText: 'URL (optional)'),
         ),
         const SizedBox(height: 16.0),
         ElevatedButton(

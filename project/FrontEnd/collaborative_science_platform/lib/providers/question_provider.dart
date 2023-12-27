@@ -13,7 +13,24 @@ class QuestionAnswerProvider with ChangeNotifier {
     return [..._questions];
   }
 
-  Future<void> postQuestion(String questionText, int nodeId, User user) async {
+  void dummyData() {
+    _questions.add(Question(
+        id: 1,
+        answer: "answer",
+        content: "content",
+        createdAt: DateTime.now().toString(),
+        asker: User(
+            id: 1, email: "cem.say@mail.com", firstName: "Cem", lastName: "Say", token: "token"),
+        answerer: User(
+            id: 1, email: "cem.say@mail.com", firstName: "Cem", lastName: "Say", token: "token"),
+        answeredAt: DateTime.now().toString(),
+        nodeId: 1,
+        isAnswered: true,
+        isHidden: false,
+        url: "url"));
+  }
+
+  Future<void> postQuestion(String questionText, String imageUrl, int nodeId, User user) async {
     Uri url = Uri.parse("${Constants.apiUrl}/ask_question/");
 
     final Map<String, String> headers = {
@@ -23,6 +40,7 @@ class QuestionAnswerProvider with ChangeNotifier {
     };
     final String body = json.encode({
       'question_content': questionText,
+      'image_url': imageUrl,
       'node_id': nodeId,
     });
 
@@ -43,6 +61,7 @@ class QuestionAnswerProvider with ChangeNotifier {
             answeredAt: null,
             nodeId: nodeId,
             isAnswered: false,
+            url: imageUrl,
             isHidden: false));
 
         _questions

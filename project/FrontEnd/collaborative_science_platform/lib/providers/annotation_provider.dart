@@ -1,4 +1,6 @@
 import 'package:collaborative_science_platform/models/annotation.dart';
+import 'package:collaborative_science_platform/models/image_annotation.dart';
+import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -8,8 +10,10 @@ enum AnnotationType { theorem, proof }
 
 class AnnotationProvider with ChangeNotifier {
   final List<Annotation> _annotations = [];
+  final List<ImageAnnotation> _imageAnnotations = [];
 
   List<Annotation> get annotations => _annotations;
+  List<ImageAnnotation> get imageAnnotations => _imageAnnotations;
 
   Future<void> getAnnotations(
       String annotationSourceLocation, List<String> annotationAuthors) async {
@@ -170,4 +174,17 @@ class AnnotationProvider with ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> getImageAnnotations(Question question) async {
+    // _imageAnnotations.add(
+    //   ImageAnnotation(
+    //       annotationContent: "abc",
+    //       annotationAuthor: "acb",
+    //       sourceLocation:
+    //           "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg",
+    //       dateCreated: DateTime.now()),
+    // );
+  }
+
+  Future<void> addImageAnnotation(ImageAnnotation imageAnnotation) async {}
 }

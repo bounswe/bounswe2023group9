@@ -5,8 +5,8 @@ import 'package:collaborative_science_platform/models/basic_user.dart';
 import 'package:collaborative_science_platform/models/user.dart';
 import 'package:collaborative_science_platform/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   User? user;
@@ -42,11 +42,6 @@ class Auth with ChangeNotifier {
           'Accept': 'application/json',
           'Authorization': "Token $token"
         };
-
-        //Add token to SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', token);
-
         final tokenResponse = await http.get(url, headers: tokenHeaders);
         if (tokenResponse.statusCode == 200) {
           final userData = json.decode(tokenResponse.body);
@@ -69,6 +64,16 @@ class Auth with ChangeNotifier {
         } else {
           throw Exception("Something has happened");
         }
+
+        //Add token to SharedPreferences
+        try {
+          const FlutterSecureStorage storage = FlutterSecureStorage();
+          await storage.write(key: "token", value: token);
+          print("token added");
+        } catch (e) {
+          print("Error: $e");
+        }
+
         notifyListeners();
       } else if (response.statusCode == 400) {
         throw WrongPasswordException(message: 'Your credentials are wrong');
@@ -76,6 +81,7 @@ class Auth with ChangeNotifier {
         throw Exception("Something has happened");
       }
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -120,8 +126,11 @@ class Auth with ChangeNotifier {
 
   Future<bool> checkTokenAndLogin() async {
     // Step 1: Retrieve the token from SharedPreferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    String? token;
+
+    token = await storage.read(key: "token");
+    print("token read");
 
     if (token != null) {
       // Step 2: Make the HTTP request with the token
@@ -146,7 +155,7 @@ class Auth with ChangeNotifier {
           // This means that the token is not valid anymore
           user = null;
           //Delete it from SharedPreferences
-          prefs.remove('token');
+          await storage.delete(key: "token");
           return false;
         }
         Uri urlBasicUser = Uri.parse("${Constants.apiUrl}/get_authenticated_basic_user/");
@@ -174,7 +183,9 @@ class Auth with ChangeNotifier {
     user = null;
     basicUser = null;
     //Delete token from shared preferences
-    SharedPreferences.getInstance().then((prefs) => prefs.remove('token'));
+    const FlutterSecureStorage storage = FlutterSecureStorage();
+    await storage.delete(key: "token");
+    print("token deleted");
     notifyListeners();
   }
 }

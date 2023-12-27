@@ -6,6 +6,7 @@ class Question {
   String createdAt;
   User asker;
   String? answer;
+  String? url;
   User? answerer;
   String? answeredAt;
   int? nodeId;
@@ -21,7 +22,8 @@ class Question {
       required this.answeredAt,
       required this.nodeId,
       required this.isAnswered,
-      required this.isHidden});
+      required this.isHidden,
+      this.url});
   factory Question.fromJson(Map<String, dynamic> jsonString) {
     return Question(
       id: jsonString['id'] ?? -1,
@@ -34,6 +36,7 @@ class Question {
           : User.fromJsonforNodeDetailPage(jsonString['answerer']),
       asker: User.fromJsonforNodeDetailPage(jsonString['asker']),
       nodeId: jsonString['node_id'] ?? -1,
+      url: jsonString['url'] ?? "",
       isAnswered: jsonString['answer_content'] != null,
       isHidden: jsonString['removed_by_admin'] ?? false,
     );
@@ -61,6 +64,7 @@ class Question {
           : null,
       answeredAt: jsonString.containsKey("answer_date") ? jsonString["answer_date"] as String : "",
       nodeId: jsonString['node_id'] ?? -1,
+      url: jsonString['image_url'] ?? "",
       isAnswered: jsonString['is_answered'] == 1,
       isHidden: jsonString['removed_by_admin'] ?? false,
     );

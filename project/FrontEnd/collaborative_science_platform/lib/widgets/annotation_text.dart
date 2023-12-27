@@ -472,7 +472,7 @@ class _DesktopShowAnnotationButtonState extends State<DesktopShowAnnotationButto
                         //     style: const TextStyle(fontSize: 16, color: Colors.white)),
                         Container(
                             height: 70,
-                            constraints: const BoxConstraints(maxWidth: 100),
+                            constraints: const BoxConstraints(maxWidth: 300),
                             child: TeXView(
                                 child: TeXViewDocument(widget.text,
                                     style: TeXViewStyle(

@@ -68,6 +68,23 @@ class NodeDetailed {
     //List<User> reviewers = reviewersList.map((e) => User.fromJsonforNodeDetailPage(e)).toList();
     List<Proof> proof = proofsList.map((e) => Proof.fromJson(e)).toList();
     List<Question> questions = questionsList.map((e) => Question.fromJson(e)).toList();
+    // List<Question> questions = [
+    //   Question(
+    //       id: 1,
+    //       answer: "answer",
+    //       content: "content",
+    //       createdAt: DateTime.now().toString(),
+    //       asker: User(
+    //           id: 1, email: "cem.say@mail.com", firstName: "Cem", lastName: "Say", token: "token"),
+    //       answerer: User(
+    //           id: 1, email: "cem.say@mail.com", firstName: "Cem", lastName: "Say", token: "token"),
+    //       answeredAt: DateTime.now().toString(),
+    //       nodeId: 1,
+    //       isAnswered: true,
+    //       isHidden: false,
+    //       url:
+    //           "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg")
+    // ];
     List<SemanticTag> semanticTags =
         semanticTagsList.map((e) => SemanticTag.fromJsonforNodeDetailPage(e)).toList();
     return NodeDetailed(

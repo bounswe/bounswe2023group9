@@ -18,6 +18,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   configureApp();
   runApp(ChangeNotifierProvider.value(value: Auth(), child: const MyApp()));
 }

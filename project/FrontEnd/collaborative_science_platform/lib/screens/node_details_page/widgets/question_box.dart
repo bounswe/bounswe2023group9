@@ -1,9 +1,11 @@
 import 'package:collaborative_science_platform/models/node_details_page/question.dart';
 import 'package:collaborative_science_platform/models/user.dart';
+import 'package:collaborative_science_platform/providers/admin_provider.dart';
+
 import 'package:collaborative_science_platform/providers/auth.dart';
 import 'package:collaborative_science_platform/screens/node_details_page/widgets/answer_box.dart';
+import 'package:collaborative_science_platform/widgets/annotation_image.dart';
 import 'package:collaborative_science_platform/widgets/app_button.dart';
-import 'package:collaborative_science_platform/providers/admin_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +37,7 @@ class _QuestionBoxState extends State<QuestionBox> {
     try {
       final User? admin = Provider.of<Auth>(context, listen: false).user;
       final adminProvider = Provider.of<AdminProvider>(context, listen: false);
-      int response =
-          await adminProvider.hideQuestion(admin, widget.question, !widget.question.isHidden);
+      await adminProvider.hideQuestion(admin, widget.question, !widget.question.isHidden);
       setState(() {
         widget.question.isHidden = !widget.question.isHidden;
       });
@@ -58,6 +59,7 @@ class _QuestionBoxState extends State<QuestionBox> {
               'Q: ${widget.question.content}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            if (widget.question.url != null) AnnotationImage(question: widget.question),
             const SizedBox(height: 8.0),
             Text('Asked by: ${widget.question.asker.email} at ${widget.question.createdAt}'),
             if (widget.question.isAnswered)
