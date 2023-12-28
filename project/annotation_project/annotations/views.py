@@ -20,7 +20,7 @@ def serialize_annotation(annotation):
         },
         'target': {
             'id': annotation.target.source.uri,
-            'type': 'text',
+            'type': '',
             'selector': {
                 'type': annotation.target.type,
             },
@@ -35,10 +35,12 @@ def serialize_annotation(annotation):
     annotation_type = annotation.target.type
 
     if annotation_type == 'TextPositionSelector':
+        response_body['target']['type'] = 'text'
         selector = TextPositionSelector.objects.get(pk=annotation.target.id)
         response_body['target']['selector']['start'] = selector.start
         response_body['target']['selector']['end'] = selector.end
     elif annotation_type == 'FragmentSelector':
+        response_body['target']['type'] = 'Image'
         selector = FragmentSelector.objects.get(pk=annotation.target.id)
         response_body['target']['selector']['conformsTo'] = selector.conformsTo
         response_body['target']['selector']['value'] = selector.value
