@@ -8,7 +8,7 @@ import hashlib
 from .models import *
 
 def serialize_annotation(annotation):
-    return {
+    response_body = {
         '@context': 'http://www.w3.org/ns/anno.jsonld',
         'id': f'http://13.51.55.11:8001/annotations/annotation/{annotation.id}',
         'type': annotation.type,
@@ -23,8 +23,6 @@ def serialize_annotation(annotation):
             'type': 'text',
             'selector': {
                 'type': annotation.target.type,
-                'start': annotation.target.start,
-                'end': annotation.target.end,
             },
         },
         'creator': {
@@ -33,6 +31,21 @@ def serialize_annotation(annotation):
         },
         'created': annotation.created,
     }
+
+    annotation_type = annotation.target.type
+
+    if annotation_type == 'TextPositionSelector':
+        selector = TextPositionSelector.objects.get(pk=annotation.target.id)
+        response_body['target']['selector']['start'] = selector.start
+        response_body['target']['selector']['end'] = selector.end
+    elif annotation_type == 'FragmentSelector':
+        selector = FragmentSelector.objects.get(pk=annotation.target.id)
+        response_body['target']['selector']['conformsTo'] = selector.conformsTo
+        response_body['target']['selector']['value'] = selector.value
+    else:
+        pass
+    
+    return response_body
 
 @csrf_exempt
 @require_http_methods(['GET', 'HEAD'])
@@ -117,28 +130,6 @@ def create_annotation(request):
         body_format = body.get('format')
         body_language = body.get('language')
 
-        target = request.POST.get('target')
-        if not target:
-            return JsonResponse({'message': 'target must be given!'}, status=400)
-        target = json.loads(target)
-        
-        target_id = target.get('id')
-        if not target_id:
-            return JsonResponse({'message': 'target id must be given!'}, status=400)
-        
-        selector = target.get('selector')
-        if not selector:
-            return JsonResponse({'message': 'target selector must be given!'}, status=400)
-        
-        selector_type = selector.get('type')
-        selector_start = selector.get('start')
-        if selector_start is None:
-            return JsonResponse({'message': 'selector start must be given!'}, status=400)
-
-        selector_end = selector.get('end')
-        if selector_end is None:
-            return JsonResponse({'message': 'selector end must be given!'}, status=400)
-        
         creator = request.POST.get('creator')
         if not creator:
             return JsonResponse({'message': 'creator must be given!'}, status=400)
@@ -149,6 +140,15 @@ def create_annotation(request):
             return JsonResponse({'message': 'creator id must be given!'}, status=400)
         
         creator_type = creator.get('type')
+
+        target = request.POST.get('target')
+        if not target:
+            return JsonResponse({'message': 'target must be given!'}, status=400)
+        target = json.loads(target)
+        
+        target_id = target.get('id')
+        if not target_id:
+            return JsonResponse({'message': 'target id must be given!'}, status=400)
 
         body_object = Body.objects.create(
             value=value
@@ -168,16 +168,44 @@ def create_annotation(request):
         source_object, created = Source.objects.get_or_create(
             uri=target_id
         )
+        
+        selector = target.get('selector')
+        if not selector:
+            return JsonResponse({'message': 'target selector must be given!'}, status=400)
+        
+        selector_type = selector.get('type')
+        selector_object = None
+        
+        if selector_type == 'TextPositionSelector':
+            selector_start = selector.get('start')
+            if selector_start is None:
+                return JsonResponse({'message': 'selector start must be given!'}, status=400)
 
-        selector_object = Selector.objects.create(
+            selector_end = selector.get('end')
+            if selector_end is None:
+                return JsonResponse({'message': 'selector end must be given!'}, status=400)
+            
+            selector_object = TextPositionSelector.objects.create(
             start=selector_start,
             end=selector_end,
-            source=source_object
+            source=source_object,
+            type = selector_type
+        )
+            
+        elif selector_type == 'FragmentSelector':
+            selector_conforms_to = selector.get('conformsTo')
+            selector_value = selector.get('value')
+            
+            if selector_value is None:
+                return JsonResponse({'message': 'selector value must be given!'}, status=400)
+            
+            selector_object = FragmentSelector.objects.create(
+            conformsTo = selector_conforms_to,
+            value =  selector_value,
+            source=source_object,
+            type = selector_type
         )
 
-        if selector_type:
-            selector_object.type = selector_type
-        
         selector_object.save()
 
         creator_object = Creator.objects.create(

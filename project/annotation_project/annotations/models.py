@@ -5,9 +5,15 @@ class Source(models.Model):
 
 class Selector(models.Model):
     type = models.CharField(max_length=100, default='TextPositionSelector')
+    source = models.ForeignKey(Source, on_delete=models.CASCADE)
+
+class TextPositionSelector(Selector):
     start = models.IntegerField()
     end = models.PositiveIntegerField()
-    source = models.ForeignKey(Source, on_delete=models.CASCADE)
+
+class FragmentSelector(Selector):
+    conformsTo = models.CharField(max_length=200, default='http://www.w3.org/TR/media-frags/')
+    value = models.CharField(max_length=100)
 
 class Body(models.Model):
     type = models.CharField(max_length=100, default='TextualBody')
