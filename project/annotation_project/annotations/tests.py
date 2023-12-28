@@ -10,7 +10,7 @@ class AnnotationGetTest(TestCase):
         source = Source.objects.create(uri='http://example.com/source1')
         body = Body.objects.create(value='Annotation Test Content')
         creator = Creator.objects.create(name='http://13.51.205.39/profile/testcreator@example.com')
-        selector = Selector.objects.create(start=0, end=5, source=source)
+        selector = TextPositionSelector.objects.create(start=0, end=5, source=source)
         self.annotation = Annotation.objects.create(
             body=body,
             target=selector,
@@ -21,12 +21,21 @@ class AnnotationGetTest(TestCase):
         source2 = Source.objects.create(uri='http://example.com/source2')
         body2 = Body.objects.create(value='Annotation Test Content2')
         creator2 = Creator.objects.create(name='http://13.51.205.39/profile/testcreator2@example.com')
-        selector2 = Selector.objects.create(start=0, end=5, source=source2)
+        selector2 = TextPositionSelector.objects.create(start=0, end=5, source=source2)
         self.annotation2 = Annotation.objects.create(
             body=body2,
             target=selector2,
             creator=creator2,
             created=datetime.now(),
+        )
+
+        fragment_selector = FragmentSelector.objects.create(value='xywh=50,50,640,480', source=source, type='FragmentSelector')
+
+        self.image_annotation = Annotation.objects.create(
+            body=body,
+            target=fragment_selector,
+            creator=creator,
+            created=datetime.now(), 
         )
     
     def tearDown(self):
@@ -37,7 +46,6 @@ class AnnotationGetTest(TestCase):
         Source.objects.all().delete()
         print("All Annotation Get API Tests Completed")
 
-    #TODO: update matched annotations test
         
     def test_get_matched_annotations(self):
         client = Client()
@@ -62,11 +70,11 @@ class AnnotationGetTest(TestCase):
 
         response = client.get(url, multicreator_data, format='json')
         self.assertEqual(response.status_code, 200, response.json())
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(len(response.json()), 3)
 
         response = client.get(url, multisource_data, format='json')
         self.assertEqual(response.status_code, 200, response.json())
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(len(response.json()), 3)
 
         response = client.get(url, data, format='json')
         self.assertEqual(response.status_code, 200, response.json())
@@ -80,13 +88,16 @@ class AnnotationGetTest(TestCase):
             'language': self.annotation2.body.language,
             'value': self.annotation2.body.value,
         })
+
+        selector = TextPositionSelector.objects.get(pk=self.annotation2.target.id)
+
         self.assertEqual(response['target'], {
             'id': self.annotation2.target.source.uri,
             'type': 'text',
             'selector': {
                 'type': self.annotation2.target.type,
-                'start': self.annotation2.target.start,
-                'end': self.annotation2.target.end,
+                'start': selector.start,
+                'end': selector.end,
             }
             })
         self.assertTrue(response['creator']['id'], self.annotation2.creator.name)
@@ -111,13 +122,16 @@ class AnnotationGetTest(TestCase):
             'language': self.annotation.body.language,
             'value': self.annotation.body.value,
         })
+
+        selector = TextPositionSelector.objects.get(pk=self.annotation.target.id)
+
         self.assertEqual(response['target'], {
             'id': self.annotation.target.source.uri,
             'type': 'text',
             'selector': {
                 'type': self.annotation.target.type,
-                'start': self.annotation.target.start,
-                'end': self.annotation.target.end,
+                'start': selector.start,
+                'end': selector.end,
             }
             })
         self.assertTrue(response['creator']['id'], self.annotation.creator.name)
@@ -130,6 +144,39 @@ class AnnotationGetTest(TestCase):
 
         response = client.delete(url)
         self.assertEqual(response.status_code, 204)
+
+    def test_image_annotation(self):
+        client = Client()
+
+        url = reverse('get_annotation_by_id', args=[self.image_annotation.id])
+
+        response = client.get(url)
+        self.assertEqual(response.status_code, 200, response.json())
+
+        response = response.json()
+        self.assertEqual(response['@context'], 'http://www.w3.org/ns/anno.jsonld')
+        self.assertEqual(response['id'],f'http://13.51.55.11:8001/annotations/annotation/{self.image_annotation.id}')
+        self.assertEqual(response['type'], self.image_annotation.type)
+        self.assertEqual(response['body'], {
+            'type': self.image_annotation.body.type,
+            'format': self.image_annotation.body.format,
+            'language': self.image_annotation.body.language,
+            'value': self.image_annotation.body.value,
+        })
+
+        selector = FragmentSelector.objects.get(pk=self.image_annotation.target.id)
+
+        self.assertEqual(response['target'], {
+            'id': self.image_annotation.target.source.uri,
+            'type': 'Image',
+            'selector': {
+                'type': self.image_annotation.target.type,
+                'conformsTo': selector.conformsTo,
+                'value': selector.value,
+            }
+            })
+        self.assertTrue(response['creator']['id'], self.image_annotation.creator.name)
+        self.assertIn('created', response)
 
 
 class AnnotationPostTest(TestCase):
