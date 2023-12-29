@@ -316,8 +316,14 @@ On the frontend, we've established an intuitive annotation system for theorems a
 We were notified about image annotations in the last week before the final milestone, and as a result, we are still working on implementing image annotations in the week following the milestone. Ultimately, our platform will support two types of annotations: one for textual annotations related to theorems, claims, and proofs, one for selections on images associated with questions asked for a theorem or claim.
 
 ### Scenarios
-Provide an extensive scenario that encompasses all core functionalities of your project.
-Describe in detail the work that has been completed related to the features necessary to realize this scenario using your application.
+Scenario - 1:
+A student called Bengisu works on a new approach on Bubble Sort with her friend Leyla. They decided to use the collaborative science platform. Bengisu sign-ups to platform and enters her ORCID. The she search for bubble sort in the platform. She find the node then creates a new workspace to add a new claim to this node. After adding their work, they send the workspace to review. 
+
+Scenario - 2:
+Cem Say realizes that he is being imitated by someone else in the platform and reports this user to platform admin.
+Admin checks the situation and then bans this user.
+
+
 ### Use and Maintenance
 Assure that the user and system manuals are correct by installing the application on alternative computers and mobile devices.
 # Project Artifacts
@@ -1028,5 +1034,52 @@ I helped cleaning the database by removing dummy/test data and creating various 
 
 **Additional information:**
 Self-Reflection: I should have written more tests. I stopped writing them entirely at some point. I thought they were not significant since I was already checking everything using Postman before each commit. I realized later that they are very important to make sure that everything functions correctly in the long run. This did not create a big problem overall, but there were several bugs that could have been prevented if I wrote the tests for them.
+
+## Member: Ömer Şükrü Uyduran - Collaborative Science Platform / Backend
+
+
+**Responsibilities:**
+I was assigned to implementation of the annotation service mainly. I also impelmented APIs for creating semantic tags initially attached to workspaces and also for removing them from workspaces since these needs arised. I also fixed some bugs we encountered. I also took place in the preparation o the milestone scenario and project plan update. I wrote the setup instructions for the annotation service and updated the backend service setup instructions for database setup.
+
+**Main contributions:**
+I attended to all of the laboratories and meetings. I made contributions while we, as a team or backend sub-team, were making decisions about significant issues. I have fulfilled all tasks that have been assigned to me. I also documented the APIs that are implemented by me in the postman workspace of the team.
+
+**Code-related significant issues:**
+
+- Semantic search bug fixes - [#573](https://github.com/bounswe/bounswe2023group9/issues/573)
+- BE - Annotations Implementation - [#603](https://github.com/bounswe/bounswe2023group9/issues/603)
+- Annotations POST API implementation - [#613](https://github.com/bounswe/bounswe2023group9/issues/613)
+- Semantic Tag POST API will be implemented - [#665](https://github.com/bounswe/bounswe2023group9/issues/665)
+- Remove Workspace Tag PUT API will be implemented - [#666](https://github.com/bounswe/bounswe2023group9/issues/666)
+
+**Management-related significant issues:**
+
+- Project plan will be updated - [#577](https://github.com/bounswe/bounswe2023group9/issues/577)
+- Setup instructions for annotation and database service - [#714](https://github.com/bounswe/bounswe2023group9/issues/714)
+- Milestone Scenario - [#653](https://github.com/bounswe/bounswe2023group9/issues/653)
+
+**Pull requests:**
+
+Created:
+
+- fix semantic tag bugs - [#592](https://github.com/bounswe/bounswe2023group9/pull/592)
+- Annotations - [#639](https://github.com/bounswe/bounswe2023group9/pull/639)
+- Semantic tag post api and remove workspace tag put api - [#673](https://github.com/bounswe/bounswe2023group9/pull/673)
+- Setup instructions - [#719](https://github.com/bounswe/bounswe2023group9/pull/719)
+
+Reviewed:
+
+- Implement GET API - [#616](https://github.com/bounswe/bounswe2023group9/pull/616)
+- disproof API implemented - [#672](https://github.com/bounswe/bounswe2023group9/pull/672)
+- BE - Image annotation - [#732](https://github.com/bounswe/bounswe2023group9/pull/732)
+
+Unit tests:
+- [ChangePasswordAPITestCase - (#345)](https://github.com/bounswe/bounswe2023group9/pull/345/files#diff-c341d6ef36d5d22a5cd01a1dd4676030062c9aadc198e63a31986ebf2c4e2454)
+- [ChangeProfileSettingsAPITestCase - (#350)](https://github.com/bounswe/bounswe2023group9/pull/350/files#diff-c341d6ef36d5d22a5cd01a1dd4676030062c9aadc198e63a31986ebf2c4e2454)
+- [RequestModelTestCase - (#426)](https://github.com/bounswe/bounswe2023group9/pull/426/files#diff-c651e6f1e2bc8af0fac0d17a881e5854afc6280be3f591360daa41b802823ad4)
+- [SemanticTagModelTestCase - (#468)](https://github.com/bounswe/bounswe2023group9/pull/468/files#diff-c651e6f1e2bc8af0fac0d17a881e5854afc6280be3f591360daa41b802823ad4)
+- [WorkspacePOSTAPITestCase - (#501)](https://github.com/bounswe/bounswe2023group9/pull/501/files#diff-c341d6ef36d5d22a5cd01a1dd4676030062c9aadc198e63a31986ebf2c4e2454)
+- [AnnotationPostTest - (#636)](https://github.com/bounswe/bounswe2023group9/pull/636/files#diff-fa6b6dcac8ac9ec78591ecfcd7f6e4acb94c1cdf8eff2af0eb6827f7ae6668ad)
+- [SemanticTagAPITestCase - (#673)](https://github.com/bounswe/bounswe2023group9/pull/673/files#diff-c341d6ef36d5d22a5cd01a1dd4676030062c9aadc198e63a31986ebf2c4e2454)
 
 
