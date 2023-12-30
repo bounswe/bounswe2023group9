@@ -1082,4 +1082,29 @@ Unit tests:
 - [AnnotationPostTest - (#636)](https://github.com/bounswe/bounswe2023group9/pull/636/files#diff-fa6b6dcac8ac9ec78591ecfcd7f6e4acb94c1cdf8eff2af0eb6827f7ae6668ad)
 - [SemanticTagAPITestCase - (#673)](https://github.com/bounswe/bounswe2023group9/pull/673/files#diff-c341d6ef36d5d22a5cd01a1dd4676030062c9aadc198e63a31986ebf2c4e2454)
 
+## Member: Ahmet Abdullah Susuz
 
+**Responsibilities:** I am member of the frontend team. My main responsibilities were designing and creating user interfaces also connecting backend with providers. I was mostly involved in the logic the admin features and question/answer page. Also, I was responsible for writing privacy policy. 
+
+**Main contributions:** I designed and implemented q/a page design, providers and state management bugs. Also implement logic for display buttons for user based. In the last week fixed all its state and design bugs. I also wrote privacy policy for the application. 
+
+**Code-related significant issues:**
+* [FE - Question/Answer Implementation](https://github.com/bounswe/bounswe2023group9/issues/567)
+* [FE - Admin Features](https://github.com/bounswe/bounswe2023group9/issues/597)
+* [FE - Privacy Policy to Login Page](https://github.com/bounswe/bounswe2023group9/issues/598)
+* [FE - Tidy Up Q&A and Admin Features](https://github.com/bounswe/bounswe2023group9/issues/655)
+* [FE - Settings Bug Fix](https://github.com/bounswe/bounswe2023group9/issues/656)
+* [FE - Get hidden nodes bug](https://github.com/bounswe/bounswe2023group9/issues/727)
+
+**Management related significant issues:**
+* [FE - Writing Privacy Policy](https://github.com/bounswe/bounswe2023group9/issues/663)
+
+**Pull requests:**
+* [Privacy policy](https://github.com/bounswe/bounswe2023group9/pull/618)
+* [Question answer pages](https://github.com/bounswe/bounswe2023group9/pull/632)
+* [bug fixed in settings](https://github.com/bounswe/bounswe2023group9/pull/710)
+* [Admin features frontend](https://github.com/bounswe/bounswe2023group9/pull/716)
+* [Get hidden node bug](https://github.com/bounswe/bounswe2023group9/pull/724)
+
+**Reviewed:** 
+* [Privacy policy text](https://github.com/bounswe/bounswe2023group9/pull/718)
